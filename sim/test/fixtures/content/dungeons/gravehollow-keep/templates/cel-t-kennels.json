@@ -1,0 +1,124 @@
+{
+  "id": "cel-t-kennels",
+  "zoneId": "the-cellars",
+  "footprint": {
+    "w": 2,
+    "h": 1
+  },
+  "doors": [
+    {
+      "side": "west",
+      "offset": 0
+    },
+    {
+      "side": "east",
+      "offset": 0
+    }
+  ],
+  "kinds": [
+    "fight",
+    "elite",
+    "trapGauntlet",
+    "lockedDoor"
+  ],
+  "camera": {
+    "position": [
+      0,
+      10.9,
+      13
+    ],
+    "lookAt": [
+      0,
+      1,
+      0
+    ],
+    "fov": 40
+  },
+  "props": [
+    {
+      "meshId": "cel_wall_low",
+      "position": [
+        -6,
+        0,
+        -2
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cel_wall_low",
+      "position": [
+        -2,
+        0,
+        -2
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cel_wall_low",
+      "position": [
+        2,
+        0,
+        -2
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cel_wall_low",
+      "position": [
+        6,
+        0,
+        -2
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cel_rat_nest",
+      "position": [
+        -5,
+        0,
+        -3.2
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cel_rat_nest",
+      "position": [
+        5,
+        0,
+        -3.2
+      ],
+      "rotationY": 20
+    },
+    {
+      "meshId": "cel_cage_hanging",
+      "position": [
+        0,
+        2.5,
+        -3
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "shr_torch_sconce",
+      "position": [
+        -7.9,
+        2,
+        2
+      ],
+      "rotationY": 90,
+      "lightSource": true
+    },
+    {
+      "meshId": "shr_torch_sconce",
+      "position": [
+        7.9,
+        2,
+        2
+      ],
+      "rotationY": -90,
+      "lightSource": true
+    }
+  ],
+  "triBudget": 30000,
+  "drawCallBudget": 60
+}

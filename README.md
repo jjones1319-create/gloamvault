@@ -40,7 +40,7 @@ Open `PROMPT.md` and paste the **Segment 1 prompt** into Claude Code with this f
 
 - [x] Research (genre · systems · tech) — 2026-10-26
 - [x] Design package: rulebook, classes, species, monsters, dungeons, items, skills, tech, art, roadmap, decisions, schemas — 2026-10-26
-- [ ] **Segment 1** — ✅ P1 repo & link (2026-10-26: the title screen installs on the phone; linter, tuning, statuses, the screenshot tool) · P2 the sim · P3 content pass 1 · P4 playable slice → *Segment 1 review*
+- [ ] **Segment 1** — ✅ P1 repo & link (2026-10-26: the title screen installs on the phone; linter, tuning, statuses, the screenshot tool) · ✅ P2 the sim (2026-10-27: the rulebook as pure TypeScript — timeline fights, statuses, the effect DSL, items and loot, the floor generator, whole delves; `npm run sim`, `npm run balance`, the first balance report on fixture content) · P3 content pass 1 · P4 playable slice → *Segment 1 review*
 - [ ] **Segment 2** — P5 characters in Blender · P6 dungeon 3D & monsters · P7 Gravehollow complete · P8 polish → *Segment 2 review*
 - [ ] **Segment 3** — P9 co-op · P10 Fungal Deep & Emberforge · P11 Beast Tamer, Wildsong import, endgame · P12 release → *v1.0*
 

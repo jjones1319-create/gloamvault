@@ -1,0 +1,61 @@
+{
+  "id": "warden-wall-stance",
+  "classId": "warden",
+  "school": "bulwark",
+  "tier": 1,
+  "name": "Wall Stance",
+  "description": "+5% Block; a successful block restores 5% Stamina; your armor wears 20% slower.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "buffStat",
+      "stat": "block",
+      "amount": 5
+    },
+    {
+      "kind": "custom",
+      "customId": "pool-on-block",
+      "percent": 5,
+      "target": "self",
+      "note": "a successful block restores 5% of the pool"
+    },
+    {
+      "kind": "custom",
+      "customId": "armor-wear-multiplier",
+      "percent": -20,
+      "target": "self",
+      "note": "armor wears 20% slower"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "+10% Block.",
+    "effects": [
+      {
+        "kind": "buffStat",
+        "stat": "block",
+        "amount": 10
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "shield"
+  ],
+  "xpTags": [
+    "endurance"
+  ],
+  "aiHints": {
+    "role": "defend",
+    "priority": 0
+  }
+}

@@ -1,11 +1,13 @@
 {
   "version": 1,
   "source": "docs/03-GAME-DESIGN.md rev. 2 §2–§12. Every number here is a tuning starting point (CLAUDE.md rule 3); the balance runner moves them, a formula changes only with a logged decision. Percentages are whole points unless the key says otherwise.",
-
   "attributes": {
     "source": "03 §2.1, §2.3",
     "base": 10,
-    "startRange": { "min": 6, "max": 15 },
+    "startRange": {
+      "min": 6,
+      "max": 15
+    },
     "heroicAt": 30,
     "legendaryAt": 50,
     "creation": {
@@ -16,37 +18,120 @@
       "total": 92
     }
   },
-
   "derived": {
     "source": "03 §2.2",
-    "hp": { "base": 30, "perVitality": 7, "perLevel": 3 },
-    "attackPhys": { "perStrength": 2, "surplusStrengthCountsDouble": true },
-    "attackSpell": { "perWisdom": 2 },
-    "defense": { "perEndurance": 1, "mitigationK": 100 },
-    "speed": { "base": 100, "perAgility": 5, "floor": 40, "cap": 300 },
-    "stamina": { "base": 30, "perEndurance": 3, "regenPercentPerTurn": 10, "basicAttackRestorePercent": 15 },
-    "mana": { "base": 30, "perWisdom": 3, "regenPercentPerTurn": 8, "basicAttackRestorePercent": 10 },
-    "momentum": { "max": 100, "onAct": 20, "onHit": 10, "onAllyAction": 5, "percentPerWillpower": 1, "ultimateCost": 100 },
-    "critRate": { "base": 5, "curveMax": 40, "curveK": 80, "cap": 45 },
-    "critDamage": { "base": 150, "perPerception": 2, "perOffenseAttribute": 2 },
-    "accuracy": { "base": 90, "perPerception": 1, "min": 50, "max": 100 },
-    "dodge": { "curveMax": 30, "curveK": 60, "luckWeight": 0.5, "cap": 30 },
-    "resistance": { "curveMax": 40, "curveK": 50, "enduranceWeight": 0.5, "cap": 40 },
-    "variance": { "floorBasePercent": 90, "floorPerLuck": 1, "floorCapPercent": 100, "ceilingPercent": 105 },
-    "fortune": { "percentPerLuck": 0.5, "cap": 25 },
-    "carry": { "baseKg": 20, "kgPerStrength": 3, "speedPenaltyPer10PercentOver": 10 },
-    "hit": { "minChance": 50 },
-    "level": { "skillRanksPerLevel": 8 }
+    "hp": {
+      "base": 30,
+      "perVitality": 7,
+      "perLevel": 3
+    },
+    "attackPhys": {
+      "perStrength": 2,
+      "surplusStrengthCountsDouble": true
+    },
+    "attackSpell": {
+      "perWisdom": 2
+    },
+    "defense": {
+      "perEndurance": 1,
+      "mitigationK": 100
+    },
+    "speed": {
+      "base": 100,
+      "perAgility": 5,
+      "floor": 40,
+      "cap": 300
+    },
+    "stamina": {
+      "base": 30,
+      "perEndurance": 3,
+      "regenPercentPerTurn": 10,
+      "basicAttackRestorePercent": 15
+    },
+    "mana": {
+      "base": 30,
+      "perWisdom": 3,
+      "regenPercentPerTurn": 8,
+      "basicAttackRestorePercent": 10
+    },
+    "momentum": {
+      "max": 100,
+      "onAct": 20,
+      "onHit": 10,
+      "onAllyAction": 5,
+      "percentPerWillpower": 1,
+      "ultimateCost": 100
+    },
+    "critRate": {
+      "base": 5,
+      "curveMax": 40,
+      "curveK": 80,
+      "cap": 45
+    },
+    "critDamage": {
+      "base": 150,
+      "perPerception": 2,
+      "perOffenseAttribute": 2
+    },
+    "accuracy": {
+      "base": 90,
+      "perPerception": 1,
+      "min": 50,
+      "max": 100
+    },
+    "dodge": {
+      "curveMax": 30,
+      "curveK": 60,
+      "luckWeight": 0.5,
+      "cap": 30
+    },
+    "resistance": {
+      "curveMax": 40,
+      "curveK": 50,
+      "enduranceWeight": 0.5,
+      "cap": 40
+    },
+    "variance": {
+      "floorBasePercent": 90,
+      "floorPerLuck": 1,
+      "floorCapPercent": 100,
+      "ceilingPercent": 105
+    },
+    "fortune": {
+      "percentPerLuck": 0.5,
+      "cap": 25
+    },
+    "carry": {
+      "baseKg": 20,
+      "kgPerStrength": 3,
+      "speedPenaltyPer10PercentOver": 10
+    },
+    "hit": {
+      "minChance": 50
+    },
+    "level": {
+      "skillRanksPerLevel": 8
+    }
   },
-
   "combat": {
     "source": "03 §3.1–§3.6 (D-004, D-029 proposed)",
     "actAtEnergy": 1000,
-    "weights": { "rowSwap": 400, "guard": 600, "item": 600, "freeAlly": 600, "light": 800, "normal": 1000, "heavy": 1400 },
+    "weights": {
+      "rowSwap": 400,
+      "guard": 600,
+      "item": 600,
+      "freeAlly": 600,
+      "light": 800,
+      "normal": 1000,
+      "heavy": 1400
+    },
     "jitterPercent": 10,
     "hasteMultiplier": 1.5,
     "slowMultiplier": 0.67,
-    "initiative": { "startMax": 400, "surpriseBonus": 500 },
+    "initiative": {
+      "startMax": 400,
+      "surpriseBonus": 500
+    },
     "charge": {
       "resolveAfterEnergy": 400,
       "interruptPush": 300,
@@ -55,15 +140,46 @@
       "note": "D-029 (Proposed): heavy casts are declared at 1,000 and resolve 400 later; a hit pushes -300 unless the concentration check passes"
     },
     "timelineStripLength": 8,
-    "guard": { "damageMultiplier": 0.5, "momentum": 10, "poolRestorePercent": 10 },
-    "elements": { "resistMultiplier": 0.5, "weakMultiplier": 1.5, "immuneMultiplier": 0 },
-    "rounds": { "ordinary": { "min": 3, "max": 6 }, "elite": { "min": 6, "max": 8 }, "boss": { "min": 10, "max": 15 }, "hardCap": 30 },
-    "animation": { "actionSeconds": 1.5, "speedToggles": [1, 2, 3] }
+    "guard": {
+      "damageMultiplier": 0.5,
+      "momentum": 10,
+      "poolRestorePercent": 10
+    },
+    "elements": {
+      "resistMultiplier": 0.5,
+      "weakMultiplier": 1.5,
+      "immuneMultiplier": 0
+    },
+    "rounds": {
+      "ordinary": {
+        "min": 3,
+        "max": 6
+      },
+      "elite": {
+        "min": 6,
+        "max": 8
+      },
+      "boss": {
+        "min": 10,
+        "max": 15
+      },
+      "hardCap": 30
+    },
+    "animation": {
+      "actionSeconds": 1.5,
+      "speedToggles": [
+        1,
+        2,
+        3
+      ]
+    }
   },
-
   "exploration": {
     "source": "03 §4.1–§4.6",
-    "rooms": { "min": 8, "max": 14 },
+    "rooms": {
+      "min": 8,
+      "max": 14
+    },
     "light": {
       "max": 100,
       "start": 100,
@@ -72,46 +188,178 @@
       "torch": 25,
       "brazier": 15,
       "bands": [
-        { "id": "radiant", "min": 76, "max": 100, "scouting": 15, "heroesAmbushed": 0, "monstersAmbushed": 20, "extraLoot": 0, "monsterAccuracy": 0, "monsterDamage": 0, "heroAccuracy": 0, "rareSlotRoll": false },
-        { "id": "dim", "min": 51, "max": 75, "scouting": 5, "heroesAmbushed": 5, "monstersAmbushed": 10, "extraLoot": 10, "monsterAccuracy": 0, "monsterDamage": 0, "heroAccuracy": 0, "rareSlotRoll": false },
-        { "id": "shadowy", "min": 26, "max": 50, "scouting": 0, "heroesAmbushed": 15, "monstersAmbushed": 0, "extraLoot": 25, "monsterAccuracy": 5, "monsterDamage": 5, "heroAccuracy": 0, "rareSlotRoll": false },
-        { "id": "dark", "min": 1, "max": 25, "scouting": -10, "heroesAmbushed": 25, "monstersAmbushed": 0, "extraLoot": 50, "monsterAccuracy": 10, "monsterDamage": 10, "heroAccuracy": -5, "rareSlotRoll": false },
-        { "id": "pitch", "min": 0, "max": 0, "scouting": -20, "heroesAmbushed": 40, "monstersAmbushed": 0, "extraLoot": 75, "monsterAccuracy": 10, "monsterDamage": 20, "heroAccuracy": -10, "rareSlotRoll": true }
+        {
+          "id": "radiant",
+          "min": 76,
+          "max": 100,
+          "scouting": 15,
+          "heroesAmbushed": 0,
+          "monstersAmbushed": 20,
+          "extraLoot": 0,
+          "monsterAccuracy": 0,
+          "monsterDamage": 0,
+          "heroAccuracy": 0,
+          "rareSlotRoll": false,
+          "detection": 4
+        },
+        {
+          "id": "dim",
+          "min": 51,
+          "max": 75,
+          "scouting": 5,
+          "heroesAmbushed": 5,
+          "monstersAmbushed": 10,
+          "extraLoot": 10,
+          "monsterAccuracy": 0,
+          "monsterDamage": 0,
+          "heroAccuracy": 0,
+          "rareSlotRoll": false,
+          "detection": 2
+        },
+        {
+          "id": "shadowy",
+          "min": 26,
+          "max": 50,
+          "scouting": 0,
+          "heroesAmbushed": 15,
+          "monstersAmbushed": 0,
+          "extraLoot": 25,
+          "monsterAccuracy": 5,
+          "monsterDamage": 5,
+          "heroAccuracy": 0,
+          "rareSlotRoll": false,
+          "detection": 0
+        },
+        {
+          "id": "dark",
+          "min": 1,
+          "max": 25,
+          "scouting": -10,
+          "heroesAmbushed": 25,
+          "monstersAmbushed": 0,
+          "extraLoot": 50,
+          "monsterAccuracy": 10,
+          "monsterDamage": 10,
+          "heroAccuracy": -5,
+          "rareSlotRoll": false,
+          "detection": -3
+        },
+        {
+          "id": "pitch",
+          "min": 0,
+          "max": 0,
+          "scouting": -20,
+          "heroesAmbushed": 40,
+          "monstersAmbushed": 0,
+          "extraLoot": 75,
+          "monsterAccuracy": 10,
+          "monsterDamage": 20,
+          "heroAccuracy": -10,
+          "rareSlotRoll": true,
+          "detection": -6
+        }
       ],
-      "darkvisionBandShift": -1
+      "darkvisionBandShift": -1,
+      "bandsNote": "detection per band is 07 §2.3 (+4 / +2 / 0 / -3 / -6); the rest is 03 §4.2"
     },
     "detection": {
-      "trapDifficulty": { "min": 8, "max": 60 },
-      "disarm": { "basePercent": 50, "perPoint": 2, "difficultyDivisor": 2, "failDamageMultiplier": 0.5 },
+      "trapDifficulty": {
+        "min": 8,
+        "max": 60
+      },
+      "disarm": {
+        "basePercent": 50,
+        "perPoint": 2,
+        "difficultyDivisor": 2,
+        "failDamageMultiplier": 0.5
+      },
       "secretRoomChance": 25,
-      "treasureFind": { "multiplier": 60, "offset": 10, "k": 30 },
-      "scouting": { "basePercent": 25, "perRanger": 5, "criticalShare": 0.5 }
+      "treasureFind": {
+        "multiplier": 60,
+        "offset": 10,
+        "k": 30
+      },
+      "scouting": {
+        "basePercent": 25,
+        "perRanger": 5,
+        "criticalShare": 0.5
+      }
     },
     "ambush": {
       "basePercent": 15,
       "ambusherFamily": 15,
-      "perceptionCurve": { "multiplier": 20, "offset": 10, "k": 10 },
+      "perceptionCurve": {
+        "multiplier": 30,
+        "offset": 10,
+        "k": 10,
+        "note": "D-058: 03 §4.4 writes 20 x (Per-10)/(Per+10) but its own examples (Per 20 -> -10, Per 30 -> -15) need 30; the examples are the intent"
+      },
       "orcNoisy": 5,
       "shadeInParty": -5,
       "energyBonus": 500
     },
-    "floorClock": { "hunterEntersAt": 40, "hunterTicksPerRoom": 2, "restAdvances": 5, "tickPerRoomEntered": 1, "tickPerFightRound": 1 },
-    "roomWeights": { "fight": 50, "elite": 8, "rest": 10, "merchant": 5, "treasure": 7, "curio": 15, "trapGauntlet": 5 },
-    "rest": { "restorePercent": 30, "perFloor": 1 },
-    "bag": { "slots": 40, "note": "03 §4.6 open question 2 (Proposed): weight penalty only, plus a 40-slot bag" }
+    "floorClock": {
+      "hunterEntersAt": 40,
+      "hunterTicksPerRoom": 2,
+      "restAdvances": 5,
+      "tickPerRoomEntered": 1,
+      "tickPerFightRound": 1
+    },
+    "roomWeights": {
+      "fight": 50,
+      "elite": 8,
+      "rest": 10,
+      "merchant": 5,
+      "treasure": 7,
+      "curio": 15,
+      "trapGauntlet": 5
+    },
+    "rest": {
+      "restorePercent": 30,
+      "perFloor": 1
+    },
+    "bag": {
+      "slots": 40,
+      "note": "03 §4.6 open question 2 (Proposed): weight penalty only, plus a 40-slot bag"
+    }
   },
-
   "xp": {
     "source": "03 §5.1–§5.3",
-    "gate": { "enemyLevelBelowHero": 10 },
+    "gate": {
+      "enemyLevelBelowHero": 10
+    },
     "difficultyCurve": [
-      { "delta": -10, "multiplier": 0.1 },
-      { "delta": 0, "multiplier": 1.0 },
-      { "delta": 5, "multiplier": 2.0 },
-      { "delta": 10, "multiplier": 3.0 }
+      {
+        "delta": -10,
+        "multiplier": 0.1
+      },
+      {
+        "delta": 0,
+        "multiplier": 1
+      },
+      {
+        "delta": 5,
+        "multiplier": 2
+      },
+      {
+        "delta": 10,
+        "multiplier": 3
+      }
     ],
-    "useBudget": { "fullUses": 20, "halfUsesUntil": 60, "halfPercent": 50, "tailPercent": 10 },
-    "skill": { "xpPerUse": 10, "rankBase": 100, "rankGrowth": 1.5, "maxRank": 10, "effectPerRank": 4, "costPerRank": -2 },
+    "useBudget": {
+      "fullUses": 20,
+      "halfUsesUntil": 60,
+      "halfPercent": 50,
+      "tailPercent": 10
+    },
+    "skill": {
+      "xpPerUse": 10,
+      "rankBase": 100,
+      "rankGrowth": 1.5,
+      "maxRank": 10,
+      "effectPerRank": 4,
+      "costPerRank": -2
+    },
     "attribute": {
       "xpPerTag": 1,
       "pointBase": 20,
@@ -120,100 +368,460 @@
       "softCapPerLevel": 2,
       "aboveCapDivisor": 4,
       "vitalityPerHpPercentTaken": 10,
-      "killTrickle": { "value": 0.2, "note": "03 §5 open question 2 (Proposed): +0.2 to the class's two affinity attributes per gated kill" }
+      "killTrickle": {
+        "value": 0.2,
+        "note": "03 §5 open question 2 (Proposed): +0.2 to the class's two affinity attributes per gated kill"
+      }
     },
     "item": {
       "xpPerHit": 2,
       "levelBase": 40,
-      "levelGrowth": 1.3,
+      "levelGrowth": 1.25,
       "maxLevel": 10,
       "percentOfBasePerLevel": 2,
-      "affinityLevels": [3, 6, 9],
+      "affinityLevels": [
+        3,
+        6,
+        9
+      ],
       "affinityPercent": 5,
       "awakenedSalvageXpPercent": 60,
-      "note": "level thresholds (40 x 1.3^(N-1), about 1,300 XP to Awakened) are a Proposed reading; 03 §5.2 gives the gain but not the curve"
+      "note": "level costs (40 x 1.25^(N-1), about 1,290 XP in total to Awakened) are a Proposed reading (D-051); 03 §5.2 gives the gain but not the curve"
     },
-    "pet": { "ownerXpSharePercent": 50, "statsPerLevelPercent": 2 },
+    "pet": {
+      "ownerXpSharePercent": 50,
+      "statsPerLevelPercent": 2
+    },
     "wisdomPercentPerPoint": 1,
     "humanBonusPercent": 10,
     "deathCostsXp": false
   },
-
   "equipment": {
     "source": "03 §6.1–§6.5 (D-008, D-009, D-010, D-031)",
-    "slots": ["mainHand", "offHand", "helmet", "chest", "legs", "boots", "gloves", "ring", "ring", "talisman", "relic"],
+    "slots": [
+      "mainHand",
+      "offHand",
+      "helmet",
+      "chest",
+      "legs",
+      "boots",
+      "gloves",
+      "ring",
+      "ring",
+      "talisman",
+      "relic"
+    ],
     "grades": [
-      { "id": "F", "name": "Crude", "colour": "grey", "hex": "#9a9a9a", "baseMultiplier": 1.0, "affixSlots": 0, "maxPlusN": 3, "floors": { "min": 1, "max": 3 } },
-      { "id": "E", "name": "Common", "colour": "white", "hex": "#f1f1f1", "baseMultiplier": 1.35, "affixSlots": 1, "maxPlusN": 4, "floors": { "min": 1, "max": 6 } },
-      { "id": "D", "name": "Fine", "colour": "green", "hex": "#4caf50", "baseMultiplier": 1.8, "affixSlots": 1, "maxPlusN": 5, "floors": { "min": 4, "max": 10 } },
-      { "id": "C", "name": "Superior", "colour": "blue", "hex": "#3b82f6", "baseMultiplier": 2.45, "affixSlots": 2, "maxPlusN": 6, "floors": { "min": 8, "max": 15 } },
-      { "id": "B", "name": "Masterwork", "colour": "purple", "hex": "#a855f7", "baseMultiplier": 3.3, "affixSlots": 2, "maxPlusN": 7, "floors": { "min": 12, "max": 22 } },
-      { "id": "A", "name": "Heroic", "colour": "orange", "hex": "#f97316", "baseMultiplier": 4.45, "affixSlots": 3, "maxPlusN": 8, "floors": { "min": 18, "max": 30 } },
-      { "id": "S", "name": "Legendary", "colour": "red", "hex": "#ef4444", "baseMultiplier": 6.0, "affixSlots": 3, "maxPlusN": 9, "floors": { "min": 26, "max": 40 } },
-      { "id": "SS", "name": "Mythic", "colour": "gold", "hex": "#eab308", "baseMultiplier": 8.1, "affixSlots": 4, "maxPlusN": 10, "floors": { "min": 35, "max": 50 } },
-      { "id": "God", "name": "Divine", "colour": "white-gold", "hex": "#fff1c7", "baseMultiplier": 11.0, "affixSlots": 4, "maxPlusN": 10, "floors": null }
+      {
+        "id": "F",
+        "name": "Crude",
+        "colour": "grey",
+        "hex": "#9a9a9a",
+        "baseMultiplier": 1,
+        "affixSlots": 0,
+        "maxPlusN": 3,
+        "floors": {
+          "min": 1,
+          "max": 3
+        }
+      },
+      {
+        "id": "E",
+        "name": "Common",
+        "colour": "white",
+        "hex": "#f1f1f1",
+        "baseMultiplier": 1.35,
+        "affixSlots": 1,
+        "maxPlusN": 4,
+        "floors": {
+          "min": 1,
+          "max": 6
+        }
+      },
+      {
+        "id": "D",
+        "name": "Fine",
+        "colour": "green",
+        "hex": "#4caf50",
+        "baseMultiplier": 1.8,
+        "affixSlots": 1,
+        "maxPlusN": 5,
+        "floors": {
+          "min": 4,
+          "max": 10
+        }
+      },
+      {
+        "id": "C",
+        "name": "Superior",
+        "colour": "blue",
+        "hex": "#3b82f6",
+        "baseMultiplier": 2.45,
+        "affixSlots": 2,
+        "maxPlusN": 6,
+        "floors": {
+          "min": 8,
+          "max": 15
+        }
+      },
+      {
+        "id": "B",
+        "name": "Masterwork",
+        "colour": "purple",
+        "hex": "#a855f7",
+        "baseMultiplier": 3.3,
+        "affixSlots": 2,
+        "maxPlusN": 7,
+        "floors": {
+          "min": 12,
+          "max": 22
+        }
+      },
+      {
+        "id": "A",
+        "name": "Heroic",
+        "colour": "orange",
+        "hex": "#f97316",
+        "baseMultiplier": 4.45,
+        "affixSlots": 3,
+        "maxPlusN": 8,
+        "floors": {
+          "min": 18,
+          "max": 30
+        }
+      },
+      {
+        "id": "S",
+        "name": "Legendary",
+        "colour": "red",
+        "hex": "#ef4444",
+        "baseMultiplier": 6,
+        "affixSlots": 3,
+        "maxPlusN": 9,
+        "floors": {
+          "min": 26,
+          "max": 40
+        }
+      },
+      {
+        "id": "SS",
+        "name": "Mythic",
+        "colour": "gold",
+        "hex": "#eab308",
+        "baseMultiplier": 8.1,
+        "affixSlots": 4,
+        "maxPlusN": 10,
+        "floors": {
+          "min": 35,
+          "max": 50
+        }
+      },
+      {
+        "id": "God",
+        "name": "Divine",
+        "colour": "white-gold",
+        "hex": "#fff1c7",
+        "baseMultiplier": 11,
+        "affixSlots": 4,
+        "maxPlusN": 10,
+        "floors": null
+      }
     ],
     "gradeStep": 1.35,
     "shopSellsUpTo": "C",
-    "plusN": { "percentOfBasePerLevel": 5, "stonesByGrade": { "whetstone": ["F", "E", "D", "C"], "honingOil": ["B", "A"], "starGrit": ["S", "SS", "God"] } },
-    "dropShape": { "centre": 56, "minus1": 25, "plus1": 14, "plus2": 4, "plus3": 1, "luckPpPerPoint": 0.5, "luckCapPp": 15, "godNeverRolls": true },
-    "armorSpeedPenalty": { "plate": 20, "mail": 10, "leather": 3, "robes": 0 },
-    "requirements": { "speedPerMissingStrength": 5 },
-    "sets": { "bonusAt": [2, 4] },
+    "plusN": {
+      "percentOfBasePerLevel": 5,
+      "stonesByGrade": {
+        "whetstone": [
+          "F",
+          "E",
+          "D",
+          "C"
+        ],
+        "honingOil": [
+          "B",
+          "A"
+        ],
+        "starGrit": [
+          "S",
+          "SS",
+          "God"
+        ]
+      },
+      "goldPercentOfValuePerLevel": 2,
+      "stonesPerLevel": {
+        "upToLevel6": 1,
+        "fromLevel7": 2
+      }
+    },
+    "dropShape": {
+      "centre": 56,
+      "minus1": 25,
+      "plus1": 14,
+      "plus2": 4,
+      "plus3": 1,
+      "luckPpPerPoint": 0.5,
+      "luckCapPp": 15,
+      "godNeverRolls": true
+    },
+    "armorSpeedPenalty": {
+      "plate": 20,
+      "mail": 10,
+      "leather": 3,
+      "robes": 0
+    },
+    "requirements": {
+      "speedPerMissingStrength": 5
+    },
+    "sets": {
+      "bonusAt": [
+        2,
+        4
+      ]
+    },
     "durability": {
       "max": 100,
-      "bands": { "fullAbove": 60, "damagedBelow": 20 },
+      "bands": {
+        "fullAbove": 60,
+        "damagedBelow": 20
+      },
       "falloffPercentAtBottom": 30,
       "falloffWeaponAccuracyPenalty": 10,
       "damagedPercent": 50,
       "brokenPercent": 100,
       "neglectErosion": 5,
-      "warnAtMaxDurability": [20, 10],
+      "warnAtMaxDurability": [
+        20,
+        10
+      ],
       "wipePenalty": 10,
-      "wearPerDelveTarget": { "min": 25, "max": 35 },
+      "wearPerDelveTarget": {
+        "min": 25,
+        "max": 35
+      },
       "kPerGradeMultiplier": 1.25,
-      "armorHitWeights": { "chest": 3, "helmet": 2, "legs": 2, "boots": 1, "gloves": 1 },
+      "armorHitWeights": {
+        "chest": 3,
+        "helmet": 2,
+        "legs": 2,
+        "boots": 1,
+        "gloves": 1
+      },
       "bowWearRate": 0.5,
       "spellsAndAmmoWear": false,
       "toastAtPercent": 20,
-      "repair": { "percentOfValuePerPoint": 0.5, "kitPercent": 25, "fieldRepairPercent": 10, "fieldRepairUnits": 1, "delveBillTargetPercentOfR": { "min": 20, "max": 30 } }
+      "repair": {
+        "percentOfValuePerPoint": 0.5,
+        "kitPercent": 25,
+        "fieldRepairPercent": 10,
+        "fieldRepairUnits": 1,
+        "delveBillTargetPercentOfR": {
+          "min": 20,
+          "max": 30
+        }
+      },
+      "basisPoints": 10000
     },
     "promotion": {
-      "units": { "F-E": 6, "E-D": 8, "D-C": 10, "C-B": 12, "B-A": 16, "A-S": 20, "S-SS": 30, "SS-God": 50 },
+      "units": {
+        "F-E": 6,
+        "E-D": 8,
+        "D-C": 10,
+        "C-B": 12,
+        "B-A": 16,
+        "A-S": 20,
+        "S-SS": 30,
+        "SS-God": 50
+      },
       "forgeFUnits": 4,
       "goldPercentOfTargetValue": 25,
       "rerollsOneAffix": true,
       "keepsItemXp": true,
       "resetsPlusN": true,
-      "plusNStoneRefundPercent": { "value": 50, "note": "03 §6.5 open question 3 (Proposed): reset +N, refund the stones at 50%" }
+      "plusNStoneRefundPercent": {
+        "value": 50,
+        "note": "03 §6.5 open question 3 (Proposed): reset +N, refund the stones at 50%"
+      }
     },
-    "salvage": { "percentOfPromotionCost": 25, "destroyedByNeglectPercent": 50 },
-    "parts": { "commonChance": 35, "rareChance": 4, "partBreakRareMultiplier": 2, "bossStack": { "min": 5, "max": 10 }, "dragonScales": { "min": 1, "max": 3 } },
+    "salvage": {
+      "percentOfPromotionCost": 25,
+      "destroyedByNeglectPercent": 50
+    },
+    "parts": {
+      "commonChance": 35,
+      "rareChance": 4,
+      "partBreakRareMultiplier": 2,
+      "bossStack": {
+        "min": 5,
+        "max": 10
+      },
+      "dragonScales": {
+        "min": 1,
+        "max": 3
+      }
+    },
     "ladders": {
-      "metal": ["Copper", "Bronze", "Iron", "Steel", "Blacksteel", "Skysteel", "Adamantine", "Orichalcum", "Starmetal"],
-      "hide": ["Rawhide", "Leather", "Boiled Leather", "Wolf Hide", "Wyvern Hide", "Basilisk Scale", "Drake Scale", "Dragon Scale", "Ancient Dragon Scale"],
-      "cloth": ["Burlap", "Linen", "Wool", "Silk", "Glyphweave", "Moonweave", "Phoenix Weave", "Voidcloth", "Celestial Thread"],
-      "wood": ["Pine", "Ash", "Oak", "Yew", "Ironwood", "Ebony", "Elderwood", "World-tree Bough", "Godwood"]
+      "metal": [
+        "Copper",
+        "Bronze",
+        "Iron",
+        "Steel",
+        "Blacksteel",
+        "Skysteel",
+        "Adamantine",
+        "Orichalcum",
+        "Starmetal"
+      ],
+      "hide": [
+        "Rawhide",
+        "Leather",
+        "Boiled Leather",
+        "Wolf Hide",
+        "Wyvern Hide",
+        "Basilisk Scale",
+        "Drake Scale",
+        "Dragon Scale",
+        "Ancient Dragon Scale"
+      ],
+      "cloth": [
+        "Burlap",
+        "Linen",
+        "Wool",
+        "Silk",
+        "Glyphweave",
+        "Moonweave",
+        "Phoenix Weave",
+        "Voidcloth",
+        "Celestial Thread"
+      ],
+      "wood": [
+        "Pine",
+        "Ash",
+        "Oak",
+        "Yew",
+        "Ironwood",
+        "Ebony",
+        "Elderwood",
+        "World-tree Bough",
+        "Godwood"
+      ]
+    },
+    "valuation": {
+      "source": "08 top: value = gradeValue x slotFactor; gradeValue is 0.5 x R of the grade band, rounded by hand in 08",
+      "gradeValue": {
+        "F": 150,
+        "E": 240,
+        "D": 380,
+        "C": 600,
+        "B": 1000,
+        "A": 1600,
+        "S": 2500,
+        "SS": 4000,
+        "God": 6500
+      },
+      "slotFactor": {
+        "mainHand": 1,
+        "twoHanded": 1.5,
+        "shield": 0.8,
+        "offHand": 0.6,
+        "chest": 1,
+        "helmet": 0.7,
+        "legs": 0.7,
+        "boots": 0.5,
+        "gloves": 0.5,
+        "ring": 0.6,
+        "talisman": 0.8,
+        "relic": 1.2
+      },
+      "sellPercent": 40,
+      "sellPerHagglingRank": 0.5
+    },
+    "armorSpeedPenaltyShares": {
+      "note": "08 §2: each piece's share of the family penalty (Plate 3/8/5/2/2 = 20, Mail 1/4/3/1/1 = 10, Leather 0/1/1/1/0 = 3); used when a piece carries no speed line of its own (D-057)",
+      "plate": {
+        "helmet": 3,
+        "chest": 8,
+        "legs": 5,
+        "boots": 2,
+        "gloves": 2
+      },
+      "mail": {
+        "helmet": 1,
+        "chest": 4,
+        "legs": 3,
+        "boots": 1,
+        "gloves": 1
+      },
+      "leather": {
+        "helmet": 0,
+        "chest": 1,
+        "legs": 1,
+        "boots": 1,
+        "gloves": 0
+      },
+      "robes": {
+        "helmet": 0,
+        "chest": 0,
+        "legs": 0,
+        "boots": 0,
+        "gloves": 0
+      }
+    },
+    "starterKitQuantities": {
+      "note": "08 §12: every kit holds 2 Small HP Potions, 2 Torches, 1 Repair Kit, 1 Bandage; the class starterKit is a unique id list, so the counts live here (D-069)",
+      "small-hp-potion": 2,
+      "torch": 2
     }
   },
-
   "skills": {
     "source": "03 §7.1–§7.6 (D-011, D-027, D-028 proposed)",
     "perClass": 45,
     "schools": 3,
     "tiers": 5,
     "perTier": 3,
-    "tierOpensAtLevel": { "1": 1, "2": 5, "3": 12, "4": 20, "5": 30 },
-    "loadout": { "actives": 4, "passives": 2, "petStance": 1, "ultimateOwnButton": true },
-    "skillHall": { "priceR": { "1": 0.1, "2": 0.3, "3": 1.0 }, "rampPercentPerPurchase": 20, "rampCap": 3, "highestTierSold": 3 },
+    "tierOpensAtLevel": {
+      "1": 1,
+      "2": 5,
+      "3": 12,
+      "4": 20,
+      "5": 30
+    },
+    "loadout": {
+      "actives": 4,
+      "passives": 2,
+      "petStance": 1,
+      "ultimateOwnButton": true
+    },
+    "skillHall": {
+      "priceR": {
+        "1": 0.1,
+        "2": 0.3,
+        "3": 1
+      },
+      "rampPercentPerPurchase": 20,
+      "rampCap": 3,
+      "highestTierSold": 3
+    },
     "insight": {
       "basePercent": 4,
       "tierLevelStep": 6,
       "curve": [
-        { "delta": 0, "multiplier": 1.0 },
-        { "delta": 3, "multiplier": 0.5 },
-        { "delta": 6, "multiplier": 0.25 },
-        { "delta": 10, "multiplier": 0 }
+        {
+          "delta": 0,
+          "multiplier": 1
+        },
+        {
+          "delta": 3,
+          "multiplier": 0.5
+        },
+        {
+          "delta": 6,
+          "multiplier": 0.25
+        },
+        {
+          "delta": 10,
+          "multiplier": 0
+        }
       ],
       "wisdomPercentPerPoint": 1,
       "pityUses": 60,
@@ -221,46 +829,120 @@
       "duplicateTomeIsRankXp": true
     },
     "fieldSkills": {
-      "haggling": { "basePercent": 130, "perRank": 1, "floorPercent": 85, "sellBasePercent": 40, "sellPerRank": 0.5 },
-      "cartography": { "ringPerRanks": 3 },
-      "cooking": { "statPercent": 5 },
-      "firstAid": { "inCombatFromRank": 5, "inCombatWeight": 1000 },
-      "lockpicking": { "skeletonKeyPriceR": 0.2 }
+      "haggling": {
+        "basePercent": 130,
+        "perRank": 1,
+        "floorPercent": 85,
+        "sellBasePercent": 40,
+        "sellPerRank": 0.5
+      },
+      "cartography": {
+        "ringPerRanks": 3
+      },
+      "cooking": {
+        "statPercent": 5
+      },
+      "firstAid": {
+        "inCombatFromRank": 5,
+        "inCombatWeight": 1000
+      },
+      "lockpicking": {
+        "skeletonKeyPriceR": 0.2
+      }
     }
   },
-
   "economy": {
     "source": "03 §8.1–§8.4 (D-012, D-025)",
-    "R": { "base": 300, "perBandMultiplier": 1.6, "floorsPerBand": 3 },
+    "R": {
+      "base": 300,
+      "perBandMultiplier": 1.6,
+      "floorsPerBand": 3
+    },
     "chests": {
-      "standardPriceR": { "gear": 0.5, "petEgg": 1.5, "materialCrate": 0.3, "skillTome": 0.8 },
-      "grandPriceR": { "gear": 2.5, "petEgg": 6, "materialCrate": 1.2, "skillTome": 3 },
+      "standardPriceR": {
+        "gear": 0.5,
+        "petEgg": 1.5,
+        "materialCrate": 0.3,
+        "skillTome": 0.8
+      },
+      "grandPriceR": {
+        "gear": 2.5,
+        "petEgg": 6,
+        "materialCrate": 1.2,
+        "skillTome": 3
+      },
       "grandGradeShift": 1,
       "materialCrateRarePartChance": 10,
-      "tomeTiers": { "standard": { "min": 1, "max": 3 }, "grand": { "min": 2, "max": 4 } }
+      "tomeTiers": {
+        "standard": {
+          "min": 1,
+          "max": 3
+        },
+        "grand": {
+          "min": 2,
+          "max": 4
+        }
+      }
     },
-    "pity": { "plusOneWithin": 10, "plusTwoWithin": 40 },
-    "dupes": { "bondStarMax": 5, "bondStarPercent": 5 },
-    "dungeonChests": { "small": { "centre": 75, "plus1": 25 }, "large": { "centre": 0, "plus1": 75, "plus2": 25 } },
+    "pity": {
+      "plusOneWithin": 10,
+      "plusTwoWithin": 40
+    },
+    "dupes": {
+      "bondStarMax": 5,
+      "bondStarPercent": 5
+    },
+    "dungeonChests": {
+      "small": {
+        "centre": 75,
+        "plus1": 25
+      },
+      "large": {
+        "centre": 0,
+        "plus1": 75,
+        "plus2": 25
+      }
+    },
     "merchantMarkup": 1.5,
-    "targets": { "standardChestsPerDelve": 1, "grandChestEveryDelves": 3 }
+    "targets": {
+      "standardChestsPerDelve": 1,
+      "grandChestEveryDelves": 3
+    }
   },
-
   "pets": {
     "source": "03 §9 (D-013)",
     "perPlayer": 1,
-    "stances": { "guardInterceptPercent": 30, "forageGoldPercent": 10, "freeChangesPerFight": 1 },
-    "activeUnlockLevels": [5, 15],
-    "activesByGrade": { "F": 1, "E": 1, "D": 1, "C": 1, "B": 2, "A": 2, "S": 3, "SS": 3, "God": 3 },
+    "stances": {
+      "guardInterceptPercent": 30,
+      "forageGoldPercent": 10,
+      "freeChangesPerFight": 1
+    },
+    "activeUnlockLevels": [
+      5,
+      15
+    ],
+    "activesByGrade": {
+      "F": 1,
+      "E": 1,
+      "D": 1,
+      "C": 1,
+      "B": 2,
+      "A": 2,
+      "S": 3,
+      "SS": 3,
+      "God": 3
+    },
     "downedReturnHpPercent": 50,
-    "treat": { "xpPercent": 10, "perDelve": 1 },
+    "treat": {
+      "xpPercent": 10,
+      "perDelve": 1
+    },
     "xpSharePercent": 50,
     "levelCap": "owner level",
     "statsPerLevelPercent": 2,
     "gradeStep": 1.35,
     "importGradeCap": "A"
   },
-
   "coop": {
     "source": "03 §10 (D-014, D-026)",
     "maxPlayers": 4,
@@ -270,34 +952,123 @@
     "stateHashEveryCommands": 20,
     "lootPickOrder": "lowest total item value first"
   },
-
   "dungeon": {
     "source": "03 §11 (D-017, D-024)",
     "floorsPerDungeon": 10,
     "zones": 3,
-    "zoneBossFloors": [3, 6, 9],
+    "zoneBossFloors": [
+      3,
+      6,
+      9
+    ],
     "finalBossFloor": 10,
-    "monsterLevel": { "floor1": 1, "floor10": 14, "dungeon2Start": 12 },
-    "partyScaling": { "tunedFor": 3, "count": [0.6, 0.8, 1.0, 1.2], "hp": [0.7, 0.85, 1.0, 1.15], "minCount": 1 },
-    "encounterSize": { "min": 2, "max": 6 },
+    "monsterLevel": {
+      "floor1": 1,
+      "floor10": 14,
+      "dungeon2Start": 12
+    },
+    "partyScaling": {
+      "tunedFor": 3,
+      "count": [
+        0.6,
+        0.8,
+        1,
+        1.2
+      ],
+      "hp": [
+        0.7,
+        0.85,
+        1,
+        1.15
+      ],
+      "minCount": 1
+    },
+    "encounterSize": {
+      "min": 2,
+      "max": 6
+    },
     "eliteAffixCount": [
-      { "floors": { "min": 1, "max": 2 }, "count": 1 },
-      { "floors": { "min": 3, "max": 6 }, "count": 2 },
-      { "floors": { "min": 7, "max": 99 }, "count": 3 }
+      {
+        "floors": {
+          "min": 1,
+          "max": 2
+        },
+        "count": 1
+      },
+      {
+        "floors": {
+          "min": 3,
+          "max": 6
+        },
+        "count": 2
+      },
+      {
+        "floors": {
+          "min": 7,
+          "max": 99
+        },
+        "count": 3
+      }
     ],
     "eliteAffixPool": 12,
-    "generator": { "maxBranches": 3, "keyLockChance": 30, "secretChance": 25, "bossFarthest": true },
-    "hunterOnBossFloors": { "value": false, "note": "03 §4.6 open question 1 (Proposed): no hunter on boss floors" }
+    "generator": {
+      "maxBranches": 3,
+      "keyLockChance": 30,
+      "secretChance": 25,
+      "bossFarthest": true
+    },
+    "hunterOnBossFloors": {
+      "value": false,
+      "note": "03 §4.6 open question 1 (Proposed): no hunter on boss floors"
+    },
+    "monsterBaseline": {
+      "note": "D-061 (Proposed): the per-level baseline a template multiplies (03 §11.2, D-024); 06 gives multipliers only. HP 50+6L, Attack 14+1.5L, Defense 6+L, gold 4+L per monster, XP unit 8+2L per xpClass point",
+      "hp": {
+        "base": 50,
+        "perLevel": 6
+      },
+      "attack": {
+        "base": 14,
+        "perLevel": 1.5
+      },
+      "defense": {
+        "base": 6,
+        "perLevel": 1
+      },
+      "gold": {
+        "base": 4,
+        "perLevel": 1
+      },
+      "xpUnit": {
+        "base": 8,
+        "perLevel": 2
+      },
+      "accuracy": 90,
+      "critRate": 5,
+      "critDamage": 150,
+      "bossResistance": 20
+    }
   },
-
   "death": {
     "source": "03 §12 (D-015)",
     "reviveWindowTurns": 3,
     "reviveHpPercent": 30,
     "postFightReviveHpPercent": 30,
-    "partyRevivesPerFloor": { "normal": 3, "hard": 1, "nightmare": 0 },
-    "flee": { "basePercent": 50, "failureCostsTurn": true, "fromBosses": false },
-    "wipe": { "durabilityPenalty": 10, "losesUnbankedGold": true, "keepsXpItemsInsights": true },
+    "partyRevivesPerFloor": {
+      "normal": 3,
+      "hard": 1,
+      "nightmare": 0
+    },
+    "flee": {
+      "basePercent": 50,
+      "failureCostsTurn": true,
+      "fromBosses": false
+    },
+    "wipe": {
+      "durabilityPenalty": 10,
+      "losesUnbankedGold": true,
+      "keepsXpItemsInsights": true
+    },
     "retreatTollPercent": 10,
     "hardcoreDeletesHero": true
   }

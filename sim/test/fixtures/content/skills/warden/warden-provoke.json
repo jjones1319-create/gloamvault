@@ -1,0 +1,54 @@
+{
+  "id": "warden-provoke",
+  "classId": "warden",
+  "school": "warcry",
+  "tier": 1,
+  "name": "Provoke",
+  "description": "Shout at one enemy in any row: Taunt 2 turns (it must target you); +10 Momentum.",
+  "type": "active",
+  "cost": 8,
+  "weight": 800,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "applyStatus",
+      "status": "taunt",
+      "duration": 2
+    },
+    {
+      "kind": "momentum",
+      "amount": 10,
+      "target": "self"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Taunt 3 turns.",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "taunt",
+        "duration": 3
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "taunt",
+    "control",
+    "momentum"
+  ],
+  "xpTags": [
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "control",
+    "priority": 70
+  }
+}

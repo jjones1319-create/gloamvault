@@ -1,0 +1,42 @@
+{
+  "id": "keen",
+  "name": "Keen",
+  "position": "prefix",
+  "lines": [
+    {
+      "bandMin": "F",
+      "bandMax": "D",
+      "stat": "critRate",
+      "unit": "flat",
+      "min": 1,
+      "max": 2
+    },
+    {
+      "bandMin": "C",
+      "bandMax": "A",
+      "stat": "critRate",
+      "unit": "flat",
+      "min": 2,
+      "max": 4
+    },
+    {
+      "bandMin": "S",
+      "bandMax": "God",
+      "stat": "critRate",
+      "unit": "flat",
+      "min": 4,
+      "max": 7
+    }
+  ],
+  "slots": [
+    "mainHand",
+    "offHand",
+    "gloves",
+    "ring"
+  ],
+  "weight": 3,
+  "tags": [
+    "offensive",
+    "crit"
+  ]
+}

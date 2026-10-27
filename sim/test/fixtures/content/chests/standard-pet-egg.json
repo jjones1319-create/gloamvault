@@ -1,0 +1,58 @@
+{
+  "id": "standard-pet-egg",
+  "name": "Standard Pet Egg",
+  "kind": "petEgg",
+  "tier": "standard",
+  "priceR": 1.5,
+  "subtypes": [],
+  "oddsByBand": [
+    {
+      "centreGrade": "F",
+      "table": {
+        "F": 56,
+        "E": 25,
+        "D": 14,
+        "C": 4,
+        "B": 1
+      }
+    },
+    {
+      "centreGrade": "E",
+      "table": {
+        "E": 56,
+        "D": 25,
+        "C": 14,
+        "B": 4,
+        "A": 1
+      }
+    },
+    {
+      "centreGrade": "D",
+      "table": {
+        "D": 56,
+        "C": 25,
+        "B": 14,
+        "A": 4,
+        "S": 1
+      }
+    },
+    {
+      "centreGrade": "B",
+      "table": {
+        "B": 56,
+        "A": 25,
+        "S": 14,
+        "SS": 5,
+        "God": 0
+      }
+    }
+  ],
+  "pity": {
+    "plusOneWithin": 10,
+    "plusTwoWithin": 40
+  },
+  "bagWithoutReplacement": false,
+  "tomeTiers": null,
+  "dupeRule": "bond",
+  "divineShardChance": 0
+}

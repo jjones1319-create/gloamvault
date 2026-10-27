@@ -1,0 +1,21 @@
+{
+  "id": "vampiric",
+  "name": "Vampiric",
+  "affixClass": "offensive",
+  "rule": "Heals 30% of the damage it deals. Healing is halved against a Burned target.",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "lifesteal-percent",
+      "percent": 30,
+      "target": "self",
+      "note": "halved when the target is Burned"
+    }
+  ],
+  "hpMultiplier": 2.5,
+  "goldMultiplier": 3,
+  "xpClassBonus": 2,
+  "floorMin": 1,
+  "tell": null,
+  "excludesElement": false
+}

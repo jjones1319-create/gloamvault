@@ -1,0 +1,44 @@
+{
+  "id": "of-vigor",
+  "name": "of Vigor",
+  "position": "suffix",
+  "lines": [
+    {
+      "bandMin": "E",
+      "bandMax": "C",
+      "stat": "hp",
+      "unit": "flat",
+      "min": 8,
+      "max": 20
+    },
+    {
+      "bandMin": "B",
+      "bandMax": "S",
+      "stat": "hp",
+      "unit": "flat",
+      "min": 24,
+      "max": 60
+    },
+    {
+      "bandMin": "SS",
+      "bandMax": "God",
+      "stat": "hp",
+      "unit": "flat",
+      "min": 70,
+      "max": 120
+    }
+  ],
+  "slots": [
+    "mainHand",
+    "offHand",
+    "helmet",
+    "chest",
+    "ring",
+    "talisman"
+  ],
+  "weight": 4,
+  "tags": [
+    "defensive",
+    "hp"
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "id": "grand-material-crate",
+  "name": "Grand Material Crate",
+  "kind": "materialCrate",
+  "tier": "grand",
+  "priceR": 1.2,
+  "subtypes": [],
+  "oddsByBand": [
+    {
+      "centreGrade": "F",
+      "table": {
+        "E": 100
+      }
+    },
+    {
+      "centreGrade": "E",
+      "table": {
+        "D": 100
+      }
+    },
+    {
+      "centreGrade": "D",
+      "table": {
+        "C": 100
+      }
+    },
+    {
+      "centreGrade": "B",
+      "table": {
+        "A": 100
+      }
+    }
+  ],
+  "pity": {
+    "plusOneWithin": 10,
+    "plusTwoWithin": 40
+  },
+  "bagWithoutReplacement": false,
+  "tomeTiers": null,
+  "dupeRule": "salvage",
+  "divineShardChance": 0
+}

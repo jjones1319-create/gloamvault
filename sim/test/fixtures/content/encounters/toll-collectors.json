@@ -1,0 +1,25 @@
+{
+  "id": "toll-collectors",
+  "tableId": "cellars-b",
+  "dungeonId": "gravehollow-keep",
+  "floorBand": {
+    "min": 1,
+    "max": 2
+  },
+  "name": "Toll Collectors",
+  "composition": [
+    {
+      "monsterId": "grinning-cutpurse",
+      "count": 2,
+      "row": "front"
+    },
+    {
+      "monsterId": "grinning-crossbowman",
+      "count": 1,
+      "row": "back"
+    }
+  ],
+  "weight": 20,
+  "ambushModifier": 15,
+  "eliteAllowed": true
+}

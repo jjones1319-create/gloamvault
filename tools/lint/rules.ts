@@ -1725,7 +1725,8 @@ function rule30(ctx: Ctx): Failure[] {
     objs(eq?.ring).forEach((inst, i) => checkItem(`equipment.ring[${i}]`, inst, 'ring'))
 
     const level = num(h.json.level)
-    const maxLevel = 1 + Math.floor(ranks / Math.max(1, ctx.t.ranksPerLevel))
+    // 03 §2.2: level N needs 8 × N ranks in total (L2 at 16, L10 at 80); D-056.
+    const maxLevel = Math.max(1, Math.floor(ranks / Math.max(1, ctx.t.ranksPerLevel)))
     if (level !== undefined && level > maxLevel) out.push(fail(h.file, 30, `level ${level} but ${ranks} total skill ranks allow level ${maxLevel} (${ctx.t.ranksPerLevel} ranks per level)`))
 
     for (const title of strs(h.json.titles)) if (!ctx.rewardTitles.has(title)) out.push(fail(h.file, 30, `title '${title}' is granted by no reward line`))
@@ -1815,10 +1816,11 @@ export const RULES: ReadonlyArray<{ n: number; run: (ctx: Ctx) => Failure[] }> =
 ]
 
 /** Runs every rule over the corpus. A rule that throws becomes a failure, never a silent pass. */
-export function runRules(corpus: Corpus): { failures: Failure[]; warnings: Failure[] } {
+export function runRules(corpus: Corpus, skipRules: ReadonlySet<number> = new Set()): { failures: Failure[]; warnings: Failure[] } {
   const ctx = buildCtx(corpus)
   const failures: Failure[] = []
   for (const rule of RULES) {
+    if (skipRules.has(rule.n)) continue
     try {
       failures.push(...rule.run(ctx))
     } catch (e) {

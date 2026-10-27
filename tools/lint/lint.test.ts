@@ -509,7 +509,7 @@ const cases: Case[] = [
         j.level = 9
       })
     },
-    check: (r) => expectRule(r, HERO, 30, 'level 9 but 18 total skill ranks allow level 3'),
+    check: (r) => expectRule(r, HERO, 30, 'level 9 but 18 total skill ranks allow level 2'),
   },
 ]
 

@@ -69,6 +69,8 @@ export type Corpus = {
 }
 
 export type LintOptions = {
+  /** Rule numbers to skip (fixture corpora: 4, 10, 14). */
+  readonly skipRules?: readonly number[]
   /** true: lint content/saves/*.json when that folder exists; a string: a file or folder of hero records. */
   saves?: string | boolean
 }

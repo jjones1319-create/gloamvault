@@ -1,0 +1,89 @@
+{
+  "id": "cel-t-cistern",
+  "zoneId": "the-cellars",
+  "footprint": {
+    "w": 1,
+    "h": 1
+  },
+  "doors": [
+    {
+      "side": "north",
+      "offset": 0
+    },
+    {
+      "side": "south",
+      "offset": 0
+    }
+  ],
+  "kinds": [
+    "fight",
+    "trapGauntlet",
+    "curio",
+    "secret",
+    "stairs"
+  ],
+  "camera": {
+    "position": [
+      8.5,
+      8.5,
+      0
+    ],
+    "lookAt": [
+      0,
+      1,
+      0
+    ],
+    "fov": 42
+  },
+  "props": [
+    {
+      "meshId": "cel_floor_grate",
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cel_floor_puddle",
+      "position": [
+        -2,
+        0,
+        1.5
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cel_floor_puddle",
+      "position": [
+        2.5,
+        0,
+        -2
+      ],
+      "rotationY": 40
+    },
+    {
+      "meshId": "shr_torch_sconce",
+      "position": [
+        -3.9,
+        2,
+        1
+      ],
+      "rotationY": 90,
+      "lightSource": true
+    },
+    {
+      "meshId": "shr_torch_sconce",
+      "position": [
+        -3.9,
+        2,
+        -2
+      ],
+      "rotationY": 90,
+      "lightSource": true
+    }
+  ],
+  "triBudget": 30000,
+  "drawCallBudget": 60
+}

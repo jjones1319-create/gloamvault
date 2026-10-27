@@ -1,0 +1,65 @@
+{
+  "id": "warden-rallying-shout",
+  "classId": "warden",
+  "school": "warcry",
+  "tier": 1,
+  "name": "Rallying Shout",
+  "description": "Allies +10% Attack for 2 turns.",
+  "type": "active",
+  "cost": 12,
+  "weight": 1000,
+  "target": "allAllies",
+  "effects": [
+    {
+      "kind": "buffStat",
+      "stat": "attackPhys",
+      "percent": 10,
+      "duration": 2
+    },
+    {
+      "kind": "buffStat",
+      "stat": "attackSpell",
+      "percent": 10,
+      "duration": 2
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "+15% Attack and +5 Momentum each.",
+    "effects": [
+      {
+        "kind": "buffStat",
+        "stat": "attackPhys",
+        "percent": 15,
+        "duration": 2
+      },
+      {
+        "kind": "buffStat",
+        "stat": "attackSpell",
+        "percent": 15,
+        "duration": 2
+      },
+      {
+        "kind": "momentum",
+        "amount": 5
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "buff"
+  ],
+  "xpTags": [
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 50
+  }
+}

@@ -1,0 +1,541 @@
+{
+  "id": "gravehollow-keep",
+  "name": "Gravehollow Keep",
+  "lore": "A border keep that sank a storey into its own dead. The Grinning Company taxes the road from the cellars; the Barrow Warden keeps the dead below them; the Tidebound are drowning the vault beneath him to wake what the keep was built to hold down.",
+  "levelRange": {
+    "min": 1,
+    "max": 14
+  },
+  "unlockedBy": null,
+  "zones": [
+    {
+      "id": "the-cellars",
+      "name": "The Cellars",
+      "floors": {
+        "from": 1,
+        "to": 3
+      },
+      "familyId": "cellar-vermin",
+      "hunterId": "old-gnaw",
+      "bossIds": [
+        "captain-vexa-marrow"
+      ],
+      "waystone": true,
+      "biomeKitId": "cel"
+    }
+  ],
+  "floors": [
+    {
+      "floor": 1,
+      "zoneId": "the-cellars",
+      "monsterLevel": 1,
+      "roomsMin": 5,
+      "roomsMax": 7,
+      "lightAtEntry": 100,
+      "encounterTableIds": [
+        "cellars-a",
+        "cellars-b"
+      ],
+      "eliteAffixCount": 1,
+      "trapBand": {
+        "min": 8,
+        "max": 12
+      },
+      "secretChance": 10,
+      "secretDifficulty": 10,
+      "merchant": false,
+      "hunterClock": 40,
+      "bossId": null,
+      "lightAtArena": null
+    },
+    {
+      "floor": 2,
+      "zoneId": "the-cellars",
+      "monsterLevel": 2,
+      "roomsMin": 8,
+      "roomsMax": 10,
+      "lightAtEntry": 90,
+      "encounterTableIds": [
+        "cellars-a",
+        "cellars-b",
+        "cellars-c"
+      ],
+      "eliteAffixCount": 1,
+      "trapBand": {
+        "min": 10,
+        "max": 14
+      },
+      "secretChance": 25,
+      "secretDifficulty": 12,
+      "merchant": true,
+      "hunterClock": 40,
+      "bossId": null,
+      "lightAtArena": null
+    },
+    {
+      "floor": 3,
+      "zoneId": "the-cellars",
+      "monsterLevel": 4,
+      "roomsMin": 8,
+      "roomsMax": 11,
+      "lightAtEntry": 85,
+      "encounterTableIds": [
+        "cellars-c"
+      ],
+      "eliteAffixCount": 2,
+      "trapBand": {
+        "min": 12,
+        "max": 16
+      },
+      "secretChance": 25,
+      "secretDifficulty": 14,
+      "merchant": false,
+      "hunterClock": null,
+      "bossId": "captain-vexa-marrow",
+      "lightAtArena": 60
+    }
+  ],
+  "generator": {
+    "roomWeights": {
+      "fight": 50,
+      "elite": 8,
+      "rest": 10,
+      "merchant": 5,
+      "treasure": 7,
+      "curio": 15,
+      "trapGauntlet": 5
+    },
+    "grammar": [
+      "G1 Floor(normal) -> Entry · Spine · Stairs",
+      "G2 Floor(zoneBoss) -> Entry · Spine · Anteroom(Rest) · Boss",
+      "G3 Floor(throne) -> Entry · Antechamber(Fight) · Rest · Boss (F10: fixed, no further rules)",
+      "G4 Spine -> Seg{3-5}",
+      "G5 Seg -> Room | Room · Fork (Fork on 45% of segments, at most 3 Forks per floor)",
+      "G6 Fork -> Branch{1-2}",
+      "G7 Branch -> Room{0-2} · Cap",
+      "G8 Cap -> Treasure [40] | Curio [30] | Fight [20] | Elite [10]",
+      "G9 Room -> Fight [50] | Elite [8] | Rest [10] | Merchant [5] | Treasure [7] | Curio [15] | Gauntlet [5]",
+      "G10 Rest: exactly one per floor - if G9 rolled none, the Spine's middle Room becomes Rest; a second Rest re-rolls as Fight",
+      "G11 Merchant: on F2, F5, F8 exactly one - if none rolled, the last Spine Room before Stairs becomes Merchant; on other floors at most one",
+      "G12 KeyLock (30%): choose a Spine edge after the Rest; mark its door Locked; place the Key as the loot of a room on a Branch rooted before the lock (if no such Branch exists, insert Fork -> Branch(Fight · Cap(Fight)) at the Room before the lock and put the Key in the Cap)",
+      "G13 Secret (25%): attach Secret to a random Room with a free socket; its door difficulty = the floor's secret difficulty",
+      "G14 Roles: re-roll the last Fight room's encounter until the floor meets 06 §8.2's role mix (>= 2 Fodder-only packs, >= 1 Special, >= 1 role-Elite from F2, <= 1 Monster room)",
+      "G15 Farthest: after layout, BFS from Entry; if Stairs/Boss is not the unique farthest room by hop count, swap it with the farthest leaf and re-lay out"
+    ],
+    "keyLockChance": 30,
+    "secretChance": 25,
+    "minRooms": 5,
+    "maxRooms": 14,
+    "maxBranches": 3,
+    "bossFarthest": true,
+    "grid": {
+      "w": 8,
+      "h": 6
+    }
+  },
+  "curios": [
+    {
+      "id": "sealed-cask",
+      "name": "Sealed Cask",
+      "zoneId": "the-cellars",
+      "description": "A 2 m cask on a cradle, bunged and wax-sealed, something scratching inside.",
+      "choices": [
+        {
+          "label": "Open",
+          "requires": [],
+          "outcomes": [
+            {
+              "chance": 60,
+              "effect": {
+                "kind": "loot",
+                "amount": 15,
+                "note": "gold 0.05 R at R ≈ 300"
+              }
+            },
+            {
+              "chance": 25,
+              "effect": {
+                "kind": "custom",
+                "customId": "ambush-encounter",
+                "note": "a Plague Rat ambush: the Cellars A pack, party surprised"
+              }
+            },
+            {
+              "chance": 15,
+              "effect": {
+                "kind": "custom",
+                "customId": "drop-item-of-grade",
+                "note": "a Fine (D) item"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Smoke them out",
+          "requires": [
+            {
+              "kind": "item",
+              "id": "torch",
+              "amount": 1,
+              "consumed": true
+            }
+          ],
+          "outcomes": [
+            {
+              "chance": 100,
+              "effect": {
+                "kind": "loot",
+                "amount": 15,
+                "note": "the purchase: the same purse, no roll"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Leave",
+          "requires": [],
+          "outcomes": []
+        }
+      ],
+      "safeItemId": "torch"
+    },
+    {
+      "id": "lost-lantern",
+      "name": "Lost Lantern",
+      "zoneId": "the-cellars",
+      "description": "A Company lantern, still lit, dropped in a hurry.",
+      "choices": [
+        {
+          "label": "Pick up",
+          "requires": [],
+          "outcomes": [
+            {
+              "chance": 70,
+              "effect": {
+                "kind": "light",
+                "amount": 15,
+                "target": "room"
+              }
+            },
+            {
+              "chance": 30,
+              "effect": {
+                "kind": "custom",
+                "customId": "lantern-gutters",
+                "amount": -10,
+                "target": "room",
+                "note": "it gutters: −10 light, then a Cellar Spider ambush (the spider is outside this set; the sim draws the floor's table)"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Relight",
+          "requires": [
+            {
+              "kind": "item",
+              "id": "flint-and-oil",
+              "amount": 1,
+              "consumed": true
+            }
+          ],
+          "outcomes": [
+            {
+              "chance": 100,
+              "effect": {
+                "kind": "light",
+                "amount": 25,
+                "target": "room",
+                "note": "the purchase: no roll"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Leave",
+          "requires": [],
+          "outcomes": []
+        }
+      ],
+      "safeItemId": "flint-and-oil"
+    },
+    {
+      "id": "rat-kings-nest",
+      "name": "Rat-King's Nest",
+      "zoneId": "the-cellars",
+      "description": "Straw, rags and bones with a dozen tails knotted together.",
+      "choices": [
+        {
+          "label": "Dig",
+          "requires": [],
+          "outcomes": [
+            {
+              "chance": 50,
+              "effect": {
+                "kind": "custom",
+                "customId": "give-material",
+                "amount": 3,
+                "note": "3 Rawhide"
+              }
+            },
+            {
+              "chance": 35,
+              "effect": {
+                "kind": "custom",
+                "customId": "ambush-encounter",
+                "note": "a Plague Rat swarm"
+              }
+            },
+            {
+              "chance": 15,
+              "effect": {
+                "kind": "applyStatus",
+                "status": "poison",
+                "duration": 3,
+                "target": "self",
+                "note": "on the digger"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Dig carefully",
+          "requires": [
+            {
+              "kind": "fieldSkillRank",
+              "id": "foraging",
+              "min": 3
+            }
+          ],
+          "outcomes": [
+            {
+              "chance": 100,
+              "effect": {
+                "kind": "custom",
+                "customId": "give-material",
+                "amount": 3,
+                "note": "3 Rawhide and a rare part roll at 20%"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Burn",
+          "requires": [
+            {
+              "kind": "item",
+              "id": "torch",
+              "amount": 1,
+              "consumed": true
+            }
+          ],
+          "outcomes": [
+            {
+              "chance": 70,
+              "effect": {
+                "kind": "custom",
+                "customId": "roll-rare-part",
+                "note": "one rare part of the family"
+              }
+            },
+            {
+              "chance": 30,
+              "effect": {
+                "kind": "custom",
+                "customId": "nothing"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Leave",
+          "requires": [],
+          "outcomes": []
+        }
+      ],
+      "safeItemId": null
+    }
+  ],
+  "traps": [
+    {
+      "id": "tripwire-bell",
+      "name": "Tripwire Bell",
+      "zoneId": "the-cellars",
+      "difficulty": 8,
+      "trigger": "step",
+      "triggerNote": "crossing the room's midline",
+      "revealedBy": {
+        "detection": 8,
+        "classId": null,
+        "petId": null,
+        "fieldSkillRank": null,
+        "criticalScout": true
+      },
+      "effects": [
+        {
+          "kind": "custom",
+          "customId": "floor-clock-add",
+          "amount": 4,
+          "target": "room"
+        },
+        {
+          "kind": "custom",
+          "customId": "next-fight-ambush",
+          "percent": 30,
+          "target": "room",
+          "note": "the next fight on this floor is an ambush, +30% surprise"
+        }
+      ],
+      "blocksDoor": false,
+      "disarmReward": [
+        {
+          "kind": "material",
+          "id": "rawhide",
+          "amount": 2
+        },
+        {
+          "kind": "gold",
+          "amount": 3,
+          "note": "0.01 R at R ≈ 300"
+        }
+      ]
+    },
+    {
+      "id": "loose-flagstone",
+      "name": "Loose Flagstone",
+      "zoneId": "the-cellars",
+      "difficulty": 10,
+      "trigger": "step",
+      "triggerNote": "stepping on the cel_floor_flag_b tile by the grate",
+      "revealedBy": {
+        "detection": 10,
+        "classId": null,
+        "petId": "cellar-hound",
+        "fieldSkillRank": null,
+        "criticalScout": false
+      },
+      "effects": [
+        {
+          "kind": "custom",
+          "customId": "damage-percent-max-hp",
+          "percent": 8,
+          "damageType": "blunt",
+          "note": "the lowest-Perception hero drops 2 m: 8% of max HP"
+        },
+        {
+          "kind": "applyStatus",
+          "status": "daze"
+        }
+      ],
+      "blocksDoor": false,
+      "disarmReward": [
+        {
+          "kind": "material",
+          "id": "copper",
+          "amount": 3
+        }
+      ]
+    },
+    {
+      "id": "spring-spikes",
+      "name": "Spring Spikes",
+      "zoneId": "the-cellars",
+      "difficulty": 12,
+      "trigger": "open",
+      "triggerNote": "opening a trapped chest",
+      "revealedBy": {
+        "detection": 12,
+        "classId": null,
+        "petId": null,
+        "fieldSkillRank": null,
+        "criticalScout": false
+      },
+      "effects": [
+        {
+          "kind": "custom",
+          "customId": "trap-flat-damage",
+          "amount": 12,
+          "damageType": "pierce",
+          "note": "Pierce 12 + 4 × floor to the opener; a Skeleton Key opens the chest safely"
+        },
+        {
+          "kind": "applyStatus",
+          "status": "bleed",
+          "duration": 3
+        }
+      ],
+      "blocksDoor": false,
+      "disarmReward": [
+        {
+          "kind": "material",
+          "id": "copper",
+          "amount": 2
+        }
+      ]
+    }
+  ],
+  "templates": [],
+  "pacts": [],
+  "presets": {
+    "normal": {
+      "enemyHpPercent": 100,
+      "enemyDamagePercent": 100,
+      "enemyCountPercent": 100,
+      "enemySpeedPercent": 100,
+      "eliteRoomWeight": 8,
+      "eliteAffixBonus": 0,
+      "hunterClock": 40,
+      "lightStart": 100,
+      "torchValue": 25,
+      "revivesPerFloor": 3,
+      "trapDifficultyBonus": 0,
+      "retreatTollPercent": 10,
+      "goldPercent": 100,
+      "xpPercent": 100,
+      "chestShiftPp": 0,
+      "chestCentreShift": 0,
+      "bossExtraRareParts": 0,
+      "finalBossExtraShards": 0
+    },
+    "hard": {
+      "enemyHpPercent": 125,
+      "enemyDamagePercent": 120,
+      "enemyCountPercent": 110,
+      "enemySpeedPercent": 105,
+      "eliteRoomWeight": 11,
+      "eliteAffixBonus": 0,
+      "hunterClock": 32,
+      "lightStart": 80,
+      "torchValue": 25,
+      "revivesPerFloor": 1,
+      "trapDifficultyBonus": 4,
+      "retreatTollPercent": 15,
+      "goldPercent": 125,
+      "xpPercent": 115,
+      "chestShiftPp": 10,
+      "chestCentreShift": 0,
+      "bossExtraRareParts": 1,
+      "finalBossExtraShards": 0
+    },
+    "nightmare": {
+      "enemyHpPercent": 150,
+      "enemyDamagePercent": 145,
+      "enemyCountPercent": 125,
+      "enemySpeedPercent": 112,
+      "eliteRoomWeight": 14,
+      "eliteAffixBonus": 1,
+      "hunterClock": 24,
+      "lightStart": 60,
+      "torchValue": 20,
+      "revivesPerFloor": 0,
+      "trapDifficultyBonus": 8,
+      "retreatTollPercent": 25,
+      "goldPercent": 160,
+      "xpPercent": 130,
+      "chestShiftPp": 0,
+      "chestCentreShift": 1,
+      "bossExtraRareParts": 1,
+      "finalBossExtraShards": 1
+    }
+  }
+}

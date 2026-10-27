@@ -1,0 +1,33 @@
+{
+  "id": "field-lockpicking",
+  "classId": "field",
+  "school": "field",
+  "tier": 1,
+  "name": "Lockpicking",
+  "description": "Open locked chests and doors without a key. Per rank: +5% success, −1 floor-clock tick per attempt. Shade +2 at start; the Halfling's Nimble Fingers add 2.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Rank 10 is the line in the description; the per-rank numbers live in tuning.json (skills.fieldSkills).",
+    "effects": []
+  },
+  "tags": [
+    "field",
+    "utility"
+  ],
+  "xpTags": [],
+  "aiHints": {
+    "role": "utility",
+    "priority": 0
+  }
+}

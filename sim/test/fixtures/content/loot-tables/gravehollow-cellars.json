@@ -1,0 +1,64 @@
+{
+  "id": "gravehollow-cellars",
+  "dungeonId": "gravehollow-keep",
+  "name": "Gravehollow Keep — the Cellars (F1–3)",
+  "floorBand": {
+    "min": 1,
+    "max": 3
+  },
+  "monsterLevels": {
+    "min": 1,
+    "max": 4
+  },
+  "goldRange": {
+    "min": 10,
+    "max": 20
+  },
+  "itemChance": 35,
+  "gradeShape": {
+    "centreGrade": "F",
+    "centre": 81,
+    "minus1": 0,
+    "plus1": 14,
+    "plus2": 4,
+    "plus3": 1
+  },
+  "partChance": {
+    "common": 35,
+    "rare": 4
+  },
+  "stoneChance": 8,
+  "consumableDrop": {
+    "chance": 40,
+    "itemIds": [
+      "small-hp-potion",
+      "torch",
+      "bandage"
+    ]
+  },
+  "treasureRoom": {
+    "goldPiles": {
+      "min": 2,
+      "max": 4
+    },
+    "goldFightsWorth": 2,
+    "smallChestChance": 100,
+    "largeChestChance": 20,
+    "largeLockedChance": 50,
+    "trappedChance": 20,
+    "trapId": "spring-spikes",
+    "consumableBundle": 3,
+    "hiddenFind": {
+      "itemAtPlusOneChance": 90,
+      "skeletonKeyChance": 10
+    }
+  },
+  "darknessItemBonus": {
+    "radiant": 0,
+    "dim": 10,
+    "shadowy": 25,
+    "dark": 50,
+    "pitch": 75
+  },
+  "bossFirstKill": "captain-vexa-marrow"
+}

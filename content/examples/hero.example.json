@@ -4,7 +4,7 @@
   "name": "Brynna Ironfoot",
   "speciesId": "dwarf",
   "classId": "warden",
-  "level": 3,
+  "level": 2,
   "attributes": {
     "strength": 15,
     "agility": 8,
@@ -36,36 +36,120 @@
   },
   "freePointsSpent": 6,
   "skills": [
-    { "skillId": "warden-shield-slam", "rank": 6, "xp": 310 },
-    { "skillId": "warden-brace", "rank": 5, "xp": 120 },
-    { "skillId": "warden-provoke", "rank": 4, "xp": 45 },
-    { "skillId": "warden-wall-stance", "rank": 3, "xp": 80 }
+    {
+      "skillId": "warden-shield-slam",
+      "rank": 6,
+      "xp": 310
+    },
+    {
+      "skillId": "warden-brace",
+      "rank": 5,
+      "xp": 120
+    },
+    {
+      "skillId": "warden-provoke",
+      "rank": 4,
+      "xp": 45
+    },
+    {
+      "skillId": "warden-wall-stance",
+      "rank": 3,
+      "xp": 80
+    }
   ],
   "loadout": {
-    "actives": ["warden-shield-slam", "warden-provoke", "warden-brace", null],
-    "passives": ["warden-wall-stance", null],
+    "actives": [
+      "warden-shield-slam",
+      "warden-provoke",
+      "warden-brace",
+      null
+    ],
+    "passives": [
+      "warden-wall-stance",
+      null
+    ],
     "stance": "guard"
   },
   "loadoutPresets": [
-    { "name": "Wall", "loadout": { "actives": ["warden-shield-slam", "warden-provoke", "warden-brace", null], "passives": ["warden-wall-stance", null], "stance": "guard" } },
-    { "name": "Scout", "loadout": { "actives": ["warden-shield-slam", "warden-brace", null, null], "passives": ["warden-wall-stance", null], "stance": "forage" } }
+    {
+      "name": "Wall",
+      "loadout": {
+        "actives": [
+          "warden-shield-slam",
+          "warden-provoke",
+          "warden-brace",
+          null
+        ],
+        "passives": [
+          "warden-wall-stance",
+          null
+        ],
+        "stance": "guard"
+      }
+    },
+    {
+      "name": "Scout",
+      "loadout": {
+        "actives": [
+          "warden-shield-slam",
+          "warden-brace",
+          null,
+          null
+        ],
+        "passives": [
+          "warden-wall-stance",
+          null
+        ],
+        "stance": "forage"
+      }
+    }
   ],
   "fieldSkills": {
-    "lockpicking": { "rank": 1, "xp": 30 },
-    "trapDisarm": { "rank": 1, "xp": 40 },
-    "foraging": { "rank": 1, "xp": 10 },
-    "fieldRepair": { "rank": 2, "xp": 5 },
-    "firstAid": { "rank": 1, "xp": 20 },
-    "haggling": { "rank": 1, "xp": 0 },
-    "cooking": { "rank": 1, "xp": 0 },
-    "cartography": { "rank": 1, "xp": 60 }
+    "lockpicking": {
+      "rank": 1,
+      "xp": 30
+    },
+    "trapDisarm": {
+      "rank": 1,
+      "xp": 40
+    },
+    "foraging": {
+      "rank": 1,
+      "xp": 10
+    },
+    "fieldRepair": {
+      "rank": 2,
+      "xp": 5
+    },
+    "firstAid": {
+      "rank": 1,
+      "xp": 20
+    },
+    "haggling": {
+      "rank": 1,
+      "xp": 0
+    },
+    "cooking": {
+      "rank": 1,
+      "xp": 0
+    },
+    "cartography": {
+      "rank": 1,
+      "xp": 60
+    }
   },
   "equipment": {
     "mainHand": {
       "instanceId": "it-0001",
       "itemId": "iron-longsword",
       "quantity": 1,
-      "affixes": [{ "affixId": "of-vigor", "value": 14, "locked": false }],
+      "affixes": [
+        {
+          "affixId": "of-vigor",
+          "value": 14,
+          "locked": false
+        }
+      ],
       "plusN": 1,
       "itemLevel": 2,
       "itemXp": 35,
@@ -73,14 +157,91 @@
       "durability": 83,
       "maxDurability": 100
     },
-    "offHand": { "instanceId": "it-0002", "itemId": "pine-buckler", "quantity": 1, "affixes": [], "plusN": 0, "itemLevel": 1, "itemXp": 12, "affinities": [], "durability": 71, "maxDurability": 100 },
-    "helmet": { "instanceId": "it-0003", "itemId": "copper-helm", "quantity": 1, "affixes": [], "plusN": 0, "itemLevel": 1, "itemXp": 0, "affinities": [], "durability": 66, "maxDurability": 100 },
-    "chest": { "instanceId": "it-0004", "itemId": "copper-breastplate", "quantity": 1, "affixes": [], "plusN": 0, "itemLevel": 2, "itemXp": 8, "affinities": [], "durability": 54, "maxDurability": 95 },
-    "legs": { "instanceId": "it-0005", "itemId": "copper-greaves", "quantity": 1, "affixes": [], "plusN": 0, "itemLevel": 1, "itemXp": 0, "affinities": [], "durability": 70, "maxDurability": 100 },
-    "boots": { "instanceId": "it-0006", "itemId": "copper-sabatons", "quantity": 1, "affixes": [], "plusN": 0, "itemLevel": 1, "itemXp": 0, "affinities": [], "durability": 88, "maxDurability": 100 },
-    "gloves": { "instanceId": "it-0007", "itemId": "copper-gauntlets", "quantity": 1, "affixes": [], "plusN": 0, "itemLevel": 1, "itemXp": 0, "affinities": [], "durability": 90, "maxDurability": 100 },
+    "offHand": {
+      "instanceId": "it-0002",
+      "itemId": "pine-buckler",
+      "quantity": 1,
+      "affixes": [],
+      "plusN": 0,
+      "itemLevel": 1,
+      "itemXp": 12,
+      "affinities": [],
+      "durability": 71,
+      "maxDurability": 100
+    },
+    "helmet": {
+      "instanceId": "it-0003",
+      "itemId": "copper-helm",
+      "quantity": 1,
+      "affixes": [],
+      "plusN": 0,
+      "itemLevel": 1,
+      "itemXp": 0,
+      "affinities": [],
+      "durability": 66,
+      "maxDurability": 100
+    },
+    "chest": {
+      "instanceId": "it-0004",
+      "itemId": "copper-breastplate",
+      "quantity": 1,
+      "affixes": [],
+      "plusN": 0,
+      "itemLevel": 2,
+      "itemXp": 8,
+      "affinities": [],
+      "durability": 54,
+      "maxDurability": 95
+    },
+    "legs": {
+      "instanceId": "it-0005",
+      "itemId": "copper-greaves",
+      "quantity": 1,
+      "affixes": [],
+      "plusN": 0,
+      "itemLevel": 1,
+      "itemXp": 0,
+      "affinities": [],
+      "durability": 70,
+      "maxDurability": 100
+    },
+    "boots": {
+      "instanceId": "it-0006",
+      "itemId": "copper-sabatons",
+      "quantity": 1,
+      "affixes": [],
+      "plusN": 0,
+      "itemLevel": 1,
+      "itemXp": 0,
+      "affinities": [],
+      "durability": 88,
+      "maxDurability": 100
+    },
+    "gloves": {
+      "instanceId": "it-0007",
+      "itemId": "copper-gauntlets",
+      "quantity": 1,
+      "affixes": [],
+      "plusN": 0,
+      "itemLevel": 1,
+      "itemXp": 0,
+      "affinities": [],
+      "durability": 90,
+      "maxDurability": 100
+    },
     "ring": [
-      { "instanceId": "it-0008", "itemId": "ring-of-vigor", "quantity": 1, "affixes": [], "plusN": 0, "itemLevel": 1, "itemXp": 0, "affinities": [], "durability": 100, "maxDurability": 100 },
+      {
+        "instanceId": "it-0008",
+        "itemId": "ring-of-vigor",
+        "quantity": 1,
+        "affixes": [],
+        "plusN": 0,
+        "itemLevel": 1,
+        "itemXp": 0,
+        "affinities": [],
+        "durability": 100,
+        "maxDurability": 100
+      },
       null
     ],
     "talisman": null,
@@ -88,10 +249,54 @@
   },
   "naturalArmor": null,
   "bag": [
-    { "instanceId": "it-0010", "itemId": "small-hp-potion", "quantity": 3, "affixes": [], "plusN": 0, "itemLevel": 1, "itemXp": 0, "affinities": [], "durability": 100, "maxDurability": 100 },
-    { "instanceId": "it-0011", "itemId": "torch", "quantity": 2, "affixes": [], "plusN": 0, "itemLevel": 1, "itemXp": 0, "affinities": [], "durability": 100, "maxDurability": 100 },
-    { "instanceId": "it-0012", "itemId": "repair-kit", "quantity": 1, "affixes": [], "plusN": 0, "itemLevel": 1, "itemXp": 0, "affinities": [], "durability": 100, "maxDurability": 100 },
-    { "instanceId": "it-0013", "itemId": "bandage", "quantity": 1, "affixes": [], "plusN": 0, "itemLevel": 1, "itemXp": 0, "affinities": [], "durability": 100, "maxDurability": 100 }
+    {
+      "instanceId": "it-0010",
+      "itemId": "small-hp-potion",
+      "quantity": 3,
+      "affixes": [],
+      "plusN": 0,
+      "itemLevel": 1,
+      "itemXp": 0,
+      "affinities": [],
+      "durability": 100,
+      "maxDurability": 100
+    },
+    {
+      "instanceId": "it-0011",
+      "itemId": "torch",
+      "quantity": 2,
+      "affixes": [],
+      "plusN": 0,
+      "itemLevel": 1,
+      "itemXp": 0,
+      "affinities": [],
+      "durability": 100,
+      "maxDurability": 100
+    },
+    {
+      "instanceId": "it-0012",
+      "itemId": "repair-kit",
+      "quantity": 1,
+      "affixes": [],
+      "plusN": 0,
+      "itemLevel": 1,
+      "itemXp": 0,
+      "affinities": [],
+      "durability": 100,
+      "maxDurability": 100
+    },
+    {
+      "instanceId": "it-0013",
+      "itemId": "bandage",
+      "quantity": 1,
+      "affixes": [],
+      "plusN": 0,
+      "itemLevel": 1,
+      "itemXp": 0,
+      "affinities": [],
+      "durability": 100,
+      "maxDurability": 100
+    }
   ],
   "gold": 140,
   "petInstance": {
@@ -106,7 +311,13 @@
     "ranchImport": null
   },
   "aiRule": "IF ally HP < 40% THEN provoke; ELSE shield slam front enemy",
-  "titles": ["toll-breaker"],
+  "titles": [
+    "toll-breaker"
+  ],
   "hardcore": false,
-  "stats": { "kills": 41, "delves": 2, "deaths": 1 }
+  "stats": {
+    "kills": 41,
+    "delves": 2,
+    "deaths": 1
+  }
 }

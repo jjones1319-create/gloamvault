@@ -1,0 +1,25 @@
+{
+  "id": "netters-corner",
+  "tableId": "cellars-c",
+  "dungeonId": "gravehollow-keep",
+  "floorBand": {
+    "min": 2,
+    "max": 3
+  },
+  "name": "Netter's Corner",
+  "composition": [
+    {
+      "monsterId": "grinning-netter",
+      "count": 1,
+      "row": "back"
+    },
+    {
+      "monsterId": "giant-rat",
+      "count": 2,
+      "row": "front"
+    }
+  ],
+  "weight": 15,
+  "ambushModifier": 15,
+  "eliteAllowed": true
+}

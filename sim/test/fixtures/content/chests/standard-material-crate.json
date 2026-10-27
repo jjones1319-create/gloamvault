@@ -1,0 +1,42 @@
+{
+  "id": "standard-material-crate",
+  "name": "Standard Material Crate",
+  "kind": "materialCrate",
+  "tier": "standard",
+  "priceR": 0.3,
+  "subtypes": [],
+  "oddsByBand": [
+    {
+      "centreGrade": "F",
+      "table": {
+        "F": 100
+      }
+    },
+    {
+      "centreGrade": "E",
+      "table": {
+        "E": 100
+      }
+    },
+    {
+      "centreGrade": "D",
+      "table": {
+        "D": 100
+      }
+    },
+    {
+      "centreGrade": "B",
+      "table": {
+        "B": 100
+      }
+    }
+  ],
+  "pity": {
+    "plusOneWithin": 10,
+    "plusTwoWithin": 40
+  },
+  "bagWithoutReplacement": false,
+  "tomeTiers": null,
+  "dupeRule": "salvage",
+  "divineShardChance": 0
+}

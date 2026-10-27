@@ -116,6 +116,8 @@ Two more shared shapes live beside it. A **`requirement`** (`{kind, id?, min?, a
 
 Rules 11, 14, 19, 22, 23 and 27 are implemented as far as the content can be checked (`tools/lint/rules.ts` says in each what it reads); rule 27's `partChance`/`itemChance` band comparison waits for the loot tables of Phase 3.
 
+**The Phase 2 fixture set.** `sim/test/fixtures/content/` mirrors this layout with test content (one class, two species, seven Cellars monsters, one zone); `sim/test/fixtures/assemble.ts` merges it with the real schemas, statuses and `tuning.json` into a temporary root that `lintCorpus(root, { skipRules: [4, 10, 14] })` and the sim's loader both read. It is not shipped; Phase 3 promotes its records into `content/` (D-068).
+
 **Gating (D-049).** The rules that demand a *complete* set — rule 3 (all 27 statuses), rule 9 (all eight field skills), rule 14's "exactly 12 elite affixes" and rule 18's "the 12 launch Pacts" — apply only once at least one file of that kind exists; an empty kind is a Phase 1 state, not an error. Every other rule applies to whatever files exist, and a dangling reference always fails, even when the referenced kind has no files yet.
 
 ## `npm run lint`

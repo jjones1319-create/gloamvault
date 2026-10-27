@@ -162,7 +162,7 @@ export function lintCorpus(rootDir: string, options: LintOptions = {}): LintResu
   for (const f of corpus.saves) files.push(validate(f))
 
   // Step 4: the cross-file rules over the real content (and the saves), never the examples.
-  const { failures, warnings } = runRules(corpus)
+  const { failures, warnings } = runRules(corpus, new Set(options.skipRules ?? []))
   const byFileThenRule = (a: Failure, b: Failure): number => (a.file < b.file ? -1 : a.file > b.file ? 1 : a.rule - b.rule)
   failures.sort(byFileThenRule)
   warnings.sort(byFileThenRule)

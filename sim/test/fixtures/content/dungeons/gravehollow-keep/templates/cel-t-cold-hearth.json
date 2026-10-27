@@ -1,0 +1,76 @@
+{
+  "id": "cel-t-cold-hearth",
+  "zoneId": "the-cellars",
+  "footprint": {
+    "w": 1,
+    "h": 1
+  },
+  "doors": [
+    {
+      "side": "south",
+      "offset": 0
+    },
+    {
+      "side": "east",
+      "offset": 0
+    }
+  ],
+  "kinds": [
+    "rest"
+  ],
+  "camera": {
+    "position": [
+      0,
+      5,
+      -8.7
+    ],
+    "lookAt": [
+      0,
+      1,
+      0
+    ],
+    "fov": 36
+  },
+  "props": [
+    {
+      "meshId": "shr_campfire",
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotationY": 0,
+      "lightSource": true
+    },
+    {
+      "meshId": "cel_crate_stack",
+      "position": [
+        -3,
+        0,
+        -2.5
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cel_barrel",
+      "position": [
+        3,
+        0,
+        -2.8
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "shr_torch_sconce",
+      "position": [
+        -3.9,
+        2,
+        -1
+      ],
+      "rotationY": 90,
+      "lightSource": true
+    }
+  ],
+  "triBudget": 30000,
+  "drawCallBudget": 60
+}

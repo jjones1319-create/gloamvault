@@ -1,0 +1,344 @@
+{
+  "id": "captain-vexa-marrow",
+  "name": "Captain Vexa Marrow, the Grinning Captain",
+  "familyId": "cellar-vermin",
+  "dungeonId": "gravehollow-keep",
+  "zoneId": "the-cellars",
+  "role": "boss",
+  "size": "medium",
+  "rows": [
+    "back",
+    "front"
+  ],
+  "levelBand": {
+    "min": 4,
+    "max": 4
+  },
+  "multipliers": {
+    "hp": 14,
+    "attack": 1.6,
+    "defense": 1.3
+  },
+  "speed": 110,
+  "xpClass": 25,
+  "goldMultiplier": 10,
+  "ambushModifier": 0,
+  "attacks": [
+    {
+      "id": "throwing-knife",
+      "name": "Throwing Knife",
+      "damageType": "pierce",
+      "weight": 800,
+      "multiplier": 1.1,
+      "target": "enemy",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "bleed",
+          "duration": 2
+        }
+      ],
+      "aiWeight": 45,
+      "tell": null
+    },
+    {
+      "id": "coin-flip",
+      "name": "Coin Flip",
+      "damageType": "blunt",
+      "weight": 800,
+      "multiplier": 0,
+      "target": "self",
+      "effects": [
+        {
+          "kind": "custom",
+          "customId": "next-attack-guaranteed-crit",
+          "target": "self"
+        }
+      ],
+      "aiWeight": 25,
+      "tell": "She flips the coin; a star lights on her strip icon. Guard it."
+    },
+    {
+      "id": "grin",
+      "name": "Grin",
+      "damageType": "blunt",
+      "weight": 1000,
+      "multiplier": 0,
+      "target": "enemy",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "mark",
+          "duration": 2
+        },
+        {
+          "kind": "custom",
+          "customId": "allies-focus-marked",
+          "target": "allAllies",
+          "note": "every bandit targets the Marked hero"
+        }
+      ],
+      "aiWeight": 30,
+      "tell": null
+    },
+    {
+      "id": "kick-the-barricade",
+      "name": "Kick the Barricade",
+      "damageType": "blunt",
+      "weight": 1000,
+      "multiplier": 1,
+      "target": "partyFront",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "daze"
+        },
+        {
+          "kind": "rowSwap",
+          "target": "self",
+          "note": "she steps to the front"
+        },
+        {
+          "kind": "applyStatus",
+          "status": "haste",
+          "duration": 3,
+          "target": "self"
+        }
+      ],
+      "aiWeight": 0,
+      "tell": "The Captain sets her boot against the kegs."
+    },
+    {
+      "id": "cutlass",
+      "name": "Cutlass",
+      "damageType": "slash",
+      "weight": 1000,
+      "multiplier": 1.4,
+      "target": "enemyFront",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "bleed",
+          "duration": 3
+        }
+      ],
+      "aiWeight": 50,
+      "tell": null
+    },
+    {
+      "id": "riposte",
+      "name": "Riposte",
+      "damageType": "slash",
+      "weight": 800,
+      "multiplier": 1.2,
+      "target": "enemy",
+      "effects": [
+        {
+          "kind": "custom",
+          "customId": "answer-next-melee-hit",
+          "note": "answers the next melee hit on her, once per 2 turns"
+        }
+      ],
+      "aiWeight": 30,
+      "tell": null
+    }
+  ],
+  "resist": [],
+  "weak": [],
+  "immune": [],
+  "statusImmune": [],
+  "behavior": {
+    "rules": [
+      {
+        "if": "phase 2 begins",
+        "then": "kick-the-barricade"
+      },
+      {
+        "if": "self HP < 20%",
+        "then": "cutlass"
+      },
+      {
+        "if": "a hero is Marked and phase 1",
+        "then": "throwing-knife"
+      },
+      {
+        "if": "always",
+        "then": "grin"
+      }
+    ],
+    "fleesAtPercent": 0
+  },
+  "parts": {
+    "common": {
+      "materialId": "copper",
+      "chance": 100,
+      "quantity": {
+        "min": 5,
+        "max": 10
+      }
+    },
+    "rare": {
+      "itemId": "marked-cards",
+      "chance": 100,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "breakLimb": {
+      "name": "grin-mask",
+      "effect": {
+        "kind": "custom",
+        "customId": "lose-fear-immunity-and-riposte",
+        "note": "Blunt, 6% HP: she loses Fear immunity and Riposte"
+      }
+    }
+  },
+  "monsterTechniqueSkillIds": [],
+  "elitePool": [],
+  "boss": {
+    "phases": [
+      {
+        "atHpPercent": 100,
+        "attacks": [
+          "throwing-knife",
+          "coin-flip",
+          "grin"
+        ],
+        "adds": [
+          {
+            "monsterId": "grinning-cutpurse",
+            "count": 2,
+            "row": "front"
+          },
+          {
+            "monsterId": "grinning-crossbowman",
+            "count": 1,
+            "row": "back"
+          }
+        ],
+        "arenaRule": "The Wine Hall: a barricade of kegs splits the room; while it stands, melee cannot reach her back row (bows, spells and spears can). Light starts at 60. Shooting a keg (3 hits) spills it: Slow (1) on any monster that changes rows. Adds respawn once at 75%."
+      },
+      {
+        "atHpPercent": 50,
+        "attacks": [
+          "kick-the-barricade",
+          "cutlass",
+          "riposte",
+          "coin-flip"
+        ],
+        "adds": [
+          {
+            "monsterId": "grinning-netter",
+            "count": 1,
+            "row": "back"
+          }
+        ],
+        "arenaRule": "The Captain steps down: the barricade is gone; under 20% she stops flipping and attacks twice per turn."
+      }
+    ],
+    "everyKill": [
+      {
+        "kind": "gold",
+        "amount": 60
+      },
+      {
+        "kind": "material",
+        "id": "copper",
+        "amount": 4
+      },
+      {
+        "kind": "material",
+        "id": "rawhide",
+        "amount": 4
+      },
+      {
+        "kind": "item",
+        "grade": "E",
+        "note": "one E item of the player's class family, pick 1 of 3 shown"
+      },
+      {
+        "kind": "item",
+        "id": "whetstone",
+        "amount": 2
+      }
+    ],
+    "firstKill": [
+      {
+        "kind": "material",
+        "id": "copper",
+        "amount": 4,
+        "note": "the first-kill stack is 8 + 8: these lines top up everyKill"
+      },
+      {
+        "kind": "material",
+        "id": "rawhide",
+        "amount": 4
+      },
+      {
+        "kind": "tome",
+        "tier": 3,
+        "note": "a Tier III Tome of a party class, bag draw"
+      },
+      {
+        "kind": "item",
+        "grade": "D"
+      },
+      {
+        "kind": "item",
+        "id": "the-grinning-mask",
+        "note": "the zone Relic (06 §3.1, 08 §3): once per fight, Fear the enemy front row for 1 round"
+      },
+      {
+        "kind": "item",
+        "id": "standard-chest-key"
+      },
+      {
+        "kind": "item",
+        "id": "marked-cards",
+        "difficultyMin": "hard",
+        "note": "+1 rare part on Hard and Nightmare"
+      },
+      {
+        "kind": "title",
+        "id": "toll-breaker"
+      },
+      {
+        "kind": "waystone",
+        "id": "the-cellars"
+      }
+    ],
+    "immunities": [
+      "fear",
+      "petrify",
+      "grab",
+      "web",
+      "root"
+    ],
+    "cannotFlee": true
+  },
+  "hunter": null,
+  "visual": {
+    "baseMesh": "humanoid",
+    "scale": 1,
+    "variantOf": "grinning-cutpurse",
+    "palette": [
+      "#9b1c1c",
+      "#f1ece4",
+      "#b08d57"
+    ],
+    "reads200px": true,
+    "animations": [
+      "Idle",
+      "Move",
+      "Attack1",
+      "Attack2",
+      "Hit",
+      "Death",
+      "CoinFlip",
+      "Riposte",
+      "Kick"
+    ],
+    "triBudget": 10000
+  }
+}

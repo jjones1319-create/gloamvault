@@ -1,0 +1,55 @@
+{
+  "id": "repair-kit",
+  "name": "Repair Kit",
+  "slot": null,
+  "kind": "consumable",
+  "grade": "F",
+  "materialLadder": null,
+  "materialRung": null,
+  "weaponType": null,
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": 600,
+  "baseStats": {},
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 0,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 3,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1,
+  "value": 24,
+  "classLock": [],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": {
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "repair-durability",
+        "percent": 25,
+        "note": "+25% durability to one item, out of combat"
+      }
+    ],
+    "stackMax": 5,
+    "target": "self",
+    "inCombat": false
+  },
+  "ammo": null,
+  "visual": {
+    "meshId": "consumable-repair-kit-01",
+    "tintPrimary": "#6b7280",
+    "tintSecondary": "#2b2b2b",
+    "trimMetal": "none"
+  }
+}

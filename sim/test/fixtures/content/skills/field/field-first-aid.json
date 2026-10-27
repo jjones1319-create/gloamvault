@@ -1,0 +1,33 @@
+{
+  "id": "field-first-aid",
+  "classId": "field",
+  "school": "field",
+  "tier": 1,
+  "name": "First Aid",
+  "description": "Revive a downed ally out of combat at any rank (20% HP + 2% per rank); from rank 5 also in combat as a weight-1,000 action at 30%; bandage Bleed. Warden and Mender +2 at start.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Rank 10 is the line in the description; the per-rank numbers live in tuning.json (skills.fieldSkills).",
+    "effects": []
+  },
+  "tags": [
+    "field",
+    "utility"
+  ],
+  "xpTags": [],
+  "aiHints": {
+    "role": "utility",
+    "priority": 0
+  }
+}

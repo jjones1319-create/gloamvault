@@ -1,0 +1,76 @@
+{
+  "id": "cel-t-stairwell",
+  "zoneId": "the-cellars",
+  "footprint": {
+    "w": 1,
+    "h": 1
+  },
+  "doors": [
+    {
+      "side": "north",
+      "offset": 0
+    },
+    {
+      "side": "east",
+      "offset": 0
+    },
+    {
+      "side": "south",
+      "offset": 0
+    },
+    {
+      "side": "west",
+      "offset": 0
+    }
+  ],
+  "kinds": [
+    "stairs",
+    "entry"
+  ],
+  "camera": {
+    "position": [
+      0,
+      5.8,
+      9.3
+    ],
+    "lookAt": [
+      0,
+      1,
+      0
+    ],
+    "fov": 40
+  },
+  "props": [
+    {
+      "meshId": "shr_stairs_down",
+      "position": [
+        0,
+        0,
+        -1.5
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "shr_torch_sconce",
+      "position": [
+        -3.9,
+        2,
+        1
+      ],
+      "rotationY": 90,
+      "lightSource": true
+    },
+    {
+      "meshId": "shr_torch_sconce",
+      "position": [
+        3.9,
+        2,
+        1
+      ],
+      "rotationY": -90,
+      "lightSource": true
+    }
+  ],
+  "triBudget": 30000,
+  "drawCallBudget": 60
+}

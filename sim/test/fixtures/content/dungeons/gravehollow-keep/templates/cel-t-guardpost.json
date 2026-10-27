@@ -1,0 +1,98 @@
+{
+  "id": "cel-t-guardpost",
+  "zoneId": "the-cellars",
+  "footprint": {
+    "w": 1,
+    "h": 1
+  },
+  "doors": [
+    {
+      "side": "north",
+      "offset": 0
+    },
+    {
+      "side": "east",
+      "offset": 0
+    },
+    {
+      "side": "south",
+      "offset": 0
+    },
+    {
+      "side": "west",
+      "offset": 0
+    }
+  ],
+  "kinds": [
+    "fight",
+    "elite",
+    "merchant",
+    "keyRoom",
+    "rest"
+  ],
+  "camera": {
+    "position": [
+      0,
+      7.5,
+      -10.6
+    ],
+    "lookAt": [
+      0,
+      1,
+      0
+    ],
+    "fov": 40
+  },
+  "props": [
+    {
+      "meshId": "cel_table_long",
+      "position": [
+        0,
+        0,
+        1.5
+      ],
+      "rotationY": 90
+    },
+    {
+      "meshId": "shr_campfire",
+      "position": [
+        2.8,
+        0,
+        -2.5
+      ],
+      "rotationY": 0,
+      "lightSource": true
+    },
+    {
+      "meshId": "cel_banner_grin",
+      "position": [
+        -3.9,
+        2.5,
+        -1
+      ],
+      "rotationY": 90
+    },
+    {
+      "meshId": "shr_torch_sconce",
+      "position": [
+        3.9,
+        2,
+        1.5
+      ],
+      "rotationY": -90,
+      "lightSource": true
+    },
+    {
+      "meshId": "shr_torch_sconce",
+      "position": [
+        -3.9,
+        2,
+        2
+      ],
+      "rotationY": 90,
+      "lightSource": true
+    }
+  ],
+  "triBudget": 30000,
+  "drawCallBudget": 60
+}

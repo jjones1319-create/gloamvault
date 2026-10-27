@@ -1,0 +1,58 @@
+{
+  "id": "warden-loud-voice",
+  "classId": "warden",
+  "school": "warcry",
+  "tier": 1,
+  "name": "Loud Voice",
+  "description": "Warcry skills cost −20%; your Taunts last +1 turn.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "school-cost-multiplier",
+      "percent": -20,
+      "target": "self",
+      "note": "the owner's school (Warcry) costs −20%"
+    },
+    {
+      "kind": "custom",
+      "customId": "taunt-duration-bonus",
+      "amount": 1,
+      "target": "self",
+      "note": "Taunts you apply last +1 turn"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Shouts give you +10 Momentum.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "momentum-on-shout",
+        "amount": 10,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "momentum",
+    "taunt"
+  ],
+  "xpTags": [
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 0
+  }
+}

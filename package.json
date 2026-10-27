@@ -20,7 +20,9 @@
     "verify": "npm run typecheck && npm test && npm run lint && npm run build && npm run check:build",
     "shots": "node tools/shots/run.ts",
     "icons": "node tools/icons/make-icons.ts",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "sim": "node tools/sim/run.ts",
+    "balance": "node tools/balance/run.ts"
   },
   "dependencies": {
     "@preact/signals": "^2.11.3",

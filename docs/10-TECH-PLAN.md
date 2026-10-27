@@ -1,6 +1,6 @@
 # 10 — Tech Plan
 
-*Last updated 2026-10-26 · rev. 2 (Claude; rev. 2 after Phase 1 built the skeleton: the §3 layout notes on the Vite root, the three TypeScript projects and Node-direct tools, and the §7 screenshot viewport — D-048, D-052). The engine decision is D-002 in `13-DECISIONS.md`; the research behind it is `docs/research/2026-10-26-tech-engine-android-coop.md` (which recommended Godot + APK under an "APK on GitHub" framing — §1 below says why the web path wins for James specifically).*
+*Last updated 2026-10-27 · rev. 3 (Claude; rev. 2 after Phase 1 built the skeleton: the §3 layout notes on the Vite root, the three TypeScript projects and Node-direct tools, and the §7 screenshot viewport — D-048, D-052; rev. 3 after Phase 2 built the sim: the §3 module map). The engine decision is D-002 in `13-DECISIONS.md`; the research behind it is `docs/research/2026-10-26-tech-engine-android-coop.md` (which recommended Godot + APK under an "APK on GitHub" framing — §1 below says why the web path wins for James specifically).*
 
 ## 1. The decision: a web app installed from GitHub Pages
 
@@ -63,6 +63,21 @@ gloamvault/
 ```
 
 Rules: `sim/` never imports `client/`; `client/` reads sim state and sends commands; every tuning number lives in `content/tuning.json` or the content files, never in code; screens are chosen by app state and mirrored to the URL hash (`#delve=gravehollow&zone=1&seed=17`), never path routing (GitHub Pages cannot serve it); asset URLs come from `import.meta.env.BASE_URL`.
+
+**The sim as built in Phase 2** (`sim/src/`, pure, DOM-less, every number from `content/tuning.json`):
+
+| Module | Owns |
+|---|---|
+| `rng.ts`, `hash.ts` | xoshiro128** on four u32 words (the state lives in the save), `seedFor`, FNV-1a state hashes |
+| `types/enums.ts`, `types/content.ts`, `content.ts` | every closed set, the record types mirroring `content/schemas/`, the `Content` bundle (`buildContent` from `{kind, path, json}` files; split templates merged) |
+| `stats.ts`, `xp.ts`, `insight.ts`, `economy.ts`, `grades.ts`, `durability.ts` | 03 §2.2 derived stats, §5 curves (gate, D curve, budgets, ranks, points, item levels), §7.5 Insight, §7.4/§7.6/§8 prices in R, drop shapes with the folds and Luck, wear bands, +N, promotion and salvage arithmetic |
+| `light.ts`, `detection.ts` | the light bands, Detection, traps, secrets, scouting, the surprise roll both ways |
+| `timeline.ts`, `statuses.ts`, `effects.ts`, `skills/custom/*`, `fight.ts`, `ai.ts`, `monsters.ts`, `pets.ts`, `hero.ts` | the energy timeline with jitter and charged casts; the 27 statuses; the effect-DSL interpreter and damage pipeline; one hook file per `customId`; the fight loop with commands, auto heroes, rounds, flee, boss phases, summons; the gambit parser; monster, pet and hero actors (`createHero`, `buildHeroActor` through the item module) |
+| `items.ts`, `loot.ts`, `chests.ts` | instances and affixes, effective stats through +N and the durability band, wear and care, promotion, salvage, item XP; fight and room loot, dungeon chests; the Curio Merchant's chests with pity and the Tome bag |
+| `generator.ts`, `generator-ascii.ts` | the 07 §2.10 grammar, layout, decoration and the floor hash; the `#gen` ASCII map |
+| `explore.ts`, `progress.ts`, `policies.ts`, `delve-types.ts`, `delve.ts` | room dressing, encounters, champions, traps, curios, merchants, the hunter's path; XP and wear applied after a fight; the four scripted players; `createDelve / legalDelveActions / stepDelve / runDelveAuto / replayDelve / hashDelve` |
+
+Tools: `tools/sim/run.ts` (`npm run sim`), `tools/balance/run.ts` (`npm run balance` → `tools/balance/out/` + `docs/balance/`), `tools/sim/loadContent.ts` (the fs loader); the Phase 2 fixture content and its assembler live in `sim/test/fixtures/`.
 
 As built in Phase 1 (D-048): one `package.json` at the root (no workspaces); the **Vite root is `client/`** (`client/index.html`, `client/src`, `client/public`; `dist/` at the repo root); `sim/` and `content/` are imported by relative path. **Three TypeScript projects** under one `tsc -b`: `tsconfig.sim.json` compiles `sim/src` with `lib: ["ES2023"]` and no DOM types, so a browser call in the sim is a type error; `tsconfig.client.json` (DOM, Preact JSX); `tsconfig.tools.json` (`tools/**`, `sim/test`, `e2e`, the configs). Tools run on **Node 24 directly** (`node tools/lint/index.ts`; type stripping, so imports carry `.ts` and the code uses only erasable syntax), no `tsx`. The sim's `Tuning` type is derived from `content/tuning.json` itself (`typeof` on a type-only import) so a renamed key fails the typecheck; the sim never reads the file at runtime — the client (`import.meta.glob`) and the tools (`readFileSync`) load content and pass it in.
 
