@@ -16,7 +16,7 @@
 - **Phase:** 4 — the playable vertical slice — **done 2026-10-27** (v0.4.0; verify green: 478 tests, lint ALL GOOD, app JS 420 KB gzipped of 600; 27 screenshots read; the e2e smoke plays New game → Mortal → a hero → the first delve → home → a chest → reload).
 - **James's direction of 2026-10-27** (mid-Phase 3) is in: Final Fantasy-style levels, leaving by a floor's entrance or its end, a very difficult tower best climbed with a party, turn-based combat (D-082–D-085; `docs/13-DECISIONS.md` §A2).
 - **James's direction during Phase 4** (D-088–D-092; §A3) is in the sim and being put on screen: the **Mortal** death rule (the dead stay dead; Sheltered is the gentler choice at New game), raising the dead (a level-10 healer in the dungeon, the Ember Shrine in town, both for levels), one **chosen hero** plus **wayfarers** from the Wayfarer Chest as the only party members (18 named, D–A), **legacies** and the Memorial, the **threat** read (Easy / Even / Dangerous / Deadly) and the flee chance.
-- **Last commit:** see `git log` (the Phase 4 commit is `P4: the playable slice …`).
+- **Last commit:** `bd42d55` P4: the playable slice (deployed 2026-10-27; the live site serves v0.4.0).
 - **Tools checked 2026-10-26:** Node 24.18.0 ✓ · npm 11.16.0 ✓ · git 2.51 ✓ · gh 2.102 signed in as `jjones1319-create` ✓ · Blender 5.2.2 LTS ✓ (needed from Segment 2) · Google Chrome ✓.
 
 ## Phase 3 task list (done)
@@ -38,7 +38,7 @@
 - 2026-10-26 — Phase 1: the installable title screen, the toolchain (verify · lint · shots · e2e · icons), tuning and statuses as content. Commit `bde2c59`.
 - 2026-10-27 — Phase 2: the sim, 239 tests, the fixture content, `npm run sim`, `npm run balance`, the first balance report. Commit `cc14fbd`.
 - 2026-10-27 — Phase 3: content pass 1 (≈ 800 records), 255 custom hooks, Final Fantasy-style levels, the exits, the second balance report. Commit `f178620`.
-- 2026-10-27 — Phase 4: the playable slice — the town and the save, the new-hero, hero, town, delve and fight screens, the 3D grey-box room; James's direction during Phase 4 (Mortal / Sheltered, raising the dead, the chosen hero and the Wayfarer Chest, legacies, the threat read); the Phase 4 balance reports under both death rules; the Segment 1 review.
+- 2026-10-27 — Phase 4: the playable slice — the town and the save, the new-hero, hero, town, delve and fight screens, the 3D grey-box room; James's direction during Phase 4 (Mortal / Sheltered, raising the dead, the chosen hero and the Wayfarer Chest, legacies, the threat read); the Phase 4 balance reports under both death rules; the Segment 1 review. Commit `bd42d55`, deployed (run 40579282736).
 
 ## What the second balance report says
 
