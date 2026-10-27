@@ -1,0 +1,162 @@
+{
+  "id": "grinning-hexer",
+  "name": "Grinning Hexer",
+  "familyId": "cellar-vermin",
+  "dungeonId": "gravehollow-keep",
+  "zoneId": "the-cellars",
+  "role": "special",
+  "size": "medium",
+  "rows": [
+    "back"
+  ],
+  "levelBand": {
+    "min": 4,
+    "max": 4
+  },
+  "multipliers": {
+    "hp": 1,
+    "attack": 1.1,
+    "defense": 0.6
+  },
+  "speed": 105,
+  "xpClass": 2,
+  "goldMultiplier": 2,
+  "ambushModifier": 15,
+  "attacks": [
+    {
+      "id": "evil-eye",
+      "name": "Evil Eye",
+      "damageType": "shadow",
+      "weight": 1000,
+      "multiplier": 0.8,
+      "target": "enemy",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "fear",
+          "duration": 2
+        }
+      ],
+      "aiWeight": 40,
+      "tell": "The green eye in the mask brightens."
+    },
+    {
+      "id": "rattle-curse",
+      "name": "Rattle Curse",
+      "damageType": "shadow",
+      "weight": 1000,
+      "multiplier": 0,
+      "target": "enemy",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "curse",
+          "duration": 3,
+          "note": "on the hero with the highest Wisdom"
+        }
+      ],
+      "aiWeight": 35,
+      "tell": "The Hexer shakes the bone rattle."
+    },
+    {
+      "id": "bone-dart",
+      "name": "Bone Dart",
+      "damageType": "pierce",
+      "weight": 800,
+      "multiplier": 0.7,
+      "target": "enemy",
+      "effects": [],
+      "aiWeight": 25,
+      "tell": null
+    }
+  ],
+  "resist": [
+    "shadow"
+  ],
+  "weak": [
+    "holy"
+  ],
+  "immune": [],
+  "statusImmune": [],
+  "behavior": {
+    "rules": [
+      {
+        "if": "a hero with a healing skill is not Cursed (the healer first)",
+        "then": "rattle-curse"
+      },
+      {
+        "if": "a hero is Guarding",
+        "then": "evil-eye"
+      },
+      {
+        "if": "always",
+        "then": "evil-eye"
+      }
+    ],
+    "fleesAtPercent": 0
+  },
+  "parts": {
+    "common": {
+      "materialId": "burlap",
+      "chance": 35,
+      "quantity": {
+        "min": 2,
+        "max": 2
+      }
+    },
+    "rare": {
+      "itemId": "hexers-fetish",
+      "chance": 4,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "breakLimb": {
+      "name": "fetish",
+      "effect": {
+        "kind": "custom",
+        "customId": "no-curse",
+        "note": "no Curse for the rest of the fight"
+      }
+    }
+  },
+  "monsterTechniqueSkillIds": [],
+  "elitePool": [
+    "shielded",
+    "vampiric",
+    "shackler",
+    "rabid",
+    "spiteful",
+    "warded",
+    "thorned",
+    "regenerating",
+    "mirrored",
+    "commander",
+    "leech",
+    "nullifier"
+  ],
+  "boss": null,
+  "hunter": null,
+  "visual": {
+    "baseMesh": "humanoid",
+    "scale": 1,
+    "variantOf": "grinning-cutpurse",
+    "palette": [
+      "#e6dcc3",
+      "#2a2a2a",
+      "#39ff6a"
+    ],
+    "reads200px": true,
+    "animations": [
+      "Idle",
+      "Move",
+      "Attack1",
+      "Attack2",
+      "Hit",
+      "Death",
+      "Cast"
+    ],
+    "triBudget": 3500
+  }
+}

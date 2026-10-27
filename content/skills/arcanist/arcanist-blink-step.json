@@ -1,0 +1,57 @@
+{
+  "id": "arcanist-blink-step",
+  "classId": "arcanist",
+  "school": "arcana",
+  "tier": 2,
+  "name": "Blink Step",
+  "description": "You or one ally swap rows at once, ignoring Root, Web and Grab, and gain +15% Dodge until the target’s next turn.",
+  "type": "active",
+  "cost": 8,
+  "weight": 800,
+  "target": "ally",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "row-swap-ignores-root",
+      "note": "this skill’s row swap succeeds under Root, Web and Grab"
+    },
+    {
+      "kind": "rowSwap",
+      "note": "self or one ally: with no ally chosen the caster swaps"
+    },
+    {
+      "kind": "buffStat",
+      "stat": "dodge",
+      "amount": 15,
+      "duration": 1,
+      "note": "until the target’s next turn"
+    }
+  ],
+  "prerequisiteId": "arcanist-quicken",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Also breaks Taunt.",
+    "effects": [
+      {
+        "kind": "removeStatus",
+        "status": "taunt"
+      }
+    ]
+  },
+  "tags": [
+    "mobility",
+    "buff"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "utility",
+    "priority": 40
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "id": "weighted-net",
+  "name": "Weighted Net",
+  "slot": null,
+  "kind": "stone",
+  "grade": "F",
+  "materialLadder": null,
+  "materialRung": null,
+  "weaponType": null,
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {},
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 0,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 3,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1,
+  "value": 12,
+  "classLock": [],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "stone-weighted-net-01",
+    "tintPrimary": "#6b7a80",
+    "tintSecondary": "#2b2b2b",
+    "trimMetal": "none"
+  }
+}

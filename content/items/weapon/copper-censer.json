@@ -1,0 +1,48 @@
+{
+  "id": "copper-censer",
+  "name": "Copper Censer",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "F",
+  "materialLadder": "metal",
+  "materialRung": 0,
+  "weaponType": "censer",
+  "armorFamily": null,
+  "hands": 1,
+  "damageType": "blunt",
+  "weight": 1000,
+  "baseStats": {
+    "attackPhys": 10,
+    "attackSpell": 10
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 9
+  },
+  "affixSlots": 0,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 3,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1.33,
+  "value": 150,
+  "classLock": [
+    "mender"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-censer-01",
+    "tintPrimary": "#b87333",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "copper"
+  }
+}

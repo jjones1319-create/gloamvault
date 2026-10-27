@@ -1,0 +1,57 @@
+{
+  "id": "ranger-tripwire",
+  "classId": "ranger",
+  "school": "trapper",
+  "tier": 2,
+  "name": "Tripwire",
+  "description": "Lay a tripwire on the enemy side: the next enemy to change rows, charge or use a reach attack is Dazed and takes 1.0× Pierce.",
+  "type": "active",
+  "cost": 14,
+  "weight": 800,
+  "target": "allEnemies",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "field-trap-on-movement",
+      "multiplier": 1,
+      "damageType": "pierce",
+      "status": "daze",
+      "amount": 1,
+      "scalesWith": "strength",
+      "note": "amount triggers; fires on a row change, a charge or a reach attack, dealing multiplier × Attack and the status"
+    }
+  ],
+  "prerequisiteId": "ranger-caltrop-toss",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Two triggers.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "field-trap-on-movement",
+        "multiplier": 1,
+        "damageType": "pierce",
+        "status": "daze",
+        "amount": 2,
+        "scalesWith": "strength"
+      }
+    ]
+  },
+  "tags": [
+    "control",
+    "utility"
+  ],
+  "xpTags": [
+    "perception",
+    "agility"
+  ],
+  "aiHints": {
+    "role": "control",
+    "priority": 50
+  }
+}

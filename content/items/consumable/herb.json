@@ -1,0 +1,55 @@
+{
+  "id": "herb",
+  "name": "Herb",
+  "slot": null,
+  "kind": "consumable",
+  "grade": "F",
+  "materialLadder": null,
+  "materialRung": null,
+  "weaponType": null,
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": 600,
+  "baseStats": {},
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 0,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 3,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1,
+  "value": 3,
+  "classLock": [],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": {
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "meal",
+        "percent": 5,
+        "note": "with Cooking at a rest room: a meal, +5% to one stat for the next floor"
+      }
+    ],
+    "stackMax": 20,
+    "target": "allAllies",
+    "inCombat": false
+  },
+  "ammo": null,
+  "visual": {
+    "meshId": "consumable-herb-01",
+    "tintPrimary": "#4caf50",
+    "tintSecondary": "#2b2b2b",
+    "trimMetal": "none"
+  }
+}

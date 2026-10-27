@@ -501,7 +501,7 @@ const cases: Case[] = [
     },
   },
   {
-    name: 'a hero whose level outruns its skill ranks (rule 30, --saves)',
+    name: 'a hero whose level does not follow its battle XP (rule 30, --saves)',
     saves: true,
     setup: (root) => {
       place(root, 'skill.example.json', SKILL)
@@ -509,7 +509,7 @@ const cases: Case[] = [
         j.level = 9
       })
     },
-    check: (r) => expectRule(r, HERO, 30, 'level 9 but 18 total skill ranks allow level 2'),
+    check: (r) => expectRule(r, HERO, 30, 'level 9 but battleXp 80 reaches level 2'),
   },
 ]
 

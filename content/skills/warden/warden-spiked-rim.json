@@ -1,0 +1,55 @@
+{
+  "id": "warden-spiked-rim",
+  "classId": "warden",
+  "school": "bulwark",
+  "tier": 2,
+  "name": "Spiked Rim",
+  "description": "A successful block reflects 15% of the halved damage as Blunt to the attacker.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "reflect-on-block-percent",
+      "damageType": "blunt",
+      "percent": 15,
+      "target": "self",
+      "note": "15% of the damage that got through the block goes back to the attacker as Blunt"
+    }
+  ],
+  "prerequisiteId": "warden-wall-stance",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "requirements": {
+    "shield": true
+  },
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Reflect 30%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "reflect-on-block-percent",
+        "damageType": "blunt",
+        "percent": 30,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "shield"
+  ],
+  "xpTags": [
+    "endurance"
+  ],
+  "aiHints": {
+    "role": "defend",
+    "priority": 0
+  }
+}

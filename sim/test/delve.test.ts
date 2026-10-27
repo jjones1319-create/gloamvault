@@ -118,12 +118,16 @@ describe('a delve on the Cellars fixture (03 §1, §4, §11, §12)', () => {
     }
   })
 
-  it('retreating costs the toll before the boss is down', () => {
+  it('walking out of the entrance is free on Normal; Hard keeps its toll (D-083)', () => {
     const state = createDelve(content, options({ auto: false }), [warden()])
     state.gold = 100
     stepDelve(content, state, { kind: 'retreat' })
     expect(state.phase.kind).toBe('over')
-    expect(state.gold).toBe(90)
+    expect(state.gold).toBe(100)
+    const hard = createDelve(content, options({ auto: false, difficulty: 'hard' }), [warden()])
+    hard.gold = 100
+    stepDelve(content, hard, { kind: 'retreat' })
+    expect(hard.gold).toBe(85)
   })
 
   it('hard mode and a pact change the knobs', () => {

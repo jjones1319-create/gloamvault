@@ -1,0 +1,48 @@
+{
+  "id": "yew-rod",
+  "name": "Yew Rod",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "C",
+  "materialLadder": "wood",
+  "materialRung": 3,
+  "weaponType": "wand",
+  "armorFamily": null,
+  "hands": 1,
+  "damageType": "fire",
+  "weight": 1000,
+  "baseStats": {
+    "attackSpell": 27,
+    "mana": 12
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 13
+  },
+  "affixSlots": 2,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 6,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 2.6,
+  "value": 600,
+  "classLock": [
+    "arcanist"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-rod-01",
+    "tintPrimary": "#7a5a3a",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "steel"
+  }
+}

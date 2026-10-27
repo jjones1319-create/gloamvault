@@ -1,0 +1,25 @@
+{
+  "id": "rat-catcher",
+  "name": "Rat-catcher",
+  "description": "Kill 30 Vermin in the Cellars.",
+  "cadence": "daily",
+  "kind": "kill",
+  "target": {
+    "familyId": "cellar-vermin",
+    "dungeonId": "gravehollow-keep",
+    "zoneId": "the-cellars",
+    "count": 30
+  },
+  "reward": {
+    "goldR": 0.2,
+    "keys": [
+      {
+        "kind": "standard",
+        "amount": 1
+      }
+    ],
+    "chestId": null,
+    "items": []
+  },
+  "band": null
+}

@@ -1,0 +1,52 @@
+{
+  "id": "mender-overflow",
+  "classId": "mender",
+  "school": "benediction",
+  "tier": 2,
+  "name": "Overflow",
+  "description": "Healing beyond max HP becomes a Shield on the target, up to 15% of their max HP, lasting 2 turns.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "overheal-to-shield",
+      "percent": 15,
+      "duration": 2,
+      "target": "self",
+      "note": "healing by the holder beyond the target’s max HP becomes a Shield on the target, capped at percent% of its max HP, for `duration` turns"
+    }
+  ],
+  "prerequisiteId": "mender-gentle-hands",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Up to 25%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "overheal-to-shield",
+        "percent": 25,
+        "duration": 2,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "heal",
+    "shield"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "heal",
+    "priority": 0
+  }
+}

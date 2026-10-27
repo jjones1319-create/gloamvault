@@ -1,0 +1,56 @@
+{
+  "id": "shade-hags-hex",
+  "classId": "shade",
+  "school": "venom",
+  "tier": 3,
+  "name": "Hag’s Hex",
+  "description": "Curse 3 turns (−10% all attributes) and Slow 2 turns on one enemy in any row. Monster technique: Insights only while a brine hag uses it (the brine hag arrives with the Drowned Vault in Phase 7).",
+  "type": "active",
+  "cost": 22,
+  "weight": 1000,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "applyStatus",
+      "status": "curse",
+      "duration": 3
+    },
+    {
+      "kind": "applyStatus",
+      "status": "slow",
+      "duration": 2
+    }
+  ],
+  "prerequisiteId": "shade-choking-cloud",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Curse −15%.",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "curse",
+        "duration": 3,
+        "percent": -15,
+        "note": "the Curse this skill applies is −15% all attributes instead of the status’s −10%"
+      }
+    ]
+  },
+  "tags": [
+    "control",
+    "debuff",
+    "reach"
+  ],
+  "xpTags": [
+    "agility",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "debuff",
+    "priority": 55
+  }
+}

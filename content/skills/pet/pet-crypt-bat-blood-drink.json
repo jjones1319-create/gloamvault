@@ -1,0 +1,39 @@
+{
+  "id": "pet-crypt-bat-blood-drink",
+  "classId": "pet",
+  "school": "pet",
+  "tier": 1,
+  "name": "Blood Drink",
+  "description": "Heal the lowest ally for 10% of their max HP.",
+  "type": "active",
+  "cost": 10,
+  "weight": 1000,
+  "target": "allyLowest",
+  "effects": [
+    {
+      "kind": "heal",
+      "percent": 10
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "No Mastery line: pet actives do not rank (03 §9).",
+    "effects": []
+  },
+  "tags": [
+    "heal"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "heal",
+    "priority": 60
+  }
+}

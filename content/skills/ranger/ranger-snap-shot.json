@@ -1,0 +1,65 @@
+{
+  "id": "ranger-snap-shot",
+  "classId": "ranger",
+  "school": "marksman",
+  "tier": 2,
+  "name": "Snap Shot",
+  "description": "1.1× Pierce to one enemy in any row; a light shot; 1 arrow.",
+  "type": "active",
+  "cost": 12,
+  "weight": 800,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1.1,
+      "damageType": "pierce",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "custom",
+      "customId": "consume-ammo",
+      "amount": 1,
+      "target": "self",
+      "note": "1 arrow (or bolt)"
+    }
+  ],
+  "prerequisiteId": "ranger-steady-draw",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "requirements": {
+    "weaponTypes": [
+      "bow",
+      "shortbow",
+      "longbow",
+      "crossbow"
+    ]
+  },
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "1.3×.",
+    "effects": [
+      {
+        "kind": "damage",
+        "multiplier": 1.3,
+        "damageType": "pierce",
+        "scalesWith": "strength"
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "reach"
+  ],
+  "xpTags": [
+    "perception",
+    "agility"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 50
+  }
+}

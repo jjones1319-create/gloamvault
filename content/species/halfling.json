@@ -1,0 +1,106 @@
+{
+  "id": "halfling",
+  "name": "Halfling",
+  "attributeMods": {
+    "luck": 2,
+    "agility": 1,
+    "perception": 1,
+    "strength": -2
+  },
+  "traits": [
+    {
+      "id": "halfling-lucky",
+      "name": "Lucky",
+      "description": "Fortune +5 points (0.5% × Luck + 5%, still capped at 25%); one free re-roll of a failed Trap Disarm per floor (the failure does not trigger the trap).",
+      "rule": {
+        "fortuneBonus": 5,
+        "trapDisarmRerollsPerFloor": 1
+      }
+    },
+    {
+      "id": "halfling-small",
+      "name": "Small",
+      "description": "+5 points of Dodge after the 30% cap (effective cap 35%); Large monsters have −10 Accuracy against you with single-target melee, Huge ones −15.",
+      "rule": {
+        "dodgeBonus": 5,
+        "dodgeCap": 35,
+        "enemyAccuracyBySize": {
+          "large": -10,
+          "huge": -15
+        }
+      }
+    },
+    {
+      "id": "halfling-nimble-fingers",
+      "name": "Nimble Fingers",
+      "description": "Lockpicking counts two ranks higher and Haggling one (both may exceed 10).",
+      "rule": {
+        "fieldSkillBonus": {
+          "lockpicking": 2,
+          "haggling": 1
+        }
+      }
+    },
+    {
+      "id": "halfling-light-frame",
+      "name": "Light Frame",
+      "description": "Carry capacity ×0.70; heavy two-handers (weight 1,400: greatswords, mauls, two-handed axes, crossbows) need +2 Strength over the listed requirement (bows and staves exempt); max HP ×0.90; tower shields are locked.",
+      "rule": {
+        "carryMultiplier": 0.7,
+        "heavyWeaponStrengthExtra": 2,
+        "hpMultiplier": 0.9
+      }
+    }
+  ],
+  "restrictions": [
+    {
+      "kind": "shieldType",
+      "shieldType": "tower",
+      "reason": "Taller than you are; bucklers are fine."
+    }
+  ],
+  "senses": {
+    "darkvision": false
+  },
+  "body": {
+    "heightM": 1.2,
+    "shapeKeys": [
+      "spc_halfling_round"
+    ],
+    "boneScales": {
+      "root": 0.7,
+      "upperLeg": 0.9,
+      "lowerLeg": 0.9,
+      "head": 1.15,
+      "hand": 1.05,
+      "foot": 1.15,
+      "toes": 1.15,
+      "chest": 1.05,
+      "shoulder": 0.95
+    },
+    "parts": [
+      "spc_halfling_feet",
+      "spc_halfling_curls"
+    ],
+    "skinTones": [
+      "#ebc59b",
+      "#c29068",
+      "#8a5a3c"
+    ],
+    "facePresets": 3,
+    "gearVariants": []
+  },
+  "creationBlurb": "Barge-folk salvagers. Lucky, small, and no lock has met them.",
+  "chips": {
+    "pros": [
+      "Crits and loot",
+      "Big things miss",
+      "Opens anything"
+    ],
+    "cons": [
+      "Weak arms",
+      "Light pack",
+      "No tower shield"
+    ]
+  }
+}

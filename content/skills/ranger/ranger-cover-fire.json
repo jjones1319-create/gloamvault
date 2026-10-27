@@ -1,0 +1,72 @@
+{
+  "id": "ranger-cover-fire",
+  "classId": "ranger",
+  "school": "pathfinder",
+  "tier": 3,
+  "name": "Cover Fire",
+  "description": "Swap the chosen ally's row (pull a wounded Blade back, push a pet forward) and fire 1.2× Pierce at the enemy that last hit them; 1 arrow.",
+  "type": "active",
+  "cost": 20,
+  "weight": 1000,
+  "target": "ally",
+  "effects": [
+    {
+      "kind": "rowSwap",
+      "note": "the chosen ally moves to the other row as part of the action"
+    },
+    {
+      "kind": "custom",
+      "customId": "damage-last-attacker-of-target",
+      "multiplier": 1.2,
+      "damageType": "pierce",
+      "scalesWith": "strength",
+      "note": "a shot at multiplier × Attack at the enemy that last hit the chosen ally"
+    },
+    {
+      "kind": "custom",
+      "customId": "consume-ammo",
+      "amount": 1,
+      "target": "self",
+      "note": "1 arrow (or bolt)"
+    }
+  ],
+  "prerequisiteId": "ranger-lantern-throw",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "requirements": {
+    "weaponTypes": [
+      "bow",
+      "shortbow",
+      "longbow",
+      "crossbow"
+    ]
+  },
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "The ally also gains Shield = 10% of its max HP.",
+    "effects": [
+      {
+        "kind": "shield",
+        "percent": 10,
+        "target": "ally",
+        "note": "10% of the ally's own max HP"
+      }
+    ]
+  },
+  "tags": [
+    "mobility",
+    "singleTarget",
+    "shield"
+  ],
+  "xpTags": [
+    "perception",
+    "agility"
+  ],
+  "aiHints": {
+    "role": "defend",
+    "priority": 55
+  }
+}

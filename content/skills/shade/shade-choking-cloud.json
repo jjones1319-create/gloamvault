@@ -1,0 +1,59 @@
+{
+  "id": "shade-choking-cloud",
+  "classId": "shade",
+  "school": "venom",
+  "tier": 2,
+  "name": "Choking Cloud",
+  "description": "Poison 2 turns and Silence 1 turn on every back-row enemy.",
+  "type": "active",
+  "cost": 16,
+  "weight": 1000,
+  "target": "enemyBack",
+  "effects": [
+    {
+      "kind": "applyStatus",
+      "status": "poison",
+      "duration": 2,
+      "target": "enemyRow",
+      "note": "the whole row of the chosen back-row enemy"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "silence",
+      "duration": 1,
+      "target": "enemyRow"
+    }
+  ],
+  "prerequisiteId": "shade-crippling-dust",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Also Blind 1 turn.",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "blind",
+        "duration": 1,
+        "target": "enemyRow"
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "dot",
+    "control",
+    "reach"
+  ],
+  "xpTags": [
+    "agility",
+    "perception"
+  ],
+  "aiHints": {
+    "role": "debuff",
+    "priority": 55
+  }
+}

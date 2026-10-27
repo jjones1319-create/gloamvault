@@ -1,0 +1,170 @@
+{
+  "id": "giant-rat",
+  "name": "Giant Rat",
+  "familyId": "cellar-vermin",
+  "dungeonId": "gravehollow-keep",
+  "zoneId": "the-cellars",
+  "role": "fodder",
+  "size": "small",
+  "rows": [
+    "front"
+  ],
+  "levelBand": {
+    "min": 1,
+    "max": 4
+  },
+  "multipliers": {
+    "hp": 0.7,
+    "attack": 0.9,
+    "defense": 0.6
+  },
+  "speed": 125,
+  "xpClass": 1,
+  "goldMultiplier": 1,
+  "ambushModifier": 15,
+  "attacks": [
+    {
+      "id": "bite",
+      "name": "Bite",
+      "damageType": "pierce",
+      "weight": 800,
+      "multiplier": 0.9,
+      "target": "enemyFront",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "bleed",
+          "chance": 15,
+          "duration": 2
+        }
+      ],
+      "aiWeight": 80,
+      "tell": null
+    },
+    {
+      "id": "scurry-nip",
+      "name": "Scurry-nip",
+      "damageType": "pierce",
+      "weight": 800,
+      "multiplier": 0.5,
+      "target": "enemyFront",
+      "effects": [
+        {
+          "kind": "damage",
+          "multiplier": 0.5,
+          "damageType": "pierce",
+          "note": "the second of two hits"
+        }
+      ],
+      "aiWeight": 20,
+      "tell": null
+    },
+    {
+      "id": "swarm-turns",
+      "name": "The Swarm Turns",
+      "damageType": "blunt",
+      "weight": 800,
+      "multiplier": 0,
+      "target": "allAllies",
+      "effects": [
+        {
+          "kind": "custom",
+          "customId": "swarm-haste-on-death",
+          "status": "haste",
+          "duration": 1,
+          "target": "allAllies",
+          "note": "fires when this rat dies, not as an action: every surviving rat ally gains Haste (1) — \"the swarm turns\""
+        }
+      ],
+      "aiWeight": 0,
+      "tell": null
+    }
+  ],
+  "resist": [
+    "poison"
+  ],
+  "weak": [
+    "fire"
+  ],
+  "immune": [],
+  "statusImmune": [],
+  "behavior": {
+    "rules": [
+      {
+        "if": "self HP reaches 0",
+        "then": "swarm-turns"
+      },
+      {
+        "if": "self HP < 15% and self is the last rat alive",
+        "then": "flee"
+      },
+      {
+        "if": "a hero has the lowest HP % in the party",
+        "then": "bite"
+      },
+      {
+        "if": "always",
+        "then": "bite"
+      }
+    ],
+    "fleesAtPercent": 15
+  },
+  "parts": {
+    "common": {
+      "materialId": "rawhide",
+      "chance": 35,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "rare": {
+      "itemId": "rat-tail-charm",
+      "chance": 4,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "breakLimb": {
+      "name": "tail",
+      "effect": {
+        "kind": "debuffStat",
+        "stat": "speed",
+        "amount": -20,
+        "note": "for the rest of the fight"
+      }
+    }
+  },
+  "monsterTechniqueSkillIds": [],
+  "elitePool": [
+    "rabid",
+    "thorned",
+    "vampiric",
+    "shielded",
+    "commander"
+  ],
+  "boss": null,
+  "hunter": null,
+  "visual": {
+    "baseMesh": "rat",
+    "scale": 1,
+    "variantOf": null,
+    "palette": [
+      "#5a4634",
+      "#e8a0a0",
+      "#e6d8a0"
+    ],
+    "reads200px": true,
+    "animations": [
+      "Idle",
+      "Move",
+      "Attack1",
+      "Attack2",
+      "Hit",
+      "Death",
+      "Flee"
+    ],
+    "triBudget": 2500
+  }
+}

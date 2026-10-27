@@ -1,0 +1,81 @@
+{
+  "id": "ranger-piercing-shot",
+  "classId": "ranger",
+  "school": "marksman",
+  "tier": 2,
+  "name": "Piercing Shot",
+  "description": "1.5× Pierce to one enemy in any row and 0.8× to the enemy directly behind it in the other row; 1 arrow.",
+  "type": "active",
+  "cost": 14,
+  "weight": 1000,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1.5,
+      "damageType": "pierce",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "damage",
+      "multiplier": 0.8,
+      "damageType": "pierce",
+      "target": "enemyRowBack",
+      "scalesWith": "strength",
+      "note": "the sheet says the enemy directly behind; enemyRowBack is the DSL's nearest target"
+    },
+    {
+      "kind": "custom",
+      "customId": "consume-ammo",
+      "amount": 1,
+      "target": "self",
+      "note": "1 arrow (or bolt)"
+    }
+  ],
+  "prerequisiteId": "ranger-aimed-shot",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "requirements": {
+    "weaponTypes": [
+      "bow",
+      "shortbow",
+      "longbow",
+      "crossbow"
+    ]
+  },
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "0.8× becomes 1.1×.",
+    "effects": [
+      {
+        "kind": "damage",
+        "multiplier": 1.5,
+        "damageType": "pierce",
+        "scalesWith": "strength",
+        "note": "Mastery restates both hits"
+      },
+      {
+        "kind": "damage",
+        "multiplier": 1.1,
+        "damageType": "pierce",
+        "target": "enemyRowBack",
+        "scalesWith": "strength"
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "reach"
+  ],
+  "xpTags": [
+    "perception",
+    "agility"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 60
+  }
+}

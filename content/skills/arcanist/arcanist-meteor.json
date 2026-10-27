@@ -1,0 +1,60 @@
+{
+  "id": "arcanist-meteor",
+  "classId": "arcanist",
+  "school": "evocation",
+  "tier": 3,
+  "name": "Meteor",
+  "description": "1.2× Fire to every enemy in both rows; Burn 3 turns; any target already Burning is also Dazed (−500 energy). Heavy cast.",
+  "type": "active",
+  "cost": 26,
+  "weight": 1400,
+  "target": "allEnemies",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "apply-if-burn",
+      "status": "daze",
+      "note": "applies `status` only to a target holding Burn before this cast (resolved before the new Burn below)"
+    },
+    {
+      "kind": "damage",
+      "multiplier": 1.2,
+      "damageType": "fire"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "burn",
+      "duration": 3
+    }
+  ],
+  "prerequisiteId": "arcanist-firewave",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "1.35× each.",
+    "effects": [
+      {
+        "kind": "damage",
+        "multiplier": 1.35,
+        "damageType": "fire"
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "dot",
+    "control"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 75
+  }
+}

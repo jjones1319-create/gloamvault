@@ -1,0 +1,50 @@
+{
+  "id": "wolf-hide-hood",
+  "name": "Wolf Hide Hood",
+  "slot": "helmet",
+  "kind": "armor",
+  "grade": "C",
+  "materialLadder": "hide",
+  "materialRung": 3,
+  "weaponType": null,
+  "armorFamily": "leather",
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "defense": 2,
+    "hp": 10,
+    "detection": 2
+  },
+  "requirements": {
+    "strength": 9,
+    "wisdom": 0
+  },
+  "affixSlots": 2,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 6,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1.56,
+  "value": 420,
+  "classLock": [
+    "ranger",
+    "shade"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "armor-leather-helm-01",
+    "tintPrimary": "#6e6a60",
+    "tintSecondary": "#3b2a1e",
+    "trimMetal": "steel"
+  }
+}

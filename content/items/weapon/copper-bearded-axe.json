@@ -1,0 +1,59 @@
+{
+  "id": "copper-bearded-axe",
+  "name": "Copper Bearded Axe",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "F",
+  "materialLadder": "metal",
+  "materialRung": 0,
+  "weaponType": "axe",
+  "armorFamily": null,
+  "hands": 1,
+  "damageType": "slash",
+  "weight": 1000,
+  "baseStats": {
+    "attackPhys": 12,
+    "critDamage": 10
+  },
+  "requirements": {
+    "strength": 10,
+    "wisdom": 0
+  },
+  "affixSlots": 0,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 3,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1.33,
+  "value": 150,
+  "classLock": [
+    "blade"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": {
+    "text": "20% Bleed on crit",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "bleed",
+        "chance": 20,
+        "target": "enemy",
+        "note": "on crit only: the sim applies uniquePower lines on every hit, so the crit gate is a hook"
+      }
+    ]
+  },
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-bearded-axe-01",
+    "tintPrimary": "#b87333",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "copper"
+  }
+}

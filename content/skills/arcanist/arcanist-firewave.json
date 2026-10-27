@@ -1,0 +1,57 @@
+{
+  "id": "arcanist-firewave",
+  "classId": "arcanist",
+  "school": "evocation",
+  "tier": 2,
+  "name": "Firewave",
+  "description": "0.9× Fire to every front-row enemy; Burn 2 turns. Heavy cast: declared at 1,000 energy, resolves 400 later, and a hit in the window can cancel it.",
+  "type": "active",
+  "cost": 16,
+  "weight": 1400,
+  "target": "enemyFront",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 0.9,
+      "damageType": "fire",
+      "target": "enemyRow",
+      "note": "the whole front row"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "burn",
+      "duration": 2,
+      "target": "enemyRow"
+    }
+  ],
+  "prerequisiteId": "arcanist-ember-lance",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "1.0× each.",
+    "effects": [
+      {
+        "kind": "damage",
+        "multiplier": 1,
+        "damageType": "fire",
+        "target": "enemyRow"
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "dot"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 70
+  }
+}

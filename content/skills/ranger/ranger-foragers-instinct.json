@@ -1,0 +1,64 @@
+{
+  "id": "ranger-foragers-instinct",
+  "classId": "ranger",
+  "school": "pathfinder",
+  "tier": 2,
+  "name": "Forager's Instinct",
+  "description": "Foraging +2; rest rooms yield one extra ingredient; recover 50% of spent arrows after each fight.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "field-skill-bonus-foraging",
+      "amount": 2,
+      "target": "self",
+      "note": "adds amount to the Foraging rank for checks"
+    },
+    {
+      "kind": "custom",
+      "customId": "rest-room-extra-ingredients",
+      "amount": 1,
+      "target": "self",
+      "note": "each rest room yields amount more ingredients"
+    },
+    {
+      "kind": "custom",
+      "customId": "recover-ammo-percent",
+      "percent": 50,
+      "target": "self",
+      "note": "percent of the arrows spent in a fight return to the quiver after it"
+    }
+  ],
+  "prerequisiteId": "ranger-keen-eyes",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Recover 75%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "recover-ammo-percent",
+        "percent": 75,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "utility",
+    "field"
+  ],
+  "xpTags": [
+    "perception"
+  ],
+  "aiHints": {
+    "role": "utility",
+    "priority": 0
+  }
+}

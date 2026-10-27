@@ -1,0 +1,73 @@
+{
+  "id": "grand-gear-chest",
+  "name": "Grand Gear Chest",
+  "kind": "gear",
+  "tier": "grand",
+  "priceR": 2.5,
+  "subtypes": [
+    "weapon",
+    "armor",
+    "trinket"
+  ],
+  "oddsByBand": [
+    {
+      "centreGrade": "F",
+      "table": {
+        "E": 45,
+        "D": 35,
+        "C": 15,
+        "B": 5
+      }
+    },
+    {
+      "centreGrade": "E",
+      "table": {
+        "D": 45,
+        "C": 35,
+        "B": 15,
+        "A": 5
+      }
+    },
+    {
+      "centreGrade": "D",
+      "table": {
+        "C": 45,
+        "B": 35,
+        "A": 15,
+        "S": 5
+      }
+    },
+    {
+      "centreGrade": "C",
+      "table": {
+        "B": 45,
+        "A": 35,
+        "S": 15,
+        "SS": 5
+      }
+    },
+    {
+      "centreGrade": "B",
+      "table": {
+        "A": 45,
+        "S": 35,
+        "SS": 20
+      }
+    },
+    {
+      "centreGrade": "A",
+      "table": {
+        "S": 45,
+        "SS": 55
+      }
+    }
+  ],
+  "pity": {
+    "plusOneWithin": 10,
+    "plusTwoWithin": 40
+  },
+  "bagWithoutReplacement": false,
+  "tomeTiers": null,
+  "dupeRule": "salvage",
+  "divineShardChance": 5
+}

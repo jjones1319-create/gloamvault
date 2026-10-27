@@ -1,0 +1,61 @@
+{
+  "id": "of-lightning-warding",
+  "name": "of Lightning Warding",
+  "position": "suffix",
+  "lines": [
+    {
+      "bandMin": "F",
+      "bandMax": "D",
+      "effect": {
+        "kind": "custom",
+        "customId": "element-resist-percent",
+        "damageType": "lightning",
+        "target": "self",
+        "note": "+resistance to Lightning, percent"
+      },
+      "min": 10,
+      "max": 15
+    },
+    {
+      "bandMin": "C",
+      "bandMax": "A",
+      "effect": {
+        "kind": "custom",
+        "customId": "element-resist-percent",
+        "damageType": "lightning",
+        "target": "self",
+        "note": "+resistance to Lightning, percent"
+      },
+      "min": 15,
+      "max": 25
+    },
+    {
+      "bandMin": "S",
+      "bandMax": "God",
+      "effect": {
+        "kind": "custom",
+        "customId": "element-resist-percent",
+        "damageType": "lightning",
+        "target": "self",
+        "note": "+resistance to Lightning, percent"
+      },
+      "min": 25,
+      "max": 40
+    }
+  ],
+  "slots": [
+    "offHand",
+    "helmet",
+    "chest",
+    "legs",
+    "boots",
+    "gloves",
+    "talisman"
+  ],
+  "weight": 3,
+  "tags": [
+    "defensive",
+    "resist",
+    "lightning"
+  ]
+}

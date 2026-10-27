@@ -1,0 +1,54 @@
+{
+  "id": "arcanist-frostbolt",
+  "classId": "arcanist",
+  "school": "rime",
+  "tier": 1,
+  "name": "Frostbolt",
+  "description": "1.3× Frost to one enemy in either row; Chill 2 turns.",
+  "type": "active",
+  "cost": 10,
+  "weight": 1000,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1.3,
+      "damageType": "frost"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "chill",
+      "duration": 2
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Chill 3 turns.",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "chill",
+        "duration": 3
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "control",
+    "debuff",
+    "reach"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 60
+  }
+}

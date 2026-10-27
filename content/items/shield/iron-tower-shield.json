@@ -1,0 +1,49 @@
+{
+  "id": "iron-tower-shield",
+  "name": "Iron Tower Shield",
+  "slot": "offHand",
+  "kind": "shield",
+  "grade": "D",
+  "materialLadder": "metal",
+  "materialRung": 2,
+  "weaponType": "shieldTower",
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "block": 39,
+    "defense": 9,
+    "speed": -10
+  },
+  "requirements": {
+    "strength": 19,
+    "wisdom": 0
+  },
+  "affixSlots": 1,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 5,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1.56,
+  "value": 304,
+  "classLock": [
+    "warden"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "shield-tower-shield-01",
+    "tintPrimary": "#8a8f98",
+    "tintSecondary": "#5b4a2f",
+    "trimMetal": "iron"
+  }
+}

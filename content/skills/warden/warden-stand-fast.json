@@ -1,0 +1,67 @@
+{
+  "id": "warden-stand-fast",
+  "classId": "warden",
+  "school": "warcry",
+  "tier": 3,
+  "name": "Stand Fast",
+  "description": "Cleanse Fear, Slow, Weaken and Curse from every ally; Fortify 2 turns.",
+  "type": "active",
+  "cost": 20,
+  "weight": 1000,
+  "target": "allAllies",
+  "effects": [
+    {
+      "kind": "removeStatus",
+      "status": "fear"
+    },
+    {
+      "kind": "removeStatus",
+      "status": "slow"
+    },
+    {
+      "kind": "removeStatus",
+      "status": "weaken"
+    },
+    {
+      "kind": "removeStatus",
+      "status": "curse"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "fortify",
+      "duration": 2
+    }
+  ],
+  "prerequisiteId": "warden-second-wind",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Also cleanses Blind and Silence.",
+    "effects": [
+      {
+        "kind": "removeStatus",
+        "status": "blind"
+      },
+      {
+        "kind": "removeStatus",
+        "status": "silence"
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "cleanse",
+    "buff"
+  ],
+  "xpTags": [
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 60
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "id": "arcanist",
+  "name": "Arcanist",
+  "role": "caster: the party’s artillery and its clock",
+  "description": "Robes, a wand or a staff, and the biggest spells in the game. The Arcanist clears rows with Fire and Frost, hands out Haste and pushes bosses back down the timeline, and pays for it in cloth: every heavy cast has a window in which a hit can knock it away.",
+  "attributeMods": {
+    "wisdom": 2,
+    "perception": 1,
+    "willpower": 1
+  },
+  "pool": "mana",
+  "armorFamily": "robes",
+  "weaponTypes": [
+    "staff",
+    "wand",
+    "focus"
+  ],
+  "schools": [
+    {
+      "id": "evocation",
+      "name": "Evocation",
+      "philosophy": "Fire and Lightning: the room is the target. Damage first, status second, Mana third; every skill hits more than one thing or makes the next hit bigger."
+    },
+    {
+      "id": "rime",
+      "name": "Rime",
+      "philosophy": "Frost: slow them, stop them, break them. Chill costs enemies turns, a second Chill is a Freeze, and a Frozen enemy is glass for the whole party."
+    },
+    {
+      "id": "arcana",
+      "name": "Arcana",
+      "philosophy": "The timeline, the Shield, the lantern. Arcana never kills anything; it decides who acts when, who gets hit, and whether the party can see."
+    }
+  ],
+  "ultimateSkillId": "arcanist-prismatic-ruin",
+  "starterKit": [
+    "pine-wand",
+    "pine-orb",
+    "burlap-cowl",
+    "burlap-robe",
+    "burlap-leggings",
+    "burlap-slippers",
+    "burlap-wraps",
+    "ring-of-the-mind",
+    "small-hp-potion",
+    "torch",
+    "repair-kit",
+    "bandage"
+  ],
+  "starterSkillIds": [
+    "arcanist-ember-lance",
+    "arcanist-frostbolt",
+    "arcanist-arcane-ward"
+  ],
+  "fieldSkillAffinities": [
+    {
+      "fieldSkill": "cartography",
+      "rankBonus": 2
+    },
+    {
+      "fieldSkill": "haggling",
+      "rankBonus": 2
+    }
+  ],
+  "monsterTechniqueIds": [],
+  "aiRuleDefault": "IF self HP < 30% THEN item small hp potion on self; IF ally HP < 50% THEN arcane ward on lowest ally; ELSE ember lance on weakest enemy",
+  "visual": {
+    "gearSetId": "arcanist-burlap-robes",
+    "palette": [
+      "#2a2f6e",
+      "#8a8a8f",
+      "#e8742a",
+      "#b5853a"
+    ],
+    "notes": "A tall narrow wedge: a long robe flaring at the hem, a high hood or collar, the staff or wand held out from the body so its light reads across the room. The off-hand tome glows while a heavy cast charges, so the interrupt window is visible."
+  },
+  "pros": [
+    "Biggest AoE in the game: Firewave at Tier II, Meteor and Avalanche at Tier III",
+    "Controls the timeline: Haste, Chill and Freeze, Daze and push-back",
+    "Utility nobody else has: Dispel, identify on pickup, light from the back row"
+  ],
+  "cons": [
+    "Robes add 0 Defense: the most fragile class in the game",
+    "Heavy (1,400) casts can be interrupted unless the Willpower check holds",
+    "Mana runs dry if spammed: three Tier II casts spend most of a level-7 pool"
+  ]
+}

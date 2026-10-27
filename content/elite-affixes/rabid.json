@@ -1,0 +1,33 @@
+{
+  "id": "rabid",
+  "name": "Rabid",
+  "affixClass": "offensive",
+  "rule": "Speed 140 (overrides the template) and +10% Attack.",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "set-speed",
+      "amount": 140,
+      "target": "self",
+      "note": "an override, not a buff: the template's Speed is replaced"
+    },
+    {
+      "kind": "buffStat",
+      "stat": "attackPhys",
+      "percent": 10,
+      "target": "self"
+    },
+    {
+      "kind": "buffStat",
+      "stat": "attackSpell",
+      "percent": 10,
+      "target": "self"
+    }
+  ],
+  "hpMultiplier": 3,
+  "goldMultiplier": 3,
+  "xpClassBonus": 2,
+  "floorMin": 1,
+  "tell": null,
+  "excludesElement": false
+}

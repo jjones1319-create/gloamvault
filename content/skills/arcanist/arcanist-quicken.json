@@ -1,0 +1,50 @@
+{
+  "id": "arcanist-quicken",
+  "classId": "arcanist",
+  "school": "arcana",
+  "tier": 1,
+  "name": "Quicken",
+  "description": "One ally gains Haste 1 turn and +200 energy at once (they jump up the strip).",
+  "type": "active",
+  "cost": 12,
+  "weight": 800,
+  "target": "ally",
+  "effects": [
+    {
+      "kind": "applyStatus",
+      "status": "haste",
+      "duration": 1
+    },
+    {
+      "kind": "timeline",
+      "energy": 200
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "+300 energy.",
+    "effects": [
+      {
+        "kind": "timeline",
+        "energy": 300
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "buff"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 50
+  }
+}

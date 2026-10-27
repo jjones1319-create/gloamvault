@@ -1,0 +1,57 @@
+{
+  "id": "crypt-bat",
+  "name": "Crypt Bat",
+  "speciesFamilyId": "restless-dead",
+  "gradeBand": {
+    "min": "E",
+    "max": "D"
+  },
+  "trait": {
+    "id": "echo-sense",
+    "name": "Echo Sense",
+    "description": "Reads the light one band brighter for its own rolls; grows as it hunts in the dark.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "pet-light-band-shift",
+        "amount": -1,
+        "target": "self",
+        "note": "the pet's own rolls read the light band one brighter (−1 = brighter, as the species lightBandShift); loot stays at the true band"
+      }
+    ],
+    "growsBy": "perception"
+  },
+  "actives": [
+    {
+      "skillId": "pet-crypt-bat-shriek",
+      "unlockLevel": 5
+    },
+    {
+      "skillId": "pet-crypt-bat-blood-drink",
+      "unlockLevel": 15
+    }
+  ],
+  "stamina": 30,
+  "baseStats": {
+    "hp": 0.7,
+    "attackPhys": 0.7,
+    "attackSpell": 0.9,
+    "defense": 0.7,
+    "speed": 1,
+    "detection": 1.1
+  },
+  "roleLean": "mend",
+  "visual": {
+    "baseMesh": "bat",
+    "palette": [
+      "#3a3340",
+      "#8a7f94",
+      "#d44a4a"
+    ]
+  },
+  "eggSource": {
+    "chestBand": "E",
+    "familyId": "restless-dead"
+  },
+  "creationChoice": false
+}

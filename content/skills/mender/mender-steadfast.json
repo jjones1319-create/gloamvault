@@ -1,0 +1,57 @@
+{
+  "id": "mender-steadfast",
+  "classId": "mender",
+  "school": "vigil",
+  "tier": 2,
+  "name": "Steadfast",
+  "description": "Allies with Fortify also have +10% Resistance; Fortify from your skills lasts +1 turn.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "resistance-bonus-while-fortified",
+      "amount": 10,
+      "target": "self",
+      "note": "while the holder is in the fight, allies holding Fortify have +amount pp Resistance"
+    },
+    {
+      "kind": "custom",
+      "customId": "fortify-duration-bonus",
+      "amount": 1,
+      "target": "self",
+      "note": "Fortify the holder applies lasts +amount turns"
+    }
+  ],
+  "prerequisiteId": "mender-vigil-lantern",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "+15% Resistance.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "resistance-bonus-while-fortified",
+        "amount": 15,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 0
+  }
+}

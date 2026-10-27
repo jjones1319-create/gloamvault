@@ -5,6 +5,7 @@
   "speciesId": "dwarf",
   "classId": "warden",
   "level": 2,
+  "battleXp": 80,
   "attributes": {
     "strength": 15,
     "agility": 8,

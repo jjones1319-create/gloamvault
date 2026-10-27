@@ -1,0 +1,112 @@
+{
+  "id": "dwarf",
+  "name": "Dwarf",
+  "attributeMods": {
+    "endurance": 2,
+    "vitality": 1,
+    "strength": 1,
+    "agility": -2
+  },
+  "traits": [
+    {
+      "id": "dwarf-darkvision",
+      "name": "Darkvision",
+      "description": "Reads the light band one brighter for your own rolls: Detection, aim and the ambush roll when you are the party's best Perception. Pitch reads as Dark; Radiant stays Radiant. Loot stays at the true band.",
+      "rule": {
+        "lightBandShift": -1
+      }
+    },
+    {
+      "id": "dwarf-stonefoot",
+      "name": "Stonefoot",
+      "description": "Immune to Root and to every forced row move (knockback, pull, enemy-forced swap). Poison damage ×0.70; Poison lands 30% less often.",
+      "rule": {
+        "immunities": [
+          "root"
+        ],
+        "forcedRowMoveImmune": true,
+        "resist": {
+          "poison": 0.7
+        },
+        "statusResist": {
+          "poison": 30
+        }
+      }
+    },
+    {
+      "id": "dwarf-forge-born",
+      "name": "Forge-born",
+      "description": "Field Repair counts two ranks higher (may exceed 10; Mastery opens two ranks early); material promotions cost 10% less gold.",
+      "rule": {
+        "fieldSkillBonus": {
+          "fieldRepair": 2
+        },
+        "promotionCostMultiplier": 0.9
+      }
+    },
+    {
+      "id": "dwarf-short-stride",
+      "name": "Short Stride",
+      "description": "−5 base Speed and a Mana pool at ×0.90: the slowest body before armor, and thin for casters. Longbows are locked; shortbows and crossbows are fine.",
+      "rule": {
+        "speedBase": 95,
+        "manaMultiplier": 0.9
+      }
+    }
+  ],
+  "restrictions": [
+    {
+      "kind": "weaponType",
+      "weaponType": "longbow",
+      "reason": "Too short in the draw; shortbows and crossbows are fine."
+    }
+  ],
+  "senses": {
+    "darkvision": true
+  },
+  "body": {
+    "heightM": 1.4,
+    "shapeKeys": [
+      "spc_dwarf_broad"
+    ],
+    "boneScales": {
+      "root": 0.84,
+      "upperLeg": 0.85,
+      "lowerLeg": 0.85,
+      "shoulder": 1.15,
+      "chest": 1.1,
+      "upperChest": 1.1,
+      "hand": 1.15,
+      "head": 1.12,
+      "neck": 0.85
+    },
+    "parts": [
+      "spc_dwarf_beard",
+      "spc_dwarf_braids"
+    ],
+    "skinTones": [
+      "#d9a98c",
+      "#a66a48",
+      "#7e6b63"
+    ],
+    "facePresets": 3,
+    "gearVariants": [
+      "helmet",
+      "chest",
+      "legs"
+    ]
+  },
+  "creationBlurb": "Forge-row's finest. Cannot be moved, sees in the dark, repairs anything.",
+  "chips": {
+    "pros": [
+      "Toughest body",
+      "Darkvision",
+      "Can't be pushed"
+    ],
+    "cons": [
+      "Slow stride",
+      "Less Mana",
+      "No longbows"
+    ]
+  }
+}

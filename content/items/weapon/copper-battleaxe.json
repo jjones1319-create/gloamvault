@@ -1,0 +1,50 @@
+{
+  "id": "copper-battleaxe",
+  "name": "Copper Battleaxe",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "F",
+  "materialLadder": "metal",
+  "materialRung": 0,
+  "weaponType": "greataxe",
+  "armorFamily": null,
+  "hands": 2,
+  "damageType": "slash",
+  "weight": 1400,
+  "baseStats": {
+    "attackPhys": 22,
+    "critDamage": 25,
+    "accuracy": -3,
+    "speed": -5
+  },
+  "requirements": {
+    "strength": 16,
+    "wisdom": 0
+  },
+  "affixSlots": 0,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 3,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1.33,
+  "value": 225,
+  "classLock": [
+    "blade"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-battleaxe-01",
+    "tintPrimary": "#b87333",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "copper"
+  }
+}

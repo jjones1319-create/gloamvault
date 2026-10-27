@@ -1,0 +1,102 @@
+{
+  "id": "warden-the-gate-holds",
+  "classId": "warden",
+  "school": "bulwark",
+  "tier": 3,
+  "name": "The Gate Holds",
+  "description": "Taunt every enemy 2 turns; you gain Shield = 40% max HP and Fortify 2 turns; every ally gains Shield = 15% of your max HP; 2.0× Blunt to every front-row enemy, Daze 50%. 100 Momentum; never misses.",
+  "type": "active",
+  "cost": 0,
+  "weight": 1000,
+  "target": "allEnemies",
+  "effects": [
+    {
+      "kind": "applyStatus",
+      "status": "taunt",
+      "duration": 2,
+      "target": "allEnemies"
+    },
+    {
+      "kind": "shield",
+      "duration": 2,
+      "percent": 40,
+      "target": "self",
+      "note": "Shield = 40% of your own max HP"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "fortify",
+      "duration": 2,
+      "target": "self"
+    },
+    {
+      "kind": "custom",
+      "customId": "shield-allies-percent-of-own-max-hp",
+      "duration": 2,
+      "percent": 15,
+      "target": "allAllies",
+      "note": "every ally gains Shield = 15% of the Warden's max HP"
+    },
+    {
+      "kind": "damage",
+      "multiplier": 2,
+      "damageType": "blunt",
+      "target": "enemyRow",
+      "scalesWith": "strength",
+      "note": "the whole enemy front row (enemyRow of the nearest reachable enemy, which is a front-row one for a melee Warden)"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "daze",
+      "chance": 50,
+      "target": "enemyRow"
+    }
+  ],
+  "prerequisiteId": "warden-shove",
+  "isUltimate": true,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Shields last 3 turns; Daze 100% on fodder.",
+    "effects": [
+      {
+        "kind": "shield",
+        "duration": 3,
+        "percent": 40,
+        "target": "self"
+      },
+      {
+        "kind": "custom",
+        "customId": "shield-allies-percent-of-own-max-hp",
+        "duration": 3,
+        "percent": 15,
+        "target": "allAllies"
+      },
+      {
+        "kind": "custom",
+        "customId": "daze-fodder-guaranteed",
+        "status": "daze",
+        "target": "enemyRow",
+        "note": "Daze 100% on fodder-role enemies; the 50% line still rolls for the rest"
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "taunt",
+    "shield",
+    "control",
+    "buff"
+  ],
+  "xpTags": [
+    "endurance",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "defend",
+    "priority": 90
+  }
+}

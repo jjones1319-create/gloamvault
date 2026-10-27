@@ -1,0 +1,53 @@
+{
+  "id": "mender-absolution",
+  "classId": "mender",
+  "school": "vigil",
+  "tier": 3,
+  "name": "Absolution",
+  "description": "Remove every debuff from one ally, Petrify, Curse and Silence included; they are immune to debuffs for 1 turn.",
+  "type": "active",
+  "cost": 22,
+  "weight": 1000,
+  "target": "ally",
+  "effects": [
+    {
+      "kind": "dispel",
+      "note": "on an ally: every debuff, Petrify, Curse and Silence included"
+    },
+    {
+      "kind": "custom",
+      "customId": "immune-to-debuffs",
+      "duration": 1,
+      "note": "the target cannot receive any debuff for `duration` turns"
+    }
+  ],
+  "prerequisiteId": "mender-purify",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Immune 2 turns.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "immune-to-debuffs",
+        "duration": 2
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "cleanse",
+    "buff"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "heal",
+    "priority": 60
+  }
+}

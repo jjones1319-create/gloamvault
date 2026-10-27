@@ -1,0 +1,47 @@
+{
+  "id": "oak-hand-crossbow",
+  "name": "Oak Hand Crossbow",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "D",
+  "materialLadder": "wood",
+  "materialRung": 2,
+  "weaponType": "crossbow",
+  "armorFamily": null,
+  "hands": 1,
+  "damageType": "pierce",
+  "weight": 1000,
+  "baseStats": {
+    "attackPhys": 20
+  },
+  "requirements": {
+    "strength": 9,
+    "wisdom": 0
+  },
+  "affixSlots": 1,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 5,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 2.08,
+  "value": 380,
+  "classLock": [
+    "ranger"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-hand-crossbow-01",
+    "tintPrimary": "#8b6b3e",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "iron"
+  }
+}

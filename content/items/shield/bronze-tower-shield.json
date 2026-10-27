@@ -1,0 +1,49 @@
+{
+  "id": "bronze-tower-shield",
+  "name": "Bronze Tower Shield",
+  "slot": "offHand",
+  "kind": "shield",
+  "grade": "E",
+  "materialLadder": "metal",
+  "materialRung": 1,
+  "weaponType": "shieldTower",
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "block": 37,
+    "defense": 7,
+    "speed": -10
+  },
+  "requirements": {
+    "strength": 17,
+    "wisdom": 0
+  },
+  "affixSlots": 1,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 4,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1.25,
+  "value": 192,
+  "classLock": [
+    "warden"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "shield-tower-shield-01",
+    "tintPrimary": "#cd7f32",
+    "tintSecondary": "#5b4a2f",
+    "trimMetal": "bronze"
+  }
+}

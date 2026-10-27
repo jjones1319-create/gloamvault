@@ -1,0 +1,59 @@
+{
+  "id": "bronze-mace",
+  "name": "Bronze Mace",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "E",
+  "materialLadder": "metal",
+  "materialRung": 1,
+  "weaponType": "mace",
+  "armorFamily": null,
+  "hands": 1,
+  "damageType": "blunt",
+  "weight": 1000,
+  "baseStats": {
+    "attackPhys": 16
+  },
+  "requirements": {
+    "strength": 12,
+    "wisdom": 0
+  },
+  "affixSlots": 1,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 4,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1.67,
+  "value": 240,
+  "classLock": [
+    "warden",
+    "mender"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": {
+    "text": "5% Daze on hit",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "daze",
+        "chance": 5,
+        "target": "enemy",
+        "note": "on hit"
+      }
+    ]
+  },
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-mace-01",
+    "tintPrimary": "#cd7f32",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "bronze"
+  }
+}

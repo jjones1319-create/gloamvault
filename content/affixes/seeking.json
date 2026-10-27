@@ -1,0 +1,42 @@
+{
+  "id": "seeking",
+  "name": "Seeking",
+  "position": "prefix",
+  "lines": [
+    {
+      "bandMin": "F",
+      "bandMax": "D",
+      "stat": "detection",
+      "unit": "flat",
+      "min": 1,
+      "max": 1
+    },
+    {
+      "bandMin": "C",
+      "bandMax": "A",
+      "stat": "detection",
+      "unit": "flat",
+      "min": 1,
+      "max": 2
+    },
+    {
+      "bandMin": "S",
+      "bandMax": "God",
+      "stat": "detection",
+      "unit": "flat",
+      "min": 2,
+      "max": 4
+    }
+  ],
+  "slots": [
+    "helmet",
+    "boots",
+    "ring",
+    "talisman"
+  ],
+  "weight": 3,
+  "tags": [
+    "utility",
+    "detection"
+  ]
+}

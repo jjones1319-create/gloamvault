@@ -1,0 +1,46 @@
+{
+  "id": "common-ring-of-the-well",
+  "name": "Common Ring of the Well",
+  "slot": "ring",
+  "kind": "ring",
+  "grade": "E",
+  "materialLadder": null,
+  "materialRung": null,
+  "weaponType": null,
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "stamina": 7,
+    "mana": 7
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 1,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 4,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1,
+  "value": 144,
+  "classLock": [],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "ring-well-01",
+    "tintPrimary": "#cd7f32",
+    "tintSecondary": "#0f766e",
+    "trimMetal": "bronze"
+  }
+}

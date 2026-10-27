@@ -33,13 +33,11 @@ export function choosePolicyCommand(policy: PolicyName, state: DelveState, actio
     const gamble = curioChoices.find((a) => a !== leave)
     if (policy === 'greedy') return (gamble ?? leave ?? curioChoices[0]!).command
     if (policy === 'cautious') return (safe ?? leave ?? curioChoices[0]!).command
+    // A hurt party does not gamble (07 §2.4: the gamble's bad outcome is usually an ambush).
+    if (worst < 70) return (safe ?? leave ?? curioChoices[0]!).command
     return (safe ?? gamble ?? leave ?? curioChoices[0]!).command
   }
 
-  if (policy === 'cautious' && anyFallen && state.floor.revivesLeft === 0) {
-    const retreat = find((a) => a.command.kind === 'retreat')
-    if (retreat) return retreat
-  }
   const restAt = policy === 'cautious' ? 75 : policy === 'greedy' ? 40 : 60
   if (worst < restAt || anyFallen) {
     const rest = find((a) => a.command.kind === 'rest')
@@ -48,16 +46,29 @@ export function choosePolicyCommand(policy: PolicyName, state: DelveState, actio
     if (aid) return aid
   }
   const potion = find((a) => a.command.kind === 'useItem' && /potion/i.test(a.label))
-  if (potion && worst < 35) return potion
+  if (potion && worst < (policy === 'greedy' ? 30 : policy === 'cautious' ? 50 : 45)) return potion
+  // Spent (hurt, no rest here, no potion): cautious and textbook head home — out of the entrance or the floor's end,
+  // whichever is nearer (D-083: only those two ways out).
+  const spent = worst < (policy === 'cautious' ? 35 : 25) && !potion && !find((a) => a.command.kind === 'rest')
+  if (policy !== 'greedy' && (spent || (policy === 'cautious' && anyFallen && state.floor.revivesLeft === 0))) {
+    const retreat = find((a) => a.command.kind === 'retreat')
+    if (retreat) return retreat
+    const moves0 = enabled.filter((a) => a.command.kind === 'move')
+    const way = doorToward(state, moves0, new Set([state.floor.graph.entryId, state.floor.graph.exitId]))
+    if (way) return way
+  }
   const torch = find((a) => a.command.kind === 'useItem' && /torch/i.test(a.label))
   if (torch && state.light < (policy === 'greedy' ? 15 : 40)) return torch
 
   const gold = find((a) => a.command.kind === 'takeGold')
   if (gold) return gold
-  const disarm = find((a) => a.command.kind === 'disarm')
-  if (disarm && policy !== 'cautious') return disarm
+  // Disarm with the party's best hand, and only at fair odds (a fumble springs the trap: 07 §2.5); a trap blocking a
+  // door the party does not need is simply left alone.
+  const disarms = enabled.filter((a) => a.command.kind === 'disarm').map((a) => ({ a, chance: Number(/\((?:[^,]*), (\d+)%\)/.exec(a.label)?.[1] ?? 0) }))
+  const bestDisarm = disarms.reduce<{ a: LegalDelveAction; chance: number } | null>((b, d) => (b === null || d.chance > b.chance ? d : b), null)
+  const fairOdds = policy === 'greedy' ? 0 : policy === 'cautious' ? 75 : 55
+  if (bestDisarm && bestDisarm.chance >= fairOdds) return bestDisarm.a.command
   const around = find((a) => a.command.kind === 'walkAround')
-  if (around) return around
   const chestKey = find((a) => a.command.kind === 'openChest' && a.command.useKey)
   const chest = find((a) => a.command.kind === 'openChest' && !a.command.useKey)
   if (policy === 'greedy' || policy === 'textbook') {
@@ -72,7 +83,8 @@ export function choosePolicyCommand(policy: PolicyName, state: DelveState, actio
   const moves = enabled.filter((a) => a.command.kind === 'move')
   const unexplored = moves.filter((a) => a.command.kind === 'move' && !state.floor.rooms[a.command.toRoomId]?.visited)
   const descend = find((a) => a.command.kind === 'descend')
-  if (policy === 'cautious' && descend && worst < 50) return descend
+  // A hurt party takes the stairs it has found rather than clearing every room (the floor's rest is behind it).
+  if (descend && policy !== 'greedy' && worst < (policy === 'cautious' ? 60 : 50)) return descend
   if (unexplored.length) {
     // Prefer rooms on the spine toward the exit for cautious; treasure/curio first for greedy.
     const pick = policy === 'greedy' ? (unexplored.find((a) => /treasure|curio|secret/i.test(a.label)) ?? unexplored[0]!) : unexplored[0]!
@@ -84,6 +96,10 @@ export function choosePolicyCommand(policy: PolicyName, state: DelveState, actio
   if (toward) return toward
   if (descend) return descend
   if (moves.length) return rng.pick(moves).command
+  // Boxed in by a trap: try the best disarm, else set it off.
+  if (bestDisarm && bestDisarm.chance >= 40) return bestDisarm.a.command
+  if (around) return around
+  if (bestDisarm) return bestDisarm.a.command
   const retreat = find((a) => a.command.kind === 'retreat')
   if (retreat) return retreat
   return enabled[0]!.command

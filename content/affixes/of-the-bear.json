@@ -1,0 +1,48 @@
+{
+  "id": "of-the-bear",
+  "name": "of the Bear",
+  "position": "suffix",
+  "lines": [
+    {
+      "bandMin": "F",
+      "bandMax": "D",
+      "stat": "strength",
+      "unit": "flat",
+      "min": 1,
+      "max": 2
+    },
+    {
+      "bandMin": "C",
+      "bandMax": "A",
+      "stat": "strength",
+      "unit": "flat",
+      "min": 2,
+      "max": 4
+    },
+    {
+      "bandMin": "S",
+      "bandMax": "God",
+      "stat": "strength",
+      "unit": "flat",
+      "min": 4,
+      "max": 7
+    }
+  ],
+  "slots": [
+    "mainHand",
+    "offHand",
+    "helmet",
+    "chest",
+    "legs",
+    "boots",
+    "gloves",
+    "ring",
+    "talisman",
+    "relic"
+  ],
+  "weight": 4,
+  "tags": [
+    "attribute",
+    "strength"
+  ]
+}

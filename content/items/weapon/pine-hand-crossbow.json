@@ -1,0 +1,47 @@
+{
+  "id": "pine-hand-crossbow",
+  "name": "Pine Hand Crossbow",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "F",
+  "materialLadder": "wood",
+  "materialRung": 0,
+  "weaponType": "crossbow",
+  "armorFamily": null,
+  "hands": 1,
+  "damageType": "pierce",
+  "weight": 1000,
+  "baseStats": {
+    "attackPhys": 11
+  },
+  "requirements": {
+    "strength": 7,
+    "wisdom": 0
+  },
+  "affixSlots": 0,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 3,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1.33,
+  "value": 150,
+  "classLock": [
+    "ranger"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-hand-crossbow-01",
+    "tintPrimary": "#a0824a",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "copper"
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "id": "shade-toxic-jab",
+  "classId": "shade",
+  "school": "venom",
+  "tier": 1,
+  "name": "Toxic Jab",
+  "description": "1.0× Pierce to a front-row enemy; Poison 3 turns (re-applying refreshes the duration).",
+  "type": "active",
+  "cost": 10,
+  "weight": 800,
+  "target": "enemyFront",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1,
+      "damageType": "pierce"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "poison",
+      "duration": 3
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Poison 4 turns.",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "poison",
+        "duration": 4
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "dot"
+  ],
+  "xpTags": [
+    "agility",
+    "perception"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 60
+  }
+}

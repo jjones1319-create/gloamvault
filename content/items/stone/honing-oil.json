@@ -1,0 +1,43 @@
+{
+  "id": "honing-oil",
+  "name": "Honing Oil",
+  "slot": null,
+  "kind": "stone",
+  "grade": "B",
+  "materialLadder": null,
+  "materialRung": null,
+  "weaponType": null,
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {},
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 2,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 7,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1,
+  "value": 36,
+  "classLock": [],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "stone-honing-oil-01",
+    "tintPrimary": "#d97706",
+    "tintSecondary": "#2b2b2b",
+    "trimMetal": "none"
+  }
+}

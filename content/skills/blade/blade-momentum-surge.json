@@ -1,0 +1,54 @@
+{
+  "id": "blade-momentum-surge",
+  "classId": "blade",
+  "school": "iron-dance",
+  "tier": 3,
+  "name": "Momentum Surge",
+  "description": "+30 Momentum; Haste 1 turn.",
+  "type": "active",
+  "cost": 18,
+  "weight": 800,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "momentum",
+      "amount": 30
+    },
+    {
+      "kind": "applyStatus",
+      "status": "haste",
+      "duration": 1
+    }
+  ],
+  "prerequisiteId": "blade-blade-rhythm",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "requirements": {
+    "dualWield": true
+  },
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "+40 Momentum.",
+    "effects": [
+      {
+        "kind": "momentum",
+        "amount": 40
+      }
+    ]
+  },
+  "tags": [
+    "momentum",
+    "buff"
+  ],
+  "xpTags": [
+    "agility",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 50
+  }
+}

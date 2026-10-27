@@ -1,0 +1,57 @@
+{
+  "id": "standard-skill-tome",
+  "name": "Standard Skill Tome",
+  "kind": "skillTome",
+  "tier": "standard",
+  "priceR": 0.8,
+  "subtypes": [],
+  "oddsByBand": [
+    {
+      "centreGrade": "F",
+      "table": {
+        "F": 100
+      }
+    },
+    {
+      "centreGrade": "E",
+      "table": {
+        "E": 100
+      }
+    },
+    {
+      "centreGrade": "D",
+      "table": {
+        "D": 100
+      }
+    },
+    {
+      "centreGrade": "C",
+      "table": {
+        "C": 100
+      }
+    },
+    {
+      "centreGrade": "B",
+      "table": {
+        "B": 100
+      }
+    },
+    {
+      "centreGrade": "A",
+      "table": {
+        "A": 100
+      }
+    }
+  ],
+  "pity": {
+    "plusOneWithin": 10,
+    "plusTwoWithin": 40
+  },
+  "bagWithoutReplacement": true,
+  "tomeTiers": {
+    "min": 1,
+    "max": 3
+  },
+  "dupeRule": "rankXp",
+  "divineShardChance": 0
+}

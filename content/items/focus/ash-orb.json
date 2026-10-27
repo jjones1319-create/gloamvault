@@ -1,0 +1,48 @@
+{
+  "id": "ash-orb",
+  "name": "Ash Orb",
+  "slot": "offHand",
+  "kind": "focus",
+  "grade": "E",
+  "materialLadder": "wood",
+  "materialRung": 1,
+  "weaponType": "focus",
+  "armorFamily": null,
+  "hands": 1,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "attackSpell": 5,
+    "mana": 7
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 9
+  },
+  "affixSlots": 1,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 4,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1.67,
+  "value": 144,
+  "classLock": [
+    "arcanist"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "focus-orb-01",
+    "tintPrimary": "#c9b58a",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "bronze"
+  }
+}

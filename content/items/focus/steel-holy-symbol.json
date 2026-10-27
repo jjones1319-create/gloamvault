@@ -1,0 +1,48 @@
+{
+  "id": "steel-holy-symbol",
+  "name": "Steel Holy Symbol",
+  "slot": "offHand",
+  "kind": "focus",
+  "grade": "C",
+  "materialLadder": "metal",
+  "materialRung": 3,
+  "weaponType": "focus",
+  "armorFamily": null,
+  "hands": 1,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "attackSpell": 12,
+    "resistance": 3
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 11
+  },
+  "affixSlots": 2,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 6,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 2.6,
+  "value": 360,
+  "classLock": [
+    "mender"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "focus-holy-symbol-01",
+    "tintPrimary": "#a8b0ba",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "steel"
+  }
+}

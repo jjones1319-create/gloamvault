@@ -24,7 +24,8 @@ describe('pets (03 §9, D-063)', () => {
     const f1 = petStats(t, def, inst())
     expect(f1.speed).toBe(120)
     expect(f1.detection).toBe(13)
-    expect(f1.hp).toBe(Math.floor(56 * 0.8 + 0.5))
+    // 06's baseline at level 1: HP 40 + 12 × 1 = 52 (D-078), × the species' 0.8.
+    expect(f1.hp).toBe(Math.floor(52 * 0.8 + 0.5))
     const e5 = petStats(t, def, inst({ grade: 'E', level: 5, bondStars: 2 }))
     expect(e5.hp).toBeGreaterThan(f1.hp)
     expect(e5.attackPhys).toBeGreaterThan(f1.attackPhys)

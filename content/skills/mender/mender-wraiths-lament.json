@@ -1,0 +1,62 @@
+{
+  "id": "mender-wraiths-lament",
+  "classId": "mender",
+  "school": "sanctity",
+  "tier": 3,
+  "name": "Wraith’s Lament",
+  "description": "1.0× Shadow to every enemy in both rows; living targets get Fear 1 turn; Undead and Shadow targets are immune to the Fear and take Mark 2 turns instead. Monster technique: Insights only while a wraith uses it (the wraith arrives with the Crypts in Phase 7).",
+  "type": "active",
+  "cost": 22,
+  "weight": 1000,
+  "target": "allEnemies",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1,
+      "damageType": "shadow"
+    },
+    {
+      "kind": "custom",
+      "customId": "apply-if-living",
+      "status": "fear",
+      "duration": 1,
+      "note": "applies `status` for `duration` only to targets that are neither Undead nor Shadow family"
+    },
+    {
+      "kind": "custom",
+      "customId": "apply-if-undead-or-shadow",
+      "status": "mark",
+      "duration": 2
+    }
+  ],
+  "prerequisiteId": "mender-censure",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "1.2× each.",
+    "effects": [
+      {
+        "kind": "damage",
+        "multiplier": 1.2,
+        "damageType": "shadow"
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "control",
+    "debuff"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 60
+  }
+}

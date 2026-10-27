@@ -1,0 +1,57 @@
+{
+  "id": "mender-gentle-hands",
+  "classId": "mender",
+  "school": "benediction",
+  "tier": 1,
+  "name": "Gentle Hands",
+  "description": "Your heals are +8%; a heal on an ally below 30% HP costs half.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "healing-done-percent",
+      "percent": 8,
+      "target": "self",
+      "note": "the holder’s heals are +percent%"
+    },
+    {
+      "kind": "custom",
+      "customId": "heal-cost-half-below-hp",
+      "percent": 30,
+      "target": "self",
+      "note": "a heal the holder casts on an ally below percent% HP costs half"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Heals +12%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "healing-done-percent",
+        "percent": 12,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "heal",
+    "buff"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "heal",
+    "priority": 0
+  }
+}

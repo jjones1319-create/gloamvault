@@ -1,0 +1,48 @@
+{
+  "id": "iron-holy-symbol",
+  "name": "Iron Holy Symbol",
+  "slot": "offHand",
+  "kind": "focus",
+  "grade": "D",
+  "materialLadder": "metal",
+  "materialRung": 2,
+  "weaponType": "focus",
+  "armorFamily": null,
+  "hands": 1,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "attackSpell": 9,
+    "resistance": 3
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 10
+  },
+  "affixSlots": 1,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 5,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 2.08,
+  "value": 228,
+  "classLock": [
+    "mender"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "focus-holy-symbol-01",
+    "tintPrimary": "#8a8f98",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "iron"
+  }
+}

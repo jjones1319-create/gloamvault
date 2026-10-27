@@ -1,0 +1,42 @@
+{
+  "id": "precise",
+  "name": "Precise",
+  "position": "prefix",
+  "lines": [
+    {
+      "bandMin": "F",
+      "bandMax": "D",
+      "stat": "accuracy",
+      "unit": "flat",
+      "min": 1,
+      "max": 2
+    },
+    {
+      "bandMin": "C",
+      "bandMax": "A",
+      "stat": "accuracy",
+      "unit": "flat",
+      "min": 2,
+      "max": 4
+    },
+    {
+      "bandMin": "S",
+      "bandMax": "God",
+      "stat": "accuracy",
+      "unit": "flat",
+      "min": 4,
+      "max": 6
+    }
+  ],
+  "slots": [
+    "mainHand",
+    "offHand",
+    "helmet",
+    "gloves"
+  ],
+  "weight": 4,
+  "tags": [
+    "offensive",
+    "accuracy"
+  ]
+}

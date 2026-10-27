@@ -1,0 +1,41 @@
+{
+  "id": "pet-spiderling-venom-bite",
+  "classId": "pet",
+  "school": "pet",
+  "tier": 1,
+  "name": "Venom Bite",
+  "description": "Poison one enemy for 3 turns.",
+  "type": "active",
+  "cost": 10,
+  "weight": 800,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "applyStatus",
+      "status": "poison",
+      "duration": 3
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "No Mastery line: pet actives do not rank (03 §9).",
+    "effects": []
+  },
+  "tags": [
+    "singleTarget",
+    "dot"
+  ],
+  "xpTags": [
+    "strength"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 55
+  }
+}

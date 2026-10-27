@@ -1,0 +1,57 @@
+{
+  "id": "arcanist-thunderhead",
+  "classId": "arcanist",
+  "school": "evocation",
+  "tier": 3,
+  "name": "Thunderhead",
+  "description": "1.0× Lightning to every enemy in both rows; every target already Shocked has a 30% chance of Stun 1 turn.",
+  "type": "active",
+  "cost": 22,
+  "weight": 1000,
+  "target": "allEnemies",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1,
+      "damageType": "lightning"
+    },
+    {
+      "kind": "custom",
+      "customId": "apply-if-shock",
+      "status": "stun",
+      "chance": 30,
+      "duration": 1,
+      "note": "applies `status` for `duration` at chance% only to a target holding Shock"
+    }
+  ],
+  "prerequisiteId": "arcanist-arc-chain",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Stun chance 45%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "apply-if-shock",
+        "status": "stun",
+        "chance": 45,
+        "duration": 1
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "control"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 70
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "id": "mender-martyrs-grace",
+  "classId": "mender",
+  "school": "benediction",
+  "tier": 3,
+  "name": "Martyr’s Grace",
+  "description": "Once per fight, the first ally who would be downed survives at 1 HP instead.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "survive-lethal-once",
+      "amount": 1,
+      "target": "self",
+      "note": "once per fight, the first ally who would be downed instead survives at `amount` HP (or at percent% of max HP when `percent` is given)"
+    }
+  ],
+  "prerequisiteId": "mender-overflow",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Survives at 10% HP.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "survive-lethal-once",
+        "percent": 10,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "heal"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "heal",
+    "priority": 0
+  }
+}

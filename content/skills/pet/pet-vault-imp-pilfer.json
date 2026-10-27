@@ -1,0 +1,42 @@
+{
+  "id": "pet-vault-imp-pilfer",
+  "classId": "pet",
+  "school": "pet",
+  "tier": 1,
+  "name": "Pilfer",
+  "description": "Steal one buff from an enemy and give it to the owner.",
+  "type": "active",
+  "cost": 10,
+  "weight": 800,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "pet-steal-buff",
+      "note": "removes the target's newest buff status and applies it to the owner for its remaining duration; nothing if the target has no buff"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "No Mastery line: pet actives do not rank (03 §9).",
+    "effects": []
+  },
+  "tags": [
+    "singleTarget",
+    "debuff",
+    "utility"
+  ],
+  "xpTags": [
+    "agility"
+  ],
+  "aiHints": {
+    "role": "debuff",
+    "priority": 45
+  }
+}

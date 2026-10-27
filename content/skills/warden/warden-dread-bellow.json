@@ -1,0 +1,57 @@
+{
+  "id": "warden-dread-bellow",
+  "classId": "warden",
+  "school": "warcry",
+  "tier": 2,
+  "name": "Dread Bellow",
+  "description": "Weaken 2 turns on every enemy; Fear 1 turn on fodder (50% chance to Guard instead of acting).",
+  "type": "active",
+  "cost": 15,
+  "weight": 1000,
+  "target": "allEnemies",
+  "effects": [
+    {
+      "kind": "applyStatus",
+      "status": "weaken",
+      "duration": 2
+    },
+    {
+      "kind": "custom",
+      "customId": "status-on-fodder",
+      "status": "fear",
+      "duration": 1,
+      "note": "the status lands only on fodder-role enemies"
+    }
+  ],
+  "prerequisiteId": "warden-loud-voice",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Fear also on elites.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "status-on-elites",
+        "status": "fear",
+        "duration": 1,
+        "note": "the status also lands on elite-role enemies"
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "debuff",
+    "control"
+  ],
+  "xpTags": [
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "debuff",
+    "priority": 60
+  }
+}

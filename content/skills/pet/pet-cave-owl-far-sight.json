@@ -1,0 +1,42 @@
+{
+  "id": "pet-cave-owl-far-sight",
+  "classId": "pet",
+  "school": "pet",
+  "tier": 1,
+  "name": "Far Sight",
+  "description": "On entering a room, reveal the rooms adjacent to it. Once per floor.",
+  "type": "active",
+  "cost": 10,
+  "weight": 800,
+  "target": "room",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "pet-reveal-adjacent-rooms",
+      "amount": 1,
+      "note": "out of combat: reveals every room adjacent to the one just entered on the floor map; amount = uses per floor"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "No Mastery line: pet actives do not rank (03 §9).",
+    "effects": []
+  },
+  "tags": [
+    "scouting",
+    "utility"
+  ],
+  "xpTags": [
+    "perception"
+  ],
+  "aiHints": {
+    "role": "utility",
+    "priority": 20
+  }
+}

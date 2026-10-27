@@ -1,0 +1,56 @@
+{
+  "id": "mender-holy-lance",
+  "classId": "mender",
+  "school": "sanctity",
+  "tier": 2,
+  "name": "Holy Lance",
+  "description": "1.9× Holy to one enemy in either row; a target carrying the Smite mark is also Stunned 1 turn. Heavy cast.",
+  "type": "active",
+  "cost": 16,
+  "weight": 1400,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1.9,
+      "damageType": "holy"
+    },
+    {
+      "kind": "custom",
+      "customId": "apply-if-smite",
+      "status": "stun",
+      "duration": 1,
+      "note": "applies `status` for `duration` only to a target holding the Smite mark"
+    }
+  ],
+  "prerequisiteId": "mender-smite",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "2.1×.",
+    "effects": [
+      {
+        "kind": "damage",
+        "multiplier": 2.1,
+        "damageType": "holy"
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "reach",
+    "control"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 65
+  }
+}

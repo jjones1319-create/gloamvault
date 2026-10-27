@@ -1,0 +1,89 @@
+{
+  "id": "warden-bone-knights-stand",
+  "classId": "warden",
+  "school": "bulwark",
+  "tier": 3,
+  "name": "Bone Knight's Stand",
+  "description": "Until your next turn: immune to Daze, Stun and Grab; Block 100% against the first 2 physical hits; reflect 30% of blocked damage. Monster technique: learned only while a Bone Knight uses the move.",
+  "type": "active",
+  "cost": 24,
+  "weight": 1400,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "status-immunity",
+      "status": "daze",
+      "duration": 1,
+      "target": "self"
+    },
+    {
+      "kind": "custom",
+      "customId": "status-immunity",
+      "status": "stun",
+      "duration": 1,
+      "target": "self"
+    },
+    {
+      "kind": "custom",
+      "customId": "status-immunity",
+      "status": "grab",
+      "duration": 1,
+      "target": "self"
+    },
+    {
+      "kind": "custom",
+      "customId": "block-first-physical-hits",
+      "duration": 1,
+      "amount": 2,
+      "target": "self",
+      "note": "the first amount physical hits until your next turn are blocked (halved) automatically"
+    },
+    {
+      "kind": "custom",
+      "customId": "reflect-on-block-percent",
+      "damageType": "blunt",
+      "duration": 1,
+      "percent": 30,
+      "target": "self"
+    }
+  ],
+  "prerequisiteId": "warden-intercept",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "3 hits; reflect 50%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "block-first-physical-hits",
+        "duration": 1,
+        "amount": 3,
+        "target": "self"
+      },
+      {
+        "kind": "custom",
+        "customId": "reflect-on-block-percent",
+        "damageType": "blunt",
+        "duration": 1,
+        "percent": 50,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "shield"
+  ],
+  "xpTags": [
+    "endurance"
+  ],
+  "aiHints": {
+    "role": "defend",
+    "priority": 55
+  }
+}

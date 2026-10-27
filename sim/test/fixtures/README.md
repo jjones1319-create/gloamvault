@@ -45,6 +45,6 @@ const result = lintCorpus(root, { skipRules: FIXTURE_SKIP_RULES }) // skips rule
 `sim/test/fixtures.test.ts` does exactly this and asserts zero ajv errors, zero cross-file failures beyond the skipped rules and one known deviation, and the record counts above. From a shell the same run is `node tools/lint/index.ts` pointed at a merged copy (the CLI lints the repo's `content/`; use the test).
 
 **Skipped rules** (`content/README.md` "Gating"): 4 (45 skills per class), 10 (all five roles per family), 14 (exactly twelve elite affixes) cannot hold on a fixture.
-**Known deviation:** the fixture dungeon ends at F3, so rule 11 reads Captain Vexa Marrow as a *final* boss and asks for three phases; `06` §3.1 gives the zone boss two. The test asserts this is the only cross-file failure.
+**Known deviations:** none since D-072 — rule 11 reads the boss of a one-zone dungeon's last floor as a zone boss (two phases) and only warns. The test asserts there are no cross-file failures beyond the skipped rules.
 
 The merged root also loads through the sim's content layer: `loadContentDir(path.join(root, 'content'))` (`tools/sim/loadContent.ts`), which is what the balance runner should use for its Phase 2 report.

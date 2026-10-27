@@ -1,0 +1,157 @@
+{
+  "id": "grinning-cutpurse",
+  "name": "Grinning Cutpurse",
+  "familyId": "cellar-vermin",
+  "dungeonId": "gravehollow-keep",
+  "zoneId": "the-cellars",
+  "role": "fodder",
+  "size": "medium",
+  "rows": [
+    "front"
+  ],
+  "levelBand": {
+    "min": 1,
+    "max": 4
+  },
+  "multipliers": {
+    "hp": 0.9,
+    "attack": 0.9,
+    "defense": 0.8
+  },
+  "speed": 110,
+  "xpClass": 1,
+  "goldMultiplier": 1.5,
+  "ambushModifier": 15,
+  "attacks": [
+    {
+      "id": "shank",
+      "name": "Shank",
+      "damageType": "pierce",
+      "weight": 800,
+      "multiplier": 0.9,
+      "target": "enemyFront",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "bleed",
+          "chance": 20,
+          "duration": 2
+        }
+      ],
+      "aiWeight": 60,
+      "tell": null
+    },
+    {
+      "id": "pickpocket",
+      "name": "Pickpocket",
+      "damageType": "pierce",
+      "weight": 800,
+      "multiplier": 0.5,
+      "target": "enemyFront",
+      "effects": [
+        {
+          "kind": "custom",
+          "customId": "steal-party-gold",
+          "percent": 5,
+          "note": "steals 5% of the party's unbanked gold; returned on its death"
+        }
+      ],
+      "aiWeight": 30,
+      "tell": null
+    },
+    {
+      "id": "dirty-kick",
+      "name": "Dirty Kick",
+      "damageType": "blunt",
+      "weight": 1000,
+      "multiplier": 0.7,
+      "target": "enemyFront",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "daze"
+        }
+      ],
+      "aiWeight": 10,
+      "tell": null
+    }
+  ],
+  "resist": [],
+  "weak": [],
+  "immune": [],
+  "statusImmune": [],
+  "behavior": {
+    "rules": [
+      {
+        "if": "self HP < 25% and no ally is alive (it reaches the door in 2 turns with the stolen gold)",
+        "then": "flee"
+      },
+      {
+        "if": "a hero carries more gold than the others (the coin icon)",
+        "then": "shank"
+      },
+      {
+        "if": "always",
+        "then": "shank"
+      }
+    ],
+    "fleesAtPercent": 25
+  },
+  "parts": {
+    "common": {
+      "materialId": "copper",
+      "chance": 35,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "rare": {
+      "itemId": "marked-cards",
+      "chance": 4,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "breakLimb": {
+      "name": "purse",
+      "effect": {
+        "kind": "custom",
+        "customId": "drop-stolen-gold",
+        "note": "drops its gold at once"
+      }
+    }
+  },
+  "monsterTechniqueSkillIds": [],
+  "elitePool": [
+    "rabid",
+    "thorned",
+    "vampiric",
+    "shielded",
+    "commander"
+  ],
+  "boss": null,
+  "hunter": null,
+  "visual": {
+    "baseMesh": "humanoid",
+    "scale": 1,
+    "variantOf": null,
+    "palette": [
+      "#5c4a32",
+      "#f1ece4",
+      "#9b1c1c"
+    ],
+    "reads200px": true,
+    "animations": [
+      "Idle",
+      "Move",
+      "Attack1",
+      "Attack2",
+      "Hit",
+      "Death",
+      "Flee"
+    ],
+    "triBudget": 3500
+  }
+}

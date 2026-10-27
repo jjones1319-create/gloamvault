@@ -1,5 +1,6 @@
 import type { Content } from './content.ts'
 import type { Actor } from './fight-types.ts'
+import { installHook } from './hooks.ts'
 import { monsterBaseline } from './monsters.ts'
 import { ALL_TENS, roundHalfUp, type DerivedStats } from './stats.ts'
 import type { Tuning } from './tuning.ts'
@@ -73,7 +74,7 @@ export function buildPetActor(content: Content, t: Tuning, inst: PetInstance, op
   const base = petStats(t, def, capped)
   const maxHp = base.hp
   const hp = Math.max(1, roundHalfUp((maxHp * (opts.hpPercent ?? 100)) / 100))
-  return {
+  const actor: Actor = {
     id: opts.id,
     name: inst.name || def.name,
     side: 'party',
@@ -92,6 +93,7 @@ export function buildPetActor(content: Content, t: Tuning, inst: PetInstance, op
     charging: null,
     statuses: [],
     modifiers: [],
+    hooks: [],
     guarding: false,
     downed: false,
     downedTurnsLeft: 0,
@@ -113,6 +115,38 @@ export function buildPetActor(content: Content, t: Tuning, inst: PetInstance, op
       traitEffects: [...def.trait.effects],
     },
   }
+  // The trait's custom lines (06 §9: Guard Dog's intercept, a hound's nose) ride on the pet as hooks.
+  for (const line of def.trait.effects) if (line.kind === 'custom' && line.customId) installHook(actor, line, actor.id)
+  return actor
+}
+
+/** The party-wide bonuses a pet's trait grants outside the fight (06 §9), read by the delve. */
+export type PetTraitBonusKind = 'detection' | 'goldPercent' | 'scouting' | 'lockpicking' | 'scoutBandShift'
+
+/**
+ * The best single pet-trait bonus of a kind across the party's pets — never the sum (D-069: three hounds are not
+ * three times as alert). Reads the trait lines the content writes: `buffStat detection` (+5 Detection),
+ * `loot percent` (+10% gold found), `pet-scouting-bonus` (pp), `pet-lockpicking-bonus` (ranks) and
+ * `pet-light-band-shift` (the party's scouting roll reads a band brighter; the most negative shift wins).
+ */
+export function partyPetTraitBonus(content: Content, pets: readonly (PetInstance | null | undefined)[], kind: PetTraitBonusKind): number {
+  let best = 0
+  for (const inst of pets) {
+    const def = inst ? content.pets.get(inst.petId) : undefined
+    for (const line of def?.trait.effects ?? []) {
+      let v: number | null = null
+      if (kind === 'detection' && line.kind === 'buffStat' && line.stat === 'detection') v = line.amount ?? 0
+      else if (kind === 'goldPercent' && line.kind === 'loot') v = line.percent ?? 0
+      else if (line.kind === 'custom') {
+        if (kind === 'scouting' && line.customId === 'pet-scouting-bonus') v = line.amount ?? 0
+        else if (kind === 'lockpicking' && line.customId === 'pet-lockpicking-bonus') v = line.amount ?? 0
+        else if (kind === 'scoutBandShift' && line.customId === 'pet-light-band-shift' && line.target === 'allAllies') v = line.amount ?? 0
+      }
+      if (v === null) continue
+      best = kind === 'scoutBandShift' ? Math.min(best, v) : Math.max(best, v)
+    }
+  }
+  return best
 }
 
 /** Pet XP after a fight (03 §9): half the owner's fight XP by participation, capped at the owner's level. */

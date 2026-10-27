@@ -1,0 +1,47 @@
+{
+  "id": "iron-throwing-knives",
+  "name": "Iron Throwing Knives",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "D",
+  "materialLadder": "metal",
+  "materialRung": 2,
+  "weaponType": "throwingKnife",
+  "armorFamily": null,
+  "hands": 1,
+  "damageType": "pierce",
+  "weight": 800,
+  "baseStats": {
+    "attackPhys": 13
+  },
+  "requirements": {
+    "strength": 7,
+    "wisdom": 0
+  },
+  "affixSlots": 1,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 5,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 2.08,
+  "value": 380,
+  "classLock": [
+    "shade"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-throwing-knives-01",
+    "tintPrimary": "#8a8f98",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "iron"
+  }
+}

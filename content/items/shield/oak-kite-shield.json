@@ -1,0 +1,49 @@
+{
+  "id": "oak-kite-shield",
+  "name": "Oak Kite Shield",
+  "slot": "offHand",
+  "kind": "shield",
+  "grade": "D",
+  "materialLadder": "wood",
+  "materialRung": 2,
+  "weaponType": "shieldKite",
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "block": 29,
+    "defense": 5,
+    "speed": -5
+  },
+  "requirements": {
+    "strength": 13,
+    "wisdom": 0
+  },
+  "affixSlots": 1,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 5,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1.56,
+  "value": 304,
+  "classLock": [
+    "warden"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "shield-kite-shield-01",
+    "tintPrimary": "#8b6b3e",
+    "tintSecondary": "#5b4a2f",
+    "trimMetal": "iron"
+  }
+}

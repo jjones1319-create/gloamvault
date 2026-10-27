@@ -1,0 +1,23 @@
+{
+  "id": "nullifier",
+  "name": "Nullifier",
+  "affixClass": "control",
+  "rule": "Silence aura: the hero it last hit is Silenced for 1 turn; while it lives all hero pool regen is −50%.",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "silence-aura",
+      "status": "silence",
+      "duration": 1,
+      "percent": -50,
+      "target": "allEnemies",
+      "note": "status + duration land on the hero the champion last hit (moving with each new hit); percent changes every hero's pool regen while the champion lives"
+    }
+  ],
+  "hpMultiplier": 3,
+  "goldMultiplier": 3,
+  "xpClassBonus": 2,
+  "floorMin": 3,
+  "tell": null,
+  "excludesElement": false
+}

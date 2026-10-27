@@ -1,0 +1,47 @@
+{
+  "id": "oak-shortbow",
+  "name": "Oak Shortbow",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "D",
+  "materialLadder": "wood",
+  "materialRung": 2,
+  "weaponType": "shortbow",
+  "armorFamily": null,
+  "hands": 2,
+  "damageType": "pierce",
+  "weight": 1000,
+  "baseStats": {
+    "attackPhys": 23
+  },
+  "requirements": {
+    "strength": 11,
+    "wisdom": 0
+  },
+  "affixSlots": 1,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 5,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 4.17,
+  "value": 570,
+  "classLock": [
+    "ranger"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-shortbow-01",
+    "tintPrimary": "#8b6b3e",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "iron"
+  }
+}

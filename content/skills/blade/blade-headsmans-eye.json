@@ -1,0 +1,51 @@
+{
+  "id": "blade-headsmans-eye",
+  "classId": "blade",
+  "school": "executioner",
+  "tier": 1,
+  "name": "Headsman's Eye",
+  "description": "+10% Crit Rate against enemies below 40% HP.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "crit-rate-vs-low-hp",
+      "amount": 10,
+      "percent": 40,
+      "target": "self",
+      "note": "amount = Crit Rate points; percent = the target HP threshold"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "+20%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "crit-rate-vs-low-hp",
+        "amount": 20,
+        "percent": 40,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff"
+  ],
+  "xpTags": [
+    "perception"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 0
+  }
+}

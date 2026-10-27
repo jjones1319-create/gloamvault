@@ -8,5 +8,6 @@ export default defineConfig({
     environment: 'node',
     include: ['sim/test/**/*.test.ts', 'client/src/**/*.test.ts', 'tools/**/*.test.ts'],
     testTimeout: 60_000,
+    hookTimeout: 60_000,
   },
 })

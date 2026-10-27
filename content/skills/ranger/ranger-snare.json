@@ -1,0 +1,70 @@
+{
+  "id": "ranger-snare",
+  "classId": "ranger",
+  "school": "trapper",
+  "tier": 1,
+  "name": "Snare",
+  "description": "0.8× Pierce to one enemy in any row; Root 2 turns (it cannot swap rows or flee); 1 arrow.",
+  "type": "active",
+  "cost": 10,
+  "weight": 1000,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 0.8,
+      "damageType": "pierce",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "root",
+      "duration": 2
+    },
+    {
+      "kind": "custom",
+      "customId": "consume-ammo",
+      "amount": 1,
+      "target": "self",
+      "note": "1 arrow (or bolt)"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "requirements": {
+    "weaponTypes": [
+      "bow",
+      "shortbow",
+      "longbow",
+      "crossbow"
+    ]
+  },
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Root 3 turns.",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "root",
+        "duration": 3
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "control",
+    "reach"
+  ],
+  "xpTags": [
+    "perception",
+    "agility"
+  ],
+  "aiHints": {
+    "role": "control",
+    "priority": 60
+  }
+}

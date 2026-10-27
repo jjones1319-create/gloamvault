@@ -18,6 +18,12 @@ export * from './items.ts'
 export * from './loot.ts'
 export * from './chests.ts'
 
+export { activeHooks, installHook, removeHook, removeHooksById, hooksOf } from './hooks.ts'
+export type { ActiveHook, InstallOptions } from './hooks.ts'
+export { linesAtRank, rankEffectPercent } from './skill-lines.ts'
+export { battleXpForLevel, heroLevelForXp, heroLevelXpCost } from './xp.ts'
+export { applyBattleXpLevel, heroAtLevel, levelUpGains } from './hero.ts'
+
 export { generateFloor, hashFloor, DEFAULT_GRAMMAR } from './generator.ts'
 export type {
   RoomKind,

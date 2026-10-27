@@ -1,0 +1,57 @@
+{
+  "id": "light",
+  "name": "Light",
+  "position": "prefix",
+  "lines": [
+    {
+      "bandMin": "F",
+      "bandMax": "D",
+      "effect": {
+        "kind": "custom",
+        "customId": "carry-weight-reduction-percent",
+        "target": "self",
+        "note": "item carry weight −percent (armor, shields, two-handed weapons); carry weight per item is not yet a schema field"
+      },
+      "min": 10,
+      "max": 15
+    },
+    {
+      "bandMin": "C",
+      "bandMax": "A",
+      "effect": {
+        "kind": "custom",
+        "customId": "carry-weight-reduction-percent",
+        "target": "self",
+        "note": "item carry weight −percent (armor, shields, two-handed weapons); carry weight per item is not yet a schema field"
+      },
+      "min": 15,
+      "max": 25
+    },
+    {
+      "bandMin": "S",
+      "bandMax": "God",
+      "effect": {
+        "kind": "custom",
+        "customId": "carry-weight-reduction-percent",
+        "target": "self",
+        "note": "item carry weight −percent (armor, shields, two-handed weapons); carry weight per item is not yet a schema field"
+      },
+      "min": 25,
+      "max": 40
+    }
+  ],
+  "slots": [
+    "mainHand",
+    "offHand",
+    "helmet",
+    "chest",
+    "legs",
+    "boots",
+    "gloves"
+  ],
+  "weight": 3,
+  "tags": [
+    "utility",
+    "carry"
+  ]
+}

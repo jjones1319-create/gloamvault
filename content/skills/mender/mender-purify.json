@@ -1,0 +1,46 @@
+{
+  "id": "mender-purify",
+  "classId": "mender",
+  "school": "vigil",
+  "tier": 2,
+  "name": "Purify",
+  "description": "Remove 1 debuff from every ally; Poison, Bleed and Curse go first.",
+  "type": "active",
+  "cost": 14,
+  "weight": 1000,
+  "target": "allAllies",
+  "effects": [
+    {
+      "kind": "dispel",
+      "amount": 1,
+      "note": "on allies: cleanse `amount` debuff(s) each; Poison, Bleed and Curse are removed first"
+    }
+  ],
+  "prerequisiteId": "mender-cleanse",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Remove 2 each.",
+    "effects": [
+      {
+        "kind": "dispel",
+        "amount": 2
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "cleanse"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "heal",
+    "priority": 60
+  }
+}

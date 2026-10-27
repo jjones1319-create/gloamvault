@@ -1,0 +1,56 @@
+{
+  "id": "blade-thousand-steps",
+  "classId": "blade",
+  "school": "iron-dance",
+  "tier": 3,
+  "name": "Thousand Steps",
+  "description": "Iron Dance skills cost −2 Stamina per Blade Rhythm stack; dodging an attack grants +10 Momentum.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "school-cost-per-combo-stack",
+      "amount": -2,
+      "target": "self",
+      "note": "actives of the owner's school cost amount per current Blade Rhythm stack"
+    },
+    {
+      "kind": "custom",
+      "customId": "momentum-on-dodge",
+      "amount": 10,
+      "target": "self"
+    }
+  ],
+  "prerequisiteId": "blade-mirror-step",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "−3 per stack.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "school-cost-per-combo-stack",
+        "amount": -3,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "momentum",
+    "buff"
+  ],
+  "xpTags": [
+    "agility"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 0
+  }
+}

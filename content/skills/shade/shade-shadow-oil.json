@@ -1,0 +1,55 @@
+{
+  "id": "shade-shadow-oil",
+  "classId": "shade",
+  "school": "venom",
+  "tier": 3,
+  "name": "Shadow Oil",
+  "description": "For 3 turns your attacks deal Shadow element (applying Wither: −50% healing) and +15% damage.",
+  "type": "active",
+  "cost": 18,
+  "weight": 800,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "attacks-become-element",
+      "damageType": "shadow",
+      "duration": 3,
+      "percent": 15,
+      "target": "self",
+      "note": "for `duration` turns the holder’s attacks deal `damageType` (and apply its mark) and +percent% damage"
+    }
+  ],
+  "prerequisiteId": "shade-envenom",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "4 turns, +20%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "attacks-become-element",
+        "damageType": "shadow",
+        "duration": 4,
+        "percent": 20,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "debuff"
+  ],
+  "xpTags": [
+    "agility",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 50
+  }
+}

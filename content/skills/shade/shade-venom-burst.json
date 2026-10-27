@@ -1,0 +1,57 @@
+{
+  "id": "shade-venom-burst",
+  "classId": "shade",
+  "school": "venom",
+  "tier": 3,
+  "name": "Venom Burst",
+  "description": "1.6× Shadow to one enemy in any row; consumes the target’s Poison and deals its remaining ticks ×1.5 at once.",
+  "type": "active",
+  "cost": 24,
+  "weight": 1000,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1.6,
+      "damageType": "shadow"
+    },
+    {
+      "kind": "custom",
+      "customId": "consume-dot-burst",
+      "status": "poison",
+      "multiplier": 1.5,
+      "note": "removes the target’s `status` DoT and deals its remaining ticks × multiplier at once (ignores Defense like the DoT)"
+    }
+  ],
+  "prerequisiteId": "shade-festering-wound",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Remaining ticks ×2.0.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "consume-dot-burst",
+        "status": "poison",
+        "multiplier": 2
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "reach",
+    "dot"
+  ],
+  "xpTags": [
+    "agility",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 65
+  }
+}

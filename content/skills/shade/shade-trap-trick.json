@@ -1,0 +1,69 @@
+{
+  "id": "shade-trap-trick",
+  "classId": "shade",
+  "school": "larceny",
+  "tier": 2,
+  "name": "Trap Trick",
+  "description": "In a corridor: pocket a trap you have disarmed (hold up to 2). In combat: throw a pocketed trap at any row for 1.2× Pierce and Root 1 turn.",
+  "type": "active",
+  "cost": 12,
+  "weight": 800,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "pocket-trap",
+      "amount": 2,
+      "target": "self",
+      "note": "out of combat: pockets a trap the party disarmed, holding up to `amount`; in combat the skill throws one, and the lines below need a pocketed trap"
+    },
+    {
+      "kind": "damage",
+      "multiplier": 1.2,
+      "damageType": "pierce"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "root",
+      "duration": 1
+    }
+  ],
+  "prerequisiteId": "shade-light-fingers",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Hold 3; thrown traps 1.6×.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "pocket-trap",
+        "amount": 3,
+        "target": "self"
+      },
+      {
+        "kind": "damage",
+        "multiplier": 1.6,
+        "damageType": "pierce"
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "reach",
+    "control",
+    "utility",
+    "field"
+  ],
+  "xpTags": [
+    "agility",
+    "perception"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 45
+  }
+}

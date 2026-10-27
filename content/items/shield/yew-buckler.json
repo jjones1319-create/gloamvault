@@ -1,0 +1,51 @@
+{
+  "id": "yew-buckler",
+  "name": "Yew Buckler",
+  "slot": "offHand",
+  "kind": "shield",
+  "grade": "C",
+  "materialLadder": "wood",
+  "materialRung": 3,
+  "weaponType": "shieldBuckler",
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "block": 21,
+    "defense": 2
+  },
+  "requirements": {
+    "strength": 9,
+    "wisdom": 0
+  },
+  "affixSlots": 2,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 6,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1.95,
+  "value": 480,
+  "classLock": [
+    "warden",
+    "blade",
+    "shade",
+    "mender"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "shield-buckler-01",
+    "tintPrimary": "#7a5a3a",
+    "tintSecondary": "#5b4a2f",
+    "trimMetal": "steel"
+  }
+}

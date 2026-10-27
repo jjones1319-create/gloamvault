@@ -91,8 +91,7 @@
         2,
         3.9
       ],
-      "rotationY": 180,
-      "lightSource": true
+      "rotationY": 180
     },
     {
       "meshId": "shr_torch_sconce",
@@ -101,8 +100,7 @@
         2,
         -3.9
       ],
-      "rotationY": 0,
-      "lightSource": true
+      "rotationY": 0
     }
   ],
   "triBudget": 30000,

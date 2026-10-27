@@ -1,7 +1,10 @@
 import type { Content } from './content.ts'
 import type { Actor, EquippedItem, FightRow, HeroActorData, HeroEquipment } from './fight-types.ts'
+import { installHook } from './hooks.ts'
 import { createItemInstance, effectiveItemStats } from './items.ts'
 import type { Rng } from './rng.ts'
+import { linesAtRank, rankEffectPercent } from './skill-lines.ts'
+import { battleXpForLevel, heroLevelForXp } from './xp.ts'
 import { ALL_TENS, deriveStats, roundHalfUp, type ArmorPieceLoad, type AttributeValues, type SpeciesStatRules, type StatBonuses, type StatInputs } from './stats.ts'
 import type { Tuning } from './tuning.ts'
 import type { ClassDef, Effect, Equipment, HeroRecord, ItemDef, ItemInstance, Loadout, PetInstance, SpeciesDef, SpeciesRule } from './types/content.ts'
@@ -137,6 +140,7 @@ export function createHero(content: Content, t: Tuning, rng: Rng, input: CreateH
     speciesId: species.id,
     classId: cls.id,
     level: 1,
+    battleXp: 0,
     attributes,
     attributeXp: {},
     creationValues: attributes,
@@ -169,6 +173,8 @@ export interface HeroLoadView {
   weapon: HeroActorData['weapon']
   shieldBlock: number
   relicUses: number
+  /** Custom lines from worn gear (affixes, unique powers): hooks on the fight actor; sourceId = the affix id or the item id. */
+  hookLines: { line: Effect; sourceId: string; itemId: string; slot: string }[]
 }
 
 function equipped(content: Content, inst: ItemInstance | null): EquippedItem | null {
@@ -197,9 +203,11 @@ export function heroLoad(content: Content, t: Tuning, hero: HeroRecord): HeroLoa
   let armorDefense = 0
   const equipment: HeroEquipment = { ring: [equipped(content, eq.ring[0]), equipped(content, eq.ring[1])] }
   const onHit: Effect[] = []
+  const hookLines: HeroLoadView['hookLines'] = []
   const consider = (item: EquippedItem | null, slot: Slot) => {
     if (!item) return
     const s = effectiveItemStats(content, t, item.def, item.inst)
+    for (const h of s.hookLines) hookLines.push({ line: h.line, sourceId: h.affixId ?? item.def.id, itemId: item.def.id, slot })
     addInto(percent, s.percentStats)
     addInto(attributeBonus, s.attributeBonuses)
     if (slot !== 'ring') equipment[slot as Exclude<Slot, 'ring' | 'pet'>] = item
@@ -299,7 +307,7 @@ export function heroLoad(content: Content, t: Tuning, hero: HeroRecord): HeroLoa
     onHit,
   }
   const relic = equipped(content, eq.relic)
-  return { inputs, equipment, weapon, shieldBlock: inputs.shieldBlock, relicUses: relic?.def.active?.usesPerFight ?? 0 }
+  return { inputs, equipment, weapon, shieldBlock: inputs.shieldBlock, relicUses: relic?.def.active?.usesPerFight ?? 0, hookLines }
 }
 
 export interface BuildHeroOptions {
@@ -353,7 +361,7 @@ export function buildHeroActor(content: Content, t: Tuning, hero: HeroRecord, op
       enemyAccuracyBySize: { ...(rules.enemyAccuracyBySize ?? {}) },
     },
   }
-  return {
+  const actor: Actor = {
     id: opts.id,
     name: hero.name,
     side: 'party',
@@ -372,6 +380,7 @@ export function buildHeroActor(content: Content, t: Tuning, hero: HeroRecord, op
     charging: null,
     statuses: [],
     modifiers: [],
+    hooks: [],
     guarding: false,
     downed: false,
     downedTurnsLeft: 0,
@@ -385,6 +394,37 @@ export function buildHeroActor(content: Content, t: Tuning, hero: HeroRecord, op
     tally: { actions: 0, hitsLanded: 0, hitsTaken: 0, blocks: 0, damageDealt: 0, damageTaken: 0, healingDone: 0, kills: 0, skillUses: {} },
     hero: data,
   }
+  applyPassives(content, actor)
+  // Worn gear's custom lines (Spined, of Renewal, a unique power) and the species' trait lines (Breath, Thick Hide) ride on the actor (D-071).
+  for (const h of load.hookLines) installHook(actor, h.line, h.sourceId, { replace: false, data: { itemId: h.itemId, slot: h.slot } })
+  for (const trait of species.traits) {
+    for (const line of trait.effects ?? []) {
+      if (line.kind === 'custom' && line.customId) installHook(actor, line, species.id, { replace: false, data: { trait: trait.id } })
+      else if ((line.kind === 'buffStat' || line.kind === 'debuffStat') && line.stat) actor.modifiers.push({ stat: line.stat, amount: line.amount ?? 0, percent: line.percent ?? 0, turnsLeft: 9999, sourceId: trait.id })
+    }
+  }
+  return actor
+}
+
+/**
+ * Loadout passives (03 §7.2: two passive slots): their stat lines sit on the actor for the whole fight and their
+ * custom lines become persistent hooks (hooks.ts), both at the passive's rank. Other line kinds on a passive are
+ * ignored here (a passive that applies a status is a design error the linter should catch).
+ */
+export function applyPassives(content: Content, actor: Actor): void {
+  const h = actor.hero
+  if (!h) return
+  for (const id of h.passives) {
+    if (!id) continue
+    const skill = content.skills.get(id)
+    if (!skill || skill.type !== 'passive') continue
+    const rank = h.ranks[id] ?? 1
+    const pct = rankEffectPercent(skill, rank)
+    for (const line of linesAtRank(skill, rank)) {
+      if ((line.kind === 'buffStat' || line.kind === 'debuffStat') && line.stat) actor.modifiers.push({ stat: line.stat, amount: roundHalfUp(((line.amount ?? 0) * pct) / 100), percent: roundHalfUp(((line.percent ?? 0) * pct) / 100), turnsLeft: 9999, sourceId: skill.id })
+      else if (line.kind === 'custom' && line.customId) installHook(actor, line, actor.id, { sourceSkillId: skill.id })
+    }
+  }
 }
 
 /** The card's derived stats for a hero record. */
@@ -393,6 +433,48 @@ export function heroStats(content: Content, t: Tuning, hero: HeroRecord): Record
 }
 
 /** Total skill ranks → level (03 §2.2). */
+/**
+ * Final Fantasy-style level-ups (D-082): reaching level L adds `attributePointsPerLevel` points to the class's bonus
+ * attributes in turn (largest bonus first, then the attribute order), and +1 Vitality on every level divisible by
+ * `vitalityEveryLevels`. The gains raise the creation values too, so the use soft cap (§5.3) moves with them.
+ * HP also grows by derived.hp.perLevel through the level itself.
+ */
+export function levelUpGains(content: Content, t: Tuning, classId: string, fromLevel: number, toLevel: number): Partial<Record<Attribute, number>> {
+  const cls = content.classes.get(classId)
+  const order = ATTRIBUTES.filter((a) => (cls?.attributeMods[a] ?? 0) > 0).sort((a, b) => (cls?.attributeMods[b] ?? 0) - (cls?.attributeMods[a] ?? 0))
+  const gains: Partial<Record<Attribute, number>> = {}
+  const per = t.xp.heroLevel.attributePointsPerLevel.value
+  const vitEvery = t.xp.heroLevel.vitalityEveryLevels.value
+  for (let level = fromLevel + 1; level <= toLevel; level++) {
+    for (let k = 0; k < per && order.length > 0; k++) {
+      const a = order[((level - 2) * per + k) % order.length]!
+      gains[a] = (gains[a] ?? 0) + 1
+    }
+    if (vitEvery > 0 && level % vitEvery === 0) gains.vitality = (gains.vitality ?? 0) + 1
+  }
+  return gains
+}
+
+/** Applies battle XP already added to `hero.battleXp`: the new level and its attribute growth (D-082). */
+export function applyBattleXpLevel(content: Content, t: Tuning, hero: HeroRecord): HeroRecord {
+  const level = heroLevelForXp(t, hero.battleXp)
+  if (level <= hero.level) return hero
+  const gains = levelUpGains(content, t, hero.classId, hero.level, level)
+  const attributes = { ...hero.attributes }
+  const creationValues = { ...hero.creationValues }
+  for (const [a, v] of Object.entries(gains) as [Attribute, number][]) {
+    attributes[a] += v
+    creationValues[a] += v
+  }
+  return { ...hero, level, attributes, creationValues }
+}
+
+/** A hero raised to a level with its growth applied (the balance runner's "grinded" heroes; a debug deep link). */
+export function heroAtLevel(content: Content, t: Tuning, hero: HeroRecord, level: number): HeroRecord {
+  return applyBattleXpLevel(content, t, { ...hero, battleXp: Math.max(hero.battleXp, battleXpForLevel(t, level)) })
+}
+
+/** Superseded by D-082 (the level follows battle XP); the ranks' milestone reading of 03 §2.2 rev. 1. */
 export function heroLevelFromSkills(t: Tuning, hero: HeroRecord): number {
   const total = hero.skills.reduce((s, k) => s + k.rank, 0)
   return Math.max(1, Math.floor(total / t.derived.level.skillRanksPerLevel))

@@ -1,0 +1,48 @@
+{
+  "id": "arcanist-arcane-ward",
+  "classId": "arcanist",
+  "school": "arcana",
+  "tier": 1,
+  "name": "Arcane Ward",
+  "description": "Shield one ally for 18% of their max HP for 3 turns.",
+  "type": "active",
+  "cost": 10,
+  "weight": 800,
+  "target": "ally",
+  "effects": [
+    {
+      "kind": "shield",
+      "percent": 18,
+      "duration": 3,
+      "note": "percent of the holder’s (the target’s) max HP, as 03 §3.5 and the sheet say"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Shield 22%.",
+    "effects": [
+      {
+        "kind": "shield",
+        "percent": 22,
+        "duration": 3
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "shield"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "defend",
+    "priority": 55
+  }
+}

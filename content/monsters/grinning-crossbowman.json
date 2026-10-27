@@ -1,0 +1,135 @@
+{
+  "id": "grinning-crossbowman",
+  "name": "Grinning Crossbowman",
+  "familyId": "cellar-vermin",
+  "dungeonId": "gravehollow-keep",
+  "zoneId": "the-cellars",
+  "role": "fodder",
+  "size": "medium",
+  "rows": [
+    "back"
+  ],
+  "levelBand": {
+    "min": 1,
+    "max": 4
+  },
+  "multipliers": {
+    "hp": 0.8,
+    "attack": 1.2,
+    "defense": 0.6
+  },
+  "speed": 95,
+  "xpClass": 1,
+  "goldMultiplier": 1.5,
+  "ambushModifier": 15,
+  "attacks": [
+    {
+      "id": "bolt",
+      "name": "Bolt",
+      "damageType": "pierce",
+      "weight": 1400,
+      "multiplier": 1.5,
+      "target": "enemy",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "bleed",
+          "chance": 30,
+          "duration": 2
+        }
+      ],
+      "aiWeight": 70,
+      "tell": null
+    },
+    {
+      "id": "reload-kick",
+      "name": "Reload-kick",
+      "damageType": "blunt",
+      "weight": 800,
+      "multiplier": 0.4,
+      "target": "enemyFront",
+      "effects": [],
+      "aiWeight": 30,
+      "tell": null
+    }
+  ],
+  "resist": [],
+  "weak": [],
+  "immune": [],
+  "statusImmune": [],
+  "behavior": {
+    "rules": [
+      {
+        "if": "a hero is Bleeding",
+        "then": "bolt"
+      },
+      {
+        "if": "a hero stands in melee with self",
+        "then": "reload-kick"
+      },
+      {
+        "if": "always (target: the lowest-Defense hero in the back row)",
+        "then": "bolt"
+      }
+    ],
+    "fleesAtPercent": 0
+  },
+  "parts": {
+    "common": {
+      "materialId": "copper",
+      "chance": 35,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "rare": {
+      "itemId": "bandit-lockpick",
+      "chance": 4,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "breakLimb": {
+      "name": "crossbow arm",
+      "effect": {
+        "kind": "custom",
+        "customId": "weaken-bolt",
+        "multiplier": 0.8,
+        "note": "Bolt ×0.8 and light weight for the rest of the fight"
+      }
+    }
+  },
+  "monsterTechniqueSkillIds": [],
+  "elitePool": [
+    "rabid",
+    "thorned",
+    "vampiric",
+    "shielded",
+    "commander"
+  ],
+  "boss": null,
+  "hunter": null,
+  "visual": {
+    "baseMesh": "humanoid",
+    "scale": 1,
+    "variantOf": "grinning-cutpurse",
+    "palette": [
+      "#5c4a32",
+      "#f1ece4",
+      "#b3261e"
+    ],
+    "reads200px": true,
+    "animations": [
+      "Idle",
+      "Move",
+      "Attack1",
+      "Attack2",
+      "Hit",
+      "Death",
+      "Reload"
+    ],
+    "triBudget": 3500
+  }
+}

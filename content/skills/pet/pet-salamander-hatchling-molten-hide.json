@@ -1,0 +1,43 @@
+{
+  "id": "pet-salamander-hatchling-molten-hide",
+  "classId": "pet",
+  "school": "pet",
+  "tier": 1,
+  "name": "Molten Hide",
+  "description": "Thorned (reflect 20% of melee damage as Pierce) on one ally for 2 turns.",
+  "type": "active",
+  "cost": 10,
+  "weight": 1000,
+  "target": "ally",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "reflect-melee-percent",
+      "percent": 20,
+      "damageType": "pierce",
+      "duration": 2,
+      "note": "the Thorned elite rule (06 §2) as a 2-turn buff on the ally"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "No Mastery line: pet actives do not rank (03 §9).",
+    "effects": []
+  },
+  "tags": [
+    "buff"
+  ],
+  "xpTags": [
+    "endurance"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 45
+  }
+}

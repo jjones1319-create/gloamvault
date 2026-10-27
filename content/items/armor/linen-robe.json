@@ -1,0 +1,50 @@
+{
+  "id": "linen-robe",
+  "name": "Linen Robe",
+  "slot": "chest",
+  "kind": "armor",
+  "grade": "E",
+  "materialLadder": "cloth",
+  "materialRung": 1,
+  "weaponType": null,
+  "armorFamily": "robes",
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "defense": 3,
+    "hp": 5,
+    "mana": 5
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 1,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 4,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 0.63,
+  "value": 240,
+  "classLock": [
+    "arcanist",
+    "mender"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "armor-robes-chest-01",
+    "tintPrimary": "#e8e0c8",
+    "tintSecondary": "#3b3b3b",
+    "trimMetal": "bronze"
+  }
+}

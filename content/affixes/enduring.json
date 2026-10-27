@@ -1,0 +1,56 @@
+{
+  "id": "enduring",
+  "name": "Enduring",
+  "position": "prefix",
+  "lines": [
+    {
+      "bandMin": "F",
+      "bandMax": "D",
+      "effect": {
+        "kind": "custom",
+        "customId": "wear-k-percent",
+        "target": "self",
+        "note": "wear k +percent (slower wear) on this item"
+      },
+      "min": 10,
+      "max": 15
+    },
+    {
+      "bandMin": "C",
+      "bandMax": "A",
+      "effect": {
+        "kind": "custom",
+        "customId": "wear-k-percent",
+        "target": "self",
+        "note": "wear k +percent (slower wear) on this item"
+      },
+      "min": 15,
+      "max": 25
+    },
+    {
+      "bandMin": "S",
+      "bandMax": "God",
+      "effect": {
+        "kind": "custom",
+        "customId": "wear-k-percent",
+        "target": "self",
+        "note": "wear k +percent (slower wear) on this item"
+      },
+      "min": 25,
+      "max": 40
+    }
+  ],
+  "slots": [
+    "mainHand",
+    "offHand",
+    "helmet",
+    "chest",
+    "legs",
+    "boots",
+    "gloves"
+  ],
+  "weight": 3,
+  "tags": [
+    "durability"
+  ]
+}

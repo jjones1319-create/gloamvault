@@ -1,0 +1,33 @@
+{
+  "id": "field-trap-disarm",
+  "classId": "field",
+  "school": "field",
+  "tier": 1,
+  "name": "Trap Disarm",
+  "description": "Disarm a revealed trap. Per rank: +2% success; rank 5: disarmed traps yield parts. Ranger +2 at start.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Rank 10 is the line in the description; the per-rank numbers live in tuning.json (skills.fieldSkills).",
+    "effects": []
+  },
+  "tags": [
+    "field",
+    "utility"
+  ],
+  "xpTags": [],
+  "aiHints": {
+    "role": "utility",
+    "priority": 0
+  }
+}

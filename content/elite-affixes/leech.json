@@ -1,0 +1,21 @@
+{
+  "id": "leech",
+  "name": "Leech",
+  "affixClass": "offensive",
+  "rule": "Each hit drains 15% of the target's pool (Stamina or Mana) and heals the champion by the same number.",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "pool-drain-heal",
+      "percent": 15,
+      "target": "enemy",
+      "note": "on each hit: drains percent of the target's current pool (stamina or mana by class) and heals the champion by that many HP"
+    }
+  ],
+  "hpMultiplier": 3,
+  "goldMultiplier": 3,
+  "xpClassBonus": 2,
+  "floorMin": 3,
+  "tell": null,
+  "excludesElement": false
+}

@@ -1,0 +1,55 @@
+{
+  "id": "ranger-double-time",
+  "classId": "ranger",
+  "school": "pathfinder",
+  "tier": 2,
+  "name": "Double Time",
+  "description": "In combat: Haste 1 turn on one ally in any row. In the corridor: the party moves through 2 rooms for 1 floor-clock tick.",
+  "type": "active",
+  "cost": 14,
+  "weight": 800,
+  "target": "ally",
+  "effects": [
+    {
+      "kind": "applyStatus",
+      "status": "haste",
+      "duration": 1
+    },
+    {
+      "kind": "custom",
+      "customId": "corridor-rooms-per-tick",
+      "amount": 2,
+      "target": "room",
+      "note": "corridor use: the next amount room entries cost one floor-clock tick in all"
+    }
+  ],
+  "prerequisiteId": "ranger-trailblaze",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Haste 2 turns.",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "haste",
+        "duration": 2
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "mobility"
+  ],
+  "xpTags": [
+    "agility",
+    "perception"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 50
+  }
+}

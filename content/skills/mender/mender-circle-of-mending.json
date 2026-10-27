@@ -1,0 +1,48 @@
+{
+  "id": "mender-circle-of-mending",
+  "classId": "mender",
+  "school": "benediction",
+  "tier": 2,
+  "name": "Circle of Mending",
+  "description": "Heal every ally and pet for 14% of their max HP. Heavy cast: declared at 1,000 energy, resolves 400 later, and a hit in the window can cancel it.",
+  "type": "active",
+  "cost": 20,
+  "weight": 1400,
+  "target": "allAllies",
+  "effects": [
+    {
+      "kind": "heal",
+      "percent": 14,
+      "scalesWith": "wisdom"
+    }
+  ],
+  "prerequisiteId": "mender-mend",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Heal 17% each.",
+    "effects": [
+      {
+        "kind": "heal",
+        "percent": 17,
+        "scalesWith": "wisdom"
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "heal"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "heal",
+    "priority": 65
+  }
+}

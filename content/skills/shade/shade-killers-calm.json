@@ -1,0 +1,54 @@
+{
+  "id": "shade-killers-calm",
+  "classId": "shade",
+  "school": "shadow",
+  "tier": 3,
+  "name": "Killer’s Calm",
+  "description": "Crit Damage +25%; your first crit each fight gives +20 Momentum.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "buffStat",
+      "stat": "critDamage",
+      "amount": 25
+    },
+    {
+      "kind": "custom",
+      "customId": "momentum-on-first-crit",
+      "amount": 20,
+      "target": "self",
+      "note": "once per fight, the holder’s first crit grants +amount Momentum"
+    }
+  ],
+  "prerequisiteId": "shade-opportunist",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "+40% Crit Damage.",
+    "effects": [
+      {
+        "kind": "buffStat",
+        "stat": "critDamage",
+        "amount": 40
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "momentum"
+  ],
+  "xpTags": [
+    "perception"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 0
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "id": "pine-staff",
+  "name": "Pine Staff",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "F",
+  "materialLadder": "wood",
+  "materialRung": 0,
+  "weaponType": "staff",
+  "armorFamily": null,
+  "hands": 2,
+  "damageType": "fire",
+  "weight": 1000,
+  "baseStats": {
+    "attackSpell": 14,
+    "mana": 10
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 10
+  },
+  "affixSlots": 0,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 3,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1.33,
+  "value": 225,
+  "classLock": [
+    "arcanist",
+    "mender"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-staff-01",
+    "tintPrimary": "#a0824a",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "copper"
+  }
+}

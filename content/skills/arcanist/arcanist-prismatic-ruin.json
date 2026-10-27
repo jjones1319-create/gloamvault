@@ -1,0 +1,65 @@
+{
+  "id": "arcanist-prismatic-ruin",
+  "classId": "arcanist",
+  "school": "evocation",
+  "tier": 3,
+  "name": "Prismatic Ruin",
+  "description": "Every enemy in both rows takes 2.4× spell Attack as the element it is weakest to among Fire, Frost and Lightning (Fire if none; immunities respected), then Burn 2, Chill 1 and Shock 2. You refund 30% of max Mana. 100 Momentum; weight 1,400 but cannot be interrupted; never misses.",
+  "type": "active",
+  "cost": 0,
+  "weight": 1400,
+  "target": "allEnemies",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "damage-weakest-of-fire-frost-lightning",
+      "multiplier": 2.4,
+      "note": "deals multiplier × spell Attack as whichever of Fire, Frost and Lightning the target is weakest to; Fire when none; an immune element is never chosen"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "burn",
+      "duration": 2
+    },
+    {
+      "kind": "applyStatus",
+      "status": "chill",
+      "duration": 1
+    },
+    {
+      "kind": "applyStatus",
+      "status": "shock",
+      "duration": 2
+    },
+    {
+      "kind": "pool",
+      "percent": 30,
+      "target": "self",
+      "note": "refund 30% of max Mana on resolution"
+    }
+  ],
+  "prerequisiteId": "arcanist-firewave",
+  "isUltimate": true,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "No Mastery line beyond rank scaling: the sheet names none for the Ultimate.",
+    "effects": []
+  },
+  "tags": [
+    "aoe",
+    "dot",
+    "debuff"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 95
+  }
+}

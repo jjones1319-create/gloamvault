@@ -1,0 +1,161 @@
+{
+  "id": "grinning-netter",
+  "name": "Grinning Netter",
+  "familyId": "cellar-vermin",
+  "dungeonId": "gravehollow-keep",
+  "zoneId": "the-cellars",
+  "role": "special",
+  "size": "medium",
+  "rows": [
+    "back"
+  ],
+  "levelBand": {
+    "min": 2,
+    "max": 4
+  },
+  "multipliers": {
+    "hp": 1.2,
+    "attack": 0.8,
+    "defense": 0.8
+  },
+  "speed": 100,
+  "xpClass": 2,
+  "goldMultiplier": 1.5,
+  "ambushModifier": 15,
+  "attacks": [
+    {
+      "id": "net-throw",
+      "name": "Net Throw",
+      "damageType": "blunt",
+      "weight": 1000,
+      "multiplier": 0,
+      "target": "enemy",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "grab",
+          "note": "until freed (06 §7)"
+        },
+        {
+          "kind": "custom",
+          "customId": "allies-focus-grabbed",
+          "target": "allAllies",
+          "note": "while a hero is netted every Vermin in the fight targets them"
+        }
+      ],
+      "aiWeight": 50,
+      "tell": "The Netter gathers the next net."
+    },
+    {
+      "id": "gaff",
+      "name": "Gaff",
+      "damageType": "pierce",
+      "weight": 800,
+      "multiplier": 1,
+      "target": "enemy",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "bleed",
+          "duration": 2
+        }
+      ],
+      "aiWeight": 35,
+      "tell": null
+    },
+    {
+      "id": "reload",
+      "name": "Reload",
+      "damageType": "blunt",
+      "weight": 800,
+      "multiplier": 0,
+      "target": "self",
+      "effects": [],
+      "aiWeight": 15,
+      "tell": null
+    }
+  ],
+  "resist": [],
+  "weak": [],
+  "immune": [],
+  "statusImmune": [],
+  "behavior": {
+    "rules": [
+      {
+        "if": "self netted a hero last turn",
+        "then": "reload"
+      },
+      {
+        "if": "no hero is Grabbed (target: the hero with the highest Attack)",
+        "then": "net-throw"
+      },
+      {
+        "if": "a hero is Grabbed by self",
+        "then": "gaff"
+      },
+      {
+        "if": "always",
+        "then": "gaff"
+      }
+    ],
+    "fleesAtPercent": 0
+  },
+  "parts": {
+    "common": {
+      "materialId": "copper",
+      "chance": 35,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "rare": {
+      "itemId": "weighted-net",
+      "chance": 4,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "breakLimb": {
+      "name": "net hand",
+      "effect": {
+        "kind": "custom",
+        "customId": "cannot-net",
+        "note": "cannot Net for the rest of the fight"
+      }
+    }
+  },
+  "monsterTechniqueSkillIds": [],
+  "elitePool": [
+    "rabid",
+    "thorned",
+    "vampiric",
+    "shielded",
+    "commander"
+  ],
+  "boss": null,
+  "hunter": null,
+  "visual": {
+    "baseMesh": "humanoid",
+    "scale": 1,
+    "variantOf": "grinning-cutpurse",
+    "palette": [
+      "#6b7a80",
+      "#f1ece4",
+      "#1c1c1c"
+    ],
+    "reads200px": true,
+    "animations": [
+      "Idle",
+      "Move",
+      "Attack1",
+      "Attack2",
+      "Hit",
+      "Death",
+      "Throw",
+      "Reload"
+    ],
+    "triBudget": 3500
+  }
+}

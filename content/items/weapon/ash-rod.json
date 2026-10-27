@@ -1,0 +1,48 @@
+{
+  "id": "ash-rod",
+  "name": "Ash Rod",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "E",
+  "materialLadder": "wood",
+  "materialRung": 1,
+  "weaponType": "wand",
+  "armorFamily": null,
+  "hands": 1,
+  "damageType": "fire",
+  "weight": 1000,
+  "baseStats": {
+    "attackSpell": 15,
+    "mana": 7
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 11
+  },
+  "affixSlots": 1,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 4,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1.67,
+  "value": 240,
+  "classLock": [
+    "arcanist"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-rod-01",
+    "tintPrimary": "#c9b58a",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "bronze"
+  }
+}

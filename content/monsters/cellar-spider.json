@@ -1,0 +1,149 @@
+{
+  "id": "cellar-spider",
+  "name": "Cellar Spider",
+  "familyId": "cellar-vermin",
+  "dungeonId": "gravehollow-keep",
+  "zoneId": "the-cellars",
+  "role": "fodder",
+  "size": "small",
+  "rows": [
+    "back",
+    "front"
+  ],
+  "levelBand": {
+    "min": 1,
+    "max": 4
+  },
+  "multipliers": {
+    "hp": 0.6,
+    "attack": 1,
+    "defense": 0.5
+  },
+  "speed": 120,
+  "xpClass": 1,
+  "goldMultiplier": 0.8,
+  "ambushModifier": 15,
+  "attacks": [
+    {
+      "id": "venom-bite",
+      "name": "Venom Bite",
+      "damageType": "pierce",
+      "weight": 800,
+      "multiplier": 0.9,
+      "target": "enemyFront",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "poison",
+          "chance": 40,
+          "duration": 2
+        }
+      ],
+      "aiWeight": 70,
+      "tell": null
+    },
+    {
+      "id": "drop",
+      "name": "Drop",
+      "damageType": "pierce",
+      "weight": 1000,
+      "multiplier": 1.3,
+      "target": "enemy",
+      "effects": [
+        {
+          "kind": "custom",
+          "customId": "drop-from-back-row",
+          "target": "self",
+          "note": "legal only while the spider stands in the back row"
+        },
+        {
+          "kind": "rowSwap",
+          "target": "self",
+          "note": "it lands in the front row"
+        }
+      ],
+      "aiWeight": 30,
+      "tell": null
+    }
+  ],
+  "resist": [
+    "poison"
+  ],
+  "weak": [
+    "fire",
+    "blunt"
+  ],
+  "immune": [],
+  "statusImmune": [],
+  "behavior": {
+    "rules": [
+      {
+        "if": "self is in the back row (target: the hero with the lowest Perception)",
+        "then": "drop"
+      },
+      {
+        "if": "always",
+        "then": "venom-bite"
+      }
+    ],
+    "fleesAtPercent": 0
+  },
+  "parts": {
+    "common": {
+      "materialId": "spider-silk",
+      "chance": 35,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "rare": {
+      "itemId": "spinneret",
+      "chance": 4,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "breakLimb": {
+      "name": "a leg",
+      "effect": {
+        "kind": "debuffStat",
+        "stat": "speed",
+        "amount": -30,
+        "note": "for the rest of the fight"
+      }
+    }
+  },
+  "monsterTechniqueSkillIds": [],
+  "elitePool": [
+    "rabid",
+    "thorned",
+    "vampiric",
+    "shielded",
+    "commander"
+  ],
+  "boss": null,
+  "hunter": null,
+  "visual": {
+    "baseMesh": "spider",
+    "scale": 1,
+    "variantOf": null,
+    "palette": [
+      "#8a8378",
+      "#d9d2c2",
+      "#c8102e"
+    ],
+    "reads200px": true,
+    "animations": [
+      "Idle",
+      "Move",
+      "Attack1",
+      "Attack2",
+      "Hit",
+      "Death",
+      "Drop"
+    ],
+    "triBudget": 3000
+  }
+}

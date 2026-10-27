@@ -1,0 +1,53 @@
+{
+  "id": "beastbane",
+  "name": "Beastbane",
+  "position": "prefix",
+  "lines": [
+    {
+      "bandMin": "F",
+      "bandMax": "D",
+      "effect": {
+        "kind": "custom",
+        "customId": "damage-vs-family-percent",
+        "target": "enemy",
+        "note": "+damage vs the Beast family, percent; the family is the affix's family: tag"
+      },
+      "min": 8,
+      "max": 10
+    },
+    {
+      "bandMin": "C",
+      "bandMax": "A",
+      "effect": {
+        "kind": "custom",
+        "customId": "damage-vs-family-percent",
+        "target": "enemy",
+        "note": "+damage vs the Beast family, percent; the family is the affix's family: tag"
+      },
+      "min": 10,
+      "max": 15
+    },
+    {
+      "bandMin": "S",
+      "bandMax": "God",
+      "effect": {
+        "kind": "custom",
+        "customId": "damage-vs-family-percent",
+        "target": "enemy",
+        "note": "+damage vs the Beast family, percent; the family is the affix's family: tag"
+      },
+      "min": 15,
+      "max": 25
+    }
+  ],
+  "slots": [
+    "mainHand",
+    "offHand"
+  ],
+  "weight": 2,
+  "tags": [
+    "offensive",
+    "bane",
+    "family:beast"
+  ]
+}

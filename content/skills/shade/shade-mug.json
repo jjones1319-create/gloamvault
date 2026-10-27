@@ -1,0 +1,58 @@
+{
+  "id": "shade-mug",
+  "classId": "shade",
+  "school": "larceny",
+  "tier": 3,
+  "name": "Mug",
+  "description": "1.8× Pierce to a front-row enemy; steal gold equal to 15 × its level; against a boss, steal a guaranteed common part.",
+  "type": "active",
+  "cost": 20,
+  "weight": 800,
+  "target": "enemyFront",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1.8,
+      "damageType": "pierce"
+    },
+    {
+      "kind": "custom",
+      "customId": "steal-gold-per-level",
+      "amount": 15
+    },
+    {
+      "kind": "custom",
+      "customId": "steal-boss-part",
+      "note": "against a boss: a guaranteed common part, once per fight"
+    }
+  ],
+  "prerequisiteId": "shade-filch",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Steal 25 × level.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "steal-gold-per-level",
+        "amount": 25
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "utility"
+  ],
+  "xpTags": [
+    "agility",
+    "perception"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 55
+  }
+}

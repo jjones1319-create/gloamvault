@@ -1,0 +1,49 @@
+{
+  "id": "iron-hauberk",
+  "name": "Iron Hauberk",
+  "slot": "chest",
+  "kind": "armor",
+  "grade": "D",
+  "materialLadder": "metal",
+  "materialRung": 2,
+  "weaponType": null,
+  "armorFamily": "mail",
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "defense": 11,
+    "hp": 14,
+    "stamina": 5
+  },
+  "requirements": {
+    "strength": 12,
+    "wisdom": 0
+  },
+  "affixSlots": 1,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 5,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1.56,
+  "value": 380,
+  "classLock": [
+    "blade"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "armor-mail-chest-01",
+    "tintPrimary": "#8a8f98",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "iron"
+  }
+}

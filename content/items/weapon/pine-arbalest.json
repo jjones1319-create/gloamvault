@@ -1,0 +1,48 @@
+{
+  "id": "pine-arbalest",
+  "name": "Pine Arbalest",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "F",
+  "materialLadder": "wood",
+  "materialRung": 0,
+  "weaponType": "crossbow",
+  "armorFamily": null,
+  "hands": 2,
+  "damageType": "pierce",
+  "weight": 1400,
+  "baseStats": {
+    "attackPhys": 26,
+    "speed": -10
+  },
+  "requirements": {
+    "strength": 12,
+    "wisdom": 0
+  },
+  "affixSlots": 0,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 3,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1.33,
+  "value": 225,
+  "classLock": [
+    "ranger"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-arbalest-01",
+    "tintPrimary": "#a0824a",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "copper"
+  }
+}

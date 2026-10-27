@@ -1,0 +1,21 @@
+{
+  "id": "thorned",
+  "name": "Thorned",
+  "affixClass": "offensive",
+  "rule": "Reflects 20% of melee damage taken as Pierce to the attacker; ranged and spells are safe.",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "reflect-melee-percent",
+      "percent": 20,
+      "damageType": "pierce",
+      "target": "self"
+    }
+  ],
+  "hpMultiplier": 3,
+  "goldMultiplier": 3,
+  "xpClassBonus": 2,
+  "floorMin": 1,
+  "tell": null,
+  "excludesElement": false
+}

@@ -1,11 +1,13 @@
-import { decide, parseBehavior, parseRule, type Action, type Condition, type TargetSelector } from './ai.ts'
+import { decide, decideAll, parseBehavior, parseRule, type Action, type Condition, type TargetSelector } from './ai.ts'
 import type { Content } from './content.ts'
-import { alliesOf, applyLine, canAct, canFlee, canSwapRow, canUseSkills, enemiesOf, gainMomentum, heal, isActive, log, lowestHpPercent, reachableEnemies, releaseHolds, speedOf, statOf, type EffectContext, type LineSource } from './effects.ts'
+import { alliesOf, applyLine, canAct, canFlee, canSwapRow, canUseSkills, enemiesOf, gainMomentum, heal, hookCtx, isActive, log, lowestHpPercent, reachableEnemies, releaseHolds, speedOf, statOf, type EffectContext, type LineSource } from './effects.ts'
+import { activeHooks, dropTurnStartHooks } from './hooks.ts'
 import type { Actor, FightCommand, FightEvent, FightOptions, FightState, LegalFightAction, PendingAction, Side } from './fight-types.ts'
 import { buildMonsterActor } from './monsters.ts'
 import { Rng } from './rng.ts'
 import { customHandler } from './skills/custom/index.ts'
-import { actionSkippedBy, countDownStatuses, pendingTicks, statusHooks } from './statuses.ts'
+import { linesAtRank } from './skill-lines.ts'
+import { actionSkippedBy, countDownStatuses, pendingTicks } from './statuses.ts'
 import { clamp, roundHalfUp } from './stats.ts'
 import { advance, beginCharge, finishCharge, initialEnergy, interruptCharge, type TimelineActor } from './timeline.ts'
 import type { Tuning } from './tuning.ts'
@@ -34,6 +36,7 @@ export function createFight(content: Content, t: Tuning, setup: FightSetup): Fig
     enemyDamagePercent: 100,
     enemySpeedPercent: 100,
     autoHeroes: false,
+    partyGold: 0,
     ...setup.options,
   }
   const state: FightState = {
@@ -51,6 +54,7 @@ export function createFight(content: Content, t: Tuning, setup: FightSetup): Fig
     xp: [],
     options,
     flags: {},
+    actingId: null,
   }
   const rng = new Rng(state.rng)
   for (const a of state.actors) {
@@ -60,8 +64,9 @@ export function createFight(content: Content, t: Tuning, setup: FightSetup): Fig
   state.rng = rng.state
   const ctx = makeCtx(content, t, state, rng)
   log(ctx, { kind: 'start', text: `Fight begins${setup.surprised === 'party' ? ' (the party is surprised)' : setup.surprised === 'enemy' ? ' (the party surprises the monsters)' : ''}` })
+  // Passives, affixes and traits that act at the fight's start.
+  for (const a of state.actors) for (const { status, hook, line } of activeHooks(content, a)) customHandler(line.customId ?? '')?.onFightStart?.(hookCtx(ctx, a, status, line, hook))
   state.rng = rng.state
-  void content
   return state
 }
 
@@ -106,6 +111,7 @@ export function runFight(content: Content, t: Tuning, state: FightState): FightS
 
 function takeTurn(ctx: EffectContext, actor: Actor): void {
   const { state, t, rng } = ctx
+  state.actingId = actor.id
   // A downed hero's turns count toward its revive window (§12.1).
   if (actor.downed) {
     actor.downedTurnsLeft -= 1
@@ -142,9 +148,9 @@ function takeTurn(ctx: EffectContext, actor: Actor): void {
   const skipped = actionSkippedBy(ctx.content, rng, actor)
   if (skipped) {
     let guardedInstead = false
-    for (const { status, line } of statusHooks(ctx.content, actor)) {
+    for (const { status, hook, line } of activeHooks(ctx.content, actor)) {
       const h = customHandler(line.customId ?? '')
-      if (h?.lostActionBecomesGuard?.({ content: ctx.content, t, state, rng, holder: actor, status, line })) guardedInstead = true
+      if (h?.lostActionBecomesGuard?.(hookCtx(ctx, actor, status, line, hook))) guardedInstead = true
     }
     if (guardedInstead) doGuard(ctx, actor)
     else {
@@ -181,10 +187,14 @@ function turnStart(ctx: EffectContext, actor: Actor): void {
       log(ctx, { kind: 'hot', actorId: actor.id, amount: healed, text: `${actor.name} regenerates ${healed}`, data: { status: tick.status } })
     }
   }
-  for (const { status, line } of statusHooks(ctx.content, actor)) customHandler(line.customId ?? '')?.onTurnStart?.({ content: ctx.content, t, state, rng: ctx.rng, holder: actor, status, line })
+  // Stances that last "until your next turn" end now; then every active hook's turn-start rule.
+  dropTurnStartHooks(actor)
+  for (const { status, hook, line } of activeHooks(ctx.content, actor)) customHandler(line.customId ?? '')?.onTurnStart?.(hookCtx(ctx, actor, status, line, hook))
   // Pool regen at the start of your own turn (§2.2).
-  if (actor.poolKind === 'stamina') actor.pool = clamp(actor.pool + roundHalfUp((actor.poolMax * t.derived.stamina.regenPercentPerTurn) / 100), 0, actor.poolMax)
-  else if (actor.poolKind === 'mana') actor.pool = clamp(actor.pool + roundHalfUp((actor.poolMax * t.derived.mana.regenPercentPerTurn) / 100), 0, actor.poolMax)
+  let regenBonus = 0
+  for (const { status, hook, line } of activeHooks(ctx.content, actor)) regenBonus += customHandler(line.customId ?? '')?.poolRegenBonus?.(hookCtx(ctx, actor, status, line, hook)) ?? 0
+  if (actor.poolKind === 'stamina') actor.pool = clamp(actor.pool + roundHalfUp((actor.poolMax * Math.max(0, t.derived.stamina.regenPercentPerTurn + regenBonus)) / 100), 0, actor.poolMax)
+  else if (actor.poolKind === 'mana') actor.pool = clamp(actor.pool + roundHalfUp((actor.poolMax * Math.max(0, t.derived.mana.regenPercentPerTurn + regenBonus)) / 100), 0, actor.poolMax)
   // Grab holds: the grabber's turn counts toward the role cap; enough damage frees the held.
   for (const held of state.actors) {
     if (held.grabbedBy !== actor.id) continue
@@ -194,7 +204,7 @@ function turnStart(ctx: EffectContext, actor: Actor): void {
     let capped = false
     if (grabStatus) {
       const h = customHandler('grab-held')
-      capped = h?.grabberTurn?.({ content: ctx.content, t, state, rng: ctx.rng, holder: held, status: grabStatus, line: { kind: 'custom', customId: 'grab-held' } }, grabber) ?? false
+      capped = h?.grabberTurn?.(hookCtx(ctx, held, grabStatus, { kind: 'custom', customId: 'grab-held' }), grabber) ?? false
     }
     if (enough || capped) {
       held.grabbedBy = null
@@ -248,6 +258,7 @@ function endTurn(ctx: EffectContext, actor: Actor): void {
     log(ctx, { kind: 'statusEnd', actorId: actor.id, text: `${actor.name}: ${s} ends`, data: { status: s } })
   }
   actor.tally.actions += 1
+  ctx.state.actingId = null
   markActed(ctx, actor)
   bossPhases(ctx)
 }
@@ -255,8 +266,19 @@ function endTurn(ctx: EffectContext, actor: Actor): void {
 function checkOver(ctx: EffectContext): void {
   const { state } = ctx
   if (state.over) return
-  const enemies = state.actors.filter((a) => a.side === 'enemy' && onTimeline(a))
   const heroesUp = state.actors.filter((a) => a.side === 'party' && isActive(a))
+  // A boss fight ends with the boss: when the last boss falls, the adds still standing break and flee (D-081).
+  const bosses = state.actors.filter((a) => a.side === 'enemy' && a.monster?.isBoss)
+  if (bosses.length > 0 && bosses.every((b) => b.gone) && heroesUp.length > 0) {
+    for (const a of state.actors) {
+      if (a.side !== 'enemy' || !onTimeline(a)) continue
+      a.gone = true
+      a.fled = true
+      releaseHolds(ctx, a)
+    }
+    log(ctx, { kind: 'crewFlees', text: 'With the boss down, the rest of the crew breaks and runs' })
+  }
+  const enemies = state.actors.filter((a) => a.side === 'enemy' && onTimeline(a))
   if (enemies.length === 0) finish(ctx, 'victory', 'every enemy is down')
   else if (heroesUp.length === 0) finish(ctx, 'defeat', 'every hero is down')
   else if (state.round > state.options.roundCap) finish(ctx, 'cap', `the ${state.options.roundCap}-round cap`)
@@ -286,7 +308,9 @@ export type ResolvedAction =
   | { kind: 'pass' }
 
 function spendWeight(ctx: EffectContext, actor: Actor, weight: number): void {
-  actor.energy -= ctx.rng.jitter(weight, ctx.state.options.jitterPercent)
+  let w = weight
+  for (const { status, hook, line } of activeHooks(ctx.content, actor)) w = customHandler(line.customId ?? '')?.modifyWeight?.(hookCtx(ctx, actor, status, line, hook), w) ?? w
+  actor.energy -= ctx.rng.jitter(Math.max(0, w), ctx.state.options.jitterPercent)
 }
 
 function heroSkillSource(skill: SkillDef, rank: number, hero: Actor, isUltimate: boolean): LineSource {
@@ -302,18 +326,6 @@ function heroSkillSource(skill: SkillDef, rank: number, hero: Actor, isUltimate:
     ranged: w?.ranged ?? false,
     isMelee: !(w?.ranged ?? false),
   }
-}
-
-function skillLines(skill: SkillDef, rank: number): Effect[] {
-  if (rank < 10 || skill.mastery.effects.length === 0) return [...skill.effects]
-  // Mastery at rank 10: a line of the same kind and status/stat replaces; others are added.
-  const lines = [...skill.effects]
-  for (const m of skill.mastery.effects) {
-    const i = lines.findIndex((l) => l.kind === m.kind && (l.status ?? null) === (m.status ?? null) && (l.stat ?? null) === (m.stat ?? null))
-    if (i >= 0) lines[i] = m
-    else lines.push(m)
-  }
-  return lines
 }
 
 export function skillCost(_t: Tuning, skill: SkillDef, rank: number): number {
@@ -336,7 +348,8 @@ function execute(ctx: EffectContext, actor: Actor, action: ResolvedAction): void
     case 'skill':
     case 'ultimate': {
       const isUlt = action.kind === 'ultimate'
-      const cost = isUlt ? 0 : skillCost(t, action.skill, action.rank)
+      let cost = isUlt ? 0 : skillCost(t, action.skill, action.rank)
+      if (cost > 0) cost = Math.max(0, roundHalfUp((cost * Math.max(0, 100 + costPercentFor(ctx, actor, action.skill))) / 100))
       if (isUlt) actor.momentum = Math.max(0, actor.momentum - t.derived.momentum.ultimateCost)
       else if (cost > 0) {
         const free = rng.pct(statOf(ctx, actor, 'fortune') / 10)
@@ -414,11 +427,12 @@ function resolveSkill(ctx: EffectContext, actor: Actor, skill: SkillDef, rank: n
   log(ctx, { kind: 'action', actorId: actor.id, targetId: target?.id, text: `${actor.name} uses ${skill.name}${target ? ` on ${target.name}` : ''}` })
   notifyAttacks(ctx, actor)
   let landedHostile = false
-  for (const line of skillLines(skill, rank)) {
+  for (const line of linesAtRank(skill, rank)) {
     const out = applyLine(ctx, actor, line, skill.target, target, source)
     if (out.results.some((r) => r.hit) || out.applied.some((a) => !a.startsWith(actor.id))) landedHostile = true
     for (const note of out.notes) if (note.startsWith('summon:')) spawnSummon(ctx, actor, note.slice(7))
   }
+  for (const { status, hook, line: hl } of activeHooks(ctx.content, actor)) customHandler(hl.customId ?? '')?.onSkillUsed?.(hookCtx(ctx, actor, status, hl, hook), skill)
   gainMomentum(ctx, actor, t.derived.momentum.onAct)
   for (const ally of alliesOf(state, actor)) if (ally !== actor) gainMomentum(ctx, ally, t.derived.momentum.onAllyAction)
   actor.tally.skillUses[skill.id] = (actor.tally.skillUses[skill.id] ?? 0) + 1
@@ -449,7 +463,7 @@ function afterHeroHits(ctx: EffectContext, actor: Actor, slot: 'mainHand' | 'off
 }
 
 function notifyAttacks(ctx: EffectContext, actor: Actor): void {
-  for (const { status, line } of statusHooks(ctx.content, actor)) customHandler(line.customId ?? '')?.onHolderAttacks?.({ content: ctx.content, t: ctx.t, state: ctx.state, rng: ctx.rng, holder: actor, status, line })
+  for (const { status, hook, line } of activeHooks(ctx.content, actor)) customHandler(line.customId ?? '')?.onHolderAttacks?.(hookCtx(ctx, actor, status, line, hook))
 }
 
 function doBasic(ctx: EffectContext, actor: Actor, target: Actor): void {
@@ -520,7 +534,10 @@ function doFlee(ctx: EffectContext, actor: Actor): void {
   const heroes = state.actors.filter((a) => a.side === 'party' && isActive(a))
   const enemies = enemiesOf(state, actor)
   const avg = (list: Actor[]) => (list.length ? roundHalfUp(list.reduce((s, a) => s + speedOf(ctx, a), 0) / list.length) : 100)
-  const chance = clamp(t.death.flee.basePercent + avg(heroes) - avg(enemies), 5, 95)
+  // A Smoke Pellet (flee-chance-bonus hooks on the party): the best single bonus counts.
+  let bonus = 0
+  for (const h of heroes) for (const hk of h.hooks) if (hk.customId === 'flee-chance-bonus') bonus = Math.max(bonus, hk.line.amount ?? 0)
+  const chance = clamp(t.death.flee.basePercent + avg(heroes) - avg(enemies) + bonus, 5, 95)
   if (rng.pct(chance)) {
     for (const h of state.actors.filter((a) => a.side === 'party')) h.fled = true
     log(ctx, { kind: 'flee', actorId: actor.id, text: `The party flees (${chance}%)` })
@@ -560,7 +577,8 @@ function resolveAttackLines(ctx: EffectContext, actor: Actor, attack: MonsterAtt
           state.xp.push({ actorId: tgt.id, kind: 'item', id: 'offHand', enemyLevel: actor.level })
         } else {
           const piece = pickArmorPiece(ctx)
-          state.wear.push({ actorId: tgt.id, kind: 'armor', slot: piece, double: r.weaknessHit })
+          const wp = wearPercentFor(ctx, tgt, 'armor')
+          state.wear.push({ actorId: tgt.id, kind: 'armor', slot: piece, double: r.weaknessHit, ...(wp !== 100 ? { percent: wp } : {}) })
           state.xp.push({ actorId: tgt.id, kind: 'item', id: piece, enemyLevel: actor.level })
         }
         // Vitality trains per 10% of max HP taken (§5.2).
@@ -629,6 +647,31 @@ function bossPhases(ctx: EffectContext): void {
   }
 }
 
+/* ---------- hook sums ---------- */
+
+/** Percent added to a skill's cost by the actor's hooks (Loud Voice −20 on its school). */
+function costPercentFor(ctx: EffectContext, actor: Actor, skill: SkillDef): number {
+  let pct = 0
+  for (const { status, hook, line } of activeHooks(ctx.content, actor)) pct += customHandler(line.customId ?? '')?.costPercent?.(hookCtx(ctx, actor, status, line, hook), skill) ?? 0
+  return pct
+}
+
+/** Percent of a normal wear event for the actor's gear of a kind (Wall Stance: armor 80). */
+function wearPercentFor(ctx: EffectContext, actor: Actor, kind: 'weapon' | 'armor' | 'shield'): number {
+  let pct = 100
+  for (const { status, hook, line } of activeHooks(ctx.content, actor)) pct += customHandler(line.customId ?? '')?.wearPercent?.(hookCtx(ctx, actor, status, line, hook), kind) ?? 0
+  return Math.max(0, pct)
+}
+
+/** The enemy a monster's hooks prefer when its behaviour names no target (every bandit on the Marked or netted hero). */
+function preferredEnemy(ctx: EffectContext, actor: Actor, candidates: Actor[]): Actor | null {
+  for (const { status, hook, line } of activeHooks(ctx.content, actor)) {
+    const pick = customHandler(line.customId ?? '')?.preferredTarget?.(hookCtx(ctx, actor, status, line, hook), candidates)
+    if (pick && candidates.includes(pick)) return pick
+  }
+  return null
+}
+
 /* ---------- decisions ---------- */
 
 function selectTarget(ctx: EffectContext, actor: Actor, sel: TargetSelector | undefined, reach: boolean): Actor | null {
@@ -638,13 +681,16 @@ function selectTarget(ctx: EffectContext, actor: Actor, sel: TargetSelector | un
   switch (sel) {
     case undefined:
     case 'nearest':
-      return enemies[0] ?? null
+      return preferredEnemy(ctx, actor, enemies) ?? enemies[0] ?? null
     case 'self':
       return actor
     case 'lowest ally':
     case 'lowest hp ally':
-    case 'weakest ally':
-      return lowestHpPercent(allies)
+    case 'weakest ally': {
+      // The party's heroes, the actor included (D-079); a party of pets alone falls back to every ally.
+      const heroes = allies.filter((a) => a.kind === 'hero')
+      return lowestHpPercent(heroes.length ? heroes : allies)
+    }
     case 'random ally':
       return allies.length ? rng.pick(allies) : null
     case 'front enemy':
@@ -673,7 +719,9 @@ function selectTarget(ctx: EffectContext, actor: Actor, sel: TargetSelector | un
 
 function conditionValue(ctx: EffectContext, actor: Actor, c: Condition): number | null {
   const { state } = ctx
-  const allies = alliesOf(state, actor).filter((a) => a !== actor)
+  // "ally" in a gambit is a party hero, the actor included (a Mender heals herself); pets answer to "pet" (D-079).
+  const partyHeroes = alliesOf(state, actor).filter((a) => a.kind === 'hero')
+  const allies = actor.kind === 'hero' ? partyHeroes : alliesOf(state, actor).filter((a) => a !== actor)
   const enemies = enemiesOf(state, actor)
   const pct = (a: Actor) => Math.floor((a.hp * 100) / Math.max(1, a.maxHp))
   const metricOf = (a: Actor): number | null => {
@@ -705,12 +753,14 @@ function conditionValue(ctx: EffectContext, actor: Actor, c: Condition): number 
     case 'ally':
     case 'lowest ally': {
       if (c.metric === 'count') return allies.length
+      // "ally status X": some ally holds it (D-079), not only the lowest one.
+      if (c.metric === 'status' && c.subject === 'ally') return allies.some((a) => metricOf(a) === 1) ? 1 : 0
       const low = lowestHpPercent(allies)
       return low ? metricOf(low) : null
     }
     case 'allies':
     case 'party': {
-      const all = [actor, ...allies]
+      const all = actor.kind === 'hero' ? partyHeroes : [actor, ...allies]
       if (c.metric === 'count') return all.length
       if (c.metric === 'hp') return Math.floor(all.reduce((s, a) => s + pct(a), 0) / all.length)
       return null
@@ -718,6 +768,8 @@ function conditionValue(ctx: EffectContext, actor: Actor, c: Condition): number 
     case 'enemy':
     case 'enemies': {
       if (c.metric === 'count') return enemies.length
+      // "enemy status mark": some enemy holds it (D-079) — the Ranger shoots the Marked one, wherever it stands.
+      if (c.metric === 'status') return enemies.some((a) => metricOf(a) === 1) ? 1 : 0
       const low = lowestHpPercent(enemies)
       return low ? metricOf(low) : null
     }
@@ -736,7 +788,9 @@ function matchesName(id: string, name: string, ref: string): boolean {
   return id === r || norm(name) === r || id.endsWith(`-${r}`)
 }
 
-function heroActionFrom(ctx: EffectContext, actor: Actor, action: Action): ResolvedAction {
+function heroActionFrom(ctx: EffectContext, actor: Actor, action: Action, strict: true): ResolvedAction | null
+function heroActionFrom(ctx: EffectContext, actor: Actor, action: Action, strict?: false): ResolvedAction
+function heroActionFrom(ctx: EffectContext, actor: Actor, action: Action, strict = false): ResolvedAction | null {
   const h = actor.hero
   if (!h) return { kind: 'pass' }
   const reach = h.weapon.reach || h.weapon.ranged
@@ -807,6 +861,8 @@ function heroActionFrom(ctx: EffectContext, actor: Actor, action: Action): Resol
     case 'basic':
       break
   }
+  // A strict caller (rule fall-through) hears "cannot" for anything but an explicit basic attack.
+  if (strict && action.verb !== 'basic') return null
   const target = selectTarget(ctx, actor, action.verb === 'basic' ? action.target : undefined, reach)
   return target ? { kind: 'basic', target } : { kind: 'guard' }
 }
@@ -818,8 +874,14 @@ function fleeAllowed(ctx: EffectContext, actor: Actor): boolean {
 
 export function decideHero(ctx: EffectContext, actor: Actor): ResolvedAction {
   const rule = parseRule(actor.hero?.aiRule ?? '')
-  const action = decide(rule, { value: (c) => conditionValue(ctx, actor, c) })
-  return heroActionFrom(ctx, actor, action)
+  // The first matching clause whose action can be carried out now wins (no potion left, no pool: the next clause);
+  // a basic attack on the nearest enemy is the last resort (D-060, D-079).
+  const actions = decideAll(rule, { value: (c) => conditionValue(ctx, actor, c) })
+  for (const action of actions.slice(0, -1)) {
+    const r = heroActionFrom(ctx, actor, action, true)
+    if (r) return r
+  }
+  return heroActionFrom(ctx, actor, actions[actions.length - 1]!, false) ?? { kind: 'guard' }
 }
 
 function decideMonster(ctx: EffectContext, actor: Actor): ResolvedAction {
@@ -849,7 +911,9 @@ function decideMonster(ctx: EffectContext, actor: Actor): ResolvedAction {
   }
   if (!attack) {
     if (available.length === 0) return { kind: 'pass' }
-    attack = ctx.rng.weighted(available, (a) => Math.max(0, a.aiWeight) || 1)
+    // A 0-weight attack is a trigger or a rule-only move (The Swarm Turns, a Bruiser's bellow): never a random pick while a weighted one exists.
+    const weighted = available.filter((a) => a.aiWeight > 0)
+    attack = ctx.rng.weighted(weighted.length ? weighted : available, (a) => Math.max(0, a.aiWeight) || 1)
   }
   const reach = attack.target !== 'enemyFront' && attack.target !== 'enemy' ? true : actor.row === 'back'
   const target = selectTarget(ctx, actor, action.verb === 'named' ? action.target : undefined, reach)

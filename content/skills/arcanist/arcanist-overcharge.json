@@ -1,0 +1,57 @@
+{
+  "id": "arcanist-overcharge",
+  "classId": "arcanist",
+  "school": "evocation",
+  "tier": 3,
+  "name": "Overcharge",
+  "description": "Evocation crits deal +30% Crit Damage and refund 10% of the skill’s Mana cost.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "school-crit-damage-bonus",
+      "amount": 30,
+      "target": "self",
+      "note": "crits by skills of this skill’s school deal +amount pp Crit Damage"
+    },
+    {
+      "kind": "custom",
+      "customId": "school-crit-refund-percent",
+      "percent": 10,
+      "target": "self",
+      "note": "a crit by a skill of this skill’s school refunds percent% of its pool cost"
+    }
+  ],
+  "prerequisiteId": "arcanist-backdraft",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Refund 20%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "school-crit-refund-percent",
+        "percent": 20,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff"
+  ],
+  "xpTags": [
+    "perception",
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 0
+  }
+}

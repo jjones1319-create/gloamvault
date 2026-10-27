@@ -1,0 +1,57 @@
+{
+  "id": "ranger-steady-draw",
+  "classId": "ranger",
+  "school": "marksman",
+  "tier": 1,
+  "name": "Steady Draw",
+  "description": "Your first action in each fight has weight 800 and deals +20%.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "first-action-weight",
+      "amount": 800,
+      "target": "self",
+      "note": "the first action of each fight resolves at weight amount"
+    },
+    {
+      "kind": "custom",
+      "customId": "first-action-damage-percent",
+      "percent": 20,
+      "target": "self",
+      "note": "the first action of each fight deals +percent"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Also +10 Momentum.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "first-action-momentum",
+        "amount": 10,
+        "target": "self",
+        "note": "the first action of each fight also gives amount Momentum"
+      }
+    ]
+  },
+  "tags": [
+    "buff"
+  ],
+  "xpTags": [
+    "perception"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 0
+  }
+}

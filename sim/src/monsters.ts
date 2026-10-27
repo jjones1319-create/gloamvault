@@ -49,13 +49,21 @@ export function buildMonsterActor(content: Content, t: Tuning, def: MonsterDef, 
   let goldMult = def.goldMultiplier
   let xpClass: number = def.xpClass
   const affixIds = opts.champion?.affixIds ?? []
+  // 06 §2: a champion "gains HP ×2.5, gold ×3, XP class +2" once, however many affixes it carries (each affix record
+  // repeats the champion's numbers; the largest of each counts — D-081).
+  let champHp = 1
+  let champGold = 1
+  let champXp = 0
   for (const id of affixIds) {
     const affix = content.eliteAffixes.get(id)
     if (!affix) continue
-    hpMult *= affix.hpMultiplier
-    goldMult *= affix.goldMultiplier
-    xpClass += affix.xpClassBonus
+    champHp = Math.max(champHp, affix.hpMultiplier)
+    champGold = Math.max(champGold, affix.goldMultiplier)
+    champXp = Math.max(champXp, affix.xpClassBonus)
   }
+  hpMult *= champHp
+  goldMult *= champGold
+  xpClass += champXp
   const maxHp = Math.max(1, roundHalfUp((base.hp * hpMult * opts.hpPercent * (opts.enemyHpPercent ?? 100)) / 10_000))
   const isBoss = def.boss !== null
   const isHunter = def.hunter !== null
@@ -99,6 +107,7 @@ export function buildMonsterActor(content: Content, t: Tuning, def: MonsterDef, 
     charging: null,
     statuses: [],
     modifiers: [],
+    hooks: [],
     guarding: false,
     downed: false,
     downedTurnsLeft: 0,
@@ -157,11 +166,14 @@ export function monsterLevelOnFloor(def: MonsterDef, floorLevel: number): number
 }
 
 /** Party-size scaling (03 §11.2, 06 §8.1): count ×0.6/0.8/1.0/1.2 (min 1, specials and monsters never removed) and HP ×0.7/0.85/1.0/1.15. */
-export function partyScale(t: Tuning, partySize: number): { countPercent: number; hpPercent: number } {
+export function partyScale(t: Tuning, partySize: number): { countPercent: number; hpPercent: number; damagePercent: number } {
   const i = Math.max(0, Math.min(3, partySize - 1))
+  // 03 §11.2 scales count and HP; the damage line is D-080's (a solo hero takes every blow the scaled pack deals).
+  const damage = (t.dungeon.partyScaling as { damage?: number[] }).damage
   return {
     countPercent: roundHalfUp((t.dungeon.partyScaling.count[i] ?? 1) * 100),
     hpPercent: roundHalfUp((t.dungeon.partyScaling.hp[i] ?? 1) * 100),
+    damagePercent: roundHalfUp((damage?.[i] ?? 1) * 100),
   }
 }
 

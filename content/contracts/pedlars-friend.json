@@ -1,0 +1,28 @@
+{
+  "id": "pedlars-friend",
+  "name": "Pedlar's Friend",
+  "description": "Sell Dunmore Quist 20 parts in one delve.",
+  "cadence": "daily",
+  "kind": "collect",
+  "target": {
+    "count": 20,
+    "condition": "parts-sold-one-delve"
+  },
+  "reward": {
+    "goldR": 0.15,
+    "keys": [
+      {
+        "kind": "standard",
+        "amount": 1
+      }
+    ],
+    "chestId": null,
+    "items": [
+      {
+        "itemId": "torch",
+        "amount": 2
+      }
+    ]
+  },
+  "band": null
+}

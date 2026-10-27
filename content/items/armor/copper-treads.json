@@ -1,0 +1,49 @@
+{
+  "id": "copper-treads",
+  "name": "Copper Treads",
+  "slot": "boots",
+  "kind": "armor",
+  "grade": "F",
+  "materialLadder": "metal",
+  "materialRung": 0,
+  "weaponType": null,
+  "armorFamily": "mail",
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "defense": 2,
+    "hp": 2,
+    "dodge": 1
+  },
+  "requirements": {
+    "strength": 8,
+    "wisdom": 0
+  },
+  "affixSlots": 0,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 3,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1,
+  "value": 75,
+  "classLock": [
+    "blade"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "armor-mail-boots-01",
+    "tintPrimary": "#b87333",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "copper"
+  }
+}

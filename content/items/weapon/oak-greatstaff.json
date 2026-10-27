@@ -1,0 +1,49 @@
+{
+  "id": "oak-greatstaff",
+  "name": "Oak Greatstaff",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "D",
+  "materialLadder": "wood",
+  "materialRung": 2,
+  "weaponType": "staff",
+  "armorFamily": null,
+  "hands": 2,
+  "damageType": "fire",
+  "weight": 1400,
+  "baseStats": {
+    "attackSpell": 32,
+    "mana": 36,
+    "speed": -3
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 17
+  },
+  "affixSlots": 1,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 5,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 2.08,
+  "value": 570,
+  "classLock": [
+    "arcanist"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-greatstaff-01",
+    "tintPrimary": "#8b6b3e",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "iron"
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "id": "lantern-of-the-deep",
+  "name": "Lantern of the Deep",
+  "slot": "relic",
+  "kind": "relic",
+  "grade": "E",
+  "materialLadder": null,
+  "materialRung": null,
+  "weaponType": null,
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {},
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 1,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 4,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1,
+  "value": 288,
+  "classLock": [],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": {
+    "effects": [
+      {
+        "kind": "light",
+        "amount": 100,
+        "target": "room",
+        "duration": 3,
+        "note": "sets light to Radiant for 3 rounds (instant): the sim clamps the dial at 100; the revert after 3 rounds is a hook"
+      }
+    ],
+    "usesPerFight": 1,
+    "target": "room"
+  },
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "relic-deep-lantern-01",
+    "tintPrimary": "#1e3a5f",
+    "tintSecondary": "#e8a33c",
+    "trimMetal": "bronze"
+  }
+}

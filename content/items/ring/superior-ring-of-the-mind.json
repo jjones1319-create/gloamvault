@@ -1,0 +1,45 @@
+{
+  "id": "superior-ring-of-the-mind",
+  "name": "Superior Ring of the Mind",
+  "slot": "ring",
+  "kind": "ring",
+  "grade": "C",
+  "materialLadder": null,
+  "materialRung": null,
+  "weaponType": null,
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "attackSpell": 5
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 2,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 6,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1,
+  "value": 360,
+  "classLock": [],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "ring-mind-01",
+    "tintPrimary": "#a8b0ba",
+    "tintSecondary": "#3b82f6",
+    "trimMetal": "steel"
+  }
+}

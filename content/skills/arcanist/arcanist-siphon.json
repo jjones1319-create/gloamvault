@@ -1,0 +1,56 @@
+{
+  "id": "arcanist-siphon",
+  "classId": "arcanist",
+  "school": "arcana",
+  "tier": 2,
+  "name": "Siphon",
+  "description": "Costs no Mana. You restore 25% of max Mana from one enemy in either row; if the target is a caster it is Silenced 1 turn.",
+  "type": "active",
+  "cost": 0,
+  "weight": 1000,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "pool",
+      "percent": 25,
+      "target": "self"
+    },
+    {
+      "kind": "custom",
+      "customId": "apply-if-caster",
+      "status": "silence",
+      "duration": 1,
+      "note": "applies `status` for `duration` only if the target is a caster (a monster with a spell attack)"
+    }
+  ],
+  "prerequisiteId": "arcanist-attune",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Restore 35%.",
+    "effects": [
+      {
+        "kind": "pool",
+        "percent": 35,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "reach",
+    "utility",
+    "control"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "utility",
+    "priority": 45
+  }
+}

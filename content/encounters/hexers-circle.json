@@ -1,0 +1,30 @@
+{
+  "id": "hexers-circle",
+  "tableId": "cellars-d",
+  "dungeonId": "gravehollow-keep",
+  "floorBand": {
+    "min": 3,
+    "max": 3
+  },
+  "name": "Hexer's Circle",
+  "composition": [
+    {
+      "monsterId": "grinning-hexer",
+      "count": 1,
+      "row": "back"
+    },
+    {
+      "monsterId": "grinning-bruiser",
+      "count": 1,
+      "row": "front"
+    },
+    {
+      "monsterId": "giant-rat",
+      "count": 2,
+      "row": "front"
+    }
+  ],
+  "weight": 10,
+  "ambushModifier": 15,
+  "eliteAllowed": true
+}

@@ -1,0 +1,63 @@
+{
+  "id": "arcanist-spark",
+  "classId": "arcanist",
+  "school": "evocation",
+  "tier": 1,
+  "name": "Spark",
+  "description": "1.2× Lightning to one enemy in either row; Shock 2 turns. If the target was already Shocked, the bolt chains 0.5× to one adjacent enemy.",
+  "type": "active",
+  "cost": 8,
+  "weight": 800,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1.2,
+      "damageType": "lightning"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "shock",
+      "duration": 2
+    },
+    {
+      "kind": "custom",
+      "customId": "chain-if-shocked",
+      "multiplier": 0.5,
+      "damageType": "lightning",
+      "amount": 1,
+      "note": "if the target held Shock before this hit, the hit chains multiplier× as damageType to `amount` adjacent enemies"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Chains to two.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "chain-if-shocked",
+        "multiplier": 0.5,
+        "damageType": "lightning",
+        "amount": 2
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "debuff",
+    "reach"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 55
+  }
+}

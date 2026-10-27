@@ -1,0 +1,53 @@
+{
+  "id": "blade-cleaving-blow",
+  "classId": "blade",
+  "school": "executioner",
+  "tier": 1,
+  "name": "Cleaving Blow",
+  "description": "1.8× Slash to a front-row enemy.",
+  "type": "active",
+  "cost": 12,
+  "weight": 1400,
+  "target": "enemyFront",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1.8,
+      "damageType": "slash",
+      "scalesWith": "strength"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "requirements": {
+    "weaponTypes": [
+      "greatsword",
+      "greataxe"
+    ]
+  },
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Weaken 1 turn.",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "weaken",
+        "duration": 1
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget"
+  ],
+  "xpTags": [
+    "strength"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 60
+  }
+}

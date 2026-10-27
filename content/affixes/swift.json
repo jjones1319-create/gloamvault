@@ -1,0 +1,42 @@
+{
+  "id": "swift",
+  "name": "Swift",
+  "position": "prefix",
+  "lines": [
+    {
+      "bandMin": "F",
+      "bandMax": "D",
+      "stat": "speed",
+      "unit": "flat",
+      "min": 1,
+      "max": 3
+    },
+    {
+      "bandMin": "C",
+      "bandMax": "A",
+      "stat": "speed",
+      "unit": "flat",
+      "min": 3,
+      "max": 6
+    },
+    {
+      "bandMin": "S",
+      "bandMax": "God",
+      "stat": "speed",
+      "unit": "flat",
+      "min": 6,
+      "max": 12
+    }
+  ],
+  "slots": [
+    "mainHand",
+    "offHand",
+    "legs",
+    "boots",
+    "ring"
+  ],
+  "weight": 3,
+  "tags": [
+    "speed"
+  ]
+}

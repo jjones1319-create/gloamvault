@@ -1,0 +1,48 @@
+{
+  "id": "copper-throwing-axes",
+  "name": "Copper Throwing Axes",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "F",
+  "materialLadder": "metal",
+  "materialRung": 0,
+  "weaponType": "throwingKnife",
+  "armorFamily": null,
+  "hands": 1,
+  "damageType": "slash",
+  "weight": 1000,
+  "baseStats": {
+    "attackPhys": 9,
+    "critDamage": 10
+  },
+  "requirements": {
+    "strength": 8,
+    "wisdom": 0
+  },
+  "affixSlots": 0,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 3,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1.33,
+  "value": 150,
+  "classLock": [
+    "shade"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-throwing-axes-01",
+    "tintPrimary": "#b87333",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "copper"
+  }
+}

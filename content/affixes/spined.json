@@ -1,0 +1,55 @@
+{
+  "id": "spined",
+  "name": "Spined",
+  "position": "prefix",
+  "lines": [
+    {
+      "bandMin": "F",
+      "bandMax": "D",
+      "effect": {
+        "kind": "custom",
+        "customId": "reflect-melee-percent",
+        "damageType": "pierce",
+        "target": "self",
+        "note": "reflects the rolled percent of melee damage taken (the Thorned elite affix's hook)"
+      },
+      "min": 5,
+      "max": 5
+    },
+    {
+      "bandMin": "C",
+      "bandMax": "A",
+      "effect": {
+        "kind": "custom",
+        "customId": "reflect-melee-percent",
+        "damageType": "pierce",
+        "target": "self",
+        "note": "reflects the rolled percent of melee damage taken (the Thorned elite affix's hook)"
+      },
+      "min": 10,
+      "max": 10
+    },
+    {
+      "bandMin": "S",
+      "bandMax": "God",
+      "effect": {
+        "kind": "custom",
+        "customId": "reflect-melee-percent",
+        "damageType": "pierce",
+        "target": "self",
+        "note": "reflects the rolled percent of melee damage taken (the Thorned elite affix's hook)"
+      },
+      "min": 15,
+      "max": 15
+    }
+  ],
+  "slots": [
+    "offHand",
+    "chest"
+  ],
+  "weight": 2,
+  "tags": [
+    "defensive",
+    "reflect"
+  ]
+}

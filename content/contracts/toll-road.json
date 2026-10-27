@@ -1,0 +1,26 @@
+{
+  "id": "toll-road",
+  "name": "Toll Road",
+  "description": "Kill 12 of the Grinning Company without any hero being Fallen.",
+  "cadence": "daily",
+  "kind": "noWipe",
+  "target": {
+    "familyId": "cellar-vermin",
+    "dungeonId": "gravehollow-keep",
+    "zoneId": "the-cellars",
+    "count": 12,
+    "condition": "grinning-company-only"
+  },
+  "reward": {
+    "goldR": 0.3,
+    "keys": [
+      {
+        "kind": "standard",
+        "amount": 1
+      }
+    ],
+    "chestId": null,
+    "items": []
+  },
+  "band": null
+}

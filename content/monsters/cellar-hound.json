@@ -1,0 +1,162 @@
+{
+  "id": "cellar-hound",
+  "name": "Cellar Hound",
+  "familyId": "cellar-vermin",
+  "dungeonId": "gravehollow-keep",
+  "zoneId": "the-cellars",
+  "role": "fodder",
+  "size": "medium",
+  "rows": [
+    "front"
+  ],
+  "levelBand": {
+    "min": 1,
+    "max": 4
+  },
+  "multipliers": {
+    "hp": 0.9,
+    "attack": 1,
+    "defense": 0.7
+  },
+  "speed": 130,
+  "xpClass": 1,
+  "goldMultiplier": 0.8,
+  "ambushModifier": 15,
+  "attacks": [
+    {
+      "id": "bite",
+      "name": "Bite",
+      "damageType": "pierce",
+      "weight": 800,
+      "multiplier": 1,
+      "target": "enemyFront",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "bleed",
+          "chance": 25,
+          "duration": 2
+        }
+      ],
+      "aiWeight": 65,
+      "tell": null
+    },
+    {
+      "id": "hamstring",
+      "name": "Hamstring",
+      "damageType": "slash",
+      "weight": 1000,
+      "multiplier": 0.8,
+      "target": "enemyFront",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "slow",
+          "duration": 2
+        }
+      ],
+      "aiWeight": 35,
+      "tell": null
+    },
+    {
+      "id": "handlers-fall",
+      "name": "Handler's Fall",
+      "damageType": "blunt",
+      "weight": 800,
+      "multiplier": 0,
+      "target": "self",
+      "effects": [
+        {
+          "kind": "custom",
+          "customId": "handler-dog",
+          "status": "fear",
+          "duration": 1,
+          "target": "self",
+          "note": "fires when the nearest bandit ally dies, not as an action: the hound is Feared (1)"
+        }
+      ],
+      "aiWeight": 0,
+      "tell": null
+    }
+  ],
+  "resist": [],
+  "weak": [
+    "fire"
+  ],
+  "immune": [],
+  "statusImmune": [],
+  "behavior": {
+    "rules": [
+      {
+        "if": "self's handler (the nearest bandit ally) died this round",
+        "then": "handlers-fall"
+      },
+      {
+        "if": "a bandit ally attacked a hero last turn (target: that hero)",
+        "then": "bite"
+      },
+      {
+        "if": "always",
+        "then": "bite"
+      }
+    ],
+    "fleesAtPercent": 0
+  },
+  "parts": {
+    "common": {
+      "materialId": "rawhide",
+      "chance": 35,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "rare": {
+      "itemId": "cellar-hound-egg",
+      "chance": 4,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "breakLimb": {
+      "name": "foreleg",
+      "effect": {
+        "kind": "debuffStat",
+        "stat": "speed",
+        "amount": -40,
+        "note": "for the rest of the fight"
+      }
+    }
+  },
+  "monsterTechniqueSkillIds": [],
+  "elitePool": [
+    "rabid",
+    "thorned",
+    "vampiric",
+    "shielded",
+    "commander"
+  ],
+  "boss": null,
+  "hunter": null,
+  "visual": {
+    "baseMesh": "hound",
+    "scale": 1,
+    "variantOf": null,
+    "palette": [
+      "#6e5a3a",
+      "#8c3b1e",
+      "#f4f1ea"
+    ],
+    "reads200px": true,
+    "animations": [
+      "Idle",
+      "Move",
+      "Attack1",
+      "Attack2",
+      "Hit",
+      "Death"
+    ],
+    "triBudget": 3000
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "id": "shade-opportunist",
+  "classId": "shade",
+  "school": "shadow",
+  "tier": 2,
+  "name": "Opportunist",
+  "description": "+15% damage against enemies under any status; your crits against such enemies Daze them 20% of the time.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "damage-bonus-vs-status",
+      "percent": 15,
+      "target": "self",
+      "note": "no `status` named: +percent% damage against any target holding at least one status"
+    },
+    {
+      "kind": "custom",
+      "customId": "daze-on-crit-vs-status",
+      "chance": 20,
+      "target": "self",
+      "note": "a crit by the holder on a target already under any status Dazes it at chance%"
+    }
+  ],
+  "prerequisiteId": "shade-cold-read",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "+25% damage; Daze 35%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "damage-bonus-vs-status",
+        "percent": 25,
+        "target": "self"
+      },
+      {
+        "kind": "custom",
+        "customId": "daze-on-crit-vs-status",
+        "chance": 35,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "control"
+  ],
+  "xpTags": [
+    "perception"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 0
+  }
+}

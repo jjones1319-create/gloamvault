@@ -1,0 +1,49 @@
+{
+  "id": "bronze-chausses",
+  "name": "Bronze Chausses",
+  "slot": "legs",
+  "kind": "armor",
+  "grade": "E",
+  "materialLadder": "metal",
+  "materialRung": 1,
+  "weaponType": null,
+  "armorFamily": "mail",
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "defense": 5,
+    "hp": 4,
+    "speed": 1
+  },
+  "requirements": {
+    "strength": 10,
+    "wisdom": 0
+  },
+  "affixSlots": 1,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 4,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1.25,
+  "value": 168,
+  "classLock": [
+    "blade"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "armor-mail-legs-01",
+    "tintPrimary": "#cd7f32",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "bronze"
+  }
+}

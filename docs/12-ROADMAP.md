@@ -1,6 +1,6 @@
 # 12 — Roadmap: twelve phases in three segments
 
-*Last updated 2026-10-26 · rev. 1 (Claude). James asked for the build to run in **three segments**, each a third of the phases, with all feedback gathered at the end of each segment. `PROMPT.md` holds the prompts that start each segment; `STATUS.md` at the repo root is the checkpoint Claude Code keeps while it works.*
+*Last updated 2026-10-27 · rev. 2 (Claude: James's direction of 2026-10-27 added to Phases 4 and 7 — D-082–D-085) · rev. 1 (Claude). James asked for the build to run in **three segments**, each a third of the phases, with all feedback gathered at the end of each segment. `PROMPT.md` holds the prompts that start each segment; `STATUS.md` at the repo root is the checkpoint Claude Code keeps while it works.*
 
 ## 0. How a segment runs
 
@@ -35,6 +35,7 @@ If a Claude Code session ends mid-segment, James pastes the **Continue** prompt;
 
 ### Phase 4 — The playable vertical slice (placeholder 3D)
 - Screens (Preact): New hero (species cards with pros/cons chips, class cards, three Tier I picks, egg choice, 6 free points) · Emberfall hub with the Blacksmith (Repair all, +N, promotion, salvage), Skill Hall, Curio Merchant (Odds button, pity counters), Stables (hatch, stance), Bank, Quest Board (3 contracts), the Lantern Inn (rest, save, backup), Waystone (Gravehollow → the Cellars) · the delve map (rooms, doors, light meter, floor clock, scout reveals) · the room scene (three.js: a grey-box Cellars template, capsule heroes and monsters in the right colours and sizes, fixed camera) · the fight HUD (timeline strip of 8, four skill buttons + Guard/Item/Row/Ultimate, target tap, pet stance, 2×/3× speed, Auto with the AI-rule editor) · loot and results screens (what grew, wear, gold) · inventory and equipment (eleven slots with wear pips, auto-equip best) · skills (three school columns) · pet · settings.
+- **James's direction of 2026-10-27** (D-082–D-085): an **XP bar and a level-up line** on the results screen and the hero card (Final Fantasy-style levels); a **party of up to four heroes for one player**, with the roster at the Lantern Inn and members unlocking as the tower is cleared (D-084's schedule); the fight HUD says whose **turn** it is and waits for the choice (turn-based, D-085); **Walk out** in a floor's entrance and **Teleport out** at a floor's end, and the Waystone offers **the floor below the deepest one finished** (D-083).
 - Save/load with migrations and export/import; deep links (`#delve=gravehollow&zone=1&seed=17&auto=1`); `npm run shots` and `npm run e2e`.
 - **Done when:** the whole loop in `03` §13 (the first thirty minutes) works on the phone, screenshots are in `client/shots/`, and `SEGMENT-1-REVIEW.md` is written.
 
@@ -55,6 +56,7 @@ If a Claude Code session ends mid-segment, James pastes the **Continue** prompt;
 - **Done when:** a delve through all three zones renders at a sustained 60 fps (or 30 in battery mode) on the S25 Ultra with every monster present; screenshots in `client/shots/`.
 
 ### Phase 7 — Gravehollow complete, systems complete
+- **Gravehollow's length** follows James's answer to D-085 (8 floors proposed: Cellars F1–3, Crypts F4–6, Drowned Vault F7–8 with the Hollow King on F8); the floor numbers below are rev. 1's ten and move with it. A **class-damage pass** (the Arcanist and Mender out-damage the Ranger 2–3× at level 1, `docs/balance/2026-10-27-content-pass-1.md` §7) goes with Tiers IV–V.
 - Floors 4–10: the Crypts and the Drowned Vault content, the Barrow Warden, Sister Naesa, the Hollow King (3 phases, light mechanic, returning hunters), Waystones, elite affixes scaling 1→3, the Pacts menu (Normal/Hard/Nightmare + 12 Pacts).
 - Skills Tiers IV–V designed into JSON (V unobtainable until Segment 3's endgame), Insights with pity, monster techniques, Tomes; weapon XP, affinities and Awakening; promotion through every material rung available in Gravehollow; items B–A, sets, named uniques; the pets' actives and traits growing by use; chests Grand tier, Divine Shards; daily/weekly contracts live.
 - Balance pass: the runner across all ten floors and party sizes 1–4; `docs/balance/<date>-gravehollow.md`.

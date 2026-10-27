@@ -1,0 +1,41 @@
+{
+  "id": "of-the-mule",
+  "name": "of the Mule",
+  "position": "suffix",
+  "lines": [
+    {
+      "bandMin": "F",
+      "bandMax": "D",
+      "stat": "carry",
+      "unit": "flat",
+      "min": 5,
+      "max": 5
+    },
+    {
+      "bandMin": "C",
+      "bandMax": "A",
+      "stat": "carry",
+      "unit": "flat",
+      "min": 10,
+      "max": 10
+    },
+    {
+      "bandMin": "S",
+      "bandMax": "God",
+      "stat": "carry",
+      "unit": "flat",
+      "min": 20,
+      "max": 20
+    }
+  ],
+  "slots": [
+    "chest",
+    "boots",
+    "talisman"
+  ],
+  "weight": 3,
+  "tags": [
+    "utility",
+    "carry"
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "id": "leather-hood",
+  "name": "Leather Hood",
+  "slot": "helmet",
+  "kind": "armor",
+  "grade": "E",
+  "materialLadder": "hide",
+  "materialRung": 1,
+  "weaponType": null,
+  "armorFamily": "leather",
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "defense": 1,
+    "hp": 5,
+    "detection": 1
+  },
+  "requirements": {
+    "strength": 7,
+    "wisdom": 0
+  },
+  "affixSlots": 1,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 4,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1,
+  "value": 168,
+  "classLock": [
+    "ranger",
+    "shade"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "armor-leather-helm-01",
+    "tintPrimary": "#7a4b2a",
+    "tintSecondary": "#3b2a1e",
+    "trimMetal": "bronze"
+  }
+}

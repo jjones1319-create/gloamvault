@@ -1,0 +1,59 @@
+{
+  "id": "copper-kris",
+  "name": "Copper Kris",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "F",
+  "materialLadder": "metal",
+  "materialRung": 0,
+  "weaponType": "dagger",
+  "armorFamily": null,
+  "hands": 1,
+  "damageType": "pierce",
+  "weight": 800,
+  "baseStats": {
+    "attackPhys": 8
+  },
+  "requirements": {
+    "strength": 7,
+    "wisdom": 0
+  },
+  "affixSlots": 0,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 3,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1.33,
+  "value": 150,
+  "classLock": [
+    "shade",
+    "blade"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": {
+    "text": "10% Bleed on hit",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "bleed",
+        "chance": 10,
+        "target": "enemy",
+        "note": "on hit"
+      }
+    ]
+  },
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-kris-01",
+    "tintPrimary": "#b87333",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "copper"
+  }
+}

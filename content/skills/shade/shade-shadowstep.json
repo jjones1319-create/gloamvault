@@ -1,0 +1,51 @@
+{
+  "id": "shade-shadowstep",
+  "classId": "shade",
+  "school": "shadow",
+  "tier": 2,
+  "name": "Shadowstep",
+  "description": "Swap rows as part of the action and enter Veil for 1 turn.",
+  "type": "active",
+  "cost": 12,
+  "weight": 800,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "rowSwap",
+      "target": "self"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "veil",
+      "duration": 1
+    }
+  ],
+  "prerequisiteId": "shade-veil",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Veil 2 turns.",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "veil",
+        "duration": 2
+      }
+    ]
+  },
+  "tags": [
+    "mobility",
+    "buff"
+  ],
+  "xpTags": [
+    "agility"
+  ],
+  "aiHints": {
+    "role": "defend",
+    "priority": 45
+  }
+}

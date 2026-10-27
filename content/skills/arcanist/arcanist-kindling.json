@@ -1,0 +1,55 @@
+{
+  "id": "arcanist-kindling",
+  "classId": "arcanist",
+  "school": "evocation",
+  "tier": 1,
+  "name": "Kindling",
+  "description": "Fire and Lightning skills +8%; the first Evocation cast of each fight costs 0 Mana.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "school-damage-percent",
+      "percent": 8,
+      "target": "self",
+      "note": "skills of this skill’s school (Evocation: Fire and Lightning) deal +percent%"
+    },
+    {
+      "kind": "custom",
+      "customId": "first-school-cast-free",
+      "target": "self",
+      "note": "the holder’s first cast of this skill’s school each fight costs 0 pool"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "+12%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "school-damage-percent",
+        "percent": 12,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 0
+  }
+}

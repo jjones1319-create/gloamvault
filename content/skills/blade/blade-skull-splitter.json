@@ -1,0 +1,65 @@
+{
+  "id": "blade-skull-splitter",
+  "classId": "blade",
+  "school": "executioner",
+  "tier": 3,
+  "name": "Skull Splitter",
+  "description": "2.4× Slash to a front-row enemy; Stun 1 turn on a crit.",
+  "type": "active",
+  "cost": 24,
+  "weight": 1400,
+  "target": "enemyFront",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 2.4,
+      "damageType": "slash",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "custom",
+      "customId": "status-on-crit",
+      "status": "stun",
+      "duration": 1,
+      "note": "the status lands only if this skill crits"
+    }
+  ],
+  "prerequisiteId": "blade-execute",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "requirements": {
+    "weaponTypes": [
+      "greatsword",
+      "greataxe"
+    ]
+  },
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Stun on any hit against a target below 40% HP.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "status-below-hp",
+        "status": "stun",
+        "duration": 1,
+        "percent": 40,
+        "note": "the status lands on any hit when the target is under percent% HP"
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "control"
+  ],
+  "xpTags": [
+    "strength",
+    "perception"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 65
+  }
+}

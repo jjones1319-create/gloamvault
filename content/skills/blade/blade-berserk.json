@@ -1,0 +1,98 @@
+{
+  "id": "blade-berserk",
+  "classId": "blade",
+  "school": "bloodletter",
+  "tier": 3,
+  "name": "Berserk",
+  "description": "For 3 turns: +25% Attack, +15 Speed, −20% Defense, Momentum gain ×1.5; you cannot Guard.",
+  "type": "active",
+  "cost": 20,
+  "weight": 800,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "buffStat",
+      "duration": 3,
+      "stat": "attackPhys",
+      "percent": 25
+    },
+    {
+      "kind": "buffStat",
+      "duration": 3,
+      "stat": "speed",
+      "amount": 15
+    },
+    {
+      "kind": "debuffStat",
+      "duration": 3,
+      "stat": "defense",
+      "percent": -20
+    },
+    {
+      "kind": "buffStat",
+      "duration": 3,
+      "stat": "momentumGain",
+      "percent": 50
+    },
+    {
+      "kind": "custom",
+      "customId": "cannot-guard",
+      "duration": 3,
+      "target": "self"
+    }
+  ],
+  "prerequisiteId": "blade-pain-threshold",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "4 turns; −10% Defense.",
+    "effects": [
+      {
+        "kind": "buffStat",
+        "duration": 4,
+        "stat": "attackPhys",
+        "percent": 25
+      },
+      {
+        "kind": "buffStat",
+        "duration": 4,
+        "stat": "speed",
+        "amount": 15
+      },
+      {
+        "kind": "debuffStat",
+        "duration": 4,
+        "stat": "defense",
+        "percent": -10
+      },
+      {
+        "kind": "buffStat",
+        "duration": 4,
+        "stat": "momentumGain",
+        "percent": 50
+      },
+      {
+        "kind": "custom",
+        "customId": "cannot-guard",
+        "duration": 4,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "momentum"
+  ],
+  "xpTags": [
+    "willpower",
+    "vitality"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 50
+  }
+}

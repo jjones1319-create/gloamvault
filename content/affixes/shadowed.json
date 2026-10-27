@@ -1,0 +1,53 @@
+{
+  "id": "shadowed",
+  "name": "Shadowed",
+  "position": "prefix",
+  "lines": [
+    {
+      "bandMin": "F",
+      "bandMax": "D",
+      "effect": {
+        "kind": "damage",
+        "multiplier": 1,
+        "damageType": "shadow",
+        "note": "the rolled value is the percent of each hit dealt again as Shadow"
+      },
+      "min": 5,
+      "max": 8
+    },
+    {
+      "bandMin": "C",
+      "bandMax": "A",
+      "effect": {
+        "kind": "damage",
+        "multiplier": 1,
+        "damageType": "shadow",
+        "note": "the rolled value is the percent of each hit dealt again as Shadow"
+      },
+      "min": 8,
+      "max": 15
+    },
+    {
+      "bandMin": "S",
+      "bandMax": "God",
+      "effect": {
+        "kind": "damage",
+        "multiplier": 1,
+        "damageType": "shadow",
+        "note": "the rolled value is the percent of each hit dealt again as Shadow"
+      },
+      "min": 15,
+      "max": 25
+    }
+  ],
+  "slots": [
+    "mainHand",
+    "offHand"
+  ],
+  "weight": 3,
+  "tags": [
+    "offensive",
+    "element",
+    "shadow"
+  ]
+}

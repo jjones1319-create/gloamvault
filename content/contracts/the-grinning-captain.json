@@ -1,0 +1,27 @@
+{
+  "id": "the-grinning-captain",
+  "name": "The Grinning Captain",
+  "description": "Kill Captain Vexa Marrow on Hard or above with a party of 2 or more.",
+  "cadence": "weekly",
+  "kind": "kill",
+  "target": {
+    "monsterId": "captain-vexa-marrow",
+    "dungeonId": "gravehollow-keep",
+    "zoneId": "the-cellars",
+    "count": 1,
+    "difficultyMin": "hard",
+    "partyMin": 2
+  },
+  "reward": {
+    "goldR": 1,
+    "keys": [
+      {
+        "kind": "grand",
+        "amount": 1
+      }
+    ],
+    "chestId": "standard-material-crate",
+    "items": []
+  },
+  "band": 1
+}

@@ -1,0 +1,42 @@
+{
+  "id": "of-the-coin",
+  "name": "of the Coin",
+  "position": "suffix",
+  "lines": [
+    {
+      "bandMin": "F",
+      "bandMax": "D",
+      "stat": "luck",
+      "unit": "flat",
+      "min": 1,
+      "max": 1
+    },
+    {
+      "bandMin": "C",
+      "bandMax": "A",
+      "stat": "luck",
+      "unit": "flat",
+      "min": 1,
+      "max": 2
+    },
+    {
+      "bandMin": "S",
+      "bandMax": "God",
+      "stat": "luck",
+      "unit": "flat",
+      "min": 2,
+      "max": 4
+    }
+  ],
+  "slots": [
+    "helmet",
+    "ring",
+    "talisman",
+    "relic"
+  ],
+  "weight": 2,
+  "tags": [
+    "attribute",
+    "luck"
+  ]
+}

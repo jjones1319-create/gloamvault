@@ -1,7 +1,7 @@
 import type { Content } from './content.ts'
 import type { DelveHero, DelveState } from './delve-types.ts'
 import type { Actor, FightState } from './fight-types.ts'
-import { heroLevelFromSkills, speciesRules } from './hero.ts'
+import { applyBattleXpLevel, speciesRules } from './hero.ts'
 import { insightChanceBp, rollInsight } from './insight.ts'
 import { gainItemXp, wearArmorPiece, wearShield, wearWeapon } from './items.ts'
 import { monsterXp } from './monsters.ts'
@@ -47,6 +47,8 @@ export interface FightProgressReport {
   itemLevels: Record<string, number>
   insights: string[]
   levelsGained: number
+  /** Battle XP this fight gave (D-082). */
+  battleXp: number
   petXp: number
 }
 
@@ -64,7 +66,7 @@ export function applyFightProgress(content: Content, t: Tuning, rng: Rng, state:
     const actor = fight.actors.find((a) => a.id === actorId)
     if (!dh || !actor) return
     let hero = dh.record
-    const report: FightProgressReport = { heroIndex, skillRanks: {}, attributes: {}, itemLevels: {}, insights: [], levelsGained: 0, petXp: 0 }
+    const report: FightProgressReport = { heroIndex, skillRanks: {}, attributes: {}, itemLevels: {}, insights: [], levelsGained: 0, battleXp: 0, petXp: 0 }
     const extra = heroExtraPercent(content, t, hero, knobXp, state.pactReward.xpPercent)
     const levelBefore = hero.level
 
@@ -130,8 +132,9 @@ export function applyFightProgress(content: Content, t: Tuning, rng: Rng, state:
       if (w.actorId !== actorId) continue
       const key = w.slot
       const c = counts.get(key) ?? { n: 0, double: 0, kind: w.kind }
-      c.n += 1
-      if (w.double) c.double += 1
+      const share = (w.percent ?? 100) / 100
+      c.n += share
+      if (w.double) c.double += share
       counts.set(key, c)
     }
     for (const [slot, c] of counts) {
@@ -146,10 +149,18 @@ export function applyFightProgress(content: Content, t: Tuning, rng: Rng, state:
       if (r.destroyed) state.log.push({ floor: state.floor.number, roomId: state.floor.currentRoomId, kind: 'destroyed', text: `${hero.name}'s ${def.name} falls apart` })
     }
 
-    // Level (§2.2).
-    const level = heroLevelFromSkills(t, hero)
-    if (level !== hero.level) hero = { ...hero, level }
-    report.levelsGained = level - levelBefore
+    // Battle XP and the level (D-082, Final Fantasy style): the heroes standing at the end of a won fight share its XP
+    // (xp class × the level's XP unit, per monster), normalised to the 3-hero table — each takes XP × 3 ÷ standing
+    // heroes — scaled by D and the hero's XP bonuses. A solo hero levels faster per fight; a full party a little slower.
+    if (fight.over?.outcome === 'victory' && !actor.fallen && totalMonsterXp > 0) {
+      const standing = Math.max(1, fight.actors.filter((a) => a.kind === 'hero' && !a.fallen).length)
+      const d = difficultyMultiplier(t, fight.options.floorLevel, hero.level)
+      const share = (totalMonsterXp * t.dungeon.partyScaling.tunedFor) / standing
+      const gain = roundHalfUp((((share * d) / 100) * (100 + extra)) / 100)
+      hero = applyBattleXpLevel(content, t, { ...hero, battleXp: hero.battleXp + Math.max(0, gain) })
+      report.battleXp = Math.max(0, gain)
+    }
+    report.levelsGained = hero.level - levelBefore
 
     // Pet XP (§9): half the owner's fight XP by participation.
     if (hero.petInstance && partyWork > 0 && totalMonsterXp > 0) {

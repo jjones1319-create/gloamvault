@@ -1,0 +1,62 @@
+{
+  "id": "blade-ghouls-grasp",
+  "classId": "blade",
+  "school": "bloodletter",
+  "tier": 3,
+  "name": "Ghoul's Grasp",
+  "description": "1.6× Pierce to a front-row enemy; Grab 1 turn (it cannot act until an ally frees it); heal 30% of the damage dealt. Monster technique: learned only while a Ghoul uses the move.",
+  "type": "active",
+  "cost": 22,
+  "weight": 1000,
+  "target": "enemyFront",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1.6,
+      "damageType": "pierce",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "grab",
+      "duration": 1
+    },
+    {
+      "kind": "custom",
+      "customId": "heal-percent-of-damage-dealt",
+      "percent": 30,
+      "target": "self"
+    }
+  ],
+  "prerequisiteId": "blade-drink-deep",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Heal 50%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "heal-percent-of-damage-dealt",
+        "percent": 50,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "control",
+    "heal"
+  ],
+  "xpTags": [
+    "strength",
+    "agility"
+  ],
+  "aiHints": {
+    "role": "control",
+    "priority": 65
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "id": "bone-pup",
+  "name": "Bone Pup",
+  "speciesFamilyId": "restless-dead",
+  "gradeBand": {
+    "min": "E",
+    "max": "D"
+  },
+  "trait": {
+    "id": "grave-marrow",
+    "name": "Grave Marrow",
+    "description": "Immune to Poison; the party's Resistance +5%. Grows as it shrugs off hits.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "pet-status-immune",
+        "status": "poison",
+        "target": "self",
+        "note": "the pet never takes poison"
+      },
+      {
+        "kind": "buffStat",
+        "stat": "resistance",
+        "amount": 5,
+        "target": "allAllies"
+      }
+    ],
+    "growsBy": "endurance"
+  },
+  "actives": [
+    {
+      "skillId": "pet-bone-pup-gnaw",
+      "unlockLevel": 5
+    },
+    {
+      "skillId": "pet-bone-pup-rally-bones",
+      "unlockLevel": 15
+    }
+  ],
+  "stamina": 30,
+  "baseStats": {
+    "hp": 0.9,
+    "attackPhys": 0.9,
+    "defense": 0.9,
+    "speed": 1
+  },
+  "roleLean": "guard",
+  "visual": {
+    "baseMesh": "hound",
+    "palette": [
+      "#e8e2d2",
+      "#9c9484",
+      "#4aa3ff"
+    ]
+  },
+  "eggSource": {
+    "chestBand": "E",
+    "familyId": "restless-dead"
+  },
+  "creationChoice": false
+}

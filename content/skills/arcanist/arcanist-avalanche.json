@@ -1,0 +1,58 @@
+{
+  "id": "arcanist-avalanche",
+  "classId": "arcanist",
+  "school": "rime",
+  "tier": 3,
+  "name": "Avalanche",
+  "description": "1.2× Frost to every enemy in both rows; Chill 2 turns; Frozen targets are shattered by this hit even without the Shatter passive. Heavy cast.",
+  "type": "active",
+  "cost": 26,
+  "weight": 1400,
+  "target": "allEnemies",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "shatter-frozen",
+      "note": "this skill’s damage shatters Frozen targets as Shatter does (+30%, crit, Freeze ends, −300 energy) even when no ally holds the passive"
+    },
+    {
+      "kind": "damage",
+      "multiplier": 1.2,
+      "damageType": "frost"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "chill",
+      "duration": 2
+    }
+  ],
+  "prerequisiteId": "arcanist-glacier-spike",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "1.35× each.",
+    "effects": [
+      {
+        "kind": "damage",
+        "multiplier": 1.35,
+        "damageType": "frost"
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "control"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 75
+  }
+}

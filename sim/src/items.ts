@@ -145,8 +145,10 @@ export interface EffectiveItemStats {
   band: DurabilityBand
   /** The band's multiplier on every line, 0 when broken. */
   statPercent: number
-  /** Affix effect lines with their rolled magnitude, then the unique power's lines. */
+  /** Non-custom affix effect lines with their rolled magnitude, then the unique power's non-custom lines: applied on hit. */
   onHit: Effect[]
+  /** Custom lines (affix or unique power): persistent hooks on the wearer for the fight; affixId null for a unique power. */
+  hookLines: { line: Effect; affixId: string | null }[]
 }
 
 const ATTACKING_KINDS: ReadonlySet<string> = new Set(['weapon', 'focus'])
@@ -183,6 +185,7 @@ export function effectiveItemStats(content: Content, t: Tuning, def: ItemDef, in
     band: band.band,
     statPercent: band.statPercent,
     onHit: [],
+    hookLines: [],
   }
   if (band.band === 'broken') return out
   const plusPct = plusNStatPercent(t, inst.plusN)
@@ -206,10 +209,12 @@ export function effectiveItemStats(content: Content, t: Tuning, def: ItemDef, in
         out.stats[line.stat] = (out.stats[line.stat] ?? 0) + value
       }
     } else if (line.effect !== undefined) {
-      out.onHit.push(effectWithMagnitude(line.effect, rolled.value))
+      const eff = effectWithMagnitude(line.effect, rolled.value)
+      if (eff.kind === 'custom') out.hookLines.push({ line: eff, affixId: affix.id })
+      else out.onHit.push(eff)
     }
   }
-  if (def.uniquePower !== null) out.onHit.push(...def.uniquePower.effects)
+  if (def.uniquePower !== null) for (const eff of def.uniquePower.effects) eff.kind === 'custom' ? out.hookLines.push({ line: eff, affixId: null }) : out.onHit.push(eff)
   if (ATTACKING_KINDS.has(def.kind)) out.accuracyPenalty = band.accuracyPenalty
   return out
 }
@@ -259,7 +264,8 @@ export function applyWearBp(t: Tuning, inst: ItemInstance, bp: number, carryBp =
 
 function wearEvents(t: Tuning, inst: ItemInstance, k: number, opts: WearOptions): WearResult {
   const events = Math.max(0, opts.events ?? 1)
-  const bp = wearPerEvent(k, opts.doubleWear ?? false) * events
+  // Events may be fractional (a Wall Stance armor event counts 0.8): the basis points round once here.
+  const bp = roundHalfUp(wearPerEvent(k, opts.doubleWear ?? false) * events)
   return applyWearBp(t, inst, bp, opts.carryBp ?? 0)
 }
 

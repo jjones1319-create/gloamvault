@@ -1,24 +1,29 @@
+import { buildTomeBag } from './chests.ts'
 import type { Content } from './content.ts'
 import type { DelveCommand, DelveHero, DelveOptions, DelveState, FloorRun, HunterState, LegalDelveAction, RoomState } from './delve-types.ts'
 import { detection, disarmChance, heroAmbushChance, monsterAmbushChance, rollScout, scoutChance, trapRevealed } from './detection.ts'
 import { goldFor, retreatToll, rForFloor } from './economy.ts'
-import { buyOffer, dressRoom, drawChampionAffixes, farthestRoom, floorDef, hopsFrom, isMonsterEncounter, meetsRoleMix, merchantStock, pickEncounter, spawnBossFight, spawnEncounter, spawnSingle, stepToward, templateHasBrazier, zoneByIndex, zoneOf } from './explore.ts'
+import { buyOffer, dressRoom, drawChampionAffixes, encountersFor, farthestRoom, floorDef, hopsFrom, isMonsterEncounter, meetsRoleMix, merchantStock, pickEncounter, spawnBossFight, spawnEncounter, spawnPack, spawnSingle, stepToward, templateHasBrazier, zoneByIndex, zoneOf } from './explore.ts'
 import { applyFightCommand, createFight, legalFightActions, runFight, runFightAuto } from './fight.ts'
-import type { Actor } from './fight-types.ts'
+import type { Actor, FightState } from './fight-types.ts'
 import { generateFloor, type FloorGraph } from './generator.ts'
 import { hashState } from './hash.ts'
 import { buildHeroActor, heroStats, speciesRules } from './hero.ts'
-import { applyWearBp, createItemInstance, fieldRepair, repairKit } from './items.ts'
+import { installHook } from './hooks.ts'
+import { applyWearBp, createItemInstance, effectiveItemStats, fieldRepair, repairItemPoints, repairKit } from './items.ts'
 import { addLight, lightAfterRoom, lightAtEntry, lightBand } from './light.ts'
-import { lootTableForFloor, openDungeonChest, rollFightLoot, rollTreasureRoom, type FightMonster } from './loot.ts'
-import { buildPetActor } from './pets.ts'
+import { lootTableForFloor, openDungeonChest, pickGearItem, rollFightLoot, rollParts, rollTreasureRoom, type FightMonster, type ItemFilter } from './loot.ts'
+import { partyScale } from './monsters.ts'
+import { buildPetActor, partyPetTraitBonus } from './pets.ts'
 import { choosePolicyCommand } from './policies.ts'
 import { applyFightProgress, carryHeroState } from './progress.ts'
 import { Rng, seedFor } from './rng.ts'
+import { linesAtRank } from './skill-lines.ts'
 import { clamp, roundHalfUp } from './stats.ts'
+import { applyStatus } from './statuses.ts'
 import type { Tuning } from './tuning.ts'
-import type { CurioDef, DifficultyKnobs, DungeonDef, HeroRecord, ItemInstance, Requirement, TrapDef } from './types/content.ts'
-import type { Grade } from './types/enums.ts'
+import type { CurioDef, DifficultyKnobs, DungeonDef, Effect, HeroRecord, ItemInstance, Requirement, Reward, SecretDef, TrapDef } from './types/content.ts'
+import { GRADES, isMember, type Grade, type Status, type Target } from './types/enums.ts'
 
 /**
  * The delve (03-GAME-DESIGN §1, §4, §11, §12; 07): `createDelve / legalDelveActions / stepDelve / runDelveAuto /
@@ -54,12 +59,65 @@ function bestOf(content: Content, t: Tuning, state: DelveState, pick: (h: DelveH
   return Number.isFinite(best) ? best : 0
 }
 
+/**
+ * The roller's Luck for every drop grade (08 §5 of Plunder: "drop shape +pp toward higher grades, stacks with Luck,
+ * same cap"): the party's best Luck plus the worn `drop-shape-pp` lines read as Luck points (pp / luckPpPerPoint),
+ * so grades.ts applies the one cap to both.
+ */
 function partyLuck(content: Content, t: Tuning, state: DelveState): number {
-  void content
-  void t
   let best = 0
   for (const h of activeHeroes(state)) best = Math.max(best, h.record.attributes.luck)
-  return best || 10
+  const pp = partyAffixPercent(content, t, state, 'drop-shape-pp')
+  const perPoint = t.equipment.dropShape.luckPpPerPoint
+  const extra = pp > 0 && perPoint > 0 ? roundHalfUp(pp / perPoint) : 0
+  return (best || 10) + extra
+}
+
+/** Σ of the worn custom lines of one id across the party (an affix's rolled value is its `percent`); a broken item gives nothing. */
+/**
+ * Every custom line of `customId` a hero carries outside a fight (D-071): worn gear's affix and unique-power lines and
+ * the loadout passives' lines at their rank. Delve-side hooks (Light Fingers, Attune, "of Greed") are read here.
+ */
+function heroHookLines(content: Content, t: Tuning, h: DelveHero, customId: string): Effect[] {
+  const out: Effect[] = []
+  const eq = h.record.equipment
+  const worn: (ItemInstance | null)[] = [eq.mainHand, eq.offHand, eq.helmet, eq.chest, eq.legs, eq.boots, eq.gloves, eq.ring[0], eq.ring[1], eq.talisman, eq.relic]
+  for (const inst of worn) {
+    const def = inst ? content.items.get(inst.itemId) : undefined
+    if (!inst || !def) continue
+    for (const hl of effectiveItemStats(content, t, def, inst).hookLines) if (hl.line.customId === customId) out.push(hl.line)
+  }
+  for (const id of h.record.loadout.passives) {
+    const skill = id ? content.skills.get(id) : undefined
+    if (!skill || skill.type !== 'passive') continue
+    const rank = h.record.skills.find((s) => s.skillId === skill.id)?.rank ?? 1
+    for (const line of linesAtRank(skill, rank)) if (line.kind === 'custom' && line.customId === customId) out.push(line)
+  }
+  return out
+}
+
+/** One hero's total of a delve-side hook (`amount`, else `percent`). */
+function heroHookAmount(content: Content, t: Tuning, h: DelveHero, customId: string): number {
+  return heroHookLines(content, t, h, customId).reduce((s, l) => s + (l.amount ?? l.percent ?? 0), 0)
+}
+
+/** The party's total of a gear or passive hook ("of Greed": every hero's lines add). */
+function partyAffixPercent(content: Content, t: Tuning, state: DelveState, customId: string): number {
+  return activeHeroes(state).reduce((s, h) => s + heroHookAmount(content, t, h, customId), 0)
+}
+
+/** The best single hero's value of a hook (two Attunes are not twice as bright; D-069's rule). */
+function partyHookBest(content: Content, t: Tuning, state: DelveState, customId: string): number {
+  return activeHeroes(state).reduce((best, h) => Math.max(best, heroHookAmount(content, t, h, customId)), 0)
+}
+
+function partyPets(state: DelveState) {
+  return activeHeroes(state).map((h) => h.record.petInstance)
+}
+
+/** A hero's effective Trap Disarm rank: the skill plus Saboteur and Quick Hands (D-071). */
+function disarmRank(content: Content, t: Tuning, h: DelveHero): number {
+  return h.record.fieldSkills.trapDisarm.rank + heroHookAmount(content, t, h, 'trap-disarm-rank-bonus') + heroHookAmount(content, t, h, 'field-skill-bonus-trap-disarm')
 }
 
 function darkvisionShift(content: Content, state: DelveState): number {
@@ -80,7 +138,8 @@ function partyDetection(content: Content, t: Tuning, state: DelveState): number 
     const pet = h.record.petInstance && h.record.petInstance.stance === 'forage' ? 2 : 0
     best = Math.max(best, detection(t, stats.detection, state.light, rules.lightBandShift ?? 0, pet))
   }
-  return best
+  // A Spiderling's or a Wisp's +5 Detection on the party's best (06 §9).
+  return best + partyPetTraitBonus(content, partyPets(state), 'detection')
 }
 
 function knobsFor(dungeon: DungeonDef, options: DelveOptions): { knobs: Record<string, number>; flags: string[]; reward: DelveState['pactReward'] } {
@@ -109,7 +168,7 @@ function knobsFor(dungeon: DungeonDef, options: DelveOptions): { knobs: Record<s
 }
 
 function emptyStats(): DelveState['stats'] {
-  return { rooms: 0, fights: 0, eliteFights: 0, bossFights: 0, roundsByKind: {}, ambushedParty: 0, ambushedMonsters: 0, trapsRevealed: 0, trapsTriggered: 0, trapsDisarmed: 0, curiosUsed: 0, chestsOpened: 0, torchesUsed: 0, hunterArrived: 0, hunterKilled: 0, downs: 0, wipes: 0, goldFound: 0, goldLost: 0, itemsFound: 0, partsFound: 0, insights: 0, secretsFound: 0, ticksToStairs: [], lightAtStairs: [], fled: 0, xpEvents: 0 }
+  return { rooms: 0, fights: 0, eliteFights: 0, bossFights: 0, roundsByKind: {}, ambushedParty: 0, ambushedMonsters: 0, trapsRevealed: 0, trapsTriggered: 0, trapsDisarmed: 0, curiosUsed: 0, chestsOpened: 0, torchesUsed: 0, hunterArrived: 0, hunterKilled: 0, downs: 0, wipes: 0, goldFound: 0, goldLost: 0, itemsFound: 0, partsFound: 0, insights: 0, secretsFound: 0, ticksToStairs: [], lightAtStairs: [], fled: 0, xpEvents: 0, hookStubs: {}, deepestFloorCompleted: 0 }
 }
 
 /* ---------- creation ---------- */
@@ -146,6 +205,7 @@ export function createDelve(content: Content, options: DelveOptions, party: read
     knobs,
     ruleFlags: flags,
     pactReward: reward,
+    pendingStatuses: [],
   }
   beginFloor(content, state, startFloor, rng)
   save(state, rng)
@@ -196,6 +256,9 @@ function beginFloor(content: Content, state: DelveState, floorNumber: number, rn
     rooms[room.id] = rs
   }
   const hunter: HunterState | null = zone.hunterId && fd.hunterClock !== null ? { monsterId: zone.hunterId, entered: false, roomId: null, moveProgress: 0, killed: false } : null
+  // The secret room's record (07 §2.6): one of the dungeon's secrets for this zone, drawn when the floor has one.
+  const secrets = (dungeon.secrets ?? []).filter((s) => s.zoneId === null || s.zoneId === zone.id)
+  const secretId = graph.secretId !== null && secrets.length > 0 ? rng.pick(secrets).id : null
   state.floor = {
     number: floorNumber,
     monsterLevel: fd.monsterLevel,
@@ -209,7 +272,13 @@ function beginFloor(content: Content, state: DelveState, floorNumber: number, rn
     bossDefeated: false,
     lastEncounterId: null,
     firstFightDone: false,
+    secretId,
+    shortcutTo: null,
+    goldPercentBonus: 0,
+    ambushPercent: 0,
   }
+  // Floor-long statuses (a shrine's Curse, a blessing) end with the floor; counted ones (Greased Stairs) carry over.
+  state.pendingStatuses = state.pendingStatuses.filter((p) => p.fightsLeft !== null)
   // The entry lantern never lowers the light (07 §2.3); on the delve's first floor the preset's lightStart wins (07 §6.1).
   const firstFloorOfDelve = state.stats.rooms === 0
   if (!(firstFloorOfDelve && state.knobs.lightStart !== undefined)) state.light = lightAtEntry(t, state.light, fd.lightAtEntry)
@@ -266,7 +335,11 @@ function enterRoom(content: Content, state: DelveState, roomId: string, rng: Rng
   const firstVisit = !rs.visited
   state.floor.currentRoomId = roomId
   if (viaMove) {
+    const before = state.light
     state.light = lightAfterRoom(t, state.light, !firstVisit)
+    // Attune, Vigil Lantern, "of Embers": the party's Light falls that many less per room (the best single hero's; D-071).
+    const ease = partyHookBest(content, t, state, 'light-decay-reduction')
+    if (ease > 0 && state.light < before) state.light = Math.min(before, state.light + ease)
     tickClock(content, state, t.exploration.floorClock.tickPerRoomEntered, rng)
   }
   if (firstVisit) {
@@ -299,7 +372,10 @@ function enterRoom(content: Content, state: DelveState, roomId: string, rng: Rng
     logEvent(state, 'secret', 'A secret door')
   }
   const rangers = state.heroes.filter((h) => h.record.classId === 'ranger').length
-  const scout = rollScout(t, rng, scoutChance(t, state.light, darkvisionShift(content, state), rangers, 0))
+  const pets = partyPets(state)
+  const scoutShift = Math.min(darkvisionShift(content, state), partyPetTraitBonus(content, pets, 'scoutBandShift'))
+  const scoutExtra = partyHookBest(content, t, state, 'scouting-chance-percent') + partyPetTraitBonus(content, pets, 'scouting')
+  const scout = rollScout(t, rng, scoutChance(t, state.light, scoutShift, rangers, 0, scoutExtra))
   if (scout !== 'none') {
     for (const d of g.doors) {
       if (d.secret && !rs.secretRevealed) continue
@@ -348,14 +424,18 @@ function enterRoom(content: Content, state: DelveState, roomId: string, rng: Rng
       break
     case 'secret':
       if (firstVisit) {
-        // D-064: a secret room's reward is the zone's cache: 0.15 R, two torches and a Small chest (07 §2.6).
-        const gold = goldFor(0.15, rForFloor(state.floor.number))
-        state.gold += gold
-        state.stats.goldFound += gold
-        const torch = [...content.items.values()].find((d) => d.kind === 'consumable' && /torch/i.test(d.name))
-        if (torch) giveItems(state, [createItemInstance(content, rng, torch.id, { quantity: 2 })])
-        rs.chests.push({ size: 'small', locked: false, trapped: false, trapId: null, opened: false })
-        logEvent(state, 'cache', `A cache: ${gold} gold`)
+        const secret = state.floor.secretId !== null ? (dungeon.secrets ?? []).find((s) => s.id === state.floor.secretId) : undefined
+        if (secret) paySecret(content, state, rng, secret, rs)
+        else {
+          // D-064: with no secret records, a secret room's reward is the zone's cache: 0.15 R, two torches and a Small chest (07 §2.6).
+          const gold = goldFor(0.15, rForFloor(state.floor.number))
+          state.gold += gold
+          state.stats.goldFound += gold
+          const torch = [...content.items.values()].find((d) => d.kind === 'consumable' && /torch/i.test(d.name))
+          if (torch) giveItems(state, [createItemInstance(content, rng, torch.id, { quantity: 2 })])
+          rs.chests.push({ size: 'small', locked: false, trapped: false, trapId: null, opened: false })
+          logEvent(state, 'cache', `A cache: ${gold} gold`)
+        }
       }
       break
     case 'curio':
@@ -395,6 +475,343 @@ function giveConsumable(content: Content, state: DelveState, inst: ItemInstance,
   } else state.pile.push(inst)
 }
 
+function giveMaterial(state: DelveState, itemId: string, quantity: number): void {
+  if (quantity <= 0) return
+  state.materials[itemId] = (state.materials[itemId] ?? 0) + quantity
+  state.stats.partsFound += quantity
+}
+
+/* ---------- secrets (07 §2.6) ---------- */
+
+/** Every room shows its kind on the map (a drawn floor map, a tablet); secret doors stay hidden — a map is not Detection. */
+function revealFloor(state: DelveState): void {
+  for (const r of Object.values(state.floor.rooms)) r.scouted = true
+}
+
+/** The rare parts of the current zone's family (06 §1), by id. */
+function familyRareParts(content: Content, state: DelveState): string[] {
+  const zone = zoneOf(dungeonOf(content, state), state.floor.number)
+  const ids = new Set<string>()
+  for (const m of content.monstersByFamily.get(zone.familyId) ?? []) {
+    const id = m.parts.rare.itemId ?? m.parts.rare.materialId
+    if (id !== undefined && content.items.has(id)) ids.add(id)
+  }
+  return [...ids].sort()
+}
+
+/** One rare part of the zone's family at `percent` (07 §2.4 "a rare part"); returns the id given or null. */
+function rollRarePart(content: Content, state: DelveState, rng: Rng, percent: number): string | null {
+  const pool = familyRareParts(content, state)
+  if (pool.length === 0 || !rng.pct(percent)) return null
+  const id = rng.pick(pool)
+  giveMaterial(state, id, 1)
+  return id
+}
+
+/** Consumables whose effects carry a `meal` line (08 §4: herb, mushroom, meat, fish, salt), by id. */
+function ingredientDefs(content: Content) {
+  return (content.itemsByKind.get('consumable') ?? []).filter((d) => d.consumable?.effects.some((e) => e.kind === 'custom' && e.customId === 'meal'))
+}
+
+function giveIngredient(content: Content, state: DelveState, rng: Rng, itemId: string | undefined, quantity: number): string | null {
+  const def = itemId !== undefined && content.items.has(itemId) ? content.items.get(itemId) : undefined
+  const pool = ingredientDefs(content)
+  const chosen = def ?? (pool.length ? rng.pick(pool) : undefined)
+  if (!chosen) return null
+  giveConsumable(content, state, createItemInstance(content, rng, chosen.id, { quantity: Math.max(1, quantity) }))
+  return chosen.id
+}
+
+/** One hero of the party learns a Tier `tier` skill of their class from a fresh Tome bag (chests.ts); a dupe is rank XP (03 §8). */
+function giveTome(content: Content, state: DelveState, rng: Rng, tier: number): string {
+  const heroes = activeHeroes(state)
+  if (heroes.length === 0) return 'no one to read it'
+  const h = rng.pick(heroes)
+  const known = new Set(h.record.skills.map((s) => s.skillId))
+  const bag = buildTomeBag(content, h.record.classId, { min: tier, max: tier }, known)
+  const ids = bag[String(tier)] ?? []
+  if (ids.length > 0) {
+    const skillId = rng.pick(ids)
+    h.record = { ...h.record, skills: [...h.record.skills, { skillId, rank: 1, xp: 0 }] }
+    h.growth.skills[skillId] = (h.growth.skills[skillId] ?? 0) + 1
+    return `${h.record.name} learns ${content.skills.get(skillId)?.name ?? skillId}`
+  }
+  const owned = h.record.skills.filter((s) => content.skills.get(s.skillId)?.tier === tier)
+  const pick = owned.length ? rng.pick(owned) : h.record.skills[0]
+  if (!pick) return 'a Tome with nothing to teach'
+  h.record = { ...h.record, skills: h.record.skills.map((s) => (s.skillId === pick.skillId ? { ...s, xp: s.xp + 10 } : s)) }
+  return `${h.record.name} studies ${content.skills.get(pick.skillId)?.name ?? pick.skillId} (duplicate: rank XP)`
+}
+
+/** One reward line of a secret, a boss or a disarm (08 §11); gold lines are whole gold. */
+function payReward(content: Content, state: DelveState, rng: Rng, r: Reward): string | null {
+  if (r.chance !== undefined && !rng.pct(r.chance)) return null
+  const amount = r.amount ?? 1
+  switch (r.kind) {
+    case 'gold':
+      state.gold += amount
+      state.stats.goldFound += amount
+      return `${amount} gold`
+    case 'material':
+      if (!r.id) return null
+      giveMaterial(state, r.id, amount)
+      return `${amount} ${content.items.get(r.id)?.name ?? r.id}`
+    case 'item': {
+      if (r.id && content.items.has(r.id)) {
+        const inst = createItemInstance(content, rng, r.id, { quantity: amount })
+        const def = content.items.get(r.id)
+        if (def?.consumable || def?.kind === 'key') giveConsumable(content, state, inst)
+        else giveItems(state, [inst])
+        return `${amount > 1 ? `${amount} ` : ''}${def?.name ?? r.id}`
+      }
+      const grade: Grade = r.grade ?? 'F'
+      const def = pickGearItem(content, rng, grade)
+      if (!def) return null
+      giveItems(state, [createItemInstance(content, rng, def.id, { rollAffixes: true })])
+      return `${def.name} (${grade})`
+    }
+    case 'tome':
+      return giveTome(content, state, rng, r.tier ?? 1)
+    default:
+      // shard, luck, title, waystone: town-side rewards the delve only notes (08 §11).
+      logEvent(state, 'reward', `${r.kind} reward noted`, { kind: r.kind, amount })
+      return `${r.kind}`
+  }
+}
+
+/** A secret room pays its record (07 §2.6): rewards, a chest, light, the floor map, a crawlway to the exit, a blessing, field-skill XP. */
+function paySecret(content: Content, state: DelveState, rng: Rng, secret: SecretDef, rs: RoomState): void {
+  const t = content.tuning
+  const bits: string[] = []
+  for (const r of secret.rewards) {
+    const text = payReward(content, state, rng, r)
+    if (text) bits.push(text)
+  }
+  if (secret.chest) {
+    rs.chests.push({ size: secret.chest, locked: false, trapped: false, trapId: null, opened: false })
+    bits.push(`a ${secret.chest} chest`)
+  }
+  if (secret.lightBonus) {
+    state.light = addLight(t, state.light, secret.lightBonus)
+    bits.push(`light ${secret.lightBonus > 0 ? '+' : ''}${secret.lightBonus}`)
+  }
+  if (secret.revealsFloor) {
+    revealFloor(state)
+    bits.push('the floor map')
+  }
+  if (secret.shortcutToExit) {
+    const exit = state.floor.rooms[state.floor.graph.exitId]
+    if (exit) exit.scouted = true
+    state.floor.shortcutTo = state.floor.graph.exitId
+    bits.push('a crawlway to the stairs')
+  }
+  if (secret.blessing) {
+    for (const line of secret.blessing.effects) {
+      if (line.kind === 'applyStatus' && line.status) {
+        state.pendingStatuses.push({ kind: 'status', status: line.status, target: line.target ?? 'allAllies', duration: line.duration, fightsLeft: null, sourceId: secret.id })
+      } else {
+        const r = resolveDelveLine(content, state, rng, line, { kind: 'secret', id: secret.id, percent: 100, victim: activeHeroes(state)[0] ?? null })
+        bits.push(r.text)
+      }
+    }
+    bits.push(`blessing: ${secret.blessing.name}`)
+  }
+  if (secret.fieldSkillXp) {
+    // Reading: 07 §2.6's "rank XP ×5" is five uses' worth (a disarm or a revive pays 10) to every active hero.
+    const skill = secret.fieldSkillXp
+    for (const h of activeHeroes(state)) h.record = { ...h.record, fieldSkills: { ...h.record.fieldSkills, [skill]: { ...h.record.fieldSkills[skill], xp: h.record.fieldSkills[skill].xp + 50 } } }
+    bits.push(`${skill} XP`)
+  }
+  logEvent(state, 'secret', `${secret.name}: ${bits.join(', ') || 'nothing but dust'}`, { secret: secret.id })
+}
+
+/* ---------- out-of-combat effect lines (07 §2.4–§2.6, 08 §4) ---------- */
+
+interface DelveLineSource {
+  kind: 'trap' | 'curio' | 'secret' | 'item'
+  id: string
+  /** Percent of the effect (a fumbled disarm fires its trap at 50). */
+  percent: number
+  /** The hero the line falls on when it names one (a trap's victim, an item's user, a curio's digger). */
+  victim: DelveHero | null
+}
+
+/** An ambush a line asks for (07 §2.4 "a fight that begins with the party surprised"). */
+interface AmbushSpec {
+  monsterId: string | null
+  count: number | null
+  surprise: boolean
+}
+
+interface DelveLineResult {
+  text: string
+  ambush: AmbushSpec | null
+}
+
+/** A trap, curio or item status lands at the start of the next fight(s) on this floor; instant statuses (Daze) have nowhere to land. */
+function queueStatus(content: Content, state: DelveState, line: Effect, status: Status, fightsLeft: number | null, sourceId: string, magnitude?: number): string {
+  const def = content.statuses.get(status)
+  if (def && def.durationDefault === null && (def.endsWhen ?? '').startsWith('instant')) return `${status} (fades before the next fight)`
+  state.pendingStatuses.push({ kind: 'status', status, target: line.target ?? 'allAllies', duration: line.duration, magnitude, fightsLeft, sourceId })
+  return fightsLeft === null ? `${status} for the rest of the floor` : `${status} for the next ${fightsLeft === 1 ? 'fight' : `${fightsLeft} fights`}`
+}
+
+/**
+ * Resolves one out-of-combat effect line (a trap's, a curio outcome's, a secret blessing's, a consumable's) against
+ * the delve: the DSL kinds that mean something outside a fight (light, damage, loot, applyStatus) and every custom
+ * id of 07 §2.4–§2.6 and 08 §4 (the handler files under sim/src/skills/custom hold each contract). Returns the
+ * result card's text and, for an ambush, what to spawn; the caller starts the fight after logging.
+ */
+function resolveDelveLine(content: Content, state: DelveState, rng: Rng, line: Effect, src: DelveLineSource): DelveLineResult {
+  const t = content.tuning
+  const floor = state.floor.number
+  const scale = src.percent / 100
+  const none = (text: string): DelveLineResult => ({ text, ambush: null })
+  const victim = src.victim
+  switch (line.kind) {
+    case 'light': {
+      const amount = roundHalfUp((line.amount ?? 0) * scale)
+      state.light = addLight(t, state.light, amount)
+      return none(`light ${amount > 0 ? '+' : ''}${amount}`)
+    }
+    case 'damage': {
+      if (!victim) return none('no one to hurt')
+      // A trap's bare damage line: 8 + 4F × multiplier (D-064's reading of 07 §2.5's numbers).
+      const dmg = Math.max(1, roundHalfUp((8 + 4 * floor) * (line.multiplier ?? 1) * scale))
+      hurtHero(content, state, victim, dmg)
+      return none(`${dmg} to ${victim.record.name}`)
+    }
+    case 'loot': {
+      // D-064: a curio's `loot.amount` is hundredths of R (0.05 R → 5), `percent` a share of the carried gold.
+      const gold = line.amount !== undefined ? goldFor(line.amount / 100, rForFloor(floor)) : roundHalfUp((state.gold * (line.percent ?? 0)) / 100)
+      state.gold = Math.max(0, state.gold + gold)
+      if (gold > 0) state.stats.goldFound += gold
+      else state.stats.goldLost += -gold
+      return none(`${gold >= 0 ? '+' : ''}${gold} gold`)
+    }
+    case 'applyStatus':
+      if (!line.status) return none('nothing')
+      return none(queueStatus(content, state, line, line.status, 1, src.id))
+    case 'custom':
+      break
+    default:
+      return none(line.kind)
+  }
+  switch (line.customId) {
+    case 'floor-clock-add':
+      tickClock(content, state, line.amount ?? 0, rng)
+      return none(`the clock runs on +${line.amount ?? 0}`)
+    case 'next-fight-ambush':
+      if (!state.ruleFlags.includes('next-fight-ambush')) state.ruleFlags.push('next-fight-ambush')
+      state.floor.ambushPercent = Math.max(state.floor.ambushPercent, line.percent ?? 30)
+      return none('the next fight will be an ambush')
+    case 'damage-percent-max-hp': {
+      if (!victim) return none('no one to hurt')
+      const stats = heroStats(content, t, victim.record)
+      const dmg = roundHalfUp((stats.hp * (line.percent ?? 0) * scale) / 100)
+      hurtHero(content, state, victim, dmg)
+      return none(`${dmg} to ${victim.record.name}`)
+    }
+    case 'trap-flat-damage': {
+      if (!victim) return none('no one to hurt')
+      const dmg = Math.max(0, roundHalfUp(((line.amount ?? 0) + (line.multiplier ?? 0) * floor) * scale))
+      hurtHero(content, state, victim, dmg)
+      return none(`${dmg} ${line.damageType ?? ''} to ${victim.record.name}`.replace('  ', ' '))
+    }
+    case 'ambush-encounter':
+      return { text: 'an ambush', ambush: { monsterId: line.summonId ?? null, count: line.amount ?? null, surprise: true } }
+    case 'lantern-gutters':
+      state.light = addLight(t, state.light, line.amount ?? -10)
+      return { text: `the lantern gutters (light ${line.amount ?? -10}): an ambush`, ambush: { monsterId: line.summonId ?? null, count: null, surprise: true } }
+    case 'give-material': {
+      const zone = zoneOf(dungeonOf(content, state), floor)
+      const familyCommon = (content.monstersByFamily.get(zone.familyId) ?? []).map((m) => m.parts.common.materialId).find((id) => id !== undefined && content.items.has(id))
+      const fallback = (content.itemsByKind.get('material') ?? []).find((d) => d.grade === 'F')?.id
+      const id = line.itemId && content.items.has(line.itemId) ? line.itemId : (familyCommon ?? fallback)
+      if (!id) return none('no material to give')
+      const qty = Math.max(1, line.amount ?? 1)
+      giveMaterial(state, id, qty)
+      const rare = line.percent ? rollRarePart(content, state, rng, line.percent) : null
+      return none(`${qty} ${content.items.get(id)?.name ?? id}${rare ? ` and ${content.items.get(rare)?.name ?? rare}` : ''}`)
+    }
+    case 'roll-rare-part': {
+      const rare = rollRarePart(content, state, rng, line.percent ?? 100)
+      return none(rare ? `a rare part: ${content.items.get(rare)?.name ?? rare}` : 'nothing rare')
+    }
+    case 'drop-item-of-grade': {
+      const byRung = line.amount !== undefined ? GRADES[Math.max(0, Math.min(GRADES.length - 2, Math.round(line.amount)))] : undefined
+      const byNote = line.note?.match(/\b(F|E|D|C|B|A|S|SS|God)\b/)?.[1]
+      const grade: Grade = byRung ?? (isMember(GRADES, byNote) ? byNote : 'D')
+      const slotWord = line.note?.match(/\b(boots|helmet|chest|legs|gloves|ring|talisman|shield)\b/i)?.[1]?.toLowerCase()
+      const filters: ItemFilter[] = slotWord ? [(d) => d.slot === slotWord, () => true] : []
+      const def = pickGearItem(content, rng, grade, filters)
+      if (!def) return none(`an item (${grade}) — nothing fits`)
+      giveItems(state, [createItemInstance(content, rng, def.id, { rollAffixes: true })])
+      return none(`${def.name} (${def.grade})`)
+    }
+    case 'reveal-floor':
+      revealFloor(state)
+      return none('the floor map')
+    case 'tome-tier-1':
+      return none(giveTome(content, state, rng, 1))
+    case 'status-next-fights':
+      if (!line.status) return none('nothing')
+      return none(queueStatus(content, state, line, line.status, Math.max(1, line.amount ?? 1), src.id))
+    case 'status-for-floor':
+      if (!line.status) return none('nothing')
+      return none(queueStatus(content, state, line, line.status, null, src.id))
+    case 'status-flat-per-tick': {
+      if (!line.status) return none('nothing')
+      const flat = Math.max(0, roundHalfUp(((line.amount ?? 0) + (line.multiplier ?? 0) * floor) * scale))
+      const def = content.statuses.get(line.status)
+      // The record ticks a share of a hit (Burn 20%): hand it the hit that makes the tick come out at the flat.
+      const magnitude = def?.magnitudeOf === 'hitDamage' && (def.percent ?? 0) > 0 ? roundHalfUp((flat * 100) / (def.percent ?? 100)) : flat
+      return none(`${queueStatus(content, state, line, line.status, 1, src.id, magnitude)} (${flat} per tick)`)
+    }
+    case 'cooking-ingredient': {
+      const id = giveIngredient(content, state, rng, line.itemId, line.amount ?? 1)
+      return none(id ? `${line.amount ?? 1} ${content.items.get(id)?.name ?? id}` : 'no ingredient to give')
+    }
+    case 'larder-feast': {
+      const regen = queueStatus(content, state, { ...line, duration: undefined }, 'regen', 2, src.id)
+      const id = giveIngredient(content, state, rng, line.itemId, 1)
+      return none(`${regen}${id ? ` and 1 ${content.items.get(id)?.name ?? id}` : ''}`)
+    }
+    case 'toll-shrine-cleanse': {
+      const amount = line.amount ?? 10
+      state.light = addLight(t, state.light, amount)
+      const status = line.status ?? 'fear'
+      state.pendingStatuses.push({ kind: 'resist', status, target: 'allAllies', percent: 100, fightsLeft: null, sourceId: src.id })
+      return none(`light +${amount} and ${status} immunity for the rest of the floor`)
+    }
+    case 'floor-gold-percent':
+      state.floor.goldPercentBonus += line.percent ?? 0
+      return none(`+${line.percent ?? 0}% gold found this floor`)
+    case 'nothing':
+      return none('nothing')
+    case 'repair-durability': {
+      if (!victim) return none('no one to repair for')
+      const eq = victim.record.equipment
+      const worst = (['mainHand', 'offHand', 'helmet', 'chest', 'legs', 'boots', 'gloves', 'talisman', 'relic'] as const).map((s) => ({ s, inst: eq[s] })).filter((x) => x.inst !== null).sort((a, b) => a.inst!.durability - b.inst!.durability)[0]
+      if (!worst?.inst) return none('nothing to repair')
+      const r = repairItemPoints(worst.inst, Math.max(0, roundHalfUp((line.percent ?? t.equipment.durability.repair.kitPercent) * scale)))
+      victim.record = { ...victim.record, equipment: { ...eq, [worst.s]: r.inst } }
+      return none(`${content.items.get(worst.inst.itemId)?.name ?? worst.s} +${r.restored}`)
+    }
+    case 'pet-treat': {
+      if (!victim) return none('no one to feed a pet')
+      if (!victim.record.petInstance) throw new Error('no pet to treat')
+      if (victim.treatUsed) throw new Error('one treat per delve')
+      victim.treatUsed = true
+      return none(`${victim.record.petInstance.name} enjoys a treat (+${line.percent ?? t.pets.treat.xpPercent}% pet XP this delve)`)
+    }
+    case 'meal':
+      throw new Error('cook it at a rest room')
+    default:
+      return none(line.customId ?? 'custom')
+  }
+}
+
 /* ---------- traps ---------- */
 
 function lowestPerceptionHero(state: DelveState): DelveHero | null {
@@ -404,50 +821,18 @@ function lowestPerceptionHero(state: DelveState): DelveHero | null {
 }
 
 function fireTrap(content: Content, state: DelveState, rng: Rng, def: TrapDef, tr: { triggered: boolean }, percent: number): void {
-  const t = content.tuning
   tr.triggered = true
   state.stats.trapsTriggered += 1
   const victim = lowestPerceptionHero(state)
   const lines: string[] = []
+  let ambush: AmbushSpec | null = null
   for (const line of def.effects) {
-    switch (line.kind) {
-      case 'light':
-        state.light = addLight(t, state.light, roundHalfUp(((line.amount ?? 0) * percent) / 100))
-        lines.push(`light ${line.amount ?? 0}`)
-        break
-      case 'damage': {
-        if (!victim) break
-        const dmg = Math.max(1, roundHalfUp((8 + 4 * state.floor.number) * (line.multiplier ?? 1) * (percent / 100)))
-        hurtHero(content, state, victim, dmg)
-        lines.push(`${dmg} to ${victim.record.name}`)
-        break
-      }
-      case 'custom': {
-        if (line.customId === 'floor-clock-add') tickClock(content, state, line.amount ?? 0, rng)
-        else if (line.customId === 'next-fight-ambush') state.ruleFlags.push('next-fight-ambush')
-        else if (line.customId === 'damage-percent-max-hp' && victim) {
-          const stats = heroStats(content, t, victim.record)
-          const dmg = roundHalfUp((stats.hp * (line.percent ?? 0) * percent) / 10_000)
-          hurtHero(content, state, victim, dmg)
-          lines.push(`${dmg} to ${victim.record.name}`)
-        } else if (line.customId === 'trap-flat-damage' && victim) {
-          const dmg = roundHalfUp(((line.amount ?? 0) + 4 * state.floor.number) * (percent / 100))
-          hurtHero(content, state, victim, dmg)
-          lines.push(`${dmg} to ${victim.record.name}`)
-        } else if (line.customId === 'ambush-encounter') state.ruleFlags.push('trap-ambush')
-        else lines.push(line.customId ?? 'custom')
-        break
-      }
-      default:
-        lines.push(line.kind)
-    }
+    const r = resolveDelveLine(content, state, rng, line, { kind: 'trap', id: def.id, percent, victim })
+    lines.push(r.text)
+    if (r.ambush) ambush = r.ambush
   }
   logEvent(state, 'trap', `${def.name} fires: ${lines.join(', ') || 'nothing'}`, { trap: def.id })
-  if (state.ruleFlags.includes('trap-ambush')) {
-    state.ruleFlags = state.ruleFlags.filter((f) => f !== 'trap-ambush')
-    state.ruleFlags.push('next-fight-ambush')
-    startFight(content, state, rng, 'trap')
-  }
+  if (ambush) startFight(content, state, rng, 'trap', ambush)
 }
 
 function hurtHero(content: Content, state: DelveState, h: DelveHero, dmg: number): void {
@@ -464,7 +849,27 @@ function hurtHero(content: Content, state: DelveState, h: DelveHero, dmg: number
 
 type FightKind = 'fight' | 'elite' | 'boss' | 'hunter' | 'trap' | 'curio'
 
-function startFight(content: Content, state: DelveState, rng: Rng, kind: FightKind): void {
+/**
+ * The monsters a named ambush brings (07 §2.4–§2.5): `count` of the monster when the line says how many, else an
+ * encounter of the floor's tables that holds it, else an ordinary pack of three.
+ */
+function spawnAmbush(content: Content, state: DelveState, rng: Rng, ambush: AmbushSpec, opts: { level: number; partySize: number; enemyHpPercent: number; enemyCountPercent: number }): Actor[] | null {
+  if (!ambush.monsterId) return null
+  const def = content.monsters.get(ambush.monsterId)
+  if (!def) return null
+  if (ambush.count !== null) return spawnPack(content, content.tuning, def, { count: ambush.count, level: opts.level, partySize: opts.partySize, enemyHpPercent: opts.enemyHpPercent })
+  const dungeon = dungeonOf(content, state)
+  const fd = floorDef(dungeon, state.floor.number)
+  const holding = encountersFor(content, fd, dungeon.id).filter((e) => e.composition.some((s) => s.monsterId === def.id))
+  if (holding.length > 0) {
+    const encounter = rng.weighted(holding, (e) => e.weight)
+    state.floor.lastEncounterId = encounter.id
+    return spawnEncounter(content, content.tuning, rng, encounter, { ...opts, championAffixIds: [] })
+  }
+  return spawnPack(content, content.tuning, def, { count: 3, level: opts.level, partySize: opts.partySize, enemyHpPercent: opts.enemyHpPercent })
+}
+
+function startFight(content: Content, state: DelveState, rng: Rng, kind: FightKind, ambush: AmbushSpec | null = null): void {
   const t = content.tuning
   const dungeon = dungeonOf(content, state)
   const fd = floorDef(dungeon, state.floor.number)
@@ -476,7 +881,11 @@ function startFight(content: Content, state: DelveState, rng: Rng, kind: FightKi
   let monsters: Actor[] = []
   let ambushMod = 0
   let isMonsterRoom = false
-  if (kind === 'boss') {
+  const named = ambush ? spawnAmbush(content, state, rng, ambush, { level: fd.monsterLevel, partySize, enemyHpPercent: enemyHp, enemyCountPercent: enemyCount }) : null
+  if (named) {
+    monsters = named
+    ambushMod = Math.max(0, ...monsters.map((m) => content.monsters.get(m.monster?.monsterId ?? '')?.ambushModifier ?? 0))
+  } else if (kind === 'boss') {
     const boss = fd.bossId ? content.monsters.get(fd.bossId) : undefined
     if (!boss) throw new Error(`floor ${fd.floor} names no boss`)
     monsters = spawnBossFight(content, t, boss, { level: fd.monsterLevel, partySize, enemyHpPercent: enemyHp })
@@ -508,11 +917,18 @@ function startFight(content: Content, state: DelveState, rng: Rng, kind: FightKi
     if (h.record.petInstance) pets.push(buildPetActor(content, t, h.record.petInstance, { id: `pet-${i}`, ownerId: `hero-${i}`, ownerLevel: h.record.level, hpPercent: h.petHpPercent }))
   })
   if (heroes.length === 0) return
-  // Surprise (03 §4.4): not for bosses and hunters (07 §2.8–§2.9).
+  // Surprise (03 §4.4): not for bosses and hunters (07 §2.8–§2.9); a curio's or trap's "ambush" is certain (07 §2.4).
   let surprised: 'party' | 'enemy' | null = null
-  if (kind !== 'boss' && kind !== 'hunter') {
-    const extra = (state.ruleFlags.includes('next-fight-ambush') ? 30 : 0) + (state.ruleFlags.includes('loud-boots') ? 15 : 0) + petAmbushModifier(content, state)
+  if (ambush?.surprise) {
+    surprised = 'party'
+    state.stats.ambushedParty += 1
     state.ruleFlags = state.ruleFlags.filter((f) => f !== 'next-fight-ambush')
+    state.floor.ambushPercent = 0
+  } else if (kind !== 'boss' && kind !== 'hunter') {
+    const flagged = state.ruleFlags.includes('next-fight-ambush')
+    const extra = (flagged ? state.floor.ambushPercent || 30 : 0) + (state.ruleFlags.includes('loud-boots') ? 15 : 0) + petAmbushModifier(content, state)
+    state.ruleFlags = state.ruleFlags.filter((f) => f !== 'next-fight-ambush')
+    state.floor.ambushPercent = 0
     const bestPer = bestOf(content, t, state, (h) => h.record.attributes.perception)
     const orcs = state.heroes.filter((h) => h.record.speciesId === 'orc').length
     const shades = state.heroes.filter((h) => h.record.classId === 'shade').length
@@ -534,15 +950,66 @@ function startFight(content: Content, state: DelveState, rng: Rng, kind: FightKi
     monsters,
     surprised,
     light: state.light,
-    options: { dungeonId: dungeon.id, floor: state.floor.number, floorLevel: fd.monsterLevel, autoHeroes: state.options.auto, enemyDamagePercent: state.knobs.enemyDamagePercent ?? 100, enemySpeedPercent: state.knobs.enemySpeedPercent ?? 100 },
+    options: { dungeonId: dungeon.id, floor: state.floor.number, floorLevel: fd.monsterLevel, autoHeroes: state.options.auto, enemyDamagePercent: roundHalfUp(((state.knobs.enemyDamagePercent ?? 100) * partyScale(t, state.heroes.filter((h) => !h.fallen).length).damagePercent) / 100), enemySpeedPercent: state.knobs.enemySpeedPercent ?? 100, partyGold: state.gold },
     rng: rng.fork(`fight-${state.stats.fights}`),
   })
+  applyPendingStatuses(content, state, fight)
   state.fight = fight
   state.fightContext = { roomId: rs.roomId, kind, isMonsterRoom }
   state.phase = { kind: 'fight' }
   logEvent(state, 'fightStart', `${kind} fight: ${monsters.map((m) => m.name).join(', ')}${surprised ? ` (${surprised} surprised)` : ''}`, { kind, monsters: monsters.length, surprised })
   void zone
   continueFight(content, state, rng)
+}
+
+/** The party actors an out-of-combat line's target word names (heroes and pets). */
+function partyTargets(fight: FightState, target: Target): Actor[] {
+  const party = fight.actors.filter((a) => a.side === 'party' && !a.fallen && a.hp > 0)
+  const heroes = party.filter((a) => a.kind === 'hero')
+  switch (target) {
+    case 'allAllies':
+      return party
+    case 'partyFront':
+      return party.filter((a) => a.row === 'front')
+    case 'partyBack':
+      return party.filter((a) => a.row === 'back')
+    case 'pet':
+      return party.filter((a) => a.kind === 'pet')
+    case 'allyLowest': {
+      let low: Actor | null = null
+      for (const a of heroes) if (!low || a.hp * low.maxHp < low.hp * a.maxHp) low = a
+      return low ? [low] : []
+    }
+    case 'self':
+    case 'ally':
+      return heroes[0] ? [heroes[0]] : []
+    default:
+      return heroes
+  }
+}
+
+/**
+ * Statuses the delve owes the party land right after the fight is created (07 §2.4–§2.6: a Larder's Regen "at the
+ * start of the next 2 fights", a Tar Pot's Burn, a shrine's Curse "for the rest of the floor", a blessing). Rolls
+ * draw from the fight's own stream so a replay agrees; counted entries tick down and leave at 0.
+ */
+function applyPendingStatuses(content: Content, state: DelveState, fight: FightState): void {
+  if (state.pendingStatuses.length === 0) return
+  const t = content.tuning
+  const r = new Rng(fight.rng)
+  for (const p of state.pendingStatuses) {
+    for (const a of partyTargets(fight, p.target)) {
+      if (p.kind === 'resist') {
+        installHook(a, { kind: 'custom', customId: 'status-resist-bonus', status: p.status, percent: p.percent ?? 100 }, p.sourceId)
+        continue
+      }
+      const out = applyStatus(content, t, r, a, { status: p.status, duration: p.duration, magnitude: p.magnitude, sourceId: p.sourceId })
+      if (out.outcome === 'applied') fight.log.push({ tick: 0, round: 1, kind: 'status', targetId: a.id, text: `${a.name} is ${out.status} (${p.sourceId})`, data: { status: out.status } })
+    }
+    if (p.fightsLeft !== null) p.fightsLeft -= 1
+  }
+  state.pendingStatuses = state.pendingStatuses.filter((p) => p.fightsLeft === null || p.fightsLeft > 0)
+  fight.rng = r.state
 }
 
 /** The best single pet trait counts, not the sum: three hounds are not three times as alert (D-069). */
@@ -571,10 +1038,18 @@ function finishFight(content: Content, state: DelveState, rng: Rng): void {
   const rs = state.floor.rooms[ctxF.roomId]!
   state.floor.clock += fight.round * t.exploration.floorClock.tickPerFightRound
   ;(state.stats.roundsByKind[ctxF.kind] ??= []).push(fight.round)
+  for (const e of fight.log) if (e.kind === 'hookStub') state.stats.hookStubs[e.text.split(':')[0] ?? 'hook'] = (state.stats.hookStubs[e.text.split(':')[0] ?? 'hook'] ?? 0) + 1
   state.stats.downs += fight.counters.heroDowns
   const heroIds = state.heroes.map((_, i) => `hero-${i}`)
   const lines: string[] = []
   const outcome = fight.over.outcome
+  // A Cutpurse's take (06 §3.1): what the bandits still hold when the fight ends is gone; a dead one dropped its share back (counters.goldStolen is the net).
+  const stolen = outcome === 'defeat' ? 0 : Math.min(state.gold, Math.max(0, fight.counters.goldStolen))
+  if (stolen > 0) {
+    state.gold -= stolen
+    state.stats.goldLost += stolen
+    lines.push(`−${stolen} gold stolen`)
+  }
   if (outcome === 'victory') {
     rs.cleared = true
     if (rs.kind === 'keyRoom' || graphRoom(state, rs.roomId).hasKey) {
@@ -595,18 +1070,37 @@ function finishFight(content: Content, state: DelveState, rng: Rng): void {
       if (!def) continue
       killed.push({ def, level: a.level, champion: m.champion !== null, eliteAffixIds: m.champion?.affixIds ?? [], partBroken: m.partBroken })
     }
-    const loot = rollFightLoot(content, t, rng, { dungeonId: dungeon.id, floor: state.floor.number, monsters: killed, lightBand: lightBand(t, state.light).id as 'radiant', luck: partyLuck(content, t, state), knobs: { goldPercent: roundHalfUp((state.knobs.goldPercent ?? 100) * (1 + state.pactReward.goldPercent / 100)) }, isMonsterRoom: ctxF.isMonsterRoom })
+    // Gold found: the preset knob × the pacts × (a paid Toll Shrine's floor bonus + the party's "of Greed" lines) (07 §2.4, 08 §5).
+    const foundPct = 100 + state.floor.goldPercentBonus + partyAffixPercent(content, t, state, 'gold-found-percent') + partyPetTraitBonus(content, partyPets(state), 'goldPercent')
+    const goldPercent = roundHalfUp(((state.knobs.goldPercent ?? 100) * (1 + state.pactReward.goldPercent / 100) * foundPct) / 100)
+    const loot = rollFightLoot(content, t, rng, { dungeonId: dungeon.id, floor: state.floor.number, monsters: killed, lightBand: lightBand(t, state.light).id as 'radiant', luck: partyLuck(content, t, state), knobs: { goldPercent }, isMonsterRoom: ctxF.isMonsterRoom })
     state.gold += loot.gold
     state.stats.goldFound += loot.gold
     giveItems(state, loot.items)
     for (const c of loot.consumables) giveConsumable(content, state, c)
     for (const s of loot.stones) giveConsumable(content, state, s)
-    for (const p of loot.parts) {
+    const parts = [...loot.parts]
+    // A Rat Prince's Scavenge (pet-extra-part-roll): more part rolls over the fight's kills.
+    for (let k = 0; k < Number(fight.flags.extraPartRolls ?? 0); k++) parts.push(...rollParts(t, rng, killed))
+    // The Shade's Light Fingers and Pickpocket in the fight (steal-part, steal-boss-part): the filched parts come home.
+    for (const e of fight.log) {
+      if (e.kind !== 'partStolen') continue
+      const id = String(e.data?.itemId ?? e.data?.materialId ?? '')
+      if (id) parts.push({ itemId: id, quantity: Number(e.data?.quantity ?? 1), rare: Boolean(e.data?.rare) })
+    }
+    for (const p of parts) {
       state.materials[p.itemId] = (state.materials[p.itemId] ?? 0) + p.quantity
       state.stats.partsFound += p.quantity
     }
+    // Gold the Shade lifted from the monsters (steal-gold-per-level).
+    const lifted = Math.max(0, Number(fight.flags.goldStolenByHeroes ?? 0))
+    if (lifted > 0) {
+      state.gold += lifted
+      state.stats.goldFound += lifted
+      lines.push(`+${lifted} gold lifted`)
+    }
     if (loot.hunterChest) rs.chests.push(loot.hunterChest)
-    lines.push(`+${loot.gold} gold`, ...(loot.items.length ? [`${loot.items.length} item(s)`] : []), ...(loot.parts.length ? [`${loot.parts.reduce((s, p) => s + p.quantity, 0)} part(s)`] : []))
+    lines.push(`+${loot.gold} gold`, ...(loot.items.length ? [`${loot.items.length} item(s)`] : []), ...(parts.length ? [`${parts.reduce((s, p) => s + p.quantity, 0)} part(s)`] : []))
     // Growth and wear.
     const reports = applyFightProgress(content, t, rng, state, fight, heroIds)
     for (const r of reports) {
@@ -732,59 +1226,11 @@ function resolveCurio(content: Content, state: DelveState, rng: Rng, curio: Curi
   }
   const outcome = rng.weighted(choice.outcomes, (o) => o.chance)
   const line = outcome.effect
-  let text: string = line.kind
-  switch (line.kind) {
-    case 'light':
-      state.light = addLight(t, state.light, line.amount ?? 0)
-      text = `light ${line.amount ?? 0}`
-      break
-    case 'loot': {
-      // D-064: a curio's `loot.amount` is hundredths of R (0.05 R → 5), `percent` a share of the carried gold.
-      const gold = line.amount !== undefined ? goldFor(line.amount / 100, rForFloor(state.floor.number)) : roundHalfUp((state.gold * (line.percent ?? 0)) / 100)
-      state.gold = Math.max(0, state.gold + gold)
-      if (gold > 0) state.stats.goldFound += gold
-      else state.stats.goldLost += -gold
-      text = `${gold >= 0 ? '+' : ''}${gold} gold`
-      break
-    }
-    case 'custom': {
-      if (line.customId === 'ambush-encounter' || line.customId === 'lantern-gutters') {
-        if (line.customId === 'lantern-gutters') state.light = addLight(t, state.light, line.amount ?? -10)
-        state.ruleFlags.push('next-fight-ambush')
-        logEvent(state, 'curio', `${curio.name}: ${choice.label} → ambush`, { curio: curio.id, choice: choiceIndex, outcome: line.customId })
-        startFight(content, state, rng, 'curio')
-        return
-      }
-      if (line.customId === 'give-material') {
-        const mat = [...content.items.values()].find((d) => d.kind === 'material' && d.grade === 'F')
-        if (mat) {
-          state.materials[mat.id] = (state.materials[mat.id] ?? 0) + (line.amount ?? 1)
-          state.stats.partsFound += line.amount ?? 1
-        }
-        text = `materials ×${line.amount ?? 1}`
-      } else if (line.customId === 'drop-item-of-grade') {
-        const grade = (line.note?.match(/\b(F|E|D|C|B|A|S|SS|God)\b/)?.[1] ?? 'D') as Grade
-        const pool = [...content.items.values()].filter((d) => d.grade === grade && ['weapon', 'armor', 'shield', 'ring', 'talisman'].includes(d.kind))
-        if (pool.length) giveItems(state, [createItemInstance(content, rng, rng.pick(pool).id, { rollAffixes: true })])
-        text = `an item (${grade})`
-      } else if (line.customId === 'floor-clock-add') tickClock(content, state, line.amount ?? 0, rng)
-      else if (line.customId === 'next-fight-ambush') state.ruleFlags.push('next-fight-ambush')
-      else if (line.customId === 'roll-rare-part') {
-        const stone = [...content.items.values()].find((d) => d.kind === 'stone')
-        if (stone && rng.pct(line.percent ?? 100)) {
-          state.materials[stone.id] = (state.materials[stone.id] ?? 0) + 1
-          state.stats.partsFound += 1
-        }
-      } else text = line.customId ?? 'custom'
-      break
-    }
-    case 'applyStatus':
-      text = `${line.status} (carried into the next fight is not modelled yet)`
-      break
-    default:
-      break
-  }
-  logEvent(state, 'curio', `${curio.name}: ${choice.label} → ${text}`, { curio: curio.id, choice: choiceIndex, outcome: line.kind })
+  // The line falls on the party's first standing hero (the one who opens, digs or eats first).
+  const r = resolveDelveLine(content, state, rng, line, { kind: 'curio', id: curio.id, percent: 100, victim: activeHeroes(state)[0] ?? null })
+  logEvent(state, 'curio', `${curio.name}: ${choice.label} → ${r.text}`, { curio: curio.id, choice: choiceIndex, outcome: line.kind === 'custom' ? (line.customId ?? 'custom') : line.kind })
+  if (r.ambush) startFight(content, state, rng, 'curio', r.ambush)
+  void t
 }
 
 /* ---------- legal actions ---------- */
@@ -832,12 +1278,16 @@ export function legalDelveActions(content: Content, state: DelveState): LegalDel
     if (blockingTrap && blockingTrap.blocksDoorTo === d.to) reason = 'a trap blocks this door'
     out.push({ command: { kind: 'move', toRoomId: d.to }, label, enabled: !reason, reason })
   }
+  // A secret's crawlway to the exit (07 §2.6 the Company's Bolt-hole): a free move from the secret room, 0 ticks.
+  if (state.floor.shortcutTo && rs.roomId === state.floor.graph.secretId && state.floor.shortcutTo !== rs.roomId) {
+    out.push({ command: { kind: 'move', toRoomId: state.floor.shortcutTo }, label: `Crawlway → ${state.floor.rooms[state.floor.shortcutTo]?.kind ?? 'stairs'} ${state.floor.shortcutTo} (0 ticks)`, enabled: true })
+  }
   rs.traps.forEach((tr, i) => {
     if (!tr.revealed || tr.disarmed || tr.triggered) return
     const def = dungeon.traps.find((x) => x.id === tr.trapId)
     state.heroes.forEach((h, hi) => {
       if (h.fallen) return
-      out.push({ command: { kind: 'disarm', trapIndex: i, heroIndex: hi }, label: `Disarm ${def?.name ?? tr.trapId} (${h.record.name}, ${disarmChance(t, h.record.fieldSkills.trapDisarm.rank, def?.difficulty ?? 10)}%)`, enabled: true })
+      out.push({ command: { kind: 'disarm', trapIndex: i, heroIndex: hi }, label: `Disarm ${def?.name ?? tr.trapId} (${h.record.name}, ${disarmChance(t, disarmRank(content, t, h), def?.difficulty ?? 10)}%)`, enabled: true })
     })
     if (tr.blocksDoorTo) out.push({ command: { kind: 'walkAround', trapIndex: i }, label: `Set off ${def?.name ?? tr.trapId}`, enabled: true })
   })
@@ -855,7 +1305,7 @@ export function legalDelveActions(content: Content, state: DelveState): LegalDel
     for (const b of h.record.bag) {
       const def = content.items.get(b.itemId)
       if (!def?.consumable || def.consumable.inCombat === undefined) continue
-      const usable = /torch|potion|draught|repair|bandage|ration/i.test(def.name)
+      const usable = /torch|potion|draught|repair|bandage|ration|treat/i.test(def.name)
       if (!usable) continue
       out.push({ command: { kind: 'useItem', heroIndex: hi, instanceId: b.instanceId }, label: `Use ${def.name} ×${b.quantity} (${h.record.name})`, enabled: true })
     }
@@ -875,7 +1325,14 @@ export function legalDelveActions(content: Content, state: DelveState): LegalDel
   })
   const atExit = state.floor.currentRoomId === state.floor.graph.exitId
   if (atExit && (g.kind === 'stairs' || (g.kind === 'boss' && rs.cleared))) out.push({ command: { kind: 'descend' }, label: state.floor.number >= (state.options.lastFloor ?? 99) ? 'Finish the delve' : 'Take the stairs', enabled: true })
-  out.push({ command: { kind: 'retreat' }, label: `Retreat to town${state.floor.bossDefeated ? '' : ` (toll ${state.knobs.retreatTollPercent ?? t.death.retreatTollPercent}%)`}`, enabled: true })
+  // D-083 (James): the party leaves by walking back out of a floor's entrance or by teleporting out at the floor's end
+  // (the stairs, or a beaten boss's room). Both keep everything; a Pact's toll knob still applies.
+  const atEntry = state.floor.currentRoomId === state.floor.graph.entryId
+  const atFloorEnd = atExit && (g.kind === 'stairs' || (g.kind === 'boss' && rs.cleared))
+  if (atEntry || atFloorEnd) {
+    const toll = state.floor.bossDefeated ? 0 : (state.knobs.retreatTollPercent ?? t.death.retreatTollPercent)
+    out.push({ command: { kind: 'retreat' }, label: `${atFloorEnd ? 'Teleport out' : 'Walk out'} to town${toll ? ` (toll ${toll}%)` : ''}`, enabled: true })
+  }
   out.push({ command: { kind: 'auto' }, label: 'Auto', enabled: true })
   return out
 }
@@ -923,12 +1380,16 @@ export function stepDelve(content: Content, state: DelveState, command: DelveCom
       const g = graphRoom(state, state.floor.currentRoomId)
       const rs = currentRoom(state)
       const door = g.doors.find((d) => d.to === command.toRoomId)
-      if (!door) throw new Error('no such door')
-      if (door.secret && !rs.secretRevealed) throw new Error('hidden door')
-      if (door.locked && !state.floor.hasKey) throw new Error('locked')
-      const blocking = rs.traps.find((tr) => tr.blocksDoorTo === door.to && !tr.disarmed && !tr.triggered)
-      if (blocking) throw new Error('a trap blocks the door')
-      enterRoom(content, state, command.toRoomId, rng, true)
+      // A secret's crawlway (07 §2.6): from the secret room straight to the exit, no door, no ticks, no light lost.
+      const crawlway = door === undefined && state.floor.shortcutTo === command.toRoomId && rs.roomId === state.floor.graph.secretId
+      if (!door && !crawlway) throw new Error('no such door')
+      if (door) {
+        if (door.secret && !rs.secretRevealed) throw new Error('hidden door')
+        if (door.locked && !state.floor.hasKey) throw new Error('locked')
+        const blocking = rs.traps.find((tr) => tr.blocksDoorTo === door.to && !tr.disarmed && !tr.triggered)
+        if (blocking) throw new Error('a trap blocks the door')
+      } else logEvent(state, 'crawlway', `The party takes the crawlway to ${command.toRoomId}`)
+      enterRoom(content, state, command.toRoomId, rng, door !== undefined)
       break
     }
     case 'disarm': {
@@ -937,7 +1398,7 @@ export function stepDelve(content: Content, state: DelveState, command: DelveCom
       const h = state.heroes[command.heroIndex]
       const def = tr ? dungeonOf(content, state).traps.find((x) => x.id === tr.trapId) : undefined
       if (!tr || !h || !def) throw new Error('no such trap')
-      const chance = disarmChance(t, h.record.fieldSkills.trapDisarm.rank, def.difficulty + (state.knobs.trapDifficultyBonus ?? 0))
+      const chance = disarmChance(t, disarmRank(content, t, h), def.difficulty + (state.knobs.trapDifficultyBonus ?? 0))
       if (rng.pct(chance)) {
         tr.disarmed = true
         state.stats.trapsDisarmed += 1
@@ -952,7 +1413,8 @@ export function stepDelve(content: Content, state: DelveState, command: DelveCom
         logEvent(state, 'disarm', `${h.record.name} disarms ${def.name} (${chance}%)`, { trap: def.id })
       } else {
         logEvent(state, 'disarmFail', `${h.record.name} fumbles ${def.name} (${chance}%)`, { trap: def.id })
-        fireTrap(content, state, rng, def, tr, 50)
+        // Saboteur's Mastery (disarm-failure-safe): a holder's fumble never springs the trap.
+        if (heroHookLines(content, t, h, 'disarm-failure-safe').length === 0) fireTrap(content, state, rng, def, tr, 50)
       }
       break
     }
@@ -986,7 +1448,8 @@ export function stepDelve(content: Content, state: DelveState, command: DelveCom
         consumeRequirement(state, { kind: 'item', id: state.heroes.flatMap((h) => h.record.bag).find((b) => /skeleton-key|lockpick/.test(b.itemId))?.itemId ?? '', amount: 1, consumed: true })
         withKey = true
       } else if (chest.locked) {
-        const rank = Math.max(...state.heroes.map((h) => h.record.fieldSkills.lockpicking.rank))
+        // Light Fingers (+2) and a Vault Imp (+2) add to the best picker's rank (D-071; 06 §9).
+        const rank = Math.max(...state.heroes.map((h) => h.record.fieldSkills.lockpicking.rank + heroHookAmount(content, t, h, 'lockpicking-rank-bonus'))) + partyPetTraitBonus(content, partyPets(state), 'lockpicking')
         const chance = clamp(40 + 5 * rank - (fd.trapBand.max - fd.trapBand.min), 5, 95)
         if (!rng.pct(chance)) {
           logEvent(state, 'lockFail', `The lock holds (${chance}%)`)
@@ -1020,10 +1483,21 @@ export function stepDelve(content: Content, state: DelveState, command: DelveCom
         } else h.hpPercent = Math.min(100, h.hpPercent + t.exploration.rest.restorePercent)
         h.poolPercent = Math.min(100, h.poolPercent + t.exploration.rest.restorePercent)
         if (command.treat && h.record.petInstance && !h.treatUsed) h.treatUsed = true
-        if (command.cookAttribute && h.record.fieldSkills.cooking.rank >= 1) h.cooked = command.cookAttribute
+      }
+      // Cooking (08 §4, 09 §5): a cook with the skill turns one ingredient (a `meal` consumable) into the party's meal.
+      let cooked: string | null = null
+      if (command.cookAttribute && state.heroes.some((h) => !h.fallen && h.record.fieldSkills.cooking.rank >= 1)) {
+        const ingredientIds = new Set(ingredientDefs(content).map((d) => d.id))
+        const cook = state.heroes.find((h) => h.record.bag.some((b) => ingredientIds.has(b.itemId)))
+        const inst = cook?.record.bag.find((b) => ingredientIds.has(b.itemId))
+        if (cook && inst) {
+          consumeRequirement(state, { kind: 'item', id: inst.itemId, amount: 1, consumed: true })
+          cooked = content.items.get(inst.itemId)?.name ?? inst.itemId
+          for (const h of state.heroes) if (!h.fallen) h.cooked = command.cookAttribute
+        }
       }
       tickClock(content, state, t.exploration.floorClock.restAdvances, rng)
-      logEvent(state, 'rest', 'The party rests')
+      logEvent(state, 'rest', `The party rests${cooked ? ` and cooks ${cooked} (+${command.cookAttribute})` : command.cookAttribute ? ' (nothing to cook)' : ''}`)
       break
     }
     case 'fieldRepair': {
@@ -1049,10 +1523,12 @@ export function stepDelve(content: Content, state: DelveState, command: DelveCom
       const def = inst ? content.items.get(inst.itemId) : undefined
       if (!inst || !def?.consumable) throw new Error('no such item')
       const name = def.name
+      const texts: string[] = []
+      const hasCustom = def.consumable.effects.some((e) => e.kind === 'custom')
       if (/torch/i.test(name)) {
         state.light = addLight(t, state.light, state.knobs.torchValue ?? t.exploration.light.torch)
         state.stats.torchesUsed += 1
-      } else if (/repair/i.test(name)) {
+      } else if (/repair/i.test(name) && !hasCustom) {
         const eq = h.record.equipment
         const worst = (['mainHand', 'offHand', 'helmet', 'chest', 'legs', 'boots', 'gloves'] as const).map((s) => ({ s, inst: eq[s] })).filter((x) => x.inst).sort((a, b) => a.inst!.durability - b.inst!.durability)[0]
         if (worst?.inst) h.record = { ...h.record, equipment: { ...eq, [worst.s]: repairKit(t, worst.inst).inst } }
@@ -1061,13 +1537,15 @@ export function stepDelve(content: Content, state: DelveState, command: DelveCom
           if (line.kind === 'heal' && line.percent !== undefined) h.hpPercent = Math.min(100, h.hpPercent + line.percent)
           if (line.kind === 'pool' && line.percent !== undefined) h.poolPercent = Math.min(100, h.poolPercent + line.percent)
           if (line.kind === 'light') state.light = addLight(t, state.light, line.amount ?? 0)
+          // Repair Kit, Pet Treat and the like: the custom line's contract lives in sim/src/skills/custom/<id>.ts.
+          if (line.kind === 'custom') texts.push(resolveDelveLine(content, state, rng, line, { kind: 'item', id: def.id, percent: 100, victim: h }).text)
         }
       }
       const bag = [...h.record.bag]
       if (inst.quantity > 1) bag[i] = { ...inst, quantity: inst.quantity - 1 }
       else bag.splice(i, 1)
       h.record = { ...h.record, bag }
-      logEvent(state, 'item', `${h.record.name} uses ${name}`)
+      logEvent(state, 'item', `${h.record.name} uses ${name}${texts.length ? `: ${texts.join(', ')}` : ''}`)
       break
     }
     case 'firstAid': {
@@ -1109,6 +1587,7 @@ export function stepDelve(content: Content, state: DelveState, command: DelveCom
       const rs = currentRoom(state)
       if (state.floor.currentRoomId !== state.floor.graph.exitId || (g.kind === 'boss' && !rs.cleared)) throw new Error('not at the way down')
       state.stats.ticksToStairs.push(state.floor.clock)
+      state.stats.deepestFloorCompleted = Math.max(state.stats.deepestFloorCompleted, state.floor.number)
       state.stats.lightAtStairs.push(state.light)
       if (state.floor.number >= (state.options.lastFloor ?? state.floor.number)) {
         state.phase = { kind: 'over', outcome: 'cleared', summary: `Cleared floors ${state.options.floor ?? 1}–${state.floor.number} with ${state.gold} gold` }
@@ -1119,6 +1598,14 @@ export function stepDelve(content: Content, state: DelveState, command: DelveCom
     }
     case 'retreat': {
       if (phase.kind !== 'room') throw new Error('not now')
+      {
+        const g = graphRoom(state, state.floor.currentRoomId)
+        const rs = currentRoom(state)
+        const atEntry = state.floor.currentRoomId === state.floor.graph.entryId
+        const atEnd = state.floor.currentRoomId === state.floor.graph.exitId && (g.kind === 'stairs' || (g.kind === 'boss' && rs.cleared))
+        if (!atEntry && !atEnd) throw new Error('leave from the entrance or the floor\'s end')
+        if (atEnd) state.stats.deepestFloorCompleted = Math.max(state.stats.deepestFloorCompleted, state.floor.number)
+      }
       const toll = state.floor.bossDefeated ? 0 : retreatToll(t, state.gold, state.knobs.retreatTollPercent ?? t.death.retreatTollPercent)
       state.gold -= toll
       state.stats.goldLost += toll
@@ -1164,7 +1651,8 @@ export function hashDelve(state: DelveState): string {
     gold: state.gold,
     pile: state.pile,
     materials: state.materials,
-    floor: { number: state.floor.number, hash: state.floor.graph.hash, rooms: state.floor.rooms, current: state.floor.currentRoomId, clock: state.floor.clock, hunter: state.floor.hunter, revives: state.floor.revivesLeft, key: state.floor.hasKey, boss: state.floor.bossDefeated },
+    floor: { number: state.floor.number, hash: state.floor.graph.hash, rooms: state.floor.rooms, current: state.floor.currentRoomId, clock: state.floor.clock, hunter: state.floor.hunter, revives: state.floor.revivesLeft, key: state.floor.hasKey, boss: state.floor.bossDefeated, secret: state.floor.secretId, shortcut: state.floor.shortcutTo, goldBonus: state.floor.goldPercentBonus, ambush: state.floor.ambushPercent },
+    pending: state.pendingStatuses,
     light: state.light,
     phase: state.phase,
     fight: state.fight ? { tick: state.fight.tick, round: state.fight.round, actors: state.fight.actors, pending: state.fight.pendingActorId, over: state.fight.over, rng: state.fight.rng } : null,

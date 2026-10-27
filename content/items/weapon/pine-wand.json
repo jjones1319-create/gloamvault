@@ -1,0 +1,47 @@
+{
+  "id": "pine-wand",
+  "name": "Pine Wand",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "F",
+  "materialLadder": "wood",
+  "materialRung": 0,
+  "weaponType": "wand",
+  "armorFamily": null,
+  "hands": 1,
+  "damageType": "fire",
+  "weight": 800,
+  "baseStats": {
+    "attackSpell": 9
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 8
+  },
+  "affixSlots": 0,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 3,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1.33,
+  "value": 150,
+  "classLock": [
+    "arcanist"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-wand-01",
+    "tintPrimary": "#a0824a",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "copper"
+  }
+}

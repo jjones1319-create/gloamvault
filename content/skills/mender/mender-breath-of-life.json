@@ -1,0 +1,47 @@
+{
+  "id": "mender-breath-of-life",
+  "classId": "mender",
+  "school": "benediction",
+  "tier": 2,
+  "name": "Breath of Life",
+  "description": "Revive a downed ally at 30% HP within the 3-turn window; the floor’s revive budget is not spent. Heavy cast.",
+  "type": "active",
+  "cost": 20,
+  "weight": 1400,
+  "target": "downedAlly",
+  "effects": [
+    {
+      "kind": "revive",
+      "percent": 30,
+      "note": "in-fight revive within the window (03 §12.1); spends no floor revive budget"
+    }
+  ],
+  "prerequisiteId": "mender-soothing-word",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Revive at 40% HP.",
+    "effects": [
+      {
+        "kind": "revive",
+        "percent": 40
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "revive"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "heal",
+    "priority": 90
+  }
+}

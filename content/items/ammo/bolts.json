@@ -1,0 +1,45 @@
+{
+  "id": "bolts",
+  "name": "Bolts",
+  "slot": null,
+  "kind": "ammo",
+  "grade": "F",
+  "materialLadder": null,
+  "materialRung": null,
+  "weaponType": null,
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {},
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 0,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 3,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1,
+  "value": 9,
+  "classLock": [],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": {
+    "stack": 50
+  },
+  "visual": {
+    "meshId": "ammo-bolts-01",
+    "tintPrimary": "#8b6b3e",
+    "tintSecondary": "#8a8f98",
+    "trimMetal": "iron"
+  }
+}

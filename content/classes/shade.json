@@ -1,0 +1,87 @@
+{
+  "id": "shade",
+  "name": "Shade",
+  "role": "assassin / rogue: fastest on the strip, burst from Veil, the party’s locksmith",
+  "description": "Dual daggers, a half-cloak and a two-beat rhythm: disappear, then appear exactly where it hurts. The Shade flanks the back row from the front, poisons what it cannot cut, and opens every lock and purse on the way.",
+  "attributeMods": {
+    "agility": 2,
+    "perception": 1,
+    "luck": 1
+  },
+  "pool": "stamina",
+  "armorFamily": "leather",
+  "weaponTypes": [
+    "dagger",
+    "sword",
+    "throwingKnife"
+  ],
+  "schools": [
+    {
+      "id": "shadow",
+      "name": "Shadow",
+      "philosophy": "Be elsewhere, then be exactly there. Stealth, crits and the backstab from the front row; everything that says \"from Veil\" doubles while hidden."
+    },
+    {
+      "id": "venom",
+      "name": "Venom",
+      "philosophy": "The fight is already won; the enemy has not noticed. Poison that ticks on their turn and ignores armor, debuffs, and the Shadow element."
+    },
+    {
+      "id": "larceny",
+      "name": "Larceny",
+      "philosophy": "The dungeon pays those who ask impolitely. Locks, mid-fight steals, pocketed traps and more gold for the party."
+    }
+  ],
+  "ultimateSkillId": "shade-last-light-out",
+  "starterKit": [
+    "copper-dagger",
+    "copper-throwing-knives",
+    "rawhide-hood",
+    "rawhide-jerkin",
+    "rawhide-breeches",
+    "rawhide-boots",
+    "rawhide-gloves",
+    "ring-of-shadows",
+    "small-hp-potion",
+    "torch",
+    "repair-kit",
+    "bandage"
+  ],
+  "starterSkillIds": [
+    "shade-veil",
+    "shade-backstab",
+    "shade-toxic-jab"
+  ],
+  "fieldSkillAffinities": [
+    {
+      "fieldSkill": "lockpicking",
+      "rankBonus": 2
+    },
+    {
+      "fieldSkill": "haggling",
+      "rankBonus": 2
+    }
+  ],
+  "monsterTechniqueIds": [],
+  "aiRuleDefault": "IF self HP < 30% THEN item small hp potion on self; IF self not status veil THEN veil; ELSE backstab on weakest enemy",
+  "visual": {
+    "gearSetId": "shade-rawhide-leather",
+    "palette": [
+      "#15151c",
+      "#5b3b8a",
+      "#8a8a8f",
+      "#2e3036"
+    ],
+    "notes": "A narrow vertical blade of a figure broken by one diagonal, the half-cloak over the left shoulder; the half-mask and the knife handles at the belt must read at 200px. Veiled, the set drops to 40% opacity with a violet rim light."
+  },
+  "pros": [
+    "Highest burst: Veil then Backstab is 3.0× with +30% Crit Rate at Tier I",
+    "Flanks the back row from the front row; Poison keeps ticking while it hides",
+    "Lockpicking +2, gold stolen mid-fight, locked chests that roll a grade up"
+  ],
+  "cons": [
+    "103 HP and Defense 20 at creation; Dodge is the only defence and caps at 30%",
+    "Pierce versus Plate: bone knights take its daggers at ×0.67 until Tier IV",
+    "Needs a setup turn: an ambushed Shade spends its first turn surviving, not Veiling"
+  ]
+}

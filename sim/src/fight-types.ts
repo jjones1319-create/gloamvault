@@ -21,6 +21,8 @@ export interface StatusInstance {
   sourceId: string | null
   /** For Grab: the grabber's turns since the grab (role cap). */
   counter: number
+  /** Applied during the holder's own turn: skips that turn's count-down once (D-077). */
+  fresh?: boolean
 }
 
 export interface StatModifier {
@@ -29,6 +31,28 @@ export interface StatModifier {
   percent: number
   turnsLeft: number
   sourceId: string
+  /** Applied during the holder's own turn: skips that turn's count-down once (D-077). */
+  fresh?: boolean
+}
+
+/**
+ * A persistent custom hook on an actor (hooks.ts): a loadout passive, a champion's affix, a pet's trait, a stance
+ * that lasts "until your next turn", a broken limb. The line plus the handler's own small state.
+ */
+export interface HookInstance {
+  customId: string
+  line: Effect
+  /** The actor that installed it (the Warden for Intercept, the pet for Guard Dog, the champion for an aura). */
+  sourceId: string
+  /** The skill that owns the line, when one does (a passive's school is read from it). */
+  sourceSkillId: string | null
+  /** Turns left, counted down at the holder's turn end like a status; null lasts the fight. */
+  turnsLeft: number | null
+  /** Drops at the holder's next turn start (Counter Stance). */
+  untilTurnStart: boolean
+  /** A counter the handler owns (hits left, a cooldown). */
+  counter: number
+  data: Record<string, number | string | boolean>
 }
 
 export interface ActorTally {
@@ -154,6 +178,8 @@ export interface Actor {
   charging: { weight: number; chargePaid: number; action: PendingAction } | null
   statuses: StatusInstance[]
   modifiers: StatModifier[]
+  /** Persistent custom hooks (passives, affixes, traits, stances); statuses carry their own lines. */
+  hooks: HookInstance[]
   guarding: boolean
   downed: boolean
   /** Turns of the downed hero that may pass before it is fallen (03 §12.1: 3). */
@@ -219,6 +245,8 @@ export interface WearEvent {
   /** Armor: the piece hit; weapon: mainHand/offHand. */
   slot: string
   double: boolean
+  /** Percent of a normal event (Wall Stance's armor −20 → 80); omitted means 100. */
+  percent?: number
 }
 
 export interface XpEvent {
@@ -250,6 +278,8 @@ export interface FightState {
   options: FightOptions
   /** Elite champions, boss phases and the like read these. */
   flags: Record<string, number | string | boolean>
+  /** The actor whose turn is resolving (a status it gains now does not count down at this turn's end; D-077). */
+  actingId: string | null
 }
 
 export interface FightOptions {
@@ -265,4 +295,6 @@ export interface FightOptions {
   /** The dungeon's loot band, for drops after the fight. */
   dungeonId: string
   floor: number
+  /** The party's carried gold when the fight began (a Cutpurse steals a share of it). */
+  partyGold: number
 }

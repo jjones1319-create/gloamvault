@@ -3,6 +3,7 @@ import type { MerchantOffer, RoomState, TrapState } from './delve-types.ts'
 import { townPrice } from './economy.ts'
 import type { Actor } from './fight-types.ts'
 import type { FloorGraph, FloorRoom } from './generator.ts'
+import { installHook } from './hooks.ts'
 import { createItemInstance } from './items.ts'
 import { buildMonsterActor, monsterLevelOnFloor, partyScale, scaledCount } from './monsters.ts'
 import type { Rng } from './rng.ts'
@@ -158,8 +159,9 @@ export function spawnEncounter(content: Content, t: Tuning, _rng: Rng, encounter
       )
     }
   }
-  // Champion affix effect lines (set-speed, attack +10%) at spawn.
+  // Champion affix effect lines (set-speed, attack +10%) at spawn; zero-weight trigger attacks arm their hooks.
   for (const a of actors) {
+    installPassiveAttackHooks(a)
     const m = a.monster
     if (!m?.champion) continue
     for (const id of m.champion.affixIds) {
@@ -167,6 +169,7 @@ export function spawnEncounter(content: Content, t: Tuning, _rng: Rng, encounter
       for (const line of affix?.effects ?? []) {
         if (line.kind === 'buffStat' && line.stat) a.modifiers.push({ stat: line.stat, amount: line.amount ?? 0, percent: line.percent ?? 0, turnsLeft: 999, sourceId: id })
         if (line.kind === 'custom' && line.customId === 'set-speed' && line.amount !== undefined) a.base.speed = line.amount
+        else if (line.kind === 'custom' && line.customId) installHook(a, line, id)
       }
     }
   }
@@ -206,9 +209,40 @@ export function scaleComposition(content: Content, slots: readonly { monsterId: 
   return per
 }
 
+/**
+ * A zero-weight attack that does not hit is a passive trigger (06 §3.1: "fires when this rat dies, not as an
+ * action" — the Giant Rat's Swarm Turns, the Cellar Hound's Handler's Fall): its custom lines are installed on the
+ * monster as hooks at spawn so their `onDeath` / `onTurnStart` rules are armed from the first tick. The hook's
+ * source is the monster itself, which is what the handlers' `apply` installs too, so the rare action pick replaces
+ * rather than stacks.
+ */
+export function installPassiveAttackHooks(actor: Actor): void {
+  const m = actor.monster
+  if (!m) return
+  for (const attack of m.attacks) {
+    if (attack.aiWeight !== 0 || attack.multiplier !== 0) continue
+    for (const line of attack.effects) if (line.kind === 'custom' && line.customId) installHook(actor, line, actor.id, { sourceSkillId: attack.id })
+  }
+}
+
 export function spawnSingle(content: Content, t: Tuning, def: MonsterDef, opts: { id: string; level: number; partySize: number; enemyHpPercent: number; row?: 'front' | 'back' }): Actor {
   const scale = partyScale(t, opts.partySize)
-  return buildMonsterActor(content, t, def, { id: opts.id, level: monsterLevelOnFloor(def, opts.level), row: opts.row ?? def.rows[0] ?? 'front', hpPercent: scale.hpPercent, enemyHpPercent: opts.enemyHpPercent })
+  const actor = buildMonsterActor(content, t, def, { id: opts.id, level: monsterLevelOnFloor(def, opts.level), row: opts.row ?? def.rows[0] ?? 'front', hpPercent: scale.hpPercent, enemyHpPercent: opts.enemyHpPercent })
+  installPassiveAttackHooks(actor)
+  return actor
+}
+
+/** A pack of one template (an ambush curio or trap, 07 §2.4–§2.5): `count` scaled by party size like any slot (03 §11.2), numbered names. */
+export function spawnPack(content: Content, t: Tuning, def: MonsterDef, opts: { count: number; level: number; partySize: number; enemyHpPercent: number }): Actor[] {
+  const scale = partyScale(t, opts.partySize)
+  const n = Math.max(1, scaledCount(opts.count, scale.countPercent, def.role))
+  const out: Actor[] = []
+  for (let i = 0; i < n; i++) {
+    const actor = buildMonsterActor(content, t, def, { id: `${def.id}-${i}`, level: monsterLevelOnFloor(def, opts.level), row: def.rows[0] ?? 'front', hpPercent: scale.hpPercent, enemyHpPercent: opts.enemyHpPercent, nameSuffix: n > 1 ? ` ${i + 1}` : '' })
+    installPassiveAttackHooks(actor)
+    out.push(actor)
+  }
+  return out
 }
 
 /** The boss and its first-phase adds (06 §3; 07 §2.8 owns timing, read as "present at the start"). */

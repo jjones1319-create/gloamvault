@@ -1,0 +1,92 @@
+{
+  "id": "cel-t-strongroom",
+  "zoneId": "the-cellars",
+  "footprint": {
+    "w": 1,
+    "h": 1
+  },
+  "doors": [
+    {
+      "side": "north",
+      "offset": 0
+    },
+    {
+      "side": "east",
+      "offset": 0
+    },
+    {
+      "side": "south",
+      "offset": 0
+    },
+    {
+      "side": "west",
+      "offset": 0
+    }
+  ],
+  "kinds": [
+    "treasure",
+    "secret"
+  ],
+  "camera": {
+    "position": [
+      0,
+      7.8,
+      7.8
+    ],
+    "lookAt": [
+      0,
+      1,
+      0
+    ],
+    "fov": 42
+  },
+  "props": [
+    {
+      "meshId": "shr_chest_small",
+      "position": [
+        -1.5,
+        0,
+        -2.5
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "shr_chest_large",
+      "position": [
+        1.8,
+        0,
+        -2.5
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "shr_gold_pile",
+      "position": [
+        -2.5,
+        0,
+        1
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "shr_gold_pile",
+      "position": [
+        2.5,
+        0,
+        0.5
+      ],
+      "rotationY": 70
+    },
+    {
+      "meshId": "shr_torch_sconce",
+      "position": [
+        0,
+        2,
+        -3.9
+      ],
+      "rotationY": 0
+    }
+  ],
+  "triBudget": 30000,
+  "drawCallBudget": 60
+}

@@ -1,0 +1,55 @@
+{
+  "id": "blade-hemorrhage",
+  "classId": "blade",
+  "school": "bloodletter",
+  "tier": 2,
+  "name": "Hemorrhage",
+  "description": "1.4× Slash to a front-row enemy; consumes the target's Bleed and deals all its remaining ticks at once.",
+  "type": "active",
+  "cost": 15,
+  "weight": 1000,
+  "target": "enemyFront",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1.4,
+      "damageType": "slash",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "custom",
+      "customId": "consume-dot-remaining",
+      "status": "bleed",
+      "note": "removes the status from the target and deals its remaining ticks now"
+    }
+  ],
+  "prerequisiteId": "blade-open-vein",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Also re-applies Bleed 2 turns.",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "bleed",
+        "duration": 2
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "dot"
+  ],
+  "xpTags": [
+    "strength",
+    "agility"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 60
+  }
+}

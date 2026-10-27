@@ -1,0 +1,56 @@
+{
+  "id": "of-grace",
+  "name": "of Grace",
+  "position": "suffix",
+  "lines": [
+    {
+      "bandMin": "F",
+      "bandMax": "D",
+      "effect": {
+        "kind": "custom",
+        "customId": "healing-done-percent",
+        "target": "self",
+        "note": "+healing done; \"Censers, Crook, Robes, Ring\" read as their slots"
+      },
+      "min": 3,
+      "max": 5
+    },
+    {
+      "bandMin": "C",
+      "bandMax": "A",
+      "effect": {
+        "kind": "custom",
+        "customId": "healing-done-percent",
+        "target": "self",
+        "note": "+healing done; \"Censers, Crook, Robes, Ring\" read as their slots"
+      },
+      "min": 5,
+      "max": 10
+    },
+    {
+      "bandMin": "S",
+      "bandMax": "God",
+      "effect": {
+        "kind": "custom",
+        "customId": "healing-done-percent",
+        "target": "self",
+        "note": "+healing done; \"Censers, Crook, Robes, Ring\" read as their slots"
+      },
+      "min": 10,
+      "max": 15
+    }
+  ],
+  "slots": [
+    "mainHand",
+    "helmet",
+    "chest",
+    "legs",
+    "boots",
+    "gloves",
+    "ring"
+  ],
+  "weight": 3,
+  "tags": [
+    "healing"
+  ]
+}

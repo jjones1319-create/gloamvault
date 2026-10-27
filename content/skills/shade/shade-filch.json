@@ -1,0 +1,54 @@
+{
+  "id": "shade-filch",
+  "classId": "shade",
+  "school": "larceny",
+  "tier": 2,
+  "name": "Filch",
+  "description": "0.8× Pierce to a front-row enemy; steal a common part from a monster, or a potion from a Grinning Company bandit (once per enemy).",
+  "type": "active",
+  "cost": 14,
+  "weight": 800,
+  "target": "enemyFront",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 0.8,
+      "damageType": "pierce"
+    },
+    {
+      "kind": "custom",
+      "customId": "steal-part",
+      "chance": 0,
+      "note": "steals one common part from a monster (a potion from a bandit), once per enemy per fight; chance% of the time the part is a rare one instead"
+    }
+  ],
+  "prerequisiteId": "shade-pickpocket",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "25% chance of a rare part instead.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "steal-part",
+        "chance": 25
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "utility"
+  ],
+  "xpTags": [
+    "agility",
+    "perception"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 40
+  }
+}

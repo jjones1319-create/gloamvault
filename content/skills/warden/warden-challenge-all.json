@@ -1,0 +1,54 @@
+{
+  "id": "warden-challenge-all",
+  "classId": "warden",
+  "school": "warcry",
+  "tier": 2,
+  "name": "Challenge All",
+  "description": "Taunt 1 turn on every enemy; you gain Fortify 1 turn.",
+  "type": "active",
+  "cost": 16,
+  "weight": 1000,
+  "target": "allEnemies",
+  "effects": [
+    {
+      "kind": "applyStatus",
+      "status": "taunt",
+      "duration": 1
+    },
+    {
+      "kind": "applyStatus",
+      "status": "fortify",
+      "duration": 1,
+      "target": "self"
+    }
+  ],
+  "prerequisiteId": "warden-provoke",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Taunt 2 turns.",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "taunt",
+        "duration": 2
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "taunt",
+    "control"
+  ],
+  "xpTags": [
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "control",
+    "priority": 65
+  }
+}

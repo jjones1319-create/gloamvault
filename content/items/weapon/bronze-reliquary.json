@@ -1,0 +1,48 @@
+{
+  "id": "bronze-reliquary",
+  "name": "Bronze Reliquary",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "E",
+  "materialLadder": "metal",
+  "materialRung": 1,
+  "weaponType": "staff",
+  "armorFamily": null,
+  "hands": 2,
+  "damageType": "holy",
+  "weight": 1000,
+  "baseStats": {
+    "attackSpell": 19,
+    "mana": 20
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 13
+  },
+  "affixSlots": 1,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 4,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1.67,
+  "value": 360,
+  "classLock": [
+    "mender"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-reliquary-01",
+    "tintPrimary": "#cd7f32",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "bronze"
+  }
+}

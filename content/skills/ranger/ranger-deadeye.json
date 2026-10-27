@@ -1,0 +1,72 @@
+{
+  "id": "ranger-deadeye",
+  "classId": "ranger",
+  "school": "marksman",
+  "tier": 3,
+  "name": "Deadeye",
+  "description": "2.6× Pierce to one enemy in any row; a guaranteed crit against a Marked target; 1 arrow.",
+  "type": "active",
+  "cost": 22,
+  "weight": 1400,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "guaranteed-crit-vs-status",
+      "status": "mark",
+      "target": "self",
+      "note": "this action crits automatically if the target holds the status"
+    },
+    {
+      "kind": "damage",
+      "multiplier": 2.6,
+      "damageType": "pierce",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "custom",
+      "customId": "consume-ammo",
+      "amount": 1,
+      "target": "self",
+      "note": "1 arrow (or bolt)"
+    }
+  ],
+  "prerequisiteId": "ranger-piercing-shot",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "requirements": {
+    "weaponTypes": [
+      "bow",
+      "shortbow",
+      "longbow",
+      "crossbow"
+    ]
+  },
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "3.0×.",
+    "effects": [
+      {
+        "kind": "damage",
+        "multiplier": 3,
+        "damageType": "pierce",
+        "scalesWith": "strength"
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "reach"
+  ],
+  "xpTags": [
+    "perception",
+    "agility"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 65
+  }
+}

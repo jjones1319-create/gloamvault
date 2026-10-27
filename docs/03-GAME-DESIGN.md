@@ -1,6 +1,6 @@
 # 03 — Game Design (the rulebook)
 
-*Last updated 2026-10-26 · rev. 2 (Claude, from James's brief of 2026-10-26 and the three research reports in `docs/research/`; rev. 2 after the independent review — ownership table, status table, promotion counts, First Aid, Pacts). Every number in this document is a **tuning starting point**, never a commitment; the simulator and the balance runner decide the final values. Each section ends with **Open questions** for James.*
+*Last updated 2026-10-27 · rev. 3 (James's direction of 2026-10-27: Final Fantasy-style levels, leaving by the entrance or a floor's end, a very difficult tower best taken with a party, turn-based combat — D-082–D-085; and the Phase 3 balance pass, D-077–D-084) · rev. 2 (Claude, from James's brief of 2026-10-26 and the three research reports in `docs/research/`; rev. 2 after the independent review — ownership table, status table, promotion counts, First Aid, Pacts). Every number in this document is a **tuning starting point**, never a commitment; the simulator and the balance runner decide the final values. Each section ends with **Open questions** for James.*
 
 **Who owns what (when two docs disagree, the owner wins and the other is fixed):**
 
@@ -91,7 +91,7 @@ Starting formulas at an ordinary adult (all 10s) with no gear. The sim owns thes
 
 - **Hit** = roll < Accuracy − targetDodge (never below 50%); Ultimates and most AoE never miss.
 - **Damage** = Attack × skillMultiplier × (1 + Σ bonuses) × elementMod × 100 / (100 + effectiveDefense) × critMod × variance. Same shape as Ascend §4.3 so the two sims stay cousins.
-- **Levels.** A hero's **level** is a milestone of total skill ranks gained (Elder Scrolls shape): level N needs 8 × N skill ranks in total (L2 at 16, L10 at 80, L30 at 240). Level gives the HP line above, unlocks skill tiers (§7.2) and sets the soft caps (§5.3). Levels never give attribute points — use does.
+- **Levels (Final Fantasy style, D-082 — James, 2026-10-27).** A hero's **level** comes from **battle XP**: the heroes standing at the end of a won fight share its XP (each takes the monsters' XP × 3 ÷ standing heroes, × the difficulty curve D of §5.1). Level N costs 60 × 1.28^(N−2) battle XP (L2 60, L5 126, L10 432; `tuning.json` → `xp.heroLevel`). Each level-up adds **+1 to the class's bonus attributes in turn** (the Blade: Str, Agi, Str …) and **+1 Vitality on every even level**, plus the HP line above (+3 per level). Level unlocks skill tiers (§7.2) and sets the soft caps (§5.3). Skills, attributes, items and pets **still grow by use** (§5): the level is the second road, not a replacement. *(Rev. 2's "level = total skill ranks ÷ 8" is superseded.)*
 
 ### 2.3 Creation
 
@@ -257,7 +257,7 @@ XP is granted only for **meaningful actions**: an action that resolves against a
 | **Pet** | 50% of the owner's fight XP by participation + its stance's tagged actions | `09` §9 | owner's level |
 | **Field skills** (§7.6) | each successful use: lockpick, disarm, forage, repair, haggle, first aid, cook, map | same rank curve | — |
 
-**Hero level** = total skill ranks (§2.2). A level-up line reads like a status screen: *"Blade Dance → rank 4 · +1 Agility · Longsword → Lv 3 (affinity: Undead)"*.
+**Hero level** = battle XP (§2.2, D-082: Final Fantasy style). The results screen reads like a status screen: *"Level 4! +1 Strength · +1 Vitality · Blade Dance → rank 4 · +1 Agility · Longsword → Lv 3 (affinity: Undead)"*.
 
 ### 5.3 Co-op fairness and death
 
@@ -512,7 +512,7 @@ Seeded by the host's 64-bit match seed; integer-only; identical on every phone.
 ### 11.2 Scaling
 
 - **Monster level** = floor band level (floor 1 = L1 … floor 10 = L14; dungeon 2 starts at L12). Everything about a monster derives from its level and its template.
-- **Party size:** encounter tables are written for three players; for 1 / 2 / 3 / 4 players the monster *count* scales ×0.6 / ×0.8 / ×1.0 / ×1.2 (minimum 1) and monster *HP* ×0.7 / ×0.85 / ×1.0 / ×1.15. The runner tunes so solo and 4-player fights land on the same 3–6 rounds.
+- **Party size:** encounter tables are written for three heroes; for 1 / 2 / 3 / 4 heroes the monster *count* scales, then monster *HP*, then monster *damage* (minimum 1 monster; a Special or Monster is never removed). Rev. 2's starting values were count ×0.6 / ×0.8 / ×1.0 / ×1.2 and HP ×0.7 / ×0.85 / ×1.0 / ×1.15; the runner's Phase 3 values are **count ×0.6 / 0.8 / 1.0 / 1.6, HP ×0.5 / 1.0 / 1.0 / 1.6, damage ×0.8 / 1.0 / 1.0 / 1.0** (`tuning.json` → `dungeon.partyScaling`; D-080, D-084). The runner tunes so solo and 4-hero fights land on the same 3–6 rounds, and so the tower is **very difficult**: not soloable the first time without levels and gear, possible solo after a lot of grinding, best taken with a party (D-084, James).
 - **Difficulty knobs** (a menu of scalars like Hades' Pact, each sweepable by the runner): enemy HP %, damage %, count %, speed %, hunter clock, light start, revives per floor. Normal is the baseline; **Hard** and **Nightmare** presets and the modifier menu ("Pacts", `07` §6) ship in Phase 7.
 
 ### 11.3 Monster families and bosses
@@ -552,9 +552,15 @@ All heroes fallen = **wipe**: the party wakes at the Lantern Inn. You lose the *
 
 ### 12.3 Retreat
 
-From any room, **Retreat to town** keeps everything (a Waystone is a free walk; without one the party pays 10% of the delve's gold, Moonlighter's toll). Not from a boss room once the fight starts.
+**Leaving (D-083 — James, 2026-10-27):** the party leaves only by **walking out of a floor's entrance room** or **teleporting out at the floor's end** (the stairs room, or the boss's room once the boss is down). Both keep everything carried and are free on Normal (Hard and Nightmare keep a 15% / 25% toll). Reaching a floor's way down records it, and the next delve may **start on the floor below** — the tower remembers. Not from a fight. *(Rev. 2's "from any room, 10% toll" is superseded.)*
 
 ---
+
+### 12.4 Open questions from James's direction of 2026-10-27
+
+1. **The party-member unlock schedule** (D-084, Proposed): the second hero when floor 1 is first finished, the third at the first Cellars boss kill, the fourth at the first Crypts boss kill?
+2. **Gravehollow at 8 floors** instead of 10 (D-085, Proposed): Cellars F1–3, Crypts F4–6, Drowned Vault F7–8 with the Hollow King on F8?
+3. **Battle XP shared or whole** (D-082 reading): shared (each standing hero takes XP × 3 ÷ standing heroes, so a solo hero levels faster per fight) or every hero takes the whole fight's XP?
 
 ## 13. The first thirty minutes
 

@@ -1,0 +1,63 @@
+{
+  "id": "shade-smoke-pellet",
+  "classId": "shade",
+  "school": "larceny",
+  "tier": 1,
+  "name": "Smoke Pellet",
+  "description": "Every ally gains +15% Dodge for 1 turn; the party’s Flee chance is +25% this turn.",
+  "type": "active",
+  "cost": 10,
+  "weight": 800,
+  "target": "allAllies",
+  "effects": [
+    {
+      "kind": "buffStat",
+      "stat": "dodge",
+      "amount": 15,
+      "duration": 1
+    },
+    {
+      "kind": "custom",
+      "customId": "flee-chance-bonus",
+      "amount": 25,
+      "duration": 1,
+      "note": "the party’s Flee chance is +amount pp for `duration` turns"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "2 turns.",
+    "effects": [
+      {
+        "kind": "buffStat",
+        "stat": "dodge",
+        "amount": 15,
+        "duration": 2
+      },
+      {
+        "kind": "custom",
+        "customId": "flee-chance-bonus",
+        "amount": 25,
+        "duration": 2
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "buff",
+    "mobility"
+  ],
+  "xpTags": [
+    "agility"
+  ],
+  "aiHints": {
+    "role": "defend",
+    "priority": 35
+  }
+}

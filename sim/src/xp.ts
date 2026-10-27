@@ -84,7 +84,32 @@ export function itemLevelCost(t: Tuning, level: number): number {
   return roundHalfUp(i.levelBase * Math.pow(i.levelGrowth, level - 1))
 }
 
-/** Hero level from total skill ranks (§2.2: level N needs 8 × N ranks; L2 at 16, L10 at 80). */
+/** Battle XP to go from level N−1 to N (D-082): base × growth^(N−2); L2 60, L5 126, L10 432 at 60 / 1.28. */
+export function heroLevelXpCost(t: Tuning, level: number): number {
+  if (level <= 1) return 0
+  const h = t.xp.heroLevel
+  return roundHalfUp(h.xpToNextBase.value * Math.pow(h.xpToNextGrowth, level - 2))
+}
+
+/** The hero level a battle-XP total reaches (D-082), capped at xp.heroLevel.cap. */
+export function heroLevelForXp(t: Tuning, battleXp: number): number {
+  let level = 1
+  let left = battleXp
+  while (level < t.xp.heroLevel.cap && left >= heroLevelXpCost(t, level + 1)) {
+    left -= heroLevelXpCost(t, level + 1)
+    level++
+  }
+  return level
+}
+
+/** Total battle XP that reaches a level (the inverse of heroLevelForXp). */
+export function battleXpForLevel(t: Tuning, level: number): number {
+  let total = 0
+  for (let n = 2; n <= level; n++) total += heroLevelXpCost(t, n)
+  return total
+}
+
+/** Hero level from total skill ranks (§2.2: level N needs 8 × N ranks; L2 at 16, L10 at 80). Superseded by D-082. */
 export function heroLevelFor(t: Tuning, totalSkillRanks: number): number {
   return Math.max(1, Math.floor(totalSkillRanks / t.derived.level.skillRanksPerLevel))
 }

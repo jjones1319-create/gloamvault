@@ -1,0 +1,52 @@
+{
+  "id": "blade-grim-harvest",
+  "classId": "blade",
+  "school": "executioner",
+  "tier": 3,
+  "name": "Grim Harvest",
+  "description": "A kill with an Executioner skill refunds its Stamina and grants +20 Momentum.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "school-kill-refund-and-momentum",
+      "amount": 20,
+      "percent": 100,
+      "target": "self",
+      "note": "a kill by an active of the owner's school refunds percent% of its cost and gives amount Momentum"
+    }
+  ],
+  "prerequisiteId": "blade-heavy-hands",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "+30 Momentum.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "school-kill-refund-and-momentum",
+        "amount": 30,
+        "percent": 100,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "momentum",
+    "buff"
+  ],
+  "xpTags": [
+    "strength"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 0
+  }
+}

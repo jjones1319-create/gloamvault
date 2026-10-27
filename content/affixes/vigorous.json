@@ -1,0 +1,45 @@
+{
+  "id": "vigorous",
+  "name": "Vigorous",
+  "position": "prefix",
+  "lines": [
+    {
+      "bandMin": "F",
+      "bandMax": "D",
+      "stat": "hp",
+      "unit": "percent",
+      "min": 3,
+      "max": 5
+    },
+    {
+      "bandMin": "C",
+      "bandMax": "A",
+      "stat": "hp",
+      "unit": "percent",
+      "min": 5,
+      "max": 8
+    },
+    {
+      "bandMin": "S",
+      "bandMax": "God",
+      "stat": "hp",
+      "unit": "percent",
+      "min": 8,
+      "max": 12
+    }
+  ],
+  "slots": [
+    "helmet",
+    "chest",
+    "legs",
+    "boots",
+    "gloves",
+    "ring",
+    "talisman"
+  ],
+  "weight": 5,
+  "tags": [
+    "defensive",
+    "hp"
+  ]
+}

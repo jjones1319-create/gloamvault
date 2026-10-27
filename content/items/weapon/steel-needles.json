@@ -1,0 +1,58 @@
+{
+  "id": "steel-needles",
+  "name": "Steel Needles",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "C",
+  "materialLadder": "metal",
+  "materialRung": 3,
+  "weaponType": "throwingKnife",
+  "armorFamily": null,
+  "hands": 1,
+  "damageType": "pierce",
+  "weight": 800,
+  "baseStats": {
+    "attackPhys": 12
+  },
+  "requirements": {
+    "strength": 7,
+    "wisdom": 0
+  },
+  "affixSlots": 2,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 6,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 2.6,
+  "value": 600,
+  "classLock": [
+    "shade"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": {
+    "text": "15% Poison on hit",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "poison",
+        "chance": 15,
+        "target": "enemy",
+        "note": "on hit"
+      }
+    ]
+  },
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-needles-01",
+    "tintPrimary": "#a8b0ba",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "steel"
+  }
+}

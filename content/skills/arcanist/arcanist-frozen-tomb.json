@@ -1,0 +1,56 @@
+{
+  "id": "arcanist-frozen-tomb",
+  "classId": "arcanist",
+  "school": "rime",
+  "tier": 3,
+  "name": "Frozen Tomb",
+  "description": "On an enemy in either row: Freeze 2 turns, no damage (bosses take Chill, as the status rules say). On an ally instead: encased, immune to all damage until their next turn, then Chill 1 turn.",
+  "type": "active",
+  "cost": 22,
+  "weight": 1000,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "applyStatus",
+      "status": "freeze",
+      "duration": 2,
+      "note": "the sheet says bosses Freeze 1; the rulebook’s status table (03 §3.5, the owner) makes a boss take Chill instead, so the status’s bossBecomes rules"
+    },
+    {
+      "kind": "custom",
+      "customId": "ally-mode-encase",
+      "duration": 1,
+      "status": "chill",
+      "note": "when the chosen target is an ally the skill’s other lines are skipped; the ally is immune to all damage until its next turn, then gets `status` 1 (no status when omitted)"
+    }
+  ],
+  "prerequisiteId": "arcanist-ice-wall",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "An encased ally keeps no Chill.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "ally-mode-encase",
+        "duration": 1
+      }
+    ]
+  },
+  "tags": [
+    "control",
+    "reach",
+    "shield"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "control",
+    "priority": 60
+  }
+}

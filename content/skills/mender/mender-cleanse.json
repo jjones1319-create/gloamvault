@@ -1,0 +1,52 @@
+{
+  "id": "mender-cleanse",
+  "classId": "mender",
+  "school": "vigil",
+  "tier": 1,
+  "name": "Cleanse",
+  "description": "Remove 1 debuff from one ally (the player picks) and heal them 5% of max HP.",
+  "type": "active",
+  "cost": 8,
+  "weight": 800,
+  "target": "ally",
+  "effects": [
+    {
+      "kind": "dispel",
+      "amount": 1,
+      "note": "on an ally: cleanse `amount` debuff(s); the player picks which"
+    },
+    {
+      "kind": "heal",
+      "percent": 5,
+      "scalesWith": "wisdom"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Remove 2.",
+    "effects": [
+      {
+        "kind": "dispel",
+        "amount": 2
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "cleanse",
+    "heal"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "heal",
+    "priority": 55
+  }
+}

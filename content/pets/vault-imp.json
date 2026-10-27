@@ -1,0 +1,63 @@
+{
+  "id": "vault-imp",
+  "name": "Vault Imp",
+  "speciesFamilyId": "tidebound",
+  "gradeBand": {
+    "min": "C",
+    "max": "B"
+  },
+  "trait": {
+    "id": "hags-fingers",
+    "name": "Hag's Fingers",
+    "description": "+10% gold found; the party's Lockpicking counts two ranks higher. Grows as it opens things.",
+    "effects": [
+      {
+        "kind": "loot",
+        "percent": 10,
+        "target": "allAllies",
+        "note": "gold found by the party +10%"
+      },
+      {
+        "kind": "custom",
+        "customId": "pet-lockpicking-bonus",
+        "amount": 2,
+        "target": "allAllies",
+        "note": "the party's best Lockpicking effective rank +2 (may exceed 10)"
+      }
+    ],
+    "growsBy": "perception"
+  },
+  "actives": [
+    {
+      "skillId": "pet-vault-imp-pilfer",
+      "unlockLevel": 5
+    },
+    {
+      "skillId": "pet-vault-imp-hex",
+      "unlockLevel": 15
+    }
+  ],
+  "stamina": 30,
+  "baseStats": {
+    "hp": 0.7,
+    "attackPhys": 0.8,
+    "attackSpell": 0.8,
+    "defense": 0.7,
+    "speed": 1.1,
+    "detection": 1.2
+  },
+  "roleLean": "forage",
+  "visual": {
+    "baseMesh": "imp",
+    "palette": [
+      "#e9e4dc",
+      "#b8b0a4",
+      "#dfe8f0"
+    ]
+  },
+  "eggSource": {
+    "chestBand": "C",
+    "familyId": "tidebound"
+  },
+  "creationChoice": false
+}

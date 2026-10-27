@@ -151,8 +151,7 @@
         2,
         -4
       ],
-      "rotationY": 90,
-      "lightSource": true
+      "rotationY": 90
     },
     {
       "meshId": "shr_torch_sconce",
@@ -161,8 +160,7 @@
         2,
         4
       ],
-      "rotationY": 90,
-      "lightSource": true
+      "rotationY": 90
     },
     {
       "meshId": "shr_torch_sconce",
@@ -171,8 +169,7 @@
         2,
         -4
       ],
-      "rotationY": -90,
-      "lightSource": true
+      "rotationY": -90
     },
     {
       "meshId": "shr_torch_sconce",
@@ -181,8 +178,7 @@
         2,
         4
       ],
-      "rotationY": -90,
-      "lightSource": true
+      "rotationY": -90
     },
     {
       "meshId": "shr_torch_sconce",
@@ -191,8 +187,7 @@
         2,
         -7.9
       ],
-      "rotationY": 0,
-      "lightSource": true
+      "rotationY": 0
     },
     {
       "meshId": "shr_torch_sconce",
@@ -201,8 +196,7 @@
         2,
         -7.9
       ],
-      "rotationY": 0,
-      "lightSource": true
+      "rotationY": 0
     }
   ],
   "triBudget": 30000,

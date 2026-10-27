@@ -1,0 +1,74 @@
+{
+  "id": "warden-lockstep",
+  "classId": "warden",
+  "school": "vanguard",
+  "tier": 2,
+  "name": "Lockstep",
+  "description": "Swap rows with the chosen ally; both of you gain Fortify 1 turn; the swapped ally +10 Momentum.",
+  "type": "active",
+  "cost": 12,
+  "weight": 800,
+  "target": "ally",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "swap-rows-with-ally",
+      "target": "ally",
+      "note": "you and the chosen ally trade rows as part of the action (no 400-weight Swap row)"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "fortify",
+      "duration": 1,
+      "target": "ally"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "fortify",
+      "duration": 1,
+      "target": "self"
+    },
+    {
+      "kind": "momentum",
+      "amount": 10,
+      "target": "ally"
+    }
+  ],
+  "prerequisiteId": "warden-formation-drill",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Both gain Shield = 10% your max HP.",
+    "effects": [
+      {
+        "kind": "shield",
+        "percent": 10,
+        "target": "self",
+        "note": "Shield = 10% of your own max HP"
+      },
+      {
+        "kind": "custom",
+        "customId": "shield-allies-percent-of-own-max-hp",
+        "percent": 10,
+        "target": "ally",
+        "note": "the ally gains Shield = 10% of the Warden’s max HP"
+      }
+    ]
+  },
+  "tags": [
+    "mobility",
+    "buff",
+    "momentum"
+  ],
+  "xpTags": [
+    "endurance"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 45
+  }
+}

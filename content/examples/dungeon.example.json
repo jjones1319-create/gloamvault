@@ -2,16 +2,24 @@
   "id": "gravehollow-keep",
   "name": "Gravehollow Keep",
   "lore": "A border keep that sank a storey into its own dead. The Grinning Company taxes the road from the cellars; the Barrow Warden keeps the dead below them; the Tidebound are drowning the vault beneath him to wake what the keep was built to hold down.",
-  "levelRange": { "min": 1, "max": 14 },
+  "levelRange": {
+    "min": 1,
+    "max": 14
+  },
   "unlockedBy": null,
   "zones": [
     {
       "id": "the-cellars",
       "name": "The Cellars",
-      "floors": { "from": 1, "to": 3 },
+      "floors": {
+        "from": 1,
+        "to": 3
+      },
       "familyId": "cellar-vermin",
       "hunterId": "old-gnaw",
-      "bossIds": ["captain-vexa-marrow"],
+      "bossIds": [
+        "captain-vexa-marrow"
+      ],
       "waystone": true,
       "biomeKitId": "cel"
     }
@@ -24,9 +32,15 @@
       "roomsMin": 5,
       "roomsMax": 7,
       "lightAtEntry": 100,
-      "encounterTableIds": ["cellars-a", "cellars-b"],
+      "encounterTableIds": [
+        "cellars-a",
+        "cellars-b"
+      ],
       "eliteAffixCount": 1,
-      "trapBand": { "min": 8, "max": 12 },
+      "trapBand": {
+        "min": 8,
+        "max": 12
+      },
       "secretChance": 10,
       "secretDifficulty": 10,
       "merchant": false,
@@ -41,9 +55,17 @@
       "roomsMin": 8,
       "roomsMax": 10,
       "lightAtEntry": 90,
-      "encounterTableIds": ["cellars-a", "cellars-b", "cellars-c", "cellars-e"],
+      "encounterTableIds": [
+        "cellars-a",
+        "cellars-b",
+        "cellars-c",
+        "cellars-e"
+      ],
       "eliteAffixCount": 1,
-      "trapBand": { "min": 10, "max": 14 },
+      "trapBand": {
+        "min": 10,
+        "max": 14
+      },
       "secretChance": 25,
       "secretDifficulty": 12,
       "merchant": true,
@@ -58,9 +80,17 @@
       "roomsMin": 8,
       "roomsMax": 11,
       "lightAtEntry": 85,
-      "encounterTableIds": ["cellars-b", "cellars-c", "cellars-d", "cellars-e"],
+      "encounterTableIds": [
+        "cellars-b",
+        "cellars-c",
+        "cellars-d",
+        "cellars-e"
+      ],
       "eliteAffixCount": 2,
-      "trapBand": { "min": 12, "max": 16 },
+      "trapBand": {
+        "min": 12,
+        "max": 16
+      },
       "secretChance": 25,
       "secretDifficulty": 14,
       "merchant": false,
@@ -92,7 +122,10 @@
     "maxRooms": 14,
     "maxBranches": 3,
     "bossFarthest": true,
-    "grid": { "w": 8, "h": 6 }
+    "grid": {
+      "w": 8,
+      "h": 6
+    }
   },
   "curios": [
     {
@@ -105,19 +138,58 @@
           "label": "Open",
           "requires": [],
           "outcomes": [
-            { "chance": 60, "effect": { "kind": "loot", "amount": 15, "note": "gold 0.05 R at R ≈ 300" } },
-            { "chance": 25, "effect": { "kind": "custom", "customId": "ambush-encounter", "note": "a Plague Rat ambush: the Cellars A pack, party surprised" } },
-            { "chance": 15, "effect": { "kind": "custom", "customId": "drop-item-of-grade", "note": "a Fine (D) item" } }
+            {
+              "chance": 60,
+              "effect": {
+                "kind": "loot",
+                "amount": 15,
+                "note": "gold 0.05 R at R ≈ 300"
+              }
+            },
+            {
+              "chance": 25,
+              "effect": {
+                "kind": "custom",
+                "customId": "ambush-encounter",
+                "note": "a Plague Rat ambush: the Cellars A pack, party surprised"
+              }
+            },
+            {
+              "chance": 15,
+              "effect": {
+                "kind": "custom",
+                "customId": "drop-item-of-grade",
+                "note": "a Fine (D) item"
+              }
+            }
           ]
         },
         {
           "label": "Smoke them out",
-          "requires": [{ "kind": "item", "id": "torch", "amount": 1, "consumed": true }],
+          "requires": [
+            {
+              "kind": "item",
+              "id": "torch",
+              "amount": 1,
+              "consumed": true
+            }
+          ],
           "outcomes": [
-            { "chance": 100, "effect": { "kind": "loot", "amount": 15, "note": "the purchase: the same purse, no roll" } }
+            {
+              "chance": 100,
+              "effect": {
+                "kind": "loot",
+                "amount": 15,
+                "note": "the purchase: the same purse, no roll"
+              }
+            }
           ]
         },
-        { "label": "Leave", "requires": [], "outcomes": [] }
+        {
+          "label": "Leave",
+          "requires": [],
+          "outcomes": []
+        }
       ],
       "safeItemId": "torch"
     },
@@ -131,27 +203,89 @@
           "label": "Dig",
           "requires": [],
           "outcomes": [
-            { "chance": 50, "effect": { "kind": "custom", "customId": "give-material", "amount": 3, "note": "3 Rawhide" } },
-            { "chance": 35, "effect": { "kind": "custom", "customId": "ambush-encounter", "note": "a Plague Rat swarm" } },
-            { "chance": 15, "effect": { "kind": "applyStatus", "status": "poison", "duration": 3, "target": "self", "note": "on the digger" } }
+            {
+              "chance": 50,
+              "effect": {
+                "kind": "custom",
+                "customId": "give-material",
+                "amount": 3,
+                "note": "3 Rawhide"
+              }
+            },
+            {
+              "chance": 35,
+              "effect": {
+                "kind": "custom",
+                "customId": "ambush-encounter",
+                "note": "a Plague Rat swarm"
+              }
+            },
+            {
+              "chance": 15,
+              "effect": {
+                "kind": "applyStatus",
+                "status": "poison",
+                "duration": 3,
+                "target": "self",
+                "note": "on the digger"
+              }
+            }
           ]
         },
         {
           "label": "Dig carefully",
-          "requires": [{ "kind": "fieldSkillRank", "id": "foraging", "min": 3 }],
+          "requires": [
+            {
+              "kind": "fieldSkillRank",
+              "id": "foraging",
+              "min": 3
+            }
+          ],
           "outcomes": [
-            { "chance": 100, "effect": { "kind": "custom", "customId": "give-material", "amount": 3, "note": "3 Rawhide and a rare part roll at 20%" } }
+            {
+              "chance": 100,
+              "effect": {
+                "kind": "custom",
+                "customId": "give-material",
+                "amount": 3,
+                "note": "3 Rawhide and a rare part roll at 20%"
+              }
+            }
           ]
         },
         {
           "label": "Burn",
-          "requires": [{ "kind": "item", "id": "torch", "amount": 1, "consumed": true }],
+          "requires": [
+            {
+              "kind": "item",
+              "id": "torch",
+              "amount": 1,
+              "consumed": true
+            }
+          ],
           "outcomes": [
-            { "chance": 70, "effect": { "kind": "custom", "customId": "roll-rare-part", "note": "one rare part of the family" } },
-            { "chance": 30, "effect": { "kind": "custom", "customId": "nothing" } }
+            {
+              "chance": 70,
+              "effect": {
+                "kind": "custom",
+                "customId": "roll-rare-part",
+                "note": "one rare part of the family"
+              }
+            },
+            {
+              "chance": 30,
+              "effect": {
+                "kind": "custom",
+                "customId": "nothing"
+              }
+            }
           ]
         },
-        { "label": "Leave", "requires": [], "outcomes": [] }
+        {
+          "label": "Leave",
+          "requires": [],
+          "outcomes": []
+        }
       ],
       "safeItemId": null
     },
@@ -165,20 +299,64 @@
           "label": "Search",
           "requires": [],
           "outcomes": [
-            { "chance": 55, "effect": { "kind": "loot", "amount": 24, "note": "gold 0.08 R" } },
-            { "chance": 30, "effect": { "kind": "custom", "customId": "ambush-encounter", "note": "a Cellar Spider ambush" } },
-            { "chance": 15, "effect": { "kind": "custom", "customId": "drop-item", "note": "Boots (E grade)" } }
+            {
+              "chance": 55,
+              "effect": {
+                "kind": "loot",
+                "amount": 24,
+                "note": "gold 0.08 R"
+              }
+            },
+            {
+              "chance": 30,
+              "effect": {
+                "kind": "custom",
+                "customId": "ambush-encounter",
+                "note": "a Cellar Spider ambush"
+              }
+            },
+            {
+              "chance": 15,
+              "effect": {
+                "kind": "custom",
+                "customId": "drop-item",
+                "note": "Boots (E grade)"
+              }
+            }
           ]
         },
         {
           "label": "Cut the tripwire, then search",
-          "requires": [{ "kind": "detection", "min": 14 }],
+          "requires": [
+            {
+              "kind": "detection",
+              "min": 14
+            }
+          ],
           "outcomes": [
-            { "chance": 50, "effect": { "kind": "loot", "amount": 24, "note": "gold 0.08 R" } },
-            { "chance": 50, "effect": { "kind": "custom", "customId": "drop-item", "note": "Boots (E grade)" } }
+            {
+              "chance": 50,
+              "effect": {
+                "kind": "loot",
+                "amount": 24,
+                "note": "gold 0.08 R"
+              }
+            },
+            {
+              "chance": 50,
+              "effect": {
+                "kind": "custom",
+                "customId": "drop-item",
+                "note": "Boots (E grade)"
+              }
+            }
           ]
         },
-        { "label": "Leave", "requires": [], "outcomes": [] }
+        {
+          "label": "Leave",
+          "requires": [],
+          "outcomes": []
+        }
       ],
       "safeItemId": null
     }
@@ -191,15 +369,40 @@
       "difficulty": 8,
       "trigger": "step",
       "triggerNote": "crossing the room's midline",
-      "revealedBy": { "detection": 8, "classId": null, "petId": null, "fieldSkillRank": null, "criticalScout": true },
+      "revealedBy": {
+        "detection": 8,
+        "classId": null,
+        "petId": null,
+        "fieldSkillRank": null,
+        "criticalScout": true
+      },
       "effects": [
-        { "kind": "custom", "customId": "floor-clock-add", "amount": 4, "target": "room" },
-        { "kind": "custom", "customId": "next-fight-ambush", "percent": 30, "target": "room", "note": "the next fight on this floor is an ambush, +30% surprise" }
+        {
+          "kind": "custom",
+          "customId": "floor-clock-add",
+          "amount": 4,
+          "target": "room"
+        },
+        {
+          "kind": "custom",
+          "customId": "next-fight-ambush",
+          "percent": 30,
+          "target": "room",
+          "note": "the next fight on this floor is an ambush, +30% surprise"
+        }
       ],
       "blocksDoor": false,
       "disarmReward": [
-        { "kind": "material", "id": "rawhide", "amount": 2 },
-        { "kind": "gold", "amount": 3, "note": "0.01 R at R ≈ 300" }
+        {
+          "kind": "material",
+          "id": "rawhide",
+          "amount": 2
+        },
+        {
+          "kind": "gold",
+          "amount": 3,
+          "note": "0.01 R at R ≈ 300"
+        }
       ]
     },
     {
@@ -209,13 +412,33 @@
       "difficulty": 10,
       "trigger": "step",
       "triggerNote": "stepping on the cel_floor_flag_b tile by the grate",
-      "revealedBy": { "detection": 10, "classId": null, "petId": "cellar-hound", "fieldSkillRank": null, "criticalScout": false },
+      "revealedBy": {
+        "detection": 10,
+        "classId": null,
+        "petId": "cellar-hound",
+        "fieldSkillRank": null,
+        "criticalScout": false
+      },
       "effects": [
-        { "kind": "damage", "multiplier": 0, "damageType": "blunt", "note": "the drop: 8% max HP, resolved by the sim as a fixed fraction" },
-        { "kind": "applyStatus", "status": "daze" }
+        {
+          "kind": "damage",
+          "multiplier": 0,
+          "damageType": "blunt",
+          "note": "the drop: 8% max HP, resolved by the sim as a fixed fraction"
+        },
+        {
+          "kind": "applyStatus",
+          "status": "daze"
+        }
       ],
       "blocksDoor": false,
-      "disarmReward": [{ "kind": "material", "id": "copper", "amount": 3 }]
+      "disarmReward": [
+        {
+          "kind": "material",
+          "id": "copper",
+          "amount": 3
+        }
+      ]
     },
     {
       "id": "greased-stairs",
@@ -224,32 +447,118 @@
       "difficulty": 14,
       "trigger": "open",
       "triggerNote": "taking the stairs down",
-      "revealedBy": { "detection": 14, "classId": null, "petId": null, "fieldSkillRank": { "fieldSkill": "cartography", "min": 2 }, "criticalScout": false },
+      "revealedBy": {
+        "detection": 14,
+        "classId": null,
+        "petId": null,
+        "fieldSkillRank": {
+          "fieldSkill": "cartography",
+          "min": 2
+        },
+        "criticalScout": false
+      },
       "effects": [
-        { "kind": "applyStatus", "status": "slow", "duration": 2, "target": "allAllies", "note": "for the first 2 turns of the next floor's first fight" }
+        {
+          "kind": "applyStatus",
+          "status": "slow",
+          "duration": 2,
+          "target": "allAllies",
+          "note": "for the first 2 turns of the next floor's first fight"
+        }
       ],
       "blocksDoor": true,
-      "disarmReward": [{ "kind": "item", "id": "flint-and-oil", "amount": 1 }]
+      "disarmReward": [
+        {
+          "kind": "item",
+          "id": "flint-and-oil",
+          "amount": 1
+        }
+      ]
     }
   ],
   "templates": [
     {
       "id": "cel-t-storeroom",
       "zoneId": "the-cellars",
-      "footprint": { "w": 1, "h": 1 },
+      "footprint": {
+        "w": 1,
+        "h": 1
+      },
       "doors": [
-        { "side": "north", "offset": 0 },
-        { "side": "east", "offset": 0 },
-        { "side": "south", "offset": 0 },
-        { "side": "west", "offset": 0 }
+        {
+          "side": "north",
+          "offset": 0
+        },
+        {
+          "side": "east",
+          "offset": 0
+        },
+        {
+          "side": "south",
+          "offset": 0
+        },
+        {
+          "side": "west",
+          "offset": 0
+        }
       ],
-      "kinds": ["entry", "fight", "curio"],
-      "camera": { "position": [0, 8.0, 10.2], "lookAt": [0, 1, 0], "fov": 40 },
+      "kinds": [
+        "entry",
+        "fight",
+        "curio"
+      ],
+      "camera": {
+        "position": [
+          0,
+          8,
+          10.2
+        ],
+        "lookAt": [
+          0,
+          1,
+          0
+        ],
+        "fov": 40
+      },
       "props": [
-        { "meshId": "cel_crate_stack", "position": [-2.5, 0, -1.5], "rotationY": 15 },
-        { "meshId": "cel_barrel", "position": [2.8, 0, -2], "rotationY": 0 },
-        { "meshId": "shr_torch_sconce", "position": [-3.9, 2, 0], "rotationY": 90, "lightSource": true },
-        { "meshId": "shr_torch_sconce", "position": [3.9, 2, 0], "rotationY": -90, "lightSource": true }
+        {
+          "meshId": "cel_crate_stack",
+          "position": [
+            -2.5,
+            0,
+            -1.5
+          ],
+          "rotationY": 15
+        },
+        {
+          "meshId": "cel_barrel",
+          "position": [
+            2.8,
+            0,
+            -2
+          ],
+          "rotationY": 0
+        },
+        {
+          "meshId": "shr_torch_sconce",
+          "position": [
+            -3.9,
+            2,
+            0
+          ],
+          "rotationY": 90,
+          "lightSource": true
+        },
+        {
+          "meshId": "shr_torch_sconce",
+          "position": [
+            3.9,
+            2,
+            0
+          ],
+          "rotationY": -90,
+          "lightSource": true
+        }
       ],
       "triBudget": 30000,
       "drawCallBudget": 60
@@ -257,19 +566,80 @@
     {
       "id": "cel-t-wine-vault",
       "zoneId": "the-cellars",
-      "footprint": { "w": 2, "h": 1 },
+      "footprint": {
+        "w": 2,
+        "h": 1
+      },
       "doors": [
-        { "side": "west", "offset": 0 },
-        { "side": "east", "offset": 0 },
-        { "side": "north", "offset": 1 }
+        {
+          "side": "west",
+          "offset": 0
+        },
+        {
+          "side": "east",
+          "offset": 0
+        },
+        {
+          "side": "north",
+          "offset": 1
+        }
       ],
-      "kinds": ["fight", "elite", "treasure"],
-      "camera": { "position": [-13.9, 8.0, 0], "lookAt": [0, 1, 0], "fov": 38 },
+      "kinds": [
+        "fight",
+        "elite",
+        "treasure"
+      ],
+      "camera": {
+        "position": [
+          -13.9,
+          8,
+          0
+        ],
+        "lookAt": [
+          0,
+          1,
+          0
+        ],
+        "fov": 38
+      },
       "props": [
-        { "meshId": "cel_cask_large", "position": [-4, 0, -3], "rotationY": 0 },
-        { "meshId": "cel_cask_large", "position": [0, 0, -3], "rotationY": 0 },
-        { "meshId": "cel_cask_large", "position": [4, 0, -3], "rotationY": 0 },
-        { "meshId": "shr_torch_sconce", "position": [0, 2, 3.9], "rotationY": 180, "lightSource": true }
+        {
+          "meshId": "cel_cask_large",
+          "position": [
+            -4,
+            0,
+            -3
+          ],
+          "rotationY": 0
+        },
+        {
+          "meshId": "cel_cask_large",
+          "position": [
+            0,
+            0,
+            -3
+          ],
+          "rotationY": 0
+        },
+        {
+          "meshId": "cel_cask_large",
+          "position": [
+            4,
+            0,
+            -3
+          ],
+          "rotationY": 0
+        },
+        {
+          "meshId": "shr_torch_sconce",
+          "position": [
+            0,
+            2,
+            3.9
+          ],
+          "rotationY": 180,
+          "lightSource": true
+        }
       ],
       "triBudget": 30000,
       "drawCallBudget": 60
@@ -281,32 +651,137 @@
       "name": "Candle Pact",
       "description": "Light starts at 25; Torches give +15.",
       "weight": 2,
-      "knobs": { "lightStart": 25, "torchValue": 15 },
+      "knobs": {
+        "lightStart": 25,
+        "torchValue": 15
+      },
       "ruleFlags": [],
-      "reward": { "goldPercent": 20, "xpPercent": 0, "chestShiftPp": 0 }
+      "reward": {
+        "goldPercent": 20,
+        "xpPercent": 0,
+        "chestShiftPp": 0
+      }
     },
     {
       "id": "hungry-hunter",
       "name": "Hungry Hunter",
       "description": "The hunter enters at 20 ticks.",
       "weight": 2,
-      "knobs": { "hunterClock": 20 },
+      "knobs": {
+        "hunterClock": 20
+      },
       "ruleFlags": [],
-      "reward": { "goldPercent": 15, "xpPercent": 10, "chestShiftPp": 0 }
+      "reward": {
+        "goldPercent": 15,
+        "xpPercent": 10,
+        "chestShiftPp": 0
+      }
     },
     {
       "id": "iron-oath",
       "name": "Iron Oath",
       "description": "No retreat; a wipe also costs the Waystone progress of this delve.",
       "weight": 3,
-      "knobs": { "retreatTollPercent": 100 },
-      "ruleFlags": ["no-retreat", "wipe-loses-waystone"],
-      "reward": { "goldPercent": 40, "xpPercent": 10, "chestShiftPp": 0 }
+      "knobs": {
+        "retreatTollPercent": 100
+      },
+      "ruleFlags": [
+        "no-retreat",
+        "wipe-loses-waystone"
+      ],
+      "reward": {
+        "goldPercent": 40,
+        "xpPercent": 10,
+        "chestShiftPp": 0
+      }
     }
   ],
   "presets": {
-    "normal": { "enemyHpPercent": 100, "enemyDamagePercent": 100, "enemyCountPercent": 100, "enemySpeedPercent": 100, "eliteRoomWeight": 8, "eliteAffixBonus": 0, "hunterClock": 40, "lightStart": 100, "torchValue": 25, "revivesPerFloor": 3, "trapDifficultyBonus": 0, "retreatTollPercent": 10, "goldPercent": 100, "xpPercent": 100, "chestShiftPp": 0, "chestCentreShift": 0, "bossExtraRareParts": 0, "finalBossExtraShards": 0 },
-    "hard": { "enemyHpPercent": 125, "enemyDamagePercent": 120, "enemyCountPercent": 110, "enemySpeedPercent": 105, "eliteRoomWeight": 11, "eliteAffixBonus": 0, "hunterClock": 32, "lightStart": 80, "torchValue": 25, "revivesPerFloor": 1, "trapDifficultyBonus": 4, "retreatTollPercent": 15, "goldPercent": 125, "xpPercent": 115, "chestShiftPp": 10, "chestCentreShift": 0, "bossExtraRareParts": 1, "finalBossExtraShards": 0 },
-    "nightmare": { "enemyHpPercent": 150, "enemyDamagePercent": 145, "enemyCountPercent": 125, "enemySpeedPercent": 112, "eliteRoomWeight": 14, "eliteAffixBonus": 1, "hunterClock": 24, "lightStart": 60, "torchValue": 20, "revivesPerFloor": 0, "trapDifficultyBonus": 8, "retreatTollPercent": 25, "goldPercent": 160, "xpPercent": 130, "chestShiftPp": 0, "chestCentreShift": 1, "bossExtraRareParts": 1, "finalBossExtraShards": 1 }
-  }
+    "normal": {
+      "enemyHpPercent": 100,
+      "enemyDamagePercent": 100,
+      "enemyCountPercent": 100,
+      "enemySpeedPercent": 100,
+      "eliteRoomWeight": 8,
+      "eliteAffixBonus": 0,
+      "hunterClock": 40,
+      "lightStart": 100,
+      "torchValue": 25,
+      "revivesPerFloor": 3,
+      "trapDifficultyBonus": 0,
+      "retreatTollPercent": 10,
+      "goldPercent": 100,
+      "xpPercent": 100,
+      "chestShiftPp": 0,
+      "chestCentreShift": 0,
+      "bossExtraRareParts": 0,
+      "finalBossExtraShards": 0
+    },
+    "hard": {
+      "enemyHpPercent": 125,
+      "enemyDamagePercent": 120,
+      "enemyCountPercent": 110,
+      "enemySpeedPercent": 105,
+      "eliteRoomWeight": 11,
+      "eliteAffixBonus": 0,
+      "hunterClock": 32,
+      "lightStart": 80,
+      "torchValue": 25,
+      "revivesPerFloor": 1,
+      "trapDifficultyBonus": 4,
+      "retreatTollPercent": 15,
+      "goldPercent": 125,
+      "xpPercent": 115,
+      "chestShiftPp": 10,
+      "chestCentreShift": 0,
+      "bossExtraRareParts": 1,
+      "finalBossExtraShards": 0
+    },
+    "nightmare": {
+      "enemyHpPercent": 150,
+      "enemyDamagePercent": 145,
+      "enemyCountPercent": 125,
+      "enemySpeedPercent": 112,
+      "eliteRoomWeight": 14,
+      "eliteAffixBonus": 1,
+      "hunterClock": 24,
+      "lightStart": 60,
+      "torchValue": 20,
+      "revivesPerFloor": 0,
+      "trapDifficultyBonus": 8,
+      "retreatTollPercent": 25,
+      "goldPercent": 160,
+      "xpPercent": 130,
+      "chestShiftPp": 0,
+      "chestCentreShift": 1,
+      "bossExtraRareParts": 1,
+      "finalBossExtraShards": 1
+    }
+  },
+  "secrets": [
+    {
+      "id": "smugglers-cache",
+      "name": "Smuggler's Cache",
+      "zoneId": "the-cellars",
+      "description": "A loose wall behind the wine racks: crates the Company never came back for.",
+      "rewards": [
+        {
+          "kind": "gold",
+          "amount": 45
+        },
+        {
+          "kind": "item",
+          "id": "torch",
+          "amount": 2,
+          "chance": 100
+        }
+      ],
+      "chest": "small",
+      "blessing": null,
+      "shortcutToExit": false,
+      "revealsFloor": false,
+      "lightBonus": 0,
+      "fieldSkillXp": null
+    }
+  ]
 }

@@ -1,0 +1,73 @@
+{
+  "id": "drakeling",
+  "name": "Drakeling",
+  "speciesFamilyId": "wyrms-and-drakes",
+  "gradeBand": {
+    "min": "S",
+    "max": "SS"
+  },
+  "trait": {
+    "id": "wyrm-blood",
+    "name": "Wyrm Blood",
+    "description": "The party's Attack +5%; immune to Fear. Grows as it fights.",
+    "effects": [
+      {
+        "kind": "buffStat",
+        "stat": "attackPhys",
+        "percent": 5,
+        "target": "allAllies",
+        "note": "\"party damage +5%\" read as Attack +5% on both Attack stats, as Rabid's \"+10% Attack\" is written"
+      },
+      {
+        "kind": "buffStat",
+        "stat": "attackSpell",
+        "percent": 5,
+        "target": "allAllies"
+      },
+      {
+        "kind": "custom",
+        "customId": "pet-status-immune",
+        "status": "fear",
+        "target": "self",
+        "note": "the pet never takes fear"
+      }
+    ],
+    "growsBy": "strength"
+  },
+  "actives": [
+    {
+      "skillId": "pet-drakeling-drake-breath",
+      "unlockLevel": 5
+    },
+    {
+      "skillId": "pet-drakeling-wing-guard",
+      "unlockLevel": 15
+    },
+    {
+      "skillId": "pet-drakeling-greater-breath",
+      "unlockLevel": 25
+    }
+  ],
+  "stamina": 30,
+  "baseStats": {
+    "hp": 1,
+    "attackPhys": 1,
+    "attackSpell": 1,
+    "defense": 0.9,
+    "speed": 1.2
+  },
+  "roleLean": "fierce",
+  "visual": {
+    "baseMesh": "drake",
+    "palette": [
+      "#3b4f6b",
+      "#7fa6c9",
+      "#e8d9a0"
+    ]
+  },
+  "eggSource": {
+    "chestBand": "A",
+    "familyId": "wyrms-and-drakes"
+  },
+  "creationChoice": false
+}

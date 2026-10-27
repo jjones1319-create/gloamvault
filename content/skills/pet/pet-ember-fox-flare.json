@@ -1,0 +1,41 @@
+{
+  "id": "pet-ember-fox-flare",
+  "classId": "pet",
+  "school": "pet",
+  "tier": 1,
+  "name": "Flare",
+  "description": "Blind every enemy for 1 turn.",
+  "type": "active",
+  "cost": 12,
+  "weight": 1000,
+  "target": "allEnemies",
+  "effects": [
+    {
+      "kind": "applyStatus",
+      "status": "blind",
+      "duration": 1
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "No Mastery line: pet actives do not rank (03 §9).",
+    "effects": []
+  },
+  "tags": [
+    "aoe",
+    "control"
+  ],
+  "xpTags": [
+    "agility"
+  ],
+  "aiHints": {
+    "role": "control",
+    "priority": 45
+  }
+}

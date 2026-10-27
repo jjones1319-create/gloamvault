@@ -1,0 +1,40 @@
+{
+  "id": "pet-bone-pup-rally-bones",
+  "classId": "pet",
+  "school": "pet",
+  "tier": 1,
+  "name": "Rally Bones",
+  "description": "Shield the owner for 10% of their max HP.",
+  "type": "active",
+  "cost": 10,
+  "weight": 1000,
+  "target": "ally",
+  "effects": [
+    {
+      "kind": "shield",
+      "percent": 10
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "No Mastery line: pet actives do not rank (03 §9).",
+    "effects": []
+  },
+  "tags": [
+    "shield",
+    "buff"
+  ],
+  "xpTags": [
+    "endurance"
+  ],
+  "aiHints": {
+    "role": "defend",
+    "priority": 50
+  }
+}

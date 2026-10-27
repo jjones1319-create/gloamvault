@@ -1,0 +1,46 @@
+{
+  "id": "fine-talisman-of-the-deep-well",
+  "name": "Fine Talisman of the Deep Well",
+  "slot": "talisman",
+  "kind": "talisman",
+  "grade": "D",
+  "materialLadder": null,
+  "materialRung": null,
+  "weaponType": null,
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "stamina": 14,
+    "mana": 14
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 1,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 5,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1,
+  "value": 304,
+  "classLock": [],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "talisman-deep-well-01",
+    "tintPrimary": "#8a8f98",
+    "tintSecondary": "#0f766e",
+    "trimMetal": "iron"
+  }
+}

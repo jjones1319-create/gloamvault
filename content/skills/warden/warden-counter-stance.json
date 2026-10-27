@@ -1,0 +1,52 @@
+{
+  "id": "warden-counter-stance",
+  "classId": "warden",
+  "school": "vanguard",
+  "tier": 1,
+  "name": "Counter Stance",
+  "description": "Until your next turn, the first melee attacker to hit you takes a 1.0× counter-hit.",
+  "type": "active",
+  "cost": 9,
+  "weight": 800,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "counter-stance",
+      "multiplier": 1,
+      "amount": 1,
+      "target": "self",
+      "note": "amount = counters until your next turn; multiplier = the counter-hit"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "2 counters.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "counter-stance",
+        "multiplier": 1,
+        "amount": 2,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff"
+  ],
+  "xpTags": [
+    "endurance",
+    "strength"
+  ],
+  "aiHints": {
+    "role": "defend",
+    "priority": 45
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "id": "shade-light-fingers",
+  "classId": "shade",
+  "school": "larceny",
+  "tier": 1,
+  "name": "Light Fingers",
+  "description": "Lockpicking +2; a locked chest you open rolls one grade up 10% of the time.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "lockpicking-rank-bonus",
+      "amount": 2,
+      "target": "self",
+      "note": "+amount Lockpicking rank for checks, on top of the class affinity"
+    },
+    {
+      "kind": "custom",
+      "customId": "locked-chest-grade-up-chance",
+      "percent": 10,
+      "target": "self",
+      "note": "a locked chest the holder opens rolls one grade up percent% of the time"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Lockpicking +4; 20%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "lockpicking-rank-bonus",
+        "amount": 4,
+        "target": "self"
+      },
+      {
+        "kind": "custom",
+        "customId": "locked-chest-grade-up-chance",
+        "percent": 20,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "utility",
+    "field"
+  ],
+  "xpTags": [
+    "perception"
+  ],
+  "aiHints": {
+    "role": "utility",
+    "priority": 0
+  }
+}

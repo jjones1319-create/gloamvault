@@ -1,0 +1,48 @@
+{
+  "id": "arcanist-dispel",
+  "classId": "arcanist",
+  "school": "arcana",
+  "tier": 3,
+  "name": "Dispel",
+  "description": "On an enemy in either row: strip every buff (Fortify, Shield, Haste, Regen, Taunt). On an ally instead: cleanse 2 debuffs.",
+  "type": "active",
+  "cost": 18,
+  "weight": 800,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "dispel",
+      "note": "side-aware: strips every buff from an enemy; on an ally, cleanses 2 debuffs (the DSL has no cleanse count — the number lives here)"
+    }
+  ],
+  "prerequisiteId": "arcanist-mirror-ward",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Ally: cleanse every debuff.",
+    "effects": [
+      {
+        "kind": "dispel",
+        "note": "on an ally, every debuff"
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "reach",
+    "debuff",
+    "cleanse",
+    "utility"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "debuff",
+    "priority": 55
+  }
+}

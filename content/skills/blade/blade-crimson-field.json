@@ -1,0 +1,64 @@
+{
+  "id": "blade-crimson-field",
+  "classId": "blade",
+  "school": "bloodletter",
+  "tier": 3,
+  "name": "Crimson Field",
+  "description": "0.9× Slash to every front-row enemy; Bleed 2 turns on each; heal 10% of the total damage.",
+  "type": "active",
+  "cost": 24,
+  "weight": 1000,
+  "target": "enemyFront",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 0.9,
+      "damageType": "slash",
+      "target": "enemyRow",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "bleed",
+      "duration": 2,
+      "target": "enemyRow"
+    },
+    {
+      "kind": "custom",
+      "customId": "heal-percent-of-damage-dealt",
+      "percent": 10,
+      "target": "self"
+    }
+  ],
+  "prerequisiteId": "blade-hemorrhage",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Bleed 3 turns.",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "bleed",
+        "duration": 3,
+        "target": "enemyRow"
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "dot",
+    "heal"
+  ],
+  "xpTags": [
+    "strength",
+    "agility"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 60
+  }
+}

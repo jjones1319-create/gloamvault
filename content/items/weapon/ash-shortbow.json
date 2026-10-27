@@ -1,0 +1,47 @@
+{
+  "id": "ash-shortbow",
+  "name": "Ash Shortbow",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "E",
+  "materialLadder": "wood",
+  "materialRung": 1,
+  "weaponType": "shortbow",
+  "armorFamily": null,
+  "hands": 2,
+  "damageType": "pierce",
+  "weight": 1000,
+  "baseStats": {
+    "attackPhys": 18
+  },
+  "requirements": {
+    "strength": 10,
+    "wisdom": 0
+  },
+  "affixSlots": 1,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 4,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 3.33,
+  "value": 360,
+  "classLock": [
+    "ranger"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-shortbow-01",
+    "tintPrimary": "#c9b58a",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "bronze"
+  }
+}

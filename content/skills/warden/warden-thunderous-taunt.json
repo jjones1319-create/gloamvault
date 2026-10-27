@@ -1,0 +1,59 @@
+{
+  "id": "warden-thunderous-taunt",
+  "classId": "warden",
+  "school": "warcry",
+  "tier": 3,
+  "name": "Thunderous Taunt",
+  "description": "Taunt 2 turns and 30% Daze on every enemy; +20 Momentum to you.",
+  "type": "active",
+  "cost": 24,
+  "weight": 1000,
+  "target": "allEnemies",
+  "effects": [
+    {
+      "kind": "applyStatus",
+      "status": "taunt",
+      "duration": 2
+    },
+    {
+      "kind": "applyStatus",
+      "status": "daze",
+      "chance": 30
+    },
+    {
+      "kind": "momentum",
+      "amount": 20,
+      "target": "self"
+    }
+  ],
+  "prerequisiteId": "warden-challenge-all",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Daze 50%.",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "daze",
+        "chance": 50
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "taunt",
+    "control",
+    "momentum"
+  ],
+  "xpTags": [
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "control",
+    "priority": 70
+  }
+}

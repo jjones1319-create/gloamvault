@@ -1,0 +1,55 @@
+{
+  "id": "fish",
+  "name": "Fish",
+  "slot": null,
+  "kind": "consumable",
+  "grade": "F",
+  "materialLadder": null,
+  "materialRung": null,
+  "weaponType": null,
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": 600,
+  "baseStats": {},
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 0,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 3,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1,
+  "value": 3,
+  "classLock": [],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": {
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "meal",
+        "percent": 5,
+        "note": "cooking ingredient"
+      }
+    ],
+    "stackMax": 20,
+    "target": "allAllies",
+    "inCombat": false
+  },
+  "ammo": null,
+  "visual": {
+    "meshId": "consumable-fish-01",
+    "tintPrimary": "#6b7a80",
+    "tintSecondary": "#2b2b2b",
+    "trimMetal": "none"
+  }
+}

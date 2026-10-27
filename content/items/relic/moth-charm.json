@@ -1,0 +1,54 @@
+{
+  "id": "moth-charm",
+  "name": "Moth Charm",
+  "slot": "relic",
+  "kind": "relic",
+  "grade": "E",
+  "materialLadder": null,
+  "materialRung": null,
+  "weaponType": null,
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": 600,
+  "baseStats": {},
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 1,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 4,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1,
+  "value": 288,
+  "classLock": [],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": {
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "blind",
+        "duration": 1,
+        "target": "allEnemies"
+      }
+    ],
+    "usesPerFight": 1,
+    "target": "allEnemies"
+  },
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "relic-moth-charm-01",
+    "tintPrimary": "#c9b58a",
+    "tintSecondary": "#5b5650",
+    "trimMetal": "bronze"
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "id": "ranger-net-throw",
+  "classId": "ranger",
+  "school": "trapper",
+  "tier": 2,
+  "name": "Net Throw",
+  "description": "Net one enemy in any row: Grab 1 turn — it cannot act until it is freed (any hit on it by an ally frees it; your own shots do not); 0.6× Blunt.",
+  "type": "active",
+  "cost": 16,
+  "weight": 1000,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 0.6,
+      "damageType": "blunt",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "custom",
+      "customId": "net-held",
+      "duration": 1,
+      "amount": 0,
+      "note": "a Grab freed by any ally hit, never by the Ranger’s own; amount = ally hits it survives"
+    }
+  ],
+  "prerequisiteId": "ranger-snare",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "The Grab survives one ally hit.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "net-held",
+        "duration": 1,
+        "amount": 1
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "control",
+    "reach"
+  ],
+  "xpTags": [
+    "agility",
+    "perception"
+  ],
+  "aiHints": {
+    "role": "control",
+    "priority": 75
+  }
+}

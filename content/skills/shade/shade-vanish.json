@@ -1,0 +1,60 @@
+{
+  "id": "shade-vanish",
+  "classId": "shade",
+  "school": "larceny",
+  "tier": 2,
+  "name": "Vanish",
+  "description": "Enter Veil and move to the back row; your next Larceny skill costs 0.",
+  "type": "active",
+  "cost": 15,
+  "weight": 800,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "applyStatus",
+      "status": "veil",
+      "duration": 2
+    },
+    {
+      "kind": "custom",
+      "customId": "move-to-back-row",
+      "target": "self",
+      "note": "moves the holder to the back row; a holder already there stays (a directional move, not a swap)"
+    },
+    {
+      "kind": "custom",
+      "customId": "next-school-skill-free",
+      "amount": 1,
+      "target": "self",
+      "note": "the holder’s next `amount` skill(s) of this skill’s school cost 0"
+    }
+  ],
+  "prerequisiteId": "shade-smoke-pellet",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Also +10 Momentum.",
+    "effects": [
+      {
+        "kind": "momentum",
+        "amount": 10
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "mobility",
+    "utility"
+  ],
+  "xpTags": [
+    "agility"
+  ],
+  "aiHints": {
+    "role": "defend",
+    "priority": 40
+  }
+}

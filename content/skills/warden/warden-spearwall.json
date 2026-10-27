@@ -1,0 +1,54 @@
+{
+  "id": "warden-spearwall",
+  "classId": "warden",
+  "school": "vanguard",
+  "tier": 3,
+  "name": "Spearwall",
+  "description": "Any enemy that enters the front row (swap, pull, charge) takes a free 1.2× Pierce hit from you.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "hit-enemy-entering-front-row",
+      "multiplier": 1.2,
+      "damageType": "pierce",
+      "target": "self",
+      "scalesWith": "strength",
+      "note": "a free hit at multiplier × Attack on every enemy that moves into the front row"
+    }
+  ],
+  "prerequisiteId": "warden-punish",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "1.6×.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "hit-enemy-entering-front-row",
+        "multiplier": 1.6,
+        "damageType": "pierce",
+        "target": "self",
+        "scalesWith": "strength"
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "control"
+  ],
+  "xpTags": [
+    "strength"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 0
+  }
+}

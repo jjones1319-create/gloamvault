@@ -1,0 +1,53 @@
+{
+  "id": "mender-blessed-rain",
+  "classId": "mender",
+  "school": "benediction",
+  "tier": 3,
+  "name": "Blessed Rain",
+  "description": "Heal every ally and pet for 30% of their max HP and cleanse 1 debuff from each. Heavy cast.",
+  "type": "active",
+  "cost": 28,
+  "weight": 1400,
+  "target": "allAllies",
+  "effects": [
+    {
+      "kind": "heal",
+      "percent": 30,
+      "scalesWith": "wisdom"
+    },
+    {
+      "kind": "dispel",
+      "amount": 1,
+      "note": "on allies: cleanse `amount` debuff(s) each"
+    }
+  ],
+  "prerequisiteId": "mender-circle-of-mending",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Cleanse 2 each.",
+    "effects": [
+      {
+        "kind": "dispel",
+        "amount": 2
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "heal",
+    "cleanse"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "heal",
+    "priority": 75
+  }
+}

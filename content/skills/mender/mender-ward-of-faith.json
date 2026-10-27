@@ -1,0 +1,54 @@
+{
+  "id": "mender-ward-of-faith",
+  "classId": "mender",
+  "school": "sanctity",
+  "tier": 2,
+  "name": "Ward of Faith",
+  "description": "Every ally gains Fortify 2 turns and immunity to Fear for 2 turns.",
+  "type": "active",
+  "cost": 15,
+  "weight": 1000,
+  "target": "allAllies",
+  "effects": [
+    {
+      "kind": "applyStatus",
+      "status": "fortify",
+      "duration": 2
+    },
+    {
+      "kind": "custom",
+      "customId": "immune-to-status",
+      "status": "fear",
+      "duration": 2,
+      "note": "the target cannot receive `status` for `duration` turns"
+    }
+  ],
+  "prerequisiteId": "mender-consecration",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Fortify 3 turns.",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "fortify",
+        "duration": 3
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "buff"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 50
+  }
+}

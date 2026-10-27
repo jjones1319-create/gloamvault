@@ -1,0 +1,103 @@
+{
+  "id": "elf",
+  "name": "Elf",
+  "attributeMods": {
+    "agility": 2,
+    "perception": 1,
+    "wisdom": 1,
+    "vitality": -2
+  },
+  "traits": [
+    {
+      "id": "elf-darkvision",
+      "name": "Darkvision",
+      "description": "Same rule as the Dwarf's: one band brighter for your own rolls (Detection, aim, scouting share, the ambush roll when you are the party's best Perception); loot at the true band.",
+      "rule": {
+        "lightBandShift": -1
+      }
+    },
+    {
+      "id": "elf-keen-senses",
+      "name": "Keen Senses",
+      "description": "+2 Detection (applies to the party's best Detection when the Elf holds it); scouting chance +5% (stacks with the Ranger's +5%).",
+      "rule": {
+        "detectionBonus": 2,
+        "scoutingBonus": 5
+      }
+    },
+    {
+      "id": "elf-lightfoot",
+      "name": "Lightfoot",
+      "description": "+5 base Speed; Web and Root durations on you are one turn shorter (minimum 1).",
+      "rule": {
+        "speedBase": 105,
+        "statusDurationDelta": {
+          "web": -1,
+          "root": -1
+        }
+      }
+    },
+    {
+      "id": "elf-slight-frame",
+      "name": "Slight Frame",
+      "description": "Max HP ×0.90; the Plate and Mail Speed penalties are doubled (−40 / −20); Fear resistance −10 points.",
+      "rule": {
+        "hpMultiplier": 0.9,
+        "armorPenaltyMultiplier": {
+          "plate": 2,
+          "mail": 2
+        },
+        "statusResist": {
+          "fear": -10
+        }
+      }
+    }
+  ],
+  "restrictions": [],
+  "senses": {
+    "darkvision": true
+  },
+  "body": {
+    "heightM": 1.9,
+    "shapeKeys": [
+      "spc_elf_lean"
+    ],
+    "boneScales": {
+      "root": 1.02,
+      "upperLeg": 1.08,
+      "lowerLeg": 1.08,
+      "neck": 1.1,
+      "head": 0.95,
+      "shoulder": 0.92,
+      "chest": 0.95,
+      "fingers": 1.1
+    },
+    "parts": [
+      "spc_elf_ears"
+    ],
+    "skinTones": [
+      "#f0e2d6",
+      "#d6b99f",
+      "#8c6a52"
+    ],
+    "facePresets": 3,
+    "gearVariants": [
+      "helmet",
+      "chest",
+      "legs"
+    ]
+  },
+  "creationBlurb": "From the gloam-woods. Fastest on the timeline and first to notice anything.",
+  "chips": {
+    "pros": [
+      "Most turns",
+      "Darkvision",
+      "Finds traps"
+    ],
+    "cons": [
+      "Low HP",
+      "Hates metal armor",
+      "Fear bites"
+    ]
+  }
+}

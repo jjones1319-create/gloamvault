@@ -1,0 +1,49 @@
+{
+  "id": "iron-gauntlets",
+  "name": "Iron Gauntlets",
+  "slot": "gloves",
+  "kind": "armor",
+  "grade": "D",
+  "materialLadder": "metal",
+  "materialRung": 2,
+  "weaponType": null,
+  "armorFamily": "plate",
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "defense": 4,
+    "hp": 4,
+    "accuracy": 2
+  },
+  "requirements": {
+    "strength": 13,
+    "wisdom": 0
+  },
+  "affixSlots": 1,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 5,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1.88,
+  "value": 190,
+  "classLock": [
+    "warden"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "armor-plate-gloves-01",
+    "tintPrimary": "#8a8f98",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "iron"
+  }
+}

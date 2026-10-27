@@ -1,0 +1,52 @@
+{
+  "id": "arcanist-shatter",
+  "classId": "arcanist",
+  "school": "rime",
+  "tier": 1,
+  "name": "Shatter",
+  "description": "Any hit from any ally on a Frozen enemy deals +30% and crits; the Freeze ends and the enemy is pushed back 300 energy as it breaks free.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "party-shatter-bonus",
+      "percent": 30,
+      "energy": -300,
+      "target": "self",
+      "note": "while the holder is in the fight, any ally’s hit on a Frozen enemy deals +percent% and crits; the Freeze ends and the target’s accumulator moves by `energy`"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "+40%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "party-shatter-bonus",
+        "percent": 40,
+        "energy": -300,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "control"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 0
+  }
+}

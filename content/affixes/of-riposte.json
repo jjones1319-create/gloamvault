@@ -1,0 +1,51 @@
+{
+  "id": "of-riposte",
+  "name": "of Riposte",
+  "position": "suffix",
+  "lines": [
+    {
+      "bandMin": "F",
+      "bandMax": "D",
+      "effect": {
+        "kind": "custom",
+        "customId": "riposte-on-block",
+        "target": "enemy",
+        "note": "on block: the rolled value is the chance to counter for 50% Attack"
+      },
+      "min": 10,
+      "max": 15
+    },
+    {
+      "bandMin": "C",
+      "bandMax": "A",
+      "effect": {
+        "kind": "custom",
+        "customId": "riposte-on-block",
+        "target": "enemy",
+        "note": "on block: the rolled value is the chance to counter for 50% Attack"
+      },
+      "min": 15,
+      "max": 25
+    },
+    {
+      "bandMin": "S",
+      "bandMax": "God",
+      "effect": {
+        "kind": "custom",
+        "customId": "riposte-on-block",
+        "target": "enemy",
+        "note": "on block: the rolled value is the chance to counter for 50% Attack"
+      },
+      "min": 25,
+      "max": 40
+    }
+  ],
+  "slots": [
+    "offHand"
+  ],
+  "weight": 2,
+  "tags": [
+    "defensive",
+    "block"
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "id": "shade-backstab",
+  "classId": "shade",
+  "school": "shadow",
+  "tier": 1,
+  "name": "Backstab",
+  "description": "1.5× Pierce to one enemy in any row (flank: the back row from the front). From Veil the hit is doubled and gets +30% Crit Rate.",
+  "type": "active",
+  "cost": 12,
+  "weight": 800,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1.5,
+      "damageType": "pierce"
+    },
+    {
+      "kind": "custom",
+      "customId": "veil-strike-bonus",
+      "percent": 100,
+      "amount": 30,
+      "note": "while Veiled: this skill’s damage +100% (×2) and Crit Rate +30 pp; the attack ends Veil as usual"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "requirements": {
+    "weaponTypes": [
+      "dagger"
+    ]
+  },
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "From Veil ×2.5.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "veil-strike-bonus",
+        "percent": 150,
+        "amount": 30
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "reach"
+  ],
+  "xpTags": [
+    "agility",
+    "perception"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 70
+  }
+}

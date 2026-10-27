@@ -1,0 +1,29 @@
+{
+  "id": "dark-harvest",
+  "name": "Dark Harvest",
+  "description": "Open 3 chests on one floor while the light is Dark or Pitch.",
+  "cadence": "daily",
+  "kind": "light",
+  "target": {
+    "lightMax": 25,
+    "count": 3,
+    "condition": "chests-opened-one-floor"
+  },
+  "reward": {
+    "goldR": 0.4,
+    "keys": [
+      {
+        "kind": "standard",
+        "amount": 1
+      }
+    ],
+    "chestId": null,
+    "items": [
+      {
+        "itemId": "skeleton-key",
+        "amount": 1
+      }
+    ]
+  },
+  "band": null
+}

@@ -1,0 +1,49 @@
+{
+  "id": "pine-kite-shield",
+  "name": "Pine Kite Shield",
+  "slot": "offHand",
+  "kind": "shield",
+  "grade": "F",
+  "materialLadder": "wood",
+  "materialRung": 0,
+  "weaponType": "shieldKite",
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "block": 25,
+    "defense": 3,
+    "speed": -5
+  },
+  "requirements": {
+    "strength": 11,
+    "wisdom": 0
+  },
+  "affixSlots": 0,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 3,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1,
+  "value": 120,
+  "classLock": [
+    "warden"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "shield-kite-shield-01",
+    "tintPrimary": "#a0824a",
+    "tintSecondary": "#5b4a2f",
+    "trimMetal": "copper"
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "id": "blade-mirror-step",
+  "classId": "blade",
+  "school": "iron-dance",
+  "tier": 2,
+  "name": "Mirror Step",
+  "description": "Dodge +30% for 1 turn; the first attack you dodge is answered with a 1.0× Slash riposte.",
+  "type": "active",
+  "cost": 12,
+  "weight": 800,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "buffStat",
+      "duration": 1,
+      "stat": "dodge",
+      "amount": 30
+    },
+    {
+      "kind": "custom",
+      "customId": "riposte-on-dodge",
+      "multiplier": 1,
+      "damageType": "slash",
+      "duration": 1,
+      "amount": 1,
+      "target": "self",
+      "scalesWith": "strength",
+      "note": "amount ripostes within duration turns, each at multiplier × Attack"
+    }
+  ],
+  "prerequisiteId": "blade-flowing-guard",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "requirements": {
+    "dualWield": true
+  },
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Riposte 1.5×.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "riposte-on-dodge",
+        "multiplier": 1.5,
+        "damageType": "slash",
+        "duration": 1,
+        "amount": 1,
+        "target": "self",
+        "scalesWith": "strength"
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "mobility"
+  ],
+  "xpTags": [
+    "agility"
+  ],
+  "aiHints": {
+    "role": "defend",
+    "priority": 45
+  }
+}

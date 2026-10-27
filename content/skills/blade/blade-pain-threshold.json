@@ -1,0 +1,79 @@
+{
+  "id": "blade-pain-threshold",
+  "classId": "blade",
+  "school": "bloodletter",
+  "tier": 2,
+  "name": "Pain Threshold",
+  "description": "Below 50% HP: +15% Attack. Below 25%: +30% Attack and +10 Speed.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "stat-percent-below-hp",
+      "stat": "attackPhys",
+      "amount": 50,
+      "percent": 15,
+      "target": "self",
+      "note": "stat +percent while under amount% HP; of several lines for one stat the deepest matching threshold applies"
+    },
+    {
+      "kind": "custom",
+      "customId": "stat-percent-below-hp",
+      "stat": "attackPhys",
+      "amount": 25,
+      "percent": 30,
+      "target": "self"
+    },
+    {
+      "kind": "custom",
+      "customId": "stat-amount-below-hp",
+      "stat": "speed",
+      "amount": 10,
+      "percent": 25,
+      "target": "self",
+      "note": "stat +amount while under percent% HP"
+    }
+  ],
+  "prerequisiteId": "blade-reckless-swing",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "+25% / +45%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "stat-percent-below-hp",
+        "stat": "attackPhys",
+        "amount": 50,
+        "percent": 25,
+        "target": "self",
+        "note": "Mastery restates both Attack thresholds"
+      },
+      {
+        "kind": "custom",
+        "customId": "stat-percent-below-hp",
+        "stat": "attackPhys",
+        "amount": 25,
+        "percent": 45,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff"
+  ],
+  "xpTags": [
+    "vitality"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 0
+  }
+}

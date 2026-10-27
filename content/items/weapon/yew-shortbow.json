@@ -1,0 +1,47 @@
+{
+  "id": "yew-shortbow",
+  "name": "Yew Shortbow",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "C",
+  "materialLadder": "wood",
+  "materialRung": 3,
+  "weaponType": "shortbow",
+  "armorFamily": null,
+  "hands": 2,
+  "damageType": "pierce",
+  "weight": 1000,
+  "baseStats": {
+    "attackPhys": 32
+  },
+  "requirements": {
+    "strength": 12,
+    "wisdom": 0
+  },
+  "affixSlots": 2,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 6,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 5.21,
+  "value": 900,
+  "classLock": [
+    "ranger"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-shortbow-01",
+    "tintPrimary": "#7a5a3a",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "steel"
+  }
+}

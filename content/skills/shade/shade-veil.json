@@ -1,0 +1,53 @@
+{
+  "id": "shade-veil",
+  "classId": "shade",
+  "school": "shadow",
+  "tier": 1,
+  "name": "Veil",
+  "description": "Enter Veil: single-target attacks cannot pick you for up to 2 turns, and it ends when you attack. +10 Momentum.",
+  "type": "active",
+  "cost": 10,
+  "weight": 800,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "applyStatus",
+      "status": "veil",
+      "duration": 2,
+      "note": "max 2 turns; ends when you attack (the status owns the rule)"
+    },
+    {
+      "kind": "momentum",
+      "amount": 10
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Costs 0 on your first action of a fight.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "free-on-first-action",
+        "target": "self",
+        "note": "this skill costs 0 pool when it is your first action of the fight"
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "momentum"
+  ],
+  "xpTags": [
+    "agility"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 60
+  }
+}

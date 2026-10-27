@@ -1,0 +1,41 @@
+{
+  "id": "pet-rat-prince-scavenge",
+  "classId": "pet",
+  "school": "pet",
+  "tier": 1,
+  "name": "Scavenge",
+  "description": "One extra part roll at the end of the fight.",
+  "type": "active",
+  "cost": 10,
+  "weight": 800,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "pet-extra-part-roll",
+      "amount": 1,
+      "note": "at fight end, one extra common/rare part roll over the fight's kills; once per fight"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "No Mastery line: pet actives do not rank (03 §9).",
+    "effects": []
+  },
+  "tags": [
+    "utility"
+  ],
+  "xpTags": [
+    "perception"
+  ],
+  "aiHints": {
+    "role": "utility",
+    "priority": 30
+  }
+}

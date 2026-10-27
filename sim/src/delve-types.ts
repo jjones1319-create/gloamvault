@@ -3,7 +3,7 @@ import type { FloorGraph } from './generator.ts'
 import type { DungeonChest } from './loot.ts'
 import type { RngState } from './rng.ts'
 import type { HeroRecord, ItemInstance } from './types/content.ts'
-import type { Difficulty, Stance } from './types/enums.ts'
+import type { Difficulty, Stance, Status, Target } from './types/enums.ts'
 
 /**
  * A delve (03-GAME-DESIGN §1, §4, §11, §12): one trip into a zone, floor by floor, as plain serialisable data.
@@ -100,6 +100,31 @@ export interface FloorRun {
   bossDefeated: boolean
   lastEncounterId: string | null
   firstFightDone: boolean
+  /** The secret record this floor's secret room holds (07 §2.6), drawn when the floor begins; null when none. */
+  secretId: string | null
+  /** A secret's crawlway to the exit room (the Company's Bolt-hole): a free move offered from the secret room. */
+  shortcutTo: string | null
+  /** Percent added to fight gold for the rest of the floor (a paid Toll Shrine). */
+  goldPercentBonus: number
+  /** Extra surprise for the next fight when `ruleFlags` carries 'next-fight-ambush' (a Tripwire Bell: 30). */
+  ambushPercent: number
+}
+
+/**
+ * A status a curio, trap or secret hands to the party out of combat (07 §2.4–§2.6): applied to the party actors
+ * the `target` word names right after each fight is created, for `fightsLeft` fights (null: every fight until the
+ * floor ends). Kind 'resist' installs a `status-resist-bonus` hook of `percent` instead (a floor's Fear immunity).
+ */
+export interface PendingStatus {
+  kind: 'status' | 'resist'
+  status: Status
+  target: Target
+  duration?: number
+  /** For a status whose record reads a magnitude (a DoT's per-tick damage, Regen's percent). */
+  magnitude?: number
+  percent?: number
+  fightsLeft: number | null
+  sourceId: string
 }
 
 export interface DelveHero {
@@ -149,6 +174,10 @@ export interface DelveStats {
   lightAtStairs: number[]
   fled: number
   xpEvents: number
+  /** Hooks that ran as documented stubs (`hookStub` events), by hook id (sim/src/skills/custom/README.md). */
+  hookStubs: Record<string, number>
+  /** The deepest floor whose way down (stairs or a beaten boss) the party reached: the next delve may start below it (D-083). */
+  deepestFloorCompleted: number
 }
 
 export type DelvePhase =
@@ -211,4 +240,6 @@ export interface DelveState {
   ruleFlags: string[]
   /** The pacts' extra percentages. */
   pactReward: { goldPercent: number; xpPercent: number; chestShiftPp: number }
+  /** Statuses waiting for the next fight(s) (a Larder's Regen, a Tar Pot's Burn, a shrine's Curse for the floor). */
+  pendingStatuses: PendingStatus[]
 }

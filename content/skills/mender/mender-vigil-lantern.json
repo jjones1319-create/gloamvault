@@ -1,0 +1,57 @@
+{
+  "id": "mender-vigil-lantern",
+  "classId": "mender",
+  "school": "vigil",
+  "tier": 1,
+  "name": "Vigil Lantern",
+  "description": "The party’s Light falls 1 less per new room; every ally has +5% Resistance.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "light-decay-reduction",
+      "amount": 1,
+      "target": "self",
+      "note": "the party’s Light falls `amount` less per new room"
+    },
+    {
+      "kind": "buffStat",
+      "stat": "resistance",
+      "amount": 5,
+      "target": "allAllies",
+      "note": "an aura: every ally while the passive is equipped"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "+8% Resistance.",
+    "effects": [
+      {
+        "kind": "buffStat",
+        "stat": "resistance",
+        "amount": 8,
+        "target": "allAllies"
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "light"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 0
+  }
+}

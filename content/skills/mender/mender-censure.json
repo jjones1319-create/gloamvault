@@ -1,0 +1,57 @@
+{
+  "id": "mender-censure",
+  "classId": "mender",
+  "school": "sanctity",
+  "tier": 2,
+  "name": "Censure",
+  "description": "Fear 2 turns on one enemy in either row; Undead and Shadow targets are also Weakened 2 turns.",
+  "type": "active",
+  "cost": 14,
+  "weight": 1000,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "applyStatus",
+      "status": "fear",
+      "duration": 2
+    },
+    {
+      "kind": "custom",
+      "customId": "apply-if-undead-or-shadow",
+      "status": "weaken",
+      "duration": 2,
+      "note": "applies `status` for `duration` only to Undead- or Shadow-family targets"
+    }
+  ],
+  "prerequisiteId": "mender-radiance",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Fear 3 turns.",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "fear",
+        "duration": 3
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "reach",
+    "control",
+    "debuff"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "control",
+    "priority": 50
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "id": "blade-sundering-swing",
+  "classId": "blade",
+  "school": "executioner",
+  "tier": 2,
+  "name": "Sundering Swing",
+  "description": "1.1× Slash to every front-row enemy; Weaken 2 turns on each.",
+  "type": "active",
+  "cost": 18,
+  "weight": 1400,
+  "target": "enemyFront",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1.1,
+      "damageType": "slash",
+      "target": "enemyRow",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "weaken",
+      "duration": 2,
+      "target": "enemyRow"
+    }
+  ],
+  "prerequisiteId": "blade-wind-up",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "requirements": {
+    "weaponTypes": [
+      "greatsword",
+      "greataxe"
+    ]
+  },
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Also strips Fortify.",
+    "effects": [
+      {
+        "kind": "removeStatus",
+        "status": "fortify",
+        "target": "enemyRow"
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "debuff"
+  ],
+  "xpTags": [
+    "strength"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 55
+  }
+}

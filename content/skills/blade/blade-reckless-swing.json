@@ -1,0 +1,64 @@
+{
+  "id": "blade-reckless-swing",
+  "classId": "blade",
+  "school": "bloodletter",
+  "tier": 1,
+  "name": "Reckless Swing",
+  "description": "1.5× Slash to a front-row enemy; you take 5% of your max HP (it tags Vitality) and gain +10 Momentum.",
+  "type": "active",
+  "cost": 9,
+  "weight": 1000,
+  "target": "enemyFront",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1.5,
+      "damageType": "slash",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "custom",
+      "customId": "damage-percent-max-hp",
+      "percent": 5,
+      "target": "self",
+      "note": "self-damage: percent of your own max HP, ignores Defense, tags Vitality"
+    },
+    {
+      "kind": "momentum",
+      "amount": 10,
+      "target": "self"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "No self-damage above 50% HP.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "self-damage-skipped-above-hp",
+        "percent": 50,
+        "target": "self",
+        "note": "this skill's self-damage line is skipped while you are above percent% HP"
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "momentum"
+  ],
+  "xpTags": [
+    "strength",
+    "agility",
+    "vitality"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 55
+  }
+}

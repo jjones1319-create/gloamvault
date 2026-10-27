@@ -1,13 +1,14 @@
 import type { Content } from './content.ts'
-import type { Actor, FightEvent, FightState, Side } from './fight-types.ts'
+import type { Actor, FightEvent, FightState, HookInstance, Side, StatusInstance } from './fight-types.ts'
+import { activeHooks, installHook, removeHook } from './hooks.ts'
 import { lightBand, shiftedBand } from './light.ts'
 import type { Rng } from './rng.ts'
-import { customHandler, type CustomHandler, type HookContext, type IncomingDamage } from './skills/custom/index.ts'
-import { applyStatus, cleanse, hasStatus, statusHooks, statusStatLines, strip } from './statuses.ts'
+import { customHandler, type CustomHandler, type HookContext, type HookFx, type IncomingDamage } from './skills/custom/index.ts'
+import { applyStatus, cleanse, hasStatus, removeStatus, statusDef, statusStatLines, strip } from './statuses.ts'
 import { clamp, hitChance, mitigate, roundHalfUp, type DerivedStats } from './stats.ts'
 import type { Tuning } from './tuning.ts'
 import type { Effect } from './types/content.ts'
-import { ELEMENTS, PHYS_TYPES, type DamageType, type DerivedStat, type Target } from './types/enums.ts'
+import { ELEMENTS, PHYS_TYPES, type DamageType, type DerivedStat, type Status, type Target } from './types/enums.ts'
 
 /**
  * The effect-DSL interpreter and the damage pipeline (03-GAME-DESIGN §2.2, §3.2–§3.5; content/README.md "The
@@ -43,17 +44,50 @@ export function alliesOf(state: FightState, actor: Actor): Actor[] {
 
 /* ---------- effective stats ---------- */
 
-function hookCtx(ctx: EffectContext, holder: Actor, status: Actor['statuses'][number] | null, line: Effect): HookContext {
-  return { content: ctx.content, t: ctx.t, state: ctx.state, rng: ctx.rng, holder, status, line }
+/** The context a custom handler sees; `fx` is the fight's verbs so handlers never import this module. */
+export function hookCtx(ctx: EffectContext, holder: Actor, status: StatusInstance | null, line: Effect, hook: HookInstance | null = null, sourceId: string | null = null): HookContext {
+  return { content: ctx.content, t: ctx.t, state: ctx.state, rng: ctx.rng, holder, status, line, hook, sourceId, fx: fxFor(ctx) }
+}
+
+function fxFor(ctx: EffectContext): HookFx {
+  return {
+    strike: (attacker, target, o) => {
+      const r = dealDamage(ctx, attacker, target, { amount: o.amount, damageType: o.damageType, canMiss: o.canMiss ?? false, canCrit: o.canCrit ?? false, isDot: false, isUltimate: false, isSingleTarget: true, isMelee: o.isMelee ?? false, ignoresDefense: o.ignoresDefense ?? false, sourceLabel: o.label })
+      log(ctx, { kind: r.hit ? 'damage' : 'miss', actorId: attacker?.id, targetId: target.id, amount: r.dealt, text: r.hit ? `${attacker ? attacker.name + ': ' : ''}${o.label} hits ${target.name} for ${r.dealt}` : `${o.label} misses ${target.name}`, data: { killed: r.killed, downed: r.downed } })
+      return { hit: r.hit, dealt: r.dealt, killed: r.killed }
+    },
+    heal: (healer, target, amount) => heal(ctx, healer, target, amount),
+    applyStatus: (target, input, sourceId) => {
+      const r = applyStatus(ctx.content, ctx.t, ctx.rng, target, { ...input, sourceId, fresh: ctx.state.actingId === target.id })
+      if (r.outcome === 'applied') log(ctx, { kind: 'status', targetId: target.id, text: `${target.name} is ${r.status}`, data: { status: r.status } })
+      return r.outcome
+    },
+    attackFor: (actor, type) => attackFor(ctx, actor, type),
+    statOf: (actor, stat) => statOf(ctx, actor, stat),
+    gainMomentum: (actor, amount) => gainMomentum(ctx, actor, amount),
+    log: (kind, text, extra = {}) => log(ctx, { kind, text, ...extra }),
+    alliesOf: (actor) => alliesOf(ctx.state, actor),
+    enemiesOf: (actor) => enemiesOf(ctx.state, actor),
+    isActive,
+    installHook: (actor, line, sourceId, opts) => installHook(actor, line, sourceId, opts),
+    removeHook: (actor, hook) => removeHook(actor, hook),
+    applyLine: (actor, line, baseTarget, chosen, source = {}) => {
+      const src: LineSource = { kind: 'trait', id: 'hook', label: 'hook', isUltimate: false, neverMisses: false, effectPercent: 100, reach: true, ranged: false, isMelee: true, ...source }
+      const out = applyLine(ctx, actor, line, baseTarget, chosen, src)
+      return { targets: out.targets, dealt: out.results.map((r) => r.dealt), applied: out.applied }
+    },
+    hasStatus: (actor, status) => hasStatus(actor, status),
+    removeStatus: (actor, status) => removeStatus(actor, status),
+  }
 }
 
 /** Σ of a custom-hook percent across the holder's statuses. */
 function hookPercent(ctx: EffectContext, actor: Actor, pick: (h: CustomHandler, hc: HookContext) => number | undefined): number {
   let total = 0
-  for (const { status, line } of statusHooks(ctx.content, actor)) {
+  for (const { status, hook, line } of activeHooks(ctx.content, actor)) {
     const h = customHandler(line.customId ?? '')
     if (!h) continue
-    total += pick(h, hookCtx(ctx, actor, status, line)) ?? 0
+    total += pick(h, hookCtx(ctx, actor, status, line, hook)) ?? 0
   }
   return total
 }
@@ -71,6 +105,14 @@ export function statOf(ctx: EffectContext, actor: Actor, stat: DerivedStat): num
     if (m.stat !== stat) continue
     flat += m.amount
     pct += m.percent
+  }
+  // Auras: a percent an ally grants while it stands (a Commander's fodder aura).
+  for (const ally of ctx.state.actors) {
+    if (ally === actor || ally.side !== actor.side || ally.hooks.length === 0 || !isActive(ally)) continue
+    for (const hook of ally.hooks) {
+      const h = customHandler(hook.customId)
+      if (h?.auraStatPercent) pct += h.auraStatPercent(hookCtx(ctx, ally, null, hook.line, hook), actor, stat)
+    }
   }
   // Curse: all attributes −10% reads as −10% on the attribute-driven stats.
   const attrPct = hookPercent(ctx, actor, (h, hc) => h.attributePercent?.(hc))
@@ -92,17 +134,17 @@ export function speedOf(ctx: EffectContext, actor: Actor): number {
 }
 
 export function canAct(ctx: EffectContext, actor: Actor): boolean {
-  for (const { status, line } of statusHooks(ctx.content, actor)) {
+  for (const { status, hook, line } of activeHooks(ctx.content, actor)) {
     const h = customHandler(line.customId ?? '')
-    if (h?.canAct && !h.canAct(hookCtx(ctx, actor, status, line))) return false
+    if (h?.canAct && !h.canAct(hookCtx(ctx, actor, status, line, hook))) return false
   }
   return true
 }
 
 export function canUseSkills(ctx: EffectContext, actor: Actor): boolean {
-  for (const { status, line } of statusHooks(ctx.content, actor)) {
+  for (const { status, hook, line } of activeHooks(ctx.content, actor)) {
     const h = customHandler(line.customId ?? '')
-    if (h?.canUseSkills && !h.canUseSkills(hookCtx(ctx, actor, status, line))) return false
+    if (h?.canUseSkills && !h.canUseSkills(hookCtx(ctx, actor, status, line, hook))) return false
   }
   return true
 }
@@ -111,26 +153,26 @@ export function canSwapRow(ctx: EffectContext, actor: Actor): boolean {
   if (actor.hero?.species.forcedRowMoveImmune === false) {
     /* voluntary swaps are always the hero's choice; the immunity is against forced moves */
   }
-  for (const { status, line } of statusHooks(ctx.content, actor)) {
+  for (const { status, hook, line } of activeHooks(ctx.content, actor)) {
     const h = customHandler(line.customId ?? '')
-    if (h?.canSwapRow && !h.canSwapRow(hookCtx(ctx, actor, status, line))) return false
+    if (h?.canSwapRow && !h.canSwapRow(hookCtx(ctx, actor, status, line, hook))) return false
   }
   return true
 }
 
 export function canFlee(ctx: EffectContext, actor: Actor): boolean {
-  for (const { status, line } of statusHooks(ctx.content, actor)) {
+  for (const { status, hook, line } of activeHooks(ctx.content, actor)) {
     const h = customHandler(line.customId ?? '')
-    if (h?.canFlee && !h.canFlee(hookCtx(ctx, actor, status, line))) return false
+    if (h?.canFlee && !h.canFlee(hookCtx(ctx, actor, status, line, hook))) return false
   }
   return true
 }
 
 /** The actor this one must target (Taunt), when it is still a legal target. */
 export function forcedTarget(ctx: EffectContext, actor: Actor): Actor | null {
-  for (const { status, line } of statusHooks(ctx.content, actor)) {
+  for (const { status, hook, line } of activeHooks(ctx.content, actor)) {
     const h = customHandler(line.customId ?? '')
-    const id = h?.mustTarget?.(hookCtx(ctx, actor, status, line))
+    const id = h?.mustTarget?.(hookCtx(ctx, actor, status, line, hook))
     if (id) {
       const target = ctx.state.actors.find((a) => a.id === id)
       if (target && isActive(target)) return target
@@ -141,10 +183,11 @@ export function forcedTarget(ctx: EffectContext, actor: Actor): Actor | null {
 
 /** Whether `attacker` may target `target` (a Grabbed hero is targetable only by the grabber). */
 export function canBeTargetedBy(ctx: EffectContext, target: Actor, attacker: Actor): boolean {
-  for (const { status, line } of statusHooks(ctx.content, target)) {
+  for (const { status, hook, line } of activeHooks(ctx.content, target)) {
     const h = customHandler(line.customId ?? '')
-    const only = h?.onlyTargetableBy?.(hookCtx(ctx, target, status, line))
+    const only = h?.onlyTargetableBy?.(hookCtx(ctx, target, status, line, hook))
     if (only && only !== attacker.id) return false
+    if (h?.untargetable?.(hookCtx(ctx, target, status, line, hook))) return false
   }
   return true
 }
@@ -357,20 +400,39 @@ export function dealDamage(ctx: EffectContext, attacker: Actor | null, target: A
   }
   // Hit roll.
   if (input.canMiss && attacker && !input.isDot) {
-    let chance = hitChance(t, accuracyOf(ctx, attacker), statOf(ctx, target, 'dodge'))
+    let accBonus = 0
+    for (const { status, hook, line } of activeHooks(ctx.content, attacker)) accBonus += customHandler(line.customId ?? '')?.accuracyBonus?.(hookCtx(ctx, attacker, status, line, hook), target) ?? 0
+    let chance = hitChance(t, accuracyOf(ctx, attacker) + accBonus, statOf(ctx, target, 'dodge'))
     // A Halfling's Small trait: big single-target melee attackers miss more (05).
     const sizePenalty = attacker.monster && target.hero && input.isSingleTarget && input.isMelee ? (target.hero.species.enemyAccuracyBySize[attacker.monster.size] ?? 0) : 0
     chance = clamp(chance + sizePenalty, t.derived.hit.minChance, 100)
-    if (!rng.pct(chance)) return MISS
-    for (const { status, line } of statusHooks(ctx.content, target)) {
+    if (!rng.pct(chance)) {
+      for (const { status, hook, line } of activeHooks(ctx.content, target)) customHandler(line.customId ?? '')?.onDodge?.(hookCtx(ctx, target, status, line, hook), attacker, incoming)
+      return MISS
+    }
+    for (const { status, hook, line } of activeHooks(ctx.content, target)) {
       const h = customHandler(line.customId ?? '')
-      if (h?.beforeHit?.(hookCtx(ctx, target, status, line), incoming) === 'miss') return MISS
+      if (h?.beforeHit?.(hookCtx(ctx, target, status, line, hook), incoming) === 'miss') return MISS
+    }
+  }
+  // Attacker-side hooks: a guaranteed crit (consumed), a scaled blow (a broken bolt arm −20%).
+  let forcedCrit = false
+  let outPct = 0
+  let critBonus = 0
+  if (attacker && !input.isDot) {
+    for (const { status, hook, line } of activeHooks(ctx.content, attacker)) {
+      const h = customHandler(line.customId ?? '')
+      if (!h) continue
+      const hc = hookCtx(ctx, attacker, status, line, hook)
+      if (input.canCrit && h.forceCrit?.(hc, target)) forcedCrit = true
+      outPct += h.outgoingDamagePercent?.(hc, target, incoming) ?? 0
+      critBonus += h.critRateBonus?.(hc, target, incoming) ?? 0
     }
   }
   let amount = input.amount
   let crit = false
   if (input.canCrit && attacker && !input.isDot) {
-    crit = rng.pct(statOf(ctx, attacker, 'critRate'))
+    crit = forcedCrit ? true : rng.pct(clamp(statOf(ctx, attacker, 'critRate') + critBonus, 0, 100))
     if (crit) amount = roundHalfUp((amount * statOf(ctx, attacker, 'critDamage')) / 100)
   }
   // Variance: × U(floor, 1.05).
@@ -378,6 +440,7 @@ export function dealDamage(ctx: EffectContext, attacker: Actor | null, target: A
     const floor = statOf(ctx, attacker, 'variance')
     amount = roundHalfUp((amount * rng.range(floor, t.derived.variance.ceilingPercent)) / 100)
   }
+  if (outPct) amount = roundHalfUp((amount * Math.max(0, 100 + outPct)) / 100)
   // Attacker-side multipliers: a species' below-half-HP rage, the difficulty knob on monster damage.
   if (attacker?.hero?.species.damageMultiplierBelowHpPercent) {
     const rage = attacker.hero.species.damageMultiplierBelowHpPercent
@@ -402,6 +465,7 @@ export function dealDamage(ctx: EffectContext, attacker: Actor | null, target: A
     if (block > 0 && rng.pct(block)) {
       blocked = true
       amount = roundHalfUp(amount / 2)
+      for (const { status, hook, line } of activeHooks(ctx.content, target)) customHandler(line.customId ?? '')?.onBlock?.(hookCtx(ctx, target, status, line, hook), incoming)
     }
   }
   // Defense.
@@ -413,18 +477,29 @@ export function dealDamage(ctx: EffectContext, attacker: Actor | null, target: A
   amount = Math.max(0, amount)
   // Shields absorb.
   let absorbed = 0
-  for (const { status, line } of statusHooks(ctx.content, target)) {
+  for (const { status, hook, line } of activeHooks(ctx.content, target)) {
     const h = customHandler(line.customId ?? '')
     if (!h?.absorb) continue
-    const left = h.absorb(hookCtx(ctx, target, status, line), { ...incoming, amount })
+    const left = h.absorb(hookCtx(ctx, target, status, line, hook), { ...incoming, amount })
     absorbed += amount - left
     amount = left
     if (amount <= 0) break
   }
-  const dealt = Math.max(0, amount)
+  let dealt = Math.max(0, amount)
   const before = target.hp
   if (attacker) attacker.lastTargetId = target.id
-  target.hp = Math.max(0, target.hp - dealt)
+  let newHp = Math.max(0, before - dealt)
+  // A Last Stand (beforeDowned): the holder stays at 1 HP once.
+  if (before > 0 && newHp <= 0) {
+    for (const { status, hook, line } of activeHooks(ctx.content, target)) {
+      if (customHandler(line.customId ?? '')?.beforeDowned?.(hookCtx(ctx, target, status, line, hook), incoming)) {
+        newHp = 1
+        dealt = Math.max(0, before - 1)
+        break
+      }
+    }
+  }
+  target.hp = newHp
   target.tally.damageTaken += dealt
   if (attacker) {
     attacker.tally.damageDealt += dealt
@@ -432,15 +507,17 @@ export function dealDamage(ctx: EffectContext, attacker: Actor | null, target: A
   }
   if (dealt > 0) target.tally.hitsTaken += 1
   if (blocked) target.tally.blocks += 1
+  if (attacker && dealt > 0) for (const { status, hook, line } of activeHooks(ctx.content, attacker)) customHandler(line.customId ?? '')?.onDealtDamage?.(hookCtx(ctx, attacker, status, line, hook), target, dealt, incoming)
+  if (dealt > 0) breakPart(ctx, attacker, target, dealt, input.damageType, crit)
   // Momentum on being hit (§2.2).
   if (!input.isDot && dealt > 0) gainMomentum(ctx, target, t.derived.momentum.onHit)
   // Grab tracking: damage to the grabber frees the held.
   if (dealt > 0) for (const a of state.actors) if (a.grabbedBy === target.id) a.grabDamage += dealt
   // After-hit hooks on the target.
   if (dealt > 0) {
-    for (const { status, line } of statusHooks(ctx.content, target)) {
+    for (const { status, hook, line } of activeHooks(ctx.content, target)) {
       const h = customHandler(line.customId ?? '')
-      h?.afterHit?.(hookCtx(ctx, target, status, line), incoming, dealt)
+      h?.afterHit?.(hookCtx(ctx, target, status, line, hook), incoming, dealt)
     }
   }
   let killed = false
@@ -457,6 +534,8 @@ export function dealDamage(ctx: EffectContext, attacker: Actor | null, target: A
       killed = true
       state.counters.monstersKilled += 1
       if (attacker) attacker.tally.kills += 1
+      for (const { status, hook, line } of activeHooks(ctx.content, target)) customHandler(line.customId ?? '')?.onDeath?.(hookCtx(ctx, target, status, line, hook), attacker)
+      if (attacker) for (const { status, hook, line } of activeHooks(ctx.content, attacker)) customHandler(line.customId ?? '')?.onKill?.(hookCtx(ctx, attacker, status, line, hook), target)
     }
     releaseHolds(ctx, target)
   }
@@ -483,8 +562,9 @@ export function gainMomentum(ctx: EffectContext, actor: Actor, amount: number): 
 /** Healing with Wither and the max HP cap; returns the HP restored. */
 export function heal(ctx: EffectContext, healer: Actor | null, target: Actor, amount: number): number {
   if (target.gone || target.fallen) return 0
-  const pct = hookPercent(ctx, target, (h, hc) => h.incomingHealingPercent?.(hc))
-  const scaled = Math.max(0, roundHalfUp((amount * (100 + pct)) / 100))
+  let pct = hookPercent(ctx, target, (h, hc) => h.incomingHealingPercent?.(hc))
+  if (healer) pct += hookPercent(ctx, healer, (h, hc) => h.outgoingHealingPercent?.(hc, target))
+  const scaled = Math.max(0, roundHalfUp((amount * Math.max(0, 100 + pct)) / 100))
   const restored = Math.min(scaled, target.maxHp - target.hp)
   target.hp += restored
   if (healer) healer.tally.healingDone += restored
@@ -526,6 +606,22 @@ export function interceptingPet(ctx: EffectContext, target: Actor): Actor | null
   return pet
 }
 
+/** Who takes a single-target hit aimed at `target`: an Intercepting ally or a Guard Dog (hooks on the target), else a Guard-stance pet. */
+export function interceptorFor(ctx: EffectContext, target: Actor, attacker: Actor | null, incoming: IncomingDamage): { actor: Actor; percent: number } | null {
+  for (const { status, hook, line } of activeHooks(ctx.content, target)) {
+    const h = customHandler(line.customId ?? '')
+    const r = h?.intercept?.(hookCtx(ctx, target, status, line, hook), attacker, incoming)
+    if (!r) continue
+    const who = ctx.state.actors.find((a) => a.id === r.interceptorId)
+    if (who && who !== target && isActive(who)) {
+      log(ctx, { kind: 'intercept', actorId: who.id, targetId: target.id, text: `${who.name} takes the hit meant for ${target.name}` })
+      return { actor: who, percent: r.percent }
+    }
+  }
+  const pet = interceptingPet(ctx, target)
+  return pet ? { actor: pet, percent: 0 } : null
+}
+
 /** Attack for a damage line: physical uses attackPhys, elements use attackSpell (03 §2.2: Attack (phys) / Attack (spell)). */
 export function attackFor(ctx: EffectContext, actor: Actor, type: DamageType): number {
   if (actor.monster) return statOf(ctx, actor, 'attackPhys')
@@ -539,7 +635,14 @@ export function scalesWithPercent(actor: Actor, line: Effect): number {
 }
 
 /** Resolves one effect line of a skill, attack or item for the actor. */
-export function applyLine(ctx: EffectContext, actor: Actor, line: Effect, baseTarget: Target, chosen: Actor | null, source: LineSource): LineOutcome {
+export function applyLine(ctx: EffectContext, actor: Actor, line0: Effect, baseTarget: Target, chosen: Actor | null, source: LineSource): LineOutcome {
+  // The actor's hooks may rewrite or skip the line first (an element swap, an execute multiplier, a conditional rider).
+  let line = line0
+  for (const { status, hook, line: hl } of activeHooks(ctx.content, actor)) {
+    const mod = customHandler(hl.customId ?? '')?.modifyLine?.(hookCtx(ctx, actor, status, hl, hook), line, source, chosen)
+    if (mod === 'skip') return { line, targets: [], results: [], healed: 0, applied: [], notes: ['skipped'] }
+    if (mod) line = mod
+  }
   const target = line.target ?? baseTarget
   const targets = resolveTargets(ctx, actor, target, chosen, { reach: source.reach, ranged: source.ranged })
   const out: LineOutcome = { line, targets: targets.map((a) => a.id), results: [], healed: 0, applied: [], notes: [] }
@@ -548,11 +651,14 @@ export function applyLine(ctx: EffectContext, actor: Actor, line: Effect, baseTa
   const aoe = targets.length > 1 || target === 'allEnemies' || target === 'enemyRow' || target === 'allAllies'
   switch (line.kind) {
     case 'damage': {
-      for (const original of targets) {
+      for (const [index, original] of targets.entries()) {
         if (chance < 100 && !ctx.rng.pct(chance)) continue
-        const tgt = aoe ? original : interceptingPet(ctx, original) ?? original
         const type = line.damageType ?? 'slash'
-        const base = roundHalfUp((attackFor(ctx, actor, type) * (line.multiplier ?? 1) * scale) / 100)
+        const base0 = roundHalfUp((attackFor(ctx, actor, type) * (line.multiplier ?? 1) * scale) / 100)
+        const picked = aoe ? null : interceptorFor(ctx, original, actor, { amount: base0, damageType: type, attacker: actor, isSingleTarget: true, isDot: false, isUltimate: source.isUltimate, isMelee: source.isMelee, physical: isPhysical(type) })
+        const tgt = picked?.actor ?? original
+        if (picked) out.targets[index] = tgt.id
+        const base = picked?.percent ? roundHalfUp((base0 * Math.max(0, 100 + picked.percent)) / 100) : base0
         const r = dealDamage(ctx, actor, tgt, {
           amount: base,
           damageType: type,
@@ -587,9 +693,10 @@ export function applyLine(ctx: EffectContext, actor: Actor, line: Effect, baseTa
       for (const tgt of targets) {
         let amount = 0
         if (line.multiplier !== undefined) amount = roundHalfUp((attackFor(ctx, actor, 'holy') * line.multiplier * scale) / 100)
-        else if (line.percent !== undefined) amount = roundHalfUp((actor.maxHp * line.percent * scale) / 10_000)
+        // 03 §3.5: a Shield absorbs a percent of the HOLDER's max HP (the Gate Holds' "of the Warden's" is its own hook).
+        else if (line.percent !== undefined) amount = roundHalfUp((tgt.maxHp * line.percent * scale) / 10_000)
         else amount = roundHalfUp(((line.amount ?? 0) * scale) / 100)
-        const r = applyStatus(ctx.content, ctx.t, ctx.rng, tgt, { status: 'shield', duration: line.duration, magnitude: amount, sourceId: actor.id, chance })
+        const r = applyStatus(ctx.content, ctx.t, ctx.rng, tgt, { status: 'shield', duration: durationWithBonus(ctx, actor, 'shield', tgt, line.duration), magnitude: amount, sourceId: actor.id, chance, fresh: ctx.state.actingId === tgt.id })
         if (r.outcome === 'applied') out.applied.push(`${tgt.id}:shield:${amount}`)
       }
       break
@@ -597,8 +704,16 @@ export function applyLine(ctx: EffectContext, actor: Actor, line: Effect, baseTa
     case 'applyStatus': {
       if (!line.status) break
       for (const tgt of targets) {
-        const magnitude = line.status === 'regen' ? roundHalfUp(((line.percent ?? 0) * scale) / 100) || undefined : undefined
-        const r = applyStatus(ctx.content, ctx.t, ctx.rng, tgt, { status: line.status, chance, duration: line.duration, magnitude, sourceId: actor.id, applierDurationMultiplier: actor.hero?.species.appliedDurationMultiplier[line.status] }, actor.monster?.size)
+        const sdef = statusDef(ctx.content, line.status)
+        // Burn and Bleed tick a share of "the applying hit's damage" (03 §3.5): this action's last hit on the target, else
+        // a hit's worth of the applier's Attack of the status's damage type when the line lands without a hit (D-077).
+        const magnitude =
+          line.status === 'regen'
+            ? roundHalfUp(((line.percent ?? 0) * scale) / 100) || undefined
+            : sdef.magnitudeOf === 'hitDamage'
+              ? applyingHitDamage(ctx, actor, tgt) ?? roundHalfUp((attackFor(ctx, actor, sdef.tickDamageType ?? 'slash') * (line.multiplier ?? 1) * scale) / 100)
+              : undefined
+        const r = applyStatus(ctx.content, ctx.t, ctx.rng, tgt, { status: line.status, chance, duration: durationWithBonus(ctx, actor, line.status, tgt, line.duration), magnitude, sourceId: actor.id, applierDurationMultiplier: actor.hero?.species.appliedDurationMultiplier[line.status], fresh: ctx.state.actingId === tgt.id }, actor.monster?.size)
         if (r.outcome === 'applied') {
           out.applied.push(`${tgt.id}:${r.status}`)
           if (r.status === 'grab') {
@@ -623,7 +738,7 @@ export function applyLine(ctx: EffectContext, actor: Actor, line: Effect, baseTa
       if (!line.stat) break
       for (const tgt of targets) {
         if (chance < 100 && !ctx.rng.pct(chance)) continue
-        tgt.modifiers.push({ stat: line.stat, amount: roundHalfUp(((line.amount ?? 0) * scale) / 100), percent: roundHalfUp(((line.percent ?? 0) * scale) / 100), turnsLeft: line.duration ?? 3, sourceId: source.id })
+        tgt.modifiers.push({ stat: line.stat, amount: roundHalfUp(((line.amount ?? 0) * scale) / 100), percent: roundHalfUp(((line.percent ?? 0) * scale) / 100), turnsLeft: line.duration ?? 3, sourceId: source.id, ...(ctx.state.actingId === tgt.id ? { fresh: true } : {}) })
         out.applied.push(`${tgt.id}:${line.kind}:${line.stat}`)
       }
       break
@@ -650,13 +765,14 @@ export function applyLine(ctx: EffectContext, actor: Actor, line: Effect, baseTa
       break
     case 'taunt':
       for (const tgt of targets) {
-        const r = applyStatus(ctx.content, ctx.t, ctx.rng, tgt, { status: 'taunt', chance, duration: line.duration, sourceId: actor.id })
+        const r = applyStatus(ctx.content, ctx.t, ctx.rng, tgt, { status: 'taunt', chance, duration: durationWithBonus(ctx, actor, 'taunt', tgt, line.duration), sourceId: actor.id, fresh: ctx.state.actingId === tgt.id })
         if (r.outcome === 'applied') out.applied.push(`${tgt.id}:taunt`)
       }
       break
     case 'dispel':
       for (const tgt of targets) {
-        const removed = tgt.side === actor.side ? cleanse(ctx.content, tgt, ['cleanse']) : strip(ctx.content, tgt, line.amount ?? Infinity)
+        // On an ally `amount` caps the debuffs removed ("Remove 1"); on an enemy it caps the buffs stripped.
+        const removed = tgt.side === actor.side ? cleanse(ctx.content, tgt, ['cleanse'], line.amount ?? Infinity) : strip(ctx.content, tgt, line.amount ?? Infinity)
         out.applied.push(...removed.map((s) => `${tgt.id}:-${s}`))
       }
       break
@@ -684,13 +800,56 @@ export function applyLine(ctx: EffectContext, actor: Actor, line: Effect, baseTa
     case 'custom': {
       const h = customHandler(line.customId ?? '')
       if (h?.apply) {
-        if (targets.length === 0) h.apply(hookCtx(ctx, actor, null, line), null, scale)
-        for (const tgt of targets) h.apply(hookCtx(ctx, actor, null, line), tgt, scale)
+        if (targets.length === 0) h.apply(hookCtx(ctx, actor, null, line, null, source.id), null, scale)
+        for (const tgt of targets) h.apply(hookCtx(ctx, actor, null, line, null, source.id), tgt, scale)
       } else out.notes.push(`custom:${line.customId ?? ''}`)
       break
     }
   }
   return out
+}
+
+/** The damage `actor` dealt to `target` with its last hit of the current action (the log since its last `action` entry), or null. */
+function applyingHitDamage(ctx: EffectContext, actor: Actor, target: Actor): number | null {
+  const log = ctx.state.log
+  for (let i = log.length - 1; i >= 0; i--) {
+    const e = log[i]!
+    if (e.kind === 'action' && e.actorId === actor.id) break
+    if (e.kind === 'damage' && e.actorId === actor.id && e.targetId === target.id && (e.amount ?? 0) > 0) return e.amount ?? null
+  }
+  return null
+}
+
+/** A status duration with the applier's bonus hooks (Loud Voice: Taunts +1 turn); the default duration when the line names none. */
+function durationWithBonus(ctx: EffectContext, applier: Actor, status: Status, target: Actor, lineDuration: number | undefined): number | undefined {
+  let bonus = 0
+  for (const { status: st, hook, line } of activeHooks(ctx.content, applier)) bonus += customHandler(line.customId ?? '')?.statusDurationBonus?.(hookCtx(ctx, applier, st, line, hook), status, target) ?? 0
+  if (!bonus) return lineDuration
+  return Math.max(1, (lineDuration ?? statusDef(ctx.content, status).durationDefault ?? 0) + bonus)
+}
+
+/**
+ * Part break (03 §6.3, 06 §1 "hit the marked limb"): one blow of at least `combat.partBreak.hpPercentOfMaxInOneHit`
+ * of the monster's max HP breaks its marked limb once per fight — the limb's effect applies to the monster and the
+ * rare-part roll doubles (loot.ts). A limb whose effect names a damage type breaks only to that type ("Blunt, 6 % HP");
+ * an untyped limb breaks only on a critical hit, the sim's reading of "aimed at the limb" (D-071, D-078).
+ */
+function breakPart(ctx: EffectContext, attacker: Actor | null, target: Actor, dealt: number, damageType: DamageType, crit: boolean): void {
+  const m = target.monster
+  if (!m || m.partBroken) return
+  const limb = ctx.content.monsters.get(m.monsterId)?.parts.breakLimb
+  if (!limb) return
+  if (dealt * 100 < target.maxHp * ctx.t.combat.partBreak.hpPercentOfMaxInOneHit.value) return
+  if (limb.effect.damageType ? limb.effect.damageType !== damageType : !crit) return
+  m.partBroken = true
+  log(ctx, { kind: 'partBreak', actorId: attacker?.id, targetId: target.id, text: `${target.name}'s ${limb.name} breaks`, data: { limb: limb.name } })
+  if (limb.effect.kind === 'custom') {
+    const h = customHandler(limb.effect.customId ?? '')
+    h?.apply?.(hookCtx(ctx, target, null, limb.effect, null, 'part-break'), target, 100)
+  } else {
+    const source: LineSource = { kind: 'trait', id: 'part-break', label: `${limb.name} breaks`, isUltimate: false, neverMisses: true, effectPercent: 100, reach: false, ranged: false, isMelee: false }
+    applyLine(ctx, target, limb.effect, 'self', target, source)
+  }
 }
 
 export function statsSnapshot(ctx: EffectContext, actor: Actor): DerivedStats {

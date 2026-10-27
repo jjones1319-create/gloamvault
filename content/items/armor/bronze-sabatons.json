@@ -1,0 +1,49 @@
+{
+  "id": "bronze-sabatons",
+  "name": "Bronze Sabatons",
+  "slot": "boots",
+  "kind": "armor",
+  "grade": "E",
+  "materialLadder": "metal",
+  "materialRung": 1,
+  "weaponType": null,
+  "armorFamily": "plate",
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "defense": 3,
+    "hp": 3,
+    "carry": 3
+  },
+  "requirements": {
+    "strength": 11,
+    "wisdom": 0
+  },
+  "affixSlots": 1,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 4,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1.5,
+  "value": 120,
+  "classLock": [
+    "warden"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "armor-plate-boots-01",
+    "tintPrimary": "#cd7f32",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "bronze"
+  }
+}

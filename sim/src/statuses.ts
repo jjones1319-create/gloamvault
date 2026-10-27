@@ -39,6 +39,8 @@ export interface ApplyStatusInput {
   sourceId: string | null
   /** Species knobs of the applier (an Orc's Fear lasts longer). */
   applierDurationMultiplier?: number
+  /** Applied during the target's own turn: the status skips that turn's count-down once (D-077). */
+  fresh?: boolean
 }
 
 export type ApplyStatusResult =
@@ -80,10 +82,29 @@ export function statusConversion(content: Content, target: Actor, id: Status, gr
 const HOSTILE_KINDS = new Set(['dot', 'control', 'debuff', 'mark'])
 
 /** The resist chance against a hostile status: Resistance (Willpower) plus the species' line for it. */
-export function resistChance(actor: Actor, def: StatusDef): number {
+export function resistChance(actor: Actor, def: StatusDef, content?: Content): number {
   if (!HOSTILE_KINDS.has(def.kind)) return 0
   const species = actor.hero?.species.statusResist[def.id] ?? 0
-  return Math.max(0, actor.base.resistance + species)
+  // An Antidote's +50% Poison resistance (08 §4): a status-resist-bonus hook on the target for its duration.
+  let hooks = 0
+  for (const h of actor.hooks) if (h.customId === 'status-resist-bonus' && h.line.status === def.id) hooks += h.line.percent ?? 0
+  // Resistance buffs count (Fortify, a Mender's aura, a passive): the actor's modifiers and its statuses' stat lines.
+  let flat = 0
+  let pct = 0
+  for (const m of actor.modifiers) {
+    if (m.stat !== 'resistance') continue
+    flat += m.amount
+    pct += m.percent
+  }
+  if (content) {
+    for (const { line, stacks } of statusStatLines(content, actor)) {
+      if (line.stat !== 'resistance') continue
+      flat += (line.amount ?? 0) * stacks
+      pct += (line.percent ?? 0) * stacks
+    }
+  }
+  const resistance = Math.round(((actor.base.resistance + flat) * (100 + pct)) / 100)
+  return Math.max(0, resistance + species + hooks)
 }
 
 /** Applies a status with every rule of §3.5 and 06 §7. The caller rolls `chance` first through this function too. */
@@ -93,7 +114,7 @@ export function applyStatus(content: Content, t: Tuning, rng: Rng, target: Actor
   if (!conv.status) return { outcome: 'immune' }
   let id = conv.status
   let def = statusDef(content, id)
-  if (rng.pct(resistChance(target, def))) return { outcome: 'resisted' }
+  if (rng.pct(resistChance(target, def, content))) return { outcome: 'resisted' }
 
   // A second Chill becomes Freeze (unless the target only ever takes Chill).
   let upgraded = false
@@ -112,7 +133,8 @@ export function applyStatus(content: Content, t: Tuning, rng: Rng, target: Actor
   if (def.appliesEnergyDelta) target.energy += def.appliesEnergyDelta
   if (instant) return { outcome: 'applied', status: id, upgraded }
 
-  let duration: number | null = input.duration ?? def.durationDefault
+  // An upgrade (Chill → Freeze) takes the upgraded status's own duration, not the Chill line's (03 §3.5: Freeze 1).
+  let duration: number | null = upgraded ? def.durationDefault : (input.duration ?? def.durationDefault)
   if (duration !== null) {
     const m = target.monster
     if (m && (m.isBoss || m.isHunter)) duration -= 1
@@ -130,9 +152,10 @@ export function applyStatus(content: Content, t: Tuning, rng: Rng, target: Actor
     existing.turnsLeft = duration
     existing.sourceId = input.sourceId
     existing.counter = 0
+    if (input.fresh) existing.fresh = true
     return { outcome: 'applied', status: id, upgraded }
   }
-  target.statuses.push({ id, stacks: 1, turnsLeft: duration, magnitude, sourceId: input.sourceId, counter: 0 })
+  target.statuses.push({ id, stacks: 1, turnsLeft: duration, magnitude, sourceId: input.sourceId, counter: 0, ...(input.fresh ? { fresh: true } : {}) })
   return { outcome: 'applied', status: id, upgraded }
 }
 
@@ -158,9 +181,10 @@ export function removeStatus(actor: Actor, id: Status): boolean {
 }
 
 /** Cleanses every status one of the tags can clear (Antidote: 'antidote'; a Mender cleanse: 'cleanse'). */
-export function cleanse(content: Content, actor: Actor, tags: readonly string[]): Status[] {
+export function cleanse(content: Content, actor: Actor, tags: readonly string[], count = Infinity): Status[] {
   const removed: Status[] = []
   actor.statuses = actor.statuses.filter((s) => {
+    if (removed.length >= count) return true
     const def = statusDef(content, s.id)
     const hit = def.cleansedBy.some((tag) => tags.includes(tag))
     if (hit) removed.push(s.id)
@@ -234,6 +258,11 @@ export function countDownStatuses(actor: Actor): Status[] {
   const expired: Status[] = []
   actor.statuses = actor.statuses.filter((s) => {
     if (s.turnsLeft === null) return true
+    // A status gained during this very turn keeps its full duration through it (D-077).
+    if (s.fresh) {
+      delete s.fresh
+      return true
+    }
     s.turnsLeft -= 1
     if (s.turnsLeft <= 0) {
       expired.push(s.id)
@@ -242,8 +271,18 @@ export function countDownStatuses(actor: Actor): Status[] {
     return true
   })
   actor.modifiers = actor.modifiers.filter((m) => {
+    if (m.fresh) {
+      delete m.fresh
+      return true
+    }
     m.turnsLeft -= 1
     return m.turnsLeft > 0
+  })
+  // Persistent hooks with a duration (Intercept 2 turns, an Antidote's 3) count down the same way.
+  actor.hooks = actor.hooks.filter((h) => {
+    if (h.turnsLeft === null) return true
+    h.turnsLeft -= 1
+    return h.turnsLeft > 0
   })
   return expired
 }

@@ -1,0 +1,64 @@
+{
+  "id": "ranger-trailblaze",
+  "classId": "ranger",
+  "school": "pathfinder",
+  "tier": 1,
+  "name": "Trailblaze",
+  "description": "In combat: allies +10 Speed for 2 turns. In the corridor: the next room's ambush roll −10%.",
+  "type": "active",
+  "cost": 8,
+  "weight": 800,
+  "target": "allAllies",
+  "effects": [
+    {
+      "kind": "buffStat",
+      "duration": 2,
+      "stat": "speed",
+      "amount": 10
+    },
+    {
+      "kind": "custom",
+      "customId": "next-room-ambush-percent",
+      "percent": -10,
+      "target": "room",
+      "note": "corridor use: the next room’s ambush roll is shifted by percent"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "+15 Speed; −15% ambush.",
+    "effects": [
+      {
+        "kind": "buffStat",
+        "duration": 2,
+        "stat": "speed",
+        "amount": 15
+      },
+      {
+        "kind": "custom",
+        "customId": "next-room-ambush-percent",
+        "percent": -15,
+        "target": "room"
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "mobility",
+    "scouting"
+  ],
+  "xpTags": [
+    "perception",
+    "agility"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 45
+  }
+}

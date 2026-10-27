@@ -1,0 +1,53 @@
+{
+  "id": "arcanist-ice-wall",
+  "classId": "arcanist",
+  "school": "rime",
+  "tier": 2,
+  "name": "Ice Wall",
+  "description": "A wall with HP equal to 25% of your max HP absorbs melee hits aimed at the party’s front row until it breaks or 2 turns pass; an enemy that strikes it is Chilled 1 turn.",
+  "type": "active",
+  "cost": 18,
+  "weight": 1000,
+  "target": "partyFront",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "ice-wall",
+      "percent": 25,
+      "duration": 2,
+      "status": "chill",
+      "note": "a wall with HP = percent% of the caster’s max HP absorbs melee hits aimed at the party’s front row for `duration` turns or until broken; a melee attacker that strikes it gets `status` 1"
+    }
+  ],
+  "prerequisiteId": "arcanist-frost-floor",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Wall HP 35%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "ice-wall",
+        "percent": 35,
+        "duration": 2,
+        "status": "chill"
+      }
+    ]
+  },
+  "tags": [
+    "shield",
+    "aoe",
+    "control"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "defend",
+    "priority": 55
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "id": "iron-breastplate",
+  "name": "Iron Breastplate",
+  "slot": "chest",
+  "kind": "armor",
+  "grade": "D",
+  "materialLadder": "metal",
+  "materialRung": 2,
+  "weaponType": null,
+  "armorFamily": "plate",
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "defense": 14,
+    "hp": 18,
+    "stamina": 7
+  },
+  "requirements": {
+    "strength": 16,
+    "wisdom": 0
+  },
+  "affixSlots": 1,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 5,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1.88,
+  "value": 380,
+  "classLock": [
+    "warden"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "armor-plate-chest-01",
+    "tintPrimary": "#8a8f98",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "iron"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "id": "mirrored",
+  "name": "Mirrored",
+  "affixClass": "defensive",
+  "rule": "Starts with two decoys (same nameplate, 10% HP, 0 damage) in the other row; the first hit on a decoy pops it.",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "decoys",
+      "amount": 2,
+      "percent": 10,
+      "target": "self",
+      "note": "amount decoys with the champion's nameplate and percent of its max HP, 0 damage, placed in the other row; any hit pops one"
+    }
+  ],
+  "hpMultiplier": 3,
+  "goldMultiplier": 3,
+  "xpClassBonus": 2,
+  "floorMin": 3,
+  "tell": null,
+  "excludesElement": false
+}

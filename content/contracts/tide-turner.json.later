@@ -1,0 +1,26 @@
+{
+  "id": "tide-turner",
+  "name": "Tide-turner",
+  "description": "Kill Sister Naesa without the tide reaching step 4.",
+  "cadence": "weekly",
+  "kind": "kill",
+  "target": {
+    "monsterId": "sister-naesa",
+    "dungeonId": "gravehollow-keep",
+    "zoneId": "the-drowned-vault",
+    "count": 1,
+    "condition": "tide-below-step-4"
+  },
+  "reward": {
+    "goldR": 1.5,
+    "keys": [
+      {
+        "kind": "grand",
+        "amount": 1
+      }
+    ],
+    "chestId": "standard-skill-tome",
+    "items": []
+  },
+  "band": 3
+}

@@ -1,0 +1,63 @@
+{
+  "id": "blade-execute",
+  "classId": "blade",
+  "school": "executioner",
+  "tier": 2,
+  "name": "Execute",
+  "description": "1.7× Slash to a front-row enemy; against a target below 30% HP, 3.4×.",
+  "type": "active",
+  "cost": 16,
+  "weight": 1400,
+  "target": "enemyFront",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1.7,
+      "damageType": "slash",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "custom",
+      "customId": "execute-multiplier-below-hp",
+      "multiplier": 3.4,
+      "damageType": "slash",
+      "percent": 30,
+      "note": "the damage line uses multiplier instead when the target is under percent% HP"
+    }
+  ],
+  "prerequisiteId": "blade-cleaving-blow",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "requirements": {
+    "weaponTypes": [
+      "greatsword",
+      "greataxe"
+    ]
+  },
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Threshold 35%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "execute-multiplier-below-hp",
+        "multiplier": 3.4,
+        "damageType": "slash",
+        "percent": 35
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget"
+  ],
+  "xpTags": [
+    "strength"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 65
+  }
+}

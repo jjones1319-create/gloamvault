@@ -1,0 +1,22 @@
+{
+  "id": "bank-run",
+  "name": "Bank Run",
+  "description": "Return to town with at least 1.5 R of unbanked gold from one delve.",
+  "cadence": "daily",
+  "kind": "collect",
+  "target": {
+    "goldR": 1.5
+  },
+  "reward": {
+    "goldR": 0.3,
+    "keys": [
+      {
+        "kind": "standard",
+        "amount": 1
+      }
+    ],
+    "chestId": null,
+    "items": []
+  },
+  "band": null
+}

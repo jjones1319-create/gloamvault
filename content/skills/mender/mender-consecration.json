@@ -1,0 +1,59 @@
+{
+  "id": "mender-consecration",
+  "classId": "mender",
+  "school": "sanctity",
+  "tier": 1,
+  "name": "Consecration",
+  "description": "Holy skills +8%; your mace or censer basic attack deals an extra 0.3× spell Attack as Holy.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "school-damage-percent",
+      "percent": 8,
+      "target": "self",
+      "note": "skills of this skill’s school (Sanctity: Holy) deal +percent%"
+    },
+    {
+      "kind": "custom",
+      "customId": "basic-attack-extra-spell-damage",
+      "multiplier": 0.3,
+      "damageType": "holy",
+      "target": "self",
+      "note": "the holder’s basic attack deals an extra multiplier × spell Attack as damageType"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Extra 0.5×.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "basic-attack-extra-spell-damage",
+        "multiplier": 0.5,
+        "damageType": "holy",
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff"
+  ],
+  "xpTags": [
+    "wisdom",
+    "strength"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 0
+  }
+}

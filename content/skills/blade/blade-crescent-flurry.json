@@ -1,0 +1,76 @@
+{
+  "id": "blade-crescent-flurry",
+  "classId": "blade",
+  "school": "iron-dance",
+  "tier": 3,
+  "name": "Crescent Flurry",
+  "description": "Two hits of 0.6× Slash to every front-row enemy (1.2× each).",
+  "type": "active",
+  "cost": 20,
+  "weight": 800,
+  "target": "enemyFront",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 0.6,
+      "damageType": "slash",
+      "target": "enemyRow",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "damage",
+      "multiplier": 0.6,
+      "damageType": "slash",
+      "target": "enemyRow",
+      "scalesWith": "strength"
+    }
+  ],
+  "prerequisiteId": "blade-flurry",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "requirements": {
+    "dualWield": true
+  },
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Three hits.",
+    "effects": [
+      {
+        "kind": "damage",
+        "multiplier": 0.6,
+        "damageType": "slash",
+        "target": "enemyRow",
+        "scalesWith": "strength",
+        "note": "Mastery restates every hit: three of 0.6× to each"
+      },
+      {
+        "kind": "damage",
+        "multiplier": 0.6,
+        "damageType": "slash",
+        "target": "enemyRow",
+        "scalesWith": "strength"
+      },
+      {
+        "kind": "damage",
+        "multiplier": 0.6,
+        "damageType": "slash",
+        "target": "enemyRow",
+        "scalesWith": "strength"
+      }
+    ]
+  },
+  "tags": [
+    "aoe"
+  ],
+  "xpTags": [
+    "strength",
+    "agility"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 60
+  }
+}

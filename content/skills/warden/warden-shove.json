@@ -1,0 +1,61 @@
+{
+  "id": "warden-shove",
+  "classId": "warden",
+  "school": "bulwark",
+  "tier": 2,
+  "name": "Shove",
+  "description": "1.4× Blunt; swaps the target with an enemy in the other row (pulls a spitter forward, pushes a bruiser back); +200 energy push-back.",
+  "type": "active",
+  "cost": 14,
+  "weight": 1000,
+  "target": "enemyFront",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1.4,
+      "damageType": "blunt",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "rowSwap",
+      "note": "the target changes places with an enemy in the other row"
+    },
+    {
+      "kind": "timeline",
+      "energy": -200
+    }
+  ],
+  "prerequisiteId": "warden-shield-slam",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "requirements": {
+    "shield": true
+  },
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Daze 40% on the swapped-in enemy too.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "daze-swapped-in-enemy",
+        "status": "daze",
+        "chance": 40
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "control"
+  ],
+  "xpTags": [
+    "strength",
+    "endurance"
+  ],
+  "aiHints": {
+    "role": "control",
+    "priority": 55
+  }
+}

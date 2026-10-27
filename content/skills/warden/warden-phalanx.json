@@ -1,0 +1,75 @@
+{
+  "id": "warden-phalanx",
+  "classId": "warden",
+  "school": "vanguard",
+  "tier": 3,
+  "name": "Phalanx",
+  "description": "Front-row allies gain Shield = 10% of your max HP and +15 Defense for 2 turns; you enter Counter Stance.",
+  "type": "active",
+  "cost": 22,
+  "weight": 1000,
+  "target": "partyFront",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "shield-allies-percent-of-own-max-hp",
+      "duration": 2,
+      "percent": 10,
+      "target": "partyFront",
+      "note": "every front-row ally gains Shield = 10% of the Warden’s max HP"
+    },
+    {
+      "kind": "buffStat",
+      "duration": 2,
+      "stat": "defense",
+      "amount": 15,
+      "target": "partyFront"
+    },
+    {
+      "kind": "custom",
+      "customId": "counter-stance",
+      "multiplier": 1,
+      "amount": 1,
+      "target": "self",
+      "note": "as Counter Stance: the first melee attacker to hit you before your next turn takes a 1.0× counter-hit"
+    }
+  ],
+  "prerequisiteId": "warden-lockstep",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "3 turns.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "shield-allies-percent-of-own-max-hp",
+        "duration": 3,
+        "percent": 10,
+        "target": "partyFront"
+      },
+      {
+        "kind": "buffStat",
+        "duration": 3,
+        "stat": "defense",
+        "amount": 15,
+        "target": "partyFront"
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "shield",
+    "buff"
+  ],
+  "xpTags": [
+    "endurance"
+  ],
+  "aiHints": {
+    "role": "defend",
+    "priority": 55
+  }
+}

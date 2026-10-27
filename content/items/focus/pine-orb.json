@@ -1,0 +1,48 @@
+{
+  "id": "pine-orb",
+  "name": "Pine Orb",
+  "slot": "offHand",
+  "kind": "focus",
+  "grade": "F",
+  "materialLadder": "wood",
+  "materialRung": 0,
+  "weaponType": "focus",
+  "armorFamily": null,
+  "hands": 1,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "attackSpell": 4,
+    "mana": 5
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 8
+  },
+  "affixSlots": 0,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 3,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1.33,
+  "value": 90,
+  "classLock": [
+    "arcanist"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "focus-orb-01",
+    "tintPrimary": "#a0824a",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "copper"
+  }
+}

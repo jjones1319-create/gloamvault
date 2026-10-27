@@ -1,0 +1,55 @@
+{
+  "id": "moss-tortoise",
+  "name": "Moss Tortoise",
+  "speciesFamilyId": "capfolk-and-cave-beasts",
+  "gradeBand": {
+    "min": "C",
+    "max": "B"
+  },
+  "trait": {
+    "id": "living-wall",
+    "name": "Living Wall",
+    "description": "In Guard it intercepts 10% more of the hits aimed at the owner; grows as it stands in the way.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "pet-intercept-bonus",
+        "percent": 10,
+        "target": "self",
+        "note": "added to the Guard stance's intercept chance (03 §9: 30%, so 40%)"
+      }
+    ],
+    "growsBy": "endurance"
+  },
+  "actives": [
+    {
+      "skillId": "pet-moss-tortoise-shell-bash",
+      "unlockLevel": 5
+    },
+    {
+      "skillId": "pet-moss-tortoise-bulwark",
+      "unlockLevel": 15
+    }
+  ],
+  "stamina": 30,
+  "baseStats": {
+    "hp": 1,
+    "attackPhys": 0.9,
+    "defense": 1,
+    "speed": 1
+  },
+  "roleLean": "guard",
+  "visual": {
+    "baseMesh": "tortoise",
+    "palette": [
+      "#4e6b3a",
+      "#7fa35a",
+      "#5c4a3a"
+    ]
+  },
+  "eggSource": {
+    "chestBand": "C",
+    "familyId": "capfolk-and-cave-beasts"
+  },
+  "creationChoice": false
+}

@@ -1,0 +1,65 @@
+{
+  "id": "shade-throat-cut",
+  "classId": "shade",
+  "school": "shadow",
+  "tier": 2,
+  "name": "Throat Cut",
+  "description": "1.3× Pierce to a front-row enemy; Silence 2 turns (no skills); +50% damage against a Dazed target.",
+  "type": "active",
+  "cost": 15,
+  "weight": 800,
+  "target": "enemyFront",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1.3,
+      "damageType": "pierce"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "silence",
+      "duration": 2
+    },
+    {
+      "kind": "custom",
+      "customId": "damage-bonus-vs-status",
+      "status": "daze",
+      "percent": 50,
+      "note": "this skill’s damage is +percent% against a target under `status`"
+    }
+  ],
+  "prerequisiteId": "shade-backstab",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "requirements": {
+    "weaponTypes": [
+      "dagger"
+    ]
+  },
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Silence 3 turns.",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "silence",
+        "duration": 3
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "control"
+  ],
+  "xpTags": [
+    "agility",
+    "perception"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 60
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "id": "ranger-quarry",
+  "classId": "ranger",
+  "school": "marksman",
+  "tier": 2,
+  "name": "Quarry",
+  "description": "+10% damage and +10% Crit Rate against Marked targets; killing a Marked target refunds the Mark's Stamina and grants +10 Momentum.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "damage-percent-vs-status",
+      "status": "mark",
+      "percent": 10,
+      "target": "self",
+      "note": "your damage to targets holding the status +percent"
+    },
+    {
+      "kind": "custom",
+      "customId": "crit-rate-vs-status",
+      "status": "mark",
+      "amount": 10,
+      "target": "self",
+      "note": "your Crit Rate against targets holding the status +amount points"
+    },
+    {
+      "kind": "custom",
+      "customId": "kill-marked-refund-and-momentum",
+      "status": "mark",
+      "amount": 10,
+      "target": "self",
+      "note": "a kill on a target holding the status refunds Hunter's Mark's cost and gives amount Momentum"
+    }
+  ],
+  "prerequisiteId": "ranger-hunters-mark",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "+15% / +15%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "damage-percent-vs-status",
+        "status": "mark",
+        "percent": 15,
+        "target": "self"
+      },
+      {
+        "kind": "custom",
+        "customId": "crit-rate-vs-status",
+        "status": "mark",
+        "amount": 15,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff"
+  ],
+  "xpTags": [
+    "perception"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 0
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "id": "warden-brace",
+  "classId": "warden",
+  "school": "bulwark",
+  "tier": 1,
+  "name": "Brace",
+  "description": "Fortify (+20% Defense) 2 turns; Block +20% until your next turn; +10 Momentum.",
+  "type": "active",
+  "cost": 8,
+  "weight": 800,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "applyStatus",
+      "status": "fortify",
+      "duration": 2
+    },
+    {
+      "kind": "buffStat",
+      "duration": 1,
+      "stat": "block",
+      "amount": 20,
+      "note": "until your next turn"
+    },
+    {
+      "kind": "momentum",
+      "amount": 10
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Also Fortifies the lowest-HP back-row ally.",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "fortify",
+        "duration": 2,
+        "target": "allyLowest",
+        "note": "the sheet says the lowest-HP back-row ally; allyLowest is the DSL's nearest target"
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "shield",
+    "momentum"
+  ],
+  "xpTags": [
+    "endurance"
+  ],
+  "aiHints": {
+    "role": "defend",
+    "priority": 40
+  }
+}

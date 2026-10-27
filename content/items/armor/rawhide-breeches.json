@@ -1,0 +1,50 @@
+{
+  "id": "rawhide-breeches",
+  "name": "Rawhide Breeches",
+  "slot": "legs",
+  "kind": "armor",
+  "grade": "F",
+  "materialLadder": "hide",
+  "materialRung": 0,
+  "weaponType": null,
+  "armorFamily": "leather",
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "defense": 3,
+    "hp": 2,
+    "speed": 2
+  },
+  "requirements": {
+    "strength": 7,
+    "wisdom": 0
+  },
+  "affixSlots": 0,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 3,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 0.8,
+  "value": 105,
+  "classLock": [
+    "ranger",
+    "shade"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "armor-leather-legs-01",
+    "tintPrimary": "#a66a48",
+    "tintSecondary": "#3b2a1e",
+    "trimMetal": "copper"
+  }
+}

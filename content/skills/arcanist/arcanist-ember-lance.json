@@ -1,0 +1,53 @@
+{
+  "id": "arcanist-ember-lance",
+  "classId": "arcanist",
+  "school": "evocation",
+  "tier": 1,
+  "name": "Ember Lance",
+  "description": "1.4× Fire to one enemy in either row; Burn 3 turns.",
+  "type": "active",
+  "cost": 10,
+  "weight": 1000,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1.4,
+      "damageType": "fire"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "burn",
+      "duration": 3
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Burn 4 turns.",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "burn",
+        "duration": 4
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "dot",
+    "reach"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 65
+  }
+}

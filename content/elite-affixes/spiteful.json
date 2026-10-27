@@ -1,0 +1,22 @@
+{
+  "id": "spiteful",
+  "name": "Spiteful",
+  "affixClass": "offensive",
+  "rule": "On death it bursts: Blunt ×1.2 of its Attack to every front-row hero plus its family's signature element status (Vermin Poison, Dead Curse, Tidebound Chill …). A 1-turn tell: it swells.",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "death-burst",
+      "multiplier": 1.2,
+      "damageType": "blunt",
+      "target": "partyFront",
+      "note": "on the champion's death: Attack × multiplier of damageType to the target row, then the champion's family signature status (06 §1: cellar-vermin poison, restless-dead curse, tidebound chill)"
+    }
+  ],
+  "hpMultiplier": 3,
+  "goldMultiplier": 3,
+  "xpClassBonus": 2,
+  "floorMin": 3,
+  "tell": "It swells for one turn before it dies.",
+  "excludesElement": false
+}

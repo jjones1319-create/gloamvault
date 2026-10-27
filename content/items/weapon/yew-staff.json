@@ -1,0 +1,49 @@
+{
+  "id": "yew-staff",
+  "name": "Yew Staff",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "C",
+  "materialLadder": "wood",
+  "materialRung": 3,
+  "weaponType": "staff",
+  "armorFamily": null,
+  "hands": 2,
+  "damageType": "fire",
+  "weight": 1000,
+  "baseStats": {
+    "attackSpell": 34,
+    "mana": 25
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 13
+  },
+  "affixSlots": 2,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 6,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 2.6,
+  "value": 900,
+  "classLock": [
+    "arcanist",
+    "mender"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-staff-01",
+    "tintPrimary": "#7a5a3a",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "steel"
+  }
+}

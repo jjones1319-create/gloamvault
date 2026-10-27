@@ -1,0 +1,165 @@
+{
+  "id": "cel-t-gallery",
+  "zoneId": "the-cellars",
+  "footprint": {
+    "w": 3,
+    "h": 1
+  },
+  "doors": [
+    {
+      "side": "west",
+      "offset": 0
+    },
+    {
+      "side": "east",
+      "offset": 0
+    }
+  ],
+  "kinds": [
+    "trapGauntlet",
+    "fight"
+  ],
+  "camera": {
+    "position": [
+      0,
+      10.3,
+      -19.4
+    ],
+    "lookAt": [
+      0,
+      1,
+      0
+    ],
+    "fov": 36
+  },
+  "props": [
+    {
+      "meshId": "cel_beam_timber",
+      "position": [
+        -8,
+        3.5,
+        0
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cel_beam_timber",
+      "position": [
+        0,
+        3.5,
+        0
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cel_beam_timber",
+      "position": [
+        8,
+        3.5,
+        0
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cel_pillar_brick",
+      "position": [
+        -4,
+        0,
+        -3.5
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cel_pillar_brick",
+      "position": [
+        -4,
+        0,
+        3.5
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cel_pillar_brick",
+      "position": [
+        4,
+        0,
+        -3.5
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cel_pillar_brick",
+      "position": [
+        4,
+        0,
+        3.5
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "shr_trap_plate",
+      "position": [
+        -8,
+        0,
+        0
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "shr_trap_plate",
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "shr_trap_plate",
+      "position": [
+        8,
+        0,
+        0
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cel_cage_hanging",
+      "position": [
+        0,
+        2.5,
+        -3.2
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "shr_torch_sconce",
+      "position": [
+        -11.9,
+        2,
+        0
+      ],
+      "rotationY": 90
+    },
+    {
+      "meshId": "shr_torch_sconce",
+      "position": [
+        11.9,
+        2,
+        0
+      ],
+      "rotationY": -90
+    },
+    {
+      "meshId": "shr_torch_sconce",
+      "position": [
+        0,
+        2,
+        -3.9
+      ],
+      "rotationY": 0
+    }
+  ],
+  "triBudget": 30000,
+  "drawCallBudget": 60
+}

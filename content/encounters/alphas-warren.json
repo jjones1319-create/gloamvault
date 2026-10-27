@@ -1,0 +1,25 @@
+{
+  "id": "alphas-warren",
+  "tableId": "cellars-c",
+  "dungeonId": "gravehollow-keep",
+  "floorBand": {
+    "min": 2,
+    "max": 3
+  },
+  "name": "Alpha's Warren",
+  "composition": [
+    {
+      "monsterId": "warren-alpha",
+      "count": 1,
+      "row": "front"
+    },
+    {
+      "monsterId": "giant-rat",
+      "count": 3,
+      "row": "front"
+    }
+  ],
+  "weight": 12,
+  "ambushModifier": 15,
+  "eliteAllowed": true
+}

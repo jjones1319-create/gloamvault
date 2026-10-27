@@ -1,0 +1,55 @@
+{
+  "id": "arcanist-glacier-spike",
+  "classId": "arcanist",
+  "school": "rime",
+  "tier": 2,
+  "name": "Glacier Spike",
+  "description": "1.9× Frost to one enemy in either row; Chill 2 turns, and a target already Chilled is Frozen at once. Heavy cast.",
+  "type": "active",
+  "cost": 16,
+  "weight": 1400,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1.9,
+      "damageType": "frost"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "chill",
+      "duration": 2,
+      "note": "a second Chill becomes Freeze 1 by the status rule (chill.upgradesTo); bosses take Chill only (03 §3.5)"
+    }
+  ],
+  "prerequisiteId": "arcanist-frostbolt",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "2.1×.",
+    "effects": [
+      {
+        "kind": "damage",
+        "multiplier": 2.1,
+        "damageType": "frost"
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "control",
+    "reach"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 70
+  }
+}

@@ -1,0 +1,124 @@
+{
+  "id": "draconid",
+  "name": "Draconid",
+  "attributeMods": {
+    "endurance": 2,
+    "strength": 1,
+    "willpower": 1,
+    "agility": -1,
+    "luck": -1
+  },
+  "traits": [
+    {
+      "id": "draconid-scales",
+      "name": "Scales",
+      "description": "+8 natural Defense as a twelfth, unremovable armor piece with its own item level 1–10 (XP from hits absorbed, 2 × D per hit): +2% per level, affinity lines at 3 / 6 / 9 (+5% reduction vs the family absorbed most), level 10 Awakened: +12 Defense and the Frost weakness softens to ×1.15. No durability.",
+      "rule": {
+        "naturalArmorBase": 8
+      }
+    },
+    {
+      "id": "draconid-breath",
+      "name": "Breath",
+      "description": "Innate, once per fight, weight 1,000, no pool cost: a Fire cone for 1.0 × Attack (physical or spell, whichever is higher) to every enemy in the front row, applying Burn. Ranks by use like a skill (10 × D per use); Mastery line open.",
+      "effects": [
+        {
+          "kind": "custom",
+          "customId": "species-breath",
+          "multiplier": 1,
+          "damageType": "fire",
+          "status": "burn",
+          "target": "enemyFront",
+          "note": "an innate action outside the loadout: once per fight, weight 1000, cost 0; Attack = max(attackPhys, attackSpell); ranks by use (10 × D per use) with the +4%/rank curve; Mastery line open"
+        }
+      ]
+    },
+    {
+      "id": "draconid-fireblood",
+      "name": "Fireblood",
+      "description": "Fire damage ×0.50; immune to Burn.",
+      "rule": {
+        "resist": {
+          "fire": 0.5
+        },
+        "immunities": [
+          "burn"
+        ]
+      }
+    },
+    {
+      "id": "draconid-dark-steady-aim",
+      "name": "Dark-steady Aim",
+      "description": "As the Orc: ignores the hero Accuracy penalty in Dark and Pitch light.",
+      "rule": {
+        "darkAccuracyImmune": true
+      }
+    },
+    {
+      "id": "draconid-cold-blooded",
+      "name": "Cold-blooded",
+      "description": "Frost damage ×1.25 (Chill and Freeze apply normally); −10% to all XP; −5 base Speed.",
+      "rule": {
+        "weak": {
+          "frost": 1.25
+        },
+        "xpMultiplier": 0.9,
+        "speedBase": 95
+      }
+    }
+  ],
+  "restrictions": [],
+  "senses": {
+    "darkvision": false
+  },
+  "body": {
+    "heightM": 1.92,
+    "shapeKeys": [
+      "spc_draconid_ridge"
+    ],
+    "boneScales": {
+      "root": 1.06,
+      "neck": 1.12,
+      "head": 1,
+      "chest": 1.08,
+      "upperChest": 1.08,
+      "shoulder": 1.05,
+      "lowerLeg": 0.97,
+      "hand": 1.08,
+      "foot": 1.1
+    },
+    "parts": [
+      "spc_draconid_tail",
+      "spc_draconid_horns",
+      "spc_draconid_crest",
+      "spc_draconid_claws_hand",
+      "spc_draconid_claws_foot"
+    ],
+    "skinTones": [
+      "#b8432e",
+      "#3f7d6a",
+      "#4b4e5c"
+    ],
+    "facePresets": 3,
+    "gearVariants": [
+      "helmet",
+      "chest",
+      "legs",
+      "boots",
+      "gloves"
+    ]
+  },
+  "creationBlurb": "The scaleborn. Armored skin that grows, and one breath of fire per fight.",
+  "chips": {
+    "pros": [
+      "Living armor",
+      "Fire breath",
+      "Burn immune"
+    ],
+    "cons": [
+      "Frost ×1.25",
+      "−10% XP",
+      "Slow"
+    ]
+  }
+}

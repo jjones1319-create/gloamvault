@@ -1,0 +1,54 @@
+{
+  "id": "deep",
+  "name": "Deep",
+  "position": "prefix",
+  "lines": [
+    {
+      "bandMin": "F",
+      "bandMax": "D",
+      "effect": {
+        "kind": "custom",
+        "customId": "max-pool-flat",
+        "target": "self",
+        "note": "+pool: the rolled value is flat points of the wearer's own pool (Stamina or Mana)"
+      },
+      "min": 3,
+      "max": 5
+    },
+    {
+      "bandMin": "C",
+      "bandMax": "A",
+      "effect": {
+        "kind": "custom",
+        "customId": "max-pool-flat",
+        "target": "self",
+        "note": "+pool: the rolled value is flat points of the wearer's own pool (Stamina or Mana)"
+      },
+      "min": 5,
+      "max": 10
+    },
+    {
+      "bandMin": "S",
+      "bandMax": "God",
+      "effect": {
+        "kind": "custom",
+        "customId": "max-pool-flat",
+        "target": "self",
+        "note": "+pool: the rolled value is flat points of the wearer's own pool (Stamina or Mana)"
+      },
+      "min": 10,
+      "max": 20
+    }
+  ],
+  "slots": [
+    "mainHand",
+    "offHand",
+    "chest",
+    "ring",
+    "talisman"
+  ],
+  "weight": 4,
+  "tags": [
+    "pool"
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "id": "shade-wraith-step",
+  "classId": "shade",
+  "school": "shadow",
+  "tier": 3,
+  "name": "Wraith-step",
+  "description": "Veil 2 turns that your own Poison ticks do not break; your next attack is Shadow element and applies Wither (−50% healing) for 2 turns. Monster technique: Insights only while a wraith uses the move (the wraith arrives with the Crypts in Phase 7).",
+  "type": "active",
+  "cost": 22,
+  "weight": 800,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "applyStatus",
+      "status": "veil",
+      "duration": 2
+    },
+    {
+      "kind": "custom",
+      "customId": "veil-survives-own-dots",
+      "target": "self",
+      "note": "the Veil this skill applies is not ended by the holder’s own DoT ticks"
+    },
+    {
+      "kind": "custom",
+      "customId": "next-attacks-element",
+      "damageType": "shadow",
+      "status": "wither",
+      "duration": 2,
+      "amount": 1,
+      "target": "self",
+      "note": "the holder’s next `amount` attack(s) deal `damageType` and apply `status` for `duration` turns"
+    }
+  ],
+  "prerequisiteId": "shade-shadowstep",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Also +15 Momentum.",
+    "effects": [
+      {
+        "kind": "momentum",
+        "amount": 15
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "debuff"
+  ],
+  "xpTags": [
+    "agility",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 50
+  }
+}

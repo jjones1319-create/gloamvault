@@ -1,0 +1,57 @@
+{
+  "id": "shade-festering-wound",
+  "classId": "shade",
+  "school": "venom",
+  "tier": 2,
+  "name": "Festering Wound",
+  "description": "1.2× Pierce to a front-row enemy; if the target is Poisoned, also Weaken 2 turns.",
+  "type": "active",
+  "cost": 15,
+  "weight": 800,
+  "target": "enemyFront",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1.2,
+      "damageType": "pierce"
+    },
+    {
+      "kind": "custom",
+      "customId": "apply-if-poison",
+      "status": "weaken",
+      "duration": 2,
+      "note": "applies `status` for `duration` only if the target holds Poison"
+    }
+  ],
+  "prerequisiteId": "shade-toxic-jab",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Weaken 3 turns.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "apply-if-poison",
+        "status": "weaken",
+        "duration": 3
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "dot",
+    "debuff"
+  ],
+  "xpTags": [
+    "agility",
+    "perception"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 60
+  }
+}

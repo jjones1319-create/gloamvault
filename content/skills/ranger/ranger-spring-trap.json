@@ -1,0 +1,73 @@
+{
+  "id": "ranger-spring-trap",
+  "classId": "ranger",
+  "school": "trapper",
+  "tier": 3,
+  "name": "Spring Trap",
+  "description": "1.8× Pierce to one enemy in any row; if the target is Rooted, Grabbed or Webbed, Stun 1 turn; 1 arrow.",
+  "type": "active",
+  "cost": 22,
+  "weight": 1000,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1.8,
+      "damageType": "pierce",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "custom",
+      "customId": "status-if-held",
+      "status": "stun",
+      "duration": 1,
+      "note": "applies only if the target holds Root, Grab, Web or a Net"
+    },
+    {
+      "kind": "custom",
+      "customId": "consume-ammo",
+      "amount": 1,
+      "target": "self",
+      "note": "1 arrow (or bolt)"
+    }
+  ],
+  "prerequisiteId": "ranger-net-throw",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "requirements": {
+    "weaponTypes": [
+      "bow",
+      "shortbow",
+      "longbow",
+      "crossbow"
+    ]
+  },
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "2.2×.",
+    "effects": [
+      {
+        "kind": "damage",
+        "multiplier": 2.2,
+        "damageType": "pierce",
+        "scalesWith": "strength"
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "control",
+    "reach"
+  ],
+  "xpTags": [
+    "perception",
+    "agility"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 65
+  }
+}

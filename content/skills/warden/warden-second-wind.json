@@ -1,0 +1,56 @@
+{
+  "id": "warden-second-wind",
+  "classId": "warden",
+  "school": "warcry",
+  "tier": 2,
+  "name": "Second Wind",
+  "description": "Whenever you shout, allies below 50% HP gain Regen 5% max HP for 2 turns.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "regen-allies-below-hp-on-shout",
+      "status": "regen",
+      "duration": 2,
+      "amount": 50,
+      "percent": 5,
+      "target": "allAllies",
+      "note": "after each Warcry active: allies under amount% HP gain Regen percent% max HP for duration turns"
+    }
+  ],
+  "prerequisiteId": "warden-rallying-shout",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Threshold 70%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "regen-allies-below-hp-on-shout",
+        "status": "regen",
+        "duration": 2,
+        "amount": 70,
+        "percent": 5,
+        "target": "allAllies"
+      }
+    ]
+  },
+  "tags": [
+    "heal",
+    "buff"
+  ],
+  "xpTags": [
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "heal",
+    "priority": 0
+  }
+}

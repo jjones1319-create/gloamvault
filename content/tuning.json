@@ -145,6 +145,12 @@
       "momentum": 10,
       "poolRestorePercent": 10
     },
+    "partBreak": {
+      "hpPercentOfMaxInOneHit": {
+        "value": 6,
+        "note": "Part break (03 §6.3, 06 §1): one blow of at least this % of max HP breaks the marked limb once per fight; its effect applies and the rare-part roll doubles. A limb effect naming a damage type breaks only to it (D-071)."
+      }
+    },
     "elements": {
       "resistMultiplier": 0.5,
       "weakMultiplier": 1.5,
@@ -394,7 +400,23 @@
     },
     "wisdomPercentPerPoint": 1,
     "humanBonusPercent": 10,
-    "deathCostsXp": false
+    "deathCostsXp": false,
+    "heroLevel": {
+      "xpToNextBase": {
+        "value": 60,
+        "note": "D-082 (James, Accepted): heroes level Final Fantasy style from battle XP; level N costs base × growth^(N−2) XP (L2 60, L5 126, L10 432)."
+      },
+      "xpToNextGrowth": 1.28,
+      "cap": 99,
+      "attributePointsPerLevel": {
+        "value": 1,
+        "note": "D-082: each level adds this many points to the class’s bonus attributes in turn (Blade: Str, Agi, Str …)."
+      },
+      "vitalityEveryLevels": {
+        "value": 2,
+        "note": "D-082: +1 Vitality on every level divisible by this."
+      }
+    }
   },
   "equipment": {
     "source": "03 §6.1–§6.5 (D-008, D-009, D-010, D-031)",
@@ -771,6 +793,12 @@
       "note": "08 §12: every kit holds 2 Small HP Potions, 2 Torches, 1 Repair Kit, 1 Bandage; the class starterKit is a unique id list, so the counts live here (D-069)",
       "small-hp-potion": 2,
       "torch": 2
+    },
+    "shields": {
+      "blockStepPerGrade": {
+        "value": 2,
+        "note": "08 §2.3: a shield’s Block steps +2 pp per grade along its ladder instead of riding the grade multiplier (linter rule 22, D-072)."
+      }
     }
   },
   "skills": {
@@ -973,13 +1001,19 @@
         0.6,
         0.8,
         1,
-        1.2
+        1.6
       ],
       "hp": [
-        0.7,
-        0.85,
+        0.5,
         1,
-        1.15
+        1,
+        1.6
+      ],
+      "damage": [
+        0.8,
+        1,
+        1,
+        1
       ],
       "minCount": 1
     },
@@ -1022,22 +1056,22 @@
       "note": "03 §4.6 open question 1 (Proposed): no hunter on boss floors"
     },
     "monsterBaseline": {
-      "note": "D-061 (Proposed): the per-level baseline a template multiplies (03 §11.2, D-024); 06 gives multipliers only. HP 50+6L, Attack 14+1.5L, Defense 6+L, gold 4+L per monster, XP unit 8+2L per xpClass point",
+      "note": "06 (How to read this file) owns the baseline: HP 40+12L, Attack 8+2L, Defense 2+1.5L, gold 5+3L; the XP unit 8+2L is D-061’s (06 names none). D-078 supersedes D-061’s numbers.",
       "hp": {
-        "base": 50,
-        "perLevel": 6
+        "base": 40,
+        "perLevel": 12
       },
       "attack": {
-        "base": 14,
-        "perLevel": 1.5
+        "base": 8,
+        "perLevel": 2
       },
       "defense": {
-        "base": 6,
-        "perLevel": 1
+        "base": 2,
+        "perLevel": 1.5
       },
       "gold": {
-        "base": 4,
-        "perLevel": 1
+        "base": 5,
+        "perLevel": 3
       },
       "xpUnit": {
         "base": 8,
@@ -1069,7 +1103,7 @@
       "losesUnbankedGold": true,
       "keepsXpItemsInsights": true
     },
-    "retreatTollPercent": 10,
+    "retreatTollPercent": 0,
     "hardcoreDeletesHero": true
   }
 }

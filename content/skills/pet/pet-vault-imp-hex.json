@@ -1,0 +1,41 @@
+{
+  "id": "pet-vault-imp-hex",
+  "classId": "pet",
+  "school": "pet",
+  "tier": 1,
+  "name": "Hex",
+  "description": "Weaken one enemy for 2 turns.",
+  "type": "active",
+  "cost": 10,
+  "weight": 800,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "applyStatus",
+      "status": "weaken",
+      "duration": 2
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "No Mastery line: pet actives do not rank (03 §9).",
+    "effects": []
+  },
+  "tags": [
+    "singleTarget",
+    "debuff"
+  ],
+  "xpTags": [
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "debuff",
+    "priority": 50
+  }
+}

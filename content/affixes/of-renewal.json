@@ -1,0 +1,53 @@
+{
+  "id": "of-renewal",
+  "name": "of Renewal",
+  "position": "suffix",
+  "lines": [
+    {
+      "bandMin": "F",
+      "bandMax": "D",
+      "effect": {
+        "kind": "custom",
+        "customId": "hp-regen-percent",
+        "target": "self",
+        "note": "+HP regen per own turn, percent of max HP"
+      },
+      "min": 1,
+      "max": 1
+    },
+    {
+      "bandMin": "C",
+      "bandMax": "A",
+      "effect": {
+        "kind": "custom",
+        "customId": "hp-regen-percent",
+        "target": "self",
+        "note": "+HP regen per own turn, percent of max HP"
+      },
+      "min": 2,
+      "max": 2
+    },
+    {
+      "bandMin": "S",
+      "bandMax": "God",
+      "effect": {
+        "kind": "custom",
+        "customId": "hp-regen-percent",
+        "target": "self",
+        "note": "+HP regen per own turn, percent of max HP"
+      },
+      "min": 3,
+      "max": 3
+    }
+  ],
+  "slots": [
+    "chest",
+    "ring",
+    "talisman"
+  ],
+  "weight": 2,
+  "tags": [
+    "defensive",
+    "regen"
+  ]
+}

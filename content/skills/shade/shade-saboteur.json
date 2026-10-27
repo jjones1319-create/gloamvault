@@ -1,0 +1,65 @@
+{
+  "id": "shade-saboteur",
+  "classId": "shade",
+  "school": "larceny",
+  "tier": 3,
+  "name": "Saboteur",
+  "description": "Trap Disarm +2; every successful disarm pockets the trap (for Trap Trick); pocketed traps deal +50%.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "trap-disarm-rank-bonus",
+      "amount": 2,
+      "target": "self",
+      "note": "+amount Trap Disarm rank for checks"
+    },
+    {
+      "kind": "custom",
+      "customId": "pocket-trap-on-disarm",
+      "target": "self",
+      "note": "every successful disarm by the holder pockets the trap (Trap Trick’s pocket, up to its hold)"
+    },
+    {
+      "kind": "custom",
+      "customId": "pocketed-trap-damage-percent",
+      "percent": 50,
+      "target": "self",
+      "note": "thrown pocketed traps deal +percent%"
+    }
+  ],
+  "prerequisiteId": "shade-trap-trick",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Disarm failures never trigger on you.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "disarm-failure-safe",
+        "target": "self",
+        "note": "a failed disarm by the holder never triggers the trap on the holder"
+      }
+    ]
+  },
+  "tags": [
+    "utility",
+    "field",
+    "buff"
+  ],
+  "xpTags": [
+    "agility",
+    "perception"
+  ],
+  "aiHints": {
+    "role": "utility",
+    "priority": 0
+  }
+}

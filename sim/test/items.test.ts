@@ -123,7 +123,7 @@ describe('effective lines (03 §6.2 +N, §6.4 bands)', () => {
 
   it('a Broken item contributes nothing', () => {
     const broken = effectiveItemStats(content, t, iron, inst('iron-longsword', { durability: 0, plusN: 5, affixes: [{ affixId: 'of-vigor', value: 14, locked: false }] }))
-    expect(broken).toEqual({ stats: {}, percentStats: {}, attributeBonuses: {}, accuracyPenalty: 0, band: 'broken', statPercent: 0, onHit: [] })
+    expect(broken).toEqual({ stats: {}, percentStats: {}, attributeBonuses: {}, accuracyPenalty: 0, band: 'broken', statPercent: 0, onHit: [], hookLines: [] })
   })
 
   it('affix lines: flat to stats, percent to percentStats, attributes to attributeBonuses, effects to onHit with the rolled magnitude; the band scales the stat lines', () => {

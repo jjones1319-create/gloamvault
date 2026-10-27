@@ -1,0 +1,49 @@
+{
+  "id": "ash-kite-shield",
+  "name": "Ash Kite Shield",
+  "slot": "offHand",
+  "kind": "shield",
+  "grade": "E",
+  "materialLadder": "wood",
+  "materialRung": 1,
+  "weaponType": "shieldKite",
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "block": 27,
+    "defense": 4,
+    "speed": -5
+  },
+  "requirements": {
+    "strength": 12,
+    "wisdom": 0
+  },
+  "affixSlots": 1,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 4,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1.25,
+  "value": 192,
+  "classLock": [
+    "warden"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "shield-kite-shield-01",
+    "tintPrimary": "#c9b58a",
+    "tintSecondary": "#5b4a2f",
+    "trimMetal": "bronze"
+  }
+}

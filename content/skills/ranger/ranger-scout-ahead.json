@@ -1,0 +1,54 @@
+{
+  "id": "ranger-scout-ahead",
+  "classId": "ranger",
+  "school": "pathfinder",
+  "tier": 3,
+  "name": "Scout Ahead",
+  "description": "In the corridor: reveal every adjacent room and the room beyond each (a critical scout). In combat: Mark 1 turn on every enemy.",
+  "type": "active",
+  "cost": 18,
+  "weight": 1000,
+  "target": "allEnemies",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "critical-scout",
+      "target": "room",
+      "note": "corridor use: reveals every adjacent room and the room beyond each, as a critical scout does"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "mark",
+      "duration": 1
+    }
+  ],
+  "prerequisiteId": "ranger-foragers-instinct",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Mark 2 turns.",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "mark",
+        "duration": 2
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "debuff",
+    "scouting"
+  ],
+  "xpTags": [
+    "perception"
+  ],
+  "aiHints": {
+    "role": "debuff",
+    "priority": 55
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "id": "sporeling",
+  "name": "Sporeling",
+  "speciesFamilyId": "spore-touched",
+  "gradeBand": {
+    "min": "C",
+    "max": "B"
+  },
+  "trait": {
+    "id": "mycelial-bloom",
+    "name": "Mycelial Bloom",
+    "description": "Immune to Poison; regrows 2% of its max HP every turn. Grows as it heals.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "pet-status-immune",
+        "status": "poison",
+        "target": "self",
+        "note": "the pet never takes poison"
+      },
+      {
+        "kind": "custom",
+        "customId": "pet-regen-percent",
+        "percent": 2,
+        "target": "self",
+        "note": "heals 2% of the pet's max HP at the start of each of its turns"
+      }
+    ],
+    "growsBy": "vitality"
+  },
+  "actives": [
+    {
+      "skillId": "pet-sporeling-spore-puff",
+      "unlockLevel": 5
+    },
+    {
+      "skillId": "pet-sporeling-regrow",
+      "unlockLevel": 15
+    }
+  ],
+  "stamina": 30,
+  "baseStats": {
+    "hp": 0.9,
+    "attackSpell": 0.8,
+    "defense": 0.8,
+    "speed": 1
+  },
+  "roleLean": "mend",
+  "visual": {
+    "baseMesh": "sporeling",
+    "palette": [
+      "#8c6b4f",
+      "#d9c7a0",
+      "#a9d18e"
+    ]
+  },
+  "eggSource": {
+    "chestBand": "C",
+    "familyId": "spore-touched"
+  },
+  "creationChoice": false
+}

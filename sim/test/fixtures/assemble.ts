@@ -20,13 +20,10 @@ export const fixtureContentDir = path.join(repoRoot, 'sim', 'test', 'fixtures', 
 export const FIXTURE_SKIP_RULES: readonly number[] = [4, 10, 14]
 
 /**
- * Rule failures the fixture carries on purpose and the test asserts are the only ones: the Cellars boss sits on the
- * fixture dungeon's last floor (F3 is the last floor written), so rule 11 reads her as a final boss and asks for
- * three phases; 06 §3.1 gives the zone boss two.
+ * Rule failures the fixture carries on purpose and the test asserts are the only ones. None since D-072: rule 11
+ * reads the boss of a one-zone dungeon's last floor as a zone boss (two phases) and warns instead of failing.
  */
-export const FIXTURE_KNOWN_FAILURES: ReadonlyArray<{ file: string; rule: number; message: RegExp }> = [
-  { file: 'content/monsters/captain-vexa-marrow.json', rule: 11, message: /final boss has 2 phases, expected 3/ },
-]
+export const FIXTURE_KNOWN_FAILURES: ReadonlyArray<{ file: string; rule: number; message: RegExp }> = []
 
 export function assembleFixtureCorpus(): string {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'gloamvault-fixture-'))

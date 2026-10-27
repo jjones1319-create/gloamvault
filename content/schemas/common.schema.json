@@ -13,12 +13,21 @@
     },
     "nullableId": {
       "description": "A content id, or null where the reference is absent.",
-      "anyOf": [{ "$ref": "#/$defs/id" }, { "type": "null" }]
+      "anyOf": [
+        {
+          "$ref": "#/$defs/id"
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "idList": {
       "type": "array",
       "description": "A list of content ids with no repeats.",
-      "items": { "$ref": "#/$defs/id" },
+      "items": {
+        "$ref": "#/$defs/id"
+      },
       "uniqueItems": true
     },
     "eliteAffixId": {
@@ -39,210 +48,857 @@
     "attribute": {
       "type": "string",
       "description": "The eight attributes (§2.1). Luck is never trained.",
-      "enum": ["strength", "agility", "vitality", "endurance", "wisdom", "perception", "willpower", "luck"]
+      "enum": [
+        "strength",
+        "agility",
+        "vitality",
+        "endurance",
+        "wisdom",
+        "perception",
+        "willpower",
+        "luck"
+      ]
     },
     "trainableAttribute": {
       "type": "string",
       "description": "The seven attributes that grow by use (§2.1, §5.2). Luck is never trainable.",
-      "enum": ["strength", "agility", "vitality", "endurance", "wisdom", "perception", "willpower"]
+      "enum": [
+        "strength",
+        "agility",
+        "vitality",
+        "endurance",
+        "wisdom",
+        "perception",
+        "willpower"
+      ]
     },
     "attributeMods": {
       "type": "object",
       "description": "A map of attribute → signed integer modifier. Attributes left out are 0.",
-      "propertyNames": { "$ref": "#/$defs/attribute" },
-      "additionalProperties": { "type": "integer", "minimum": -10, "maximum": 10 }
+      "propertyNames": {
+        "$ref": "#/$defs/attribute"
+      },
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": -10,
+        "maximum": 10
+      }
     },
     "derivedStat": {
       "type": "string",
       "description": "The derived stats the card shows (§2.2). Percent-shaped stats (critRate, critDamage, accuracy, dodge, resistance, fortune, block) are whole percentage points; variance is in hundredths of the damage floor; the rest are flat.",
-      "enum": ["hp", "attackPhys", "attackSpell", "defense", "speed", "stamina", "mana", "momentumGain", "critRate", "critDamage", "accuracy", "dodge", "resistance", "detection", "variance", "fortune", "carry", "block"]
+      "enum": [
+        "hp",
+        "attackPhys",
+        "attackSpell",
+        "defense",
+        "speed",
+        "stamina",
+        "mana",
+        "momentumGain",
+        "critRate",
+        "critDamage",
+        "accuracy",
+        "dodge",
+        "resistance",
+        "detection",
+        "variance",
+        "fortune",
+        "carry",
+        "block"
+      ]
     },
     "derivedStatMap": {
       "type": "object",
       "description": "A map of derived stat → integer value.",
-      "propertyNames": { "$ref": "#/$defs/derivedStat" },
-      "additionalProperties": { "type": "integer" }
+      "propertyNames": {
+        "$ref": "#/$defs/derivedStat"
+      },
+      "additionalProperties": {
+        "type": "integer"
+      }
     },
     "element": {
       "type": "string",
       "description": "The six elements (§3.4).",
-      "enum": ["fire", "frost", "lightning", "poison", "holy", "shadow"]
+      "enum": [
+        "fire",
+        "frost",
+        "lightning",
+        "poison",
+        "holy",
+        "shadow"
+      ]
     },
     "physType": {
       "type": "string",
       "description": "The three physical damage types (§3.4). Armor materials each have a weak type.",
-      "enum": ["slash", "pierce", "blunt"]
+      "enum": [
+        "slash",
+        "pierce",
+        "blunt"
+      ]
     },
     "damageType": {
       "description": "Any damage type: an element or a physical type.",
-      "anyOf": [{ "$ref": "#/$defs/element" }, { "$ref": "#/$defs/physType" }]
+      "anyOf": [
+        {
+          "$ref": "#/$defs/element"
+        },
+        {
+          "$ref": "#/$defs/physType"
+        }
+      ]
     },
     "status": {
       "type": "string",
       "description": "The standard status set (§3.5 rev. 2, 27 rows: the 24 of rev. 1 plus the Holy mark Smite, the Shadow mark Wither and the Shade's Veil state). Each owns its numbers in content/statuses/<id>.json.",
-      "enum": ["bleed", "poison", "burn", "chill", "freeze", "shock", "stun", "daze", "blind", "silence", "taunt", "shield", "regen", "haste", "slow", "weaken", "fortify", "mark", "fear", "grab", "root", "web", "curse", "petrify", "smite", "wither", "veil"]
+      "enum": [
+        "bleed",
+        "poison",
+        "burn",
+        "chill",
+        "freeze",
+        "shock",
+        "stun",
+        "daze",
+        "blind",
+        "silence",
+        "taunt",
+        "shield",
+        "regen",
+        "haste",
+        "slow",
+        "weaken",
+        "fortify",
+        "mark",
+        "fear",
+        "grab",
+        "root",
+        "web",
+        "curse",
+        "petrify",
+        "smite",
+        "wither",
+        "veil"
+      ]
     },
     "grade": {
       "type": "string",
       "description": "The nine grades F → God (§6.2), in ladder order.",
-      "enum": ["F", "E", "D", "C", "B", "A", "S", "SS", "God"]
+      "enum": [
+        "F",
+        "E",
+        "D",
+        "C",
+        "B",
+        "A",
+        "S",
+        "SS",
+        "God"
+      ]
     },
     "difficulty": {
       "type": "string",
       "description": "The three launch presets (§11.2, docs/07-DUNGEONS.md §6.1), in order.",
-      "enum": ["normal", "hard", "nightmare"]
+      "enum": [
+        "normal",
+        "hard",
+        "nightmare"
+      ]
     },
     "weight": {
       "type": "integer",
       "description": "Timeline weight subtracted from the accumulator after an action (§3.1, §3.2): 400 row swap, 600 guard/item, 800 light, 1000 normal, 1400 heavy.",
-      "enum": [400, 600, 800, 1000, 1400]
+      "enum": [
+        400,
+        600,
+        800,
+        1000,
+        1400
+      ]
     },
     "row": {
       "type": "string",
       "description": "A combat row (§3.3). 'either' means the actor or target may be in front or back.",
-      "enum": ["front", "back", "either"]
+      "enum": [
+        "front",
+        "back",
+        "either"
+      ]
     },
     "target": {
       "type": "string",
       "description": "Who an action or effect lands on. enemyFront/enemyBack hit that row; enemyRow hits the whole row of the chosen target; enemyRowBack hits the row behind the chosen target (Skewer's 'single + behind' is two lines: enemy, then enemyRowBack); enemyRandom is a random enemy in any row; allyRow is the whole row of the chosen ally; partyFront/partyBack are the party's own rows; allDowned is every hero at 0 HP within the revive window; fallenAlly is a hero past the window (Rebirth); summon is the acting side's summons; room is an out-of-combat effect on the party's room; downedAlly is a hero at 0 HP within the revive window (§12.1).",
-      "enum": ["self", "ally", "allyLowest", "allAllies", "allyRow", "partyFront", "partyBack", "enemy", "enemyFront", "enemyBack", "enemyRandom", "allEnemies", "enemyRow", "enemyRowBack", "pet", "summon", "downedAlly", "allDowned", "fallenAlly", "room"]
+      "enum": [
+        "self",
+        "ally",
+        "allyLowest",
+        "allAllies",
+        "allyRow",
+        "partyFront",
+        "partyBack",
+        "enemy",
+        "enemyFront",
+        "enemyBack",
+        "enemyRandom",
+        "allEnemies",
+        "enemyRow",
+        "enemyRowBack",
+        "pet",
+        "summon",
+        "downedAlly",
+        "allDowned",
+        "fallenAlly",
+        "room"
+      ]
     },
     "armorFamily": {
       "type": "string",
       "description": "The four armor families (§6.1); each is also a material ladder.",
-      "enum": ["plate", "mail", "leather", "robes"]
+      "enum": [
+        "plate",
+        "mail",
+        "leather",
+        "robes"
+      ]
     },
     "materialLadder": {
       "type": "string",
       "description": "The four material ladders (§6.5): metal (weapons, plate, mail), hide (leather), cloth (robes), wood (bows, staves, shields).",
-      "enum": ["metal", "hide", "cloth", "wood"]
+      "enum": [
+        "metal",
+        "hide",
+        "cloth",
+        "wood"
+      ]
     },
     "slot": {
       "type": "string",
       "description": "The eleven gear slots plus the pet (§6.1). A hero has two ring slots; the slot name is the same for both.",
-      "enum": ["mainHand", "offHand", "helmet", "chest", "legs", "boots", "gloves", "ring", "talisman", "relic", "pet"]
+      "enum": [
+        "mainHand",
+        "offHand",
+        "helmet",
+        "chest",
+        "legs",
+        "boots",
+        "gloves",
+        "ring",
+        "talisman",
+        "relic",
+        "pet"
+      ]
     },
     "weaponType": {
       "type": "string",
       "description": "Weapon and off-hand types (§6.3, docs/08-ITEMS.md §1, docs/04-CLASSES.md). 'bow' is the generic a class list may use to allow both; a species restriction or an item names 'longbow' (2h, heavy draw) or 'shortbow' (2h, light). 'shortSpear' is the 1h spear; 'spear' the 2h reach spear. 'lantern' and 'horn' are Beast Tamer off-hands.",
-      "enum": ["sword", "greatsword", "axe", "greataxe", "mace", "maul", "spear", "shortSpear", "dagger", "bow", "longbow", "shortbow", "crossbow", "staff", "wand", "censer", "whip", "throwingKnife", "shieldBuckler", "shieldKite", "shieldTower", "focus", "lantern", "horn"]
+      "enum": [
+        "sword",
+        "greatsword",
+        "axe",
+        "greataxe",
+        "mace",
+        "maul",
+        "spear",
+        "shortSpear",
+        "dagger",
+        "bow",
+        "longbow",
+        "shortbow",
+        "crossbow",
+        "staff",
+        "wand",
+        "censer",
+        "whip",
+        "throwingKnife",
+        "shieldBuckler",
+        "shieldKite",
+        "shieldTower",
+        "focus",
+        "lantern",
+        "horn"
+      ]
     },
     "role": {
       "type": "string",
       "description": "Monster taxonomy roles (§11.1, §11.3): fodder, armored elite, disabler special, monster, boss, and the floor hunter (§4.5).",
-      "enum": ["fodder", "elite", "special", "monster", "boss", "hunter"]
+      "enum": [
+        "fodder",
+        "elite",
+        "special",
+        "monster",
+        "boss",
+        "hunter"
+      ]
     },
     "size": {
       "type": "string",
       "description": "Monster body size (docs/06-MONSTERS.md §7); drives the 200px readability check, which disablers work and the Halfling's Small trait.",
-      "enum": ["small", "medium", "large", "huge"]
+      "enum": [
+        "small",
+        "medium",
+        "large",
+        "huge"
+      ]
     },
     "stance": {
       "type": "string",
       "description": "Pet stances (§9).",
-      "enum": ["fierce", "guard", "mend", "forage"]
+      "enum": [
+        "fierce",
+        "guard",
+        "mend",
+        "forage"
+      ]
     },
     "fieldSkill": {
       "type": "string",
       "description": "The eight universal field skills (§7.6).",
-      "enum": ["lockpicking", "trapDisarm", "foraging", "fieldRepair", "firstAid", "haggling", "cooking", "cartography"]
+      "enum": [
+        "lockpicking",
+        "trapDisarm",
+        "foraging",
+        "fieldRepair",
+        "firstAid",
+        "haggling",
+        "cooking",
+        "cartography"
+      ]
     },
     "lightBand": {
       "type": "string",
       "description": "Light bands (§4.2): radiant 76–100, dim 51–75, shadowy 26–50, dark 1–25, pitch 0.",
-      "enum": ["radiant", "dim", "shadowy", "dark", "pitch"]
+      "enum": [
+        "radiant",
+        "dim",
+        "shadowy",
+        "dark",
+        "pitch"
+      ]
     },
     "roomKind": {
       "type": "string",
       "description": "Room kinds (§4.6, §11.1). entry, stairs, boss, keyRoom, lockedDoor and secret are placed by the grammar; the rest are rolled by weight.",
-      "enum": ["entry", "fight", "elite", "rest", "merchant", "treasure", "curio", "trapGauntlet", "secret", "stairs", "boss", "keyRoom", "lockedDoor"]
+      "enum": [
+        "entry",
+        "fight",
+        "elite",
+        "rest",
+        "merchant",
+        "treasure",
+        "curio",
+        "trapGauntlet",
+        "secret",
+        "stairs",
+        "boss",
+        "keyRoom",
+        "lockedDoor"
+      ]
     },
     "requirementKind": {
       "type": "string",
       "description": "What a curio choice, a trap reveal, a door or a kit demands (docs/07-DUNGEONS.md §2.4–§2.5): an item in the bag, a field-skill rank, an attribute value, the party's best Detection, a gold stake, a light level, a class or a species in the party.",
-      "enum": ["item", "fieldSkillRank", "attribute", "detection", "gold", "light", "classId", "speciesId"]
+      "enum": [
+        "item",
+        "fieldSkillRank",
+        "attribute",
+        "detection",
+        "gold",
+        "light",
+        "classId",
+        "speciesId"
+      ]
     },
     "requirement": {
       "type": "object",
       "description": "One gate. `id` names the thing by kind: an item, class or species id, a fieldSkill name or an attribute name. `min` is the threshold (rank, attribute value, Detection, light 0–100); `amount` the units consumed (items) or the stake in R (gold). A list of requirements is an AND.",
       "properties": {
-        "kind": { "$ref": "#/$defs/requirementKind" },
+        "kind": {
+          "$ref": "#/$defs/requirementKind"
+        },
         "id": {
           "description": "A content id (item, classId, speciesId), a field skill (fieldSkillRank) or an attribute (attribute).",
-          "anyOf": [{ "$ref": "#/$defs/id" }, { "$ref": "#/$defs/fieldSkill" }, { "$ref": "#/$defs/attribute" }]
+          "anyOf": [
+            {
+              "$ref": "#/$defs/id"
+            },
+            {
+              "$ref": "#/$defs/fieldSkill"
+            },
+            {
+              "$ref": "#/$defs/attribute"
+            }
+          ]
         },
-        "min": { "type": "integer", "description": "Threshold: a rank 1–10, an attribute value, a Detection or a light level.", "minimum": 0 },
-        "amount": { "type": "number", "description": "Units consumed for an item (default 1), or the gold stake in units of R for gold (0.05 = 0.05 R).", "minimum": 0 },
-        "consumed": { "type": "boolean", "description": "For an item: whether taking the choice uses it up (the safe item is consumed, a key is not)." },
-        "note": { "type": "string", "description": "Designer's note; ignored by the sim." }
+        "min": {
+          "type": "integer",
+          "description": "Threshold: a rank 1–10, an attribute value, a Detection or a light level.",
+          "minimum": 0
+        },
+        "amount": {
+          "type": "number",
+          "description": "Units consumed for an item (default 1), or the gold stake in units of R for gold (0.05 = 0.05 R).",
+          "minimum": 0
+        },
+        "consumed": {
+          "type": "boolean",
+          "description": "For an item: whether taking the choice uses it up (the safe item is consumed, a key is not)."
+        },
+        "note": {
+          "type": "string",
+          "description": "Designer's note; ignored by the sim."
+        }
       },
-      "required": ["kind"],
+      "required": [
+        "kind"
+      ],
       "additionalProperties": false,
       "allOf": [
-        { "if": { "properties": { "kind": { "enum": ["item", "classId", "speciesId"] } }, "required": ["kind"] }, "then": { "required": ["id"], "properties": { "id": { "$ref": "#/$defs/id" } } } },
-        { "if": { "properties": { "kind": { "const": "fieldSkillRank" } }, "required": ["kind"] }, "then": { "required": ["id", "min"], "properties": { "id": { "$ref": "#/$defs/fieldSkill" }, "min": { "type": "integer", "minimum": 1, "maximum": 10 } } } },
-        { "if": { "properties": { "kind": { "const": "attribute" } }, "required": ["kind"] }, "then": { "required": ["id", "min"], "properties": { "id": { "$ref": "#/$defs/attribute" } } } },
-        { "if": { "properties": { "kind": { "const": "detection" } }, "required": ["kind"] }, "then": { "required": ["min"] } },
-        { "if": { "properties": { "kind": { "const": "light" } }, "required": ["kind"] }, "then": { "required": ["min"], "properties": { "min": { "$ref": "#/$defs/percent" } } } },
-        { "if": { "properties": { "kind": { "const": "gold" } }, "required": ["kind"] }, "then": { "required": ["amount"] } },
-        { "if": { "properties": { "kind": { "not": { "const": "item" } } }, "required": ["kind"] }, "then": { "not": { "required": ["consumed"] } } }
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "enum": [
+                  "item",
+                  "classId",
+                  "speciesId"
+                ]
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "id"
+            ],
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/id"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "fieldSkillRank"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "id",
+              "min"
+            ],
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/fieldSkill"
+              },
+              "min": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 10
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "attribute"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "id",
+              "min"
+            ],
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/attribute"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "detection"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "min"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "light"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "min"
+            ],
+            "properties": {
+              "min": {
+                "$ref": "#/$defs/percent"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "gold"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "amount"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "not": {
+                  "const": "item"
+                }
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "not": {
+              "required": [
+                "consumed"
+              ]
+            }
+          }
+        }
       ]
     },
     "requirementList": {
       "type": "array",
       "description": "Requirements that must all hold. Empty means none.",
-      "items": { "$ref": "#/$defs/requirement" }
+      "items": {
+        "$ref": "#/$defs/requirement"
+      }
     },
     "rewardKind": {
       "type": "string",
       "description": "What a reward line gives (docs/08-ITEMS.md §11, docs/06-MONSTERS.md §3 first-kill lines, docs/07-DUNGEONS.md §2.5 disarm rewards): a named or grade-rolled item (chest keys are items), a material stack, a Skill Tome, a Divine Shard, flat gold, a permanent Luck point, a title, or a zone Waystone.",
-      "enum": ["item", "material", "tome", "shard", "gold", "luck", "title", "waystone"]
+      "enum": [
+        "item",
+        "material",
+        "tome",
+        "shard",
+        "gold",
+        "luck",
+        "title",
+        "waystone"
+      ]
     },
     "reward": {
       "type": "object",
       "description": "One reward line. `id` is the item, material or skill (tome) id, the title id, or the zone id (waystone); an item line with `grade` and no `id` rolls a random item of that grade; a tome line with no `id` draws the party class's bag at `tier`. `chance` omitted means guaranteed; `difficultyMin` restricts the line to Hard or Nightmare.",
       "properties": {
-        "kind": { "$ref": "#/$defs/rewardKind" },
-        "id": { "$ref": "#/$defs/id" },
-        "amount": { "type": "integer", "description": "Units (materials), gold, shards, Luck points or items; omitted means 1.", "minimum": 1 },
-        "chance": { "$ref": "#/$defs/percent", "description": "Chance the line drops, 0–100; omitted means 100." },
-        "grade": { "$ref": "#/$defs/grade", "description": "For an item line without an id: the grade rolled (the boss's 'one C item'). For a material line it is implied by the id." },
-        "tier": { "type": "integer", "description": "For a tome line without an id: the tier drawn (a boss's 'Tier III Tome').", "minimum": 1, "maximum": 5 },
-        "difficultyMin": { "$ref": "#/$defs/difficulty", "description": "The lowest preset the line applies on; omitted means every difficulty." },
-        "note": { "type": "string", "description": "Designer's note; ignored by the sim." }
+        "kind": {
+          "$ref": "#/$defs/rewardKind"
+        },
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "amount": {
+          "type": "integer",
+          "description": "Units (materials), gold, shards, Luck points or items; omitted means 1.",
+          "minimum": 1
+        },
+        "chance": {
+          "$ref": "#/$defs/percent",
+          "description": "Chance the line drops, 0–100; omitted means 100."
+        },
+        "grade": {
+          "$ref": "#/$defs/grade",
+          "description": "For an item line without an id: the grade rolled (the boss's 'one C item'). For a material line it is implied by the id."
+        },
+        "tier": {
+          "type": "integer",
+          "description": "For a tome line without an id: the tier drawn (a boss's 'Tier III Tome').",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "difficultyMin": {
+          "$ref": "#/$defs/difficulty",
+          "description": "The lowest preset the line applies on; omitted means every difficulty."
+        },
+        "note": {
+          "type": "string",
+          "description": "Designer's note; ignored by the sim."
+        }
       },
-      "required": ["kind"],
+      "required": [
+        "kind"
+      ],
       "additionalProperties": false,
       "allOf": [
-        { "if": { "properties": { "kind": { "const": "item" } }, "required": ["kind"] }, "then": { "anyOf": [{ "required": ["id"] }, { "required": ["grade"] }], "not": { "required": ["tier"] } } },
-        { "if": { "properties": { "kind": { "const": "material" } }, "required": ["kind"] }, "then": { "required": ["id", "amount"], "not": { "anyOf": [{ "required": ["grade"] }, { "required": ["tier"] }] } } },
-        { "if": { "properties": { "kind": { "const": "tome" } }, "required": ["kind"] }, "then": { "anyOf": [{ "required": ["id"] }, { "required": ["tier"] }], "not": { "required": ["grade"] } } },
-        { "if": { "properties": { "kind": { "enum": ["shard", "gold", "luck"] } }, "required": ["kind"] }, "then": { "required": ["amount"], "not": { "anyOf": [{ "required": ["id"] }, { "required": ["grade"] }, { "required": ["tier"] }] } } },
-        { "if": { "properties": { "kind": { "enum": ["title", "waystone"] } }, "required": ["kind"] }, "then": { "required": ["id"], "not": { "anyOf": [{ "required": ["amount"] }, { "required": ["grade"] }, { "required": ["tier"] }] } } }
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "item"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "anyOf": [
+              {
+                "required": [
+                  "id"
+                ]
+              },
+              {
+                "required": [
+                  "grade"
+                ]
+              }
+            ],
+            "not": {
+              "required": [
+                "tier"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "material"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "id",
+              "amount"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "grade"
+                  ]
+                },
+                {
+                  "required": [
+                    "tier"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "tome"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "anyOf": [
+              {
+                "required": [
+                  "id"
+                ]
+              },
+              {
+                "required": [
+                  "tier"
+                ]
+              }
+            ],
+            "not": {
+              "required": [
+                "grade"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "enum": [
+                  "shard",
+                  "gold",
+                  "luck"
+                ]
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "amount"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "id"
+                  ]
+                },
+                {
+                  "required": [
+                    "grade"
+                  ]
+                },
+                {
+                  "required": [
+                    "tier"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "enum": [
+                  "title",
+                  "waystone"
+                ]
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "id"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "amount"
+                  ]
+                },
+                {
+                  "required": [
+                    "grade"
+                  ]
+                },
+                {
+                  "required": [
+                    "tier"
+                  ]
+                }
+              ]
+            }
+          }
+        }
       ]
     },
     "rewardList": {
       "type": "array",
       "description": "Reward lines, each rolled on its own chance. Empty means nothing.",
-      "items": { "$ref": "#/$defs/reward" }
+      "items": {
+        "$ref": "#/$defs/reward"
+      }
     },
     "effectKind": {
       "type": "string",
       "description": "What an effect does. damage/heal/shield scale an Attack by multiplier; applyStatus/removeStatus name a status; buffStat/debuffStat move a derived stat by amount or percent; momentum and pool move those bars; timeline pushes (negative) or pulls (positive) energy on the accumulator; rowSwap moves the target; summon adds a monster by summonId; revive restores a downed ally; light moves the light dial; loot changes gold or drop odds; taunt forces targeting; dispel strips buffs; custom hands off to sim code by customId.",
-      "enum": ["damage", "heal", "shield", "applyStatus", "removeStatus", "buffStat", "debuffStat", "momentum", "pool", "timeline", "rowSwap", "summon", "revive", "light", "loot", "taunt", "dispel", "custom"]
+      "enum": [
+        "damage",
+        "heal",
+        "shield",
+        "applyStatus",
+        "removeStatus",
+        "buffStat",
+        "debuffStat",
+        "momentum",
+        "pool",
+        "timeline",
+        "rowSwap",
+        "summon",
+        "revive",
+        "light",
+        "loot",
+        "taunt",
+        "dispel",
+        "custom"
+      ]
     },
     "effect": {
       "type": "object",
       "description": "One line of the effect DSL. Only `kind` is always required; the per-kind requirements below say which fields each kind needs. Fields a kind does not use are left out.",
       "properties": {
-        "kind": { "$ref": "#/$defs/effectKind" },
+        "kind": {
+          "$ref": "#/$defs/effectKind"
+        },
         "multiplier": {
           "type": "number",
           "description": "Scale of the actor's Attack for damage, heal and shield (1.0 = a basic hit). Fed into the §2.2 damage formula.",
           "minimum": 0
         },
-        "damageType": { "$ref": "#/$defs/damageType" },
-        "status": { "$ref": "#/$defs/status" },
+        "damageType": {
+          "$ref": "#/$defs/damageType"
+        },
+        "status": {
+          "$ref": "#/$defs/status"
+        },
         "chance": {
           "$ref": "#/$defs/percent",
           "description": "Chance the line applies, 0–100. Omitted means 100."
@@ -291,41 +947,319 @@
         "note": {
           "type": "string",
           "description": "A designer's note on the tuning intent; ignored by the sim."
+        },
+        "itemId": {
+          "$ref": "#/$defs/id",
+          "description": "For a custom line that grants or consumes an item or material (give-material, cooking-ingredient): its id. The linter resolves it."
         }
       },
-      "required": ["kind"],
+      "required": [
+        "kind"
+      ],
       "additionalProperties": false,
       "allOf": [
-        { "if": { "properties": { "kind": { "const": "damage" } }, "required": ["kind"] }, "then": { "required": ["multiplier", "damageType"] } },
-        { "if": { "properties": { "kind": { "const": "heal" } }, "required": ["kind"] }, "then": { "anyOf": [{ "required": ["multiplier"] }, { "required": ["percent"] }, { "required": ["amount"] }] } },
-        { "if": { "properties": { "kind": { "const": "shield" } }, "required": ["kind"] }, "then": { "anyOf": [{ "required": ["multiplier"] }, { "required": ["percent"] }, { "required": ["amount"] }] } },
-        { "if": { "properties": { "kind": { "enum": ["applyStatus", "removeStatus"] } }, "required": ["kind"] }, "then": { "required": ["status"] } },
-        { "if": { "properties": { "kind": { "enum": ["buffStat", "debuffStat"] } }, "required": ["kind"] }, "then": { "required": ["stat"], "anyOf": [{ "required": ["amount"] }, { "required": ["percent"] }] } },
-        { "if": { "properties": { "kind": { "enum": ["momentum", "light"] } }, "required": ["kind"] }, "then": { "required": ["amount"] } },
-        { "if": { "properties": { "kind": { "const": "pool" } }, "required": ["kind"] }, "then": { "anyOf": [{ "required": ["amount"] }, { "required": ["percent"] }] } },
-        { "if": { "properties": { "kind": { "const": "timeline" } }, "required": ["kind"] }, "then": { "required": ["energy"] } },
-        { "if": { "properties": { "kind": { "const": "summon" } }, "required": ["kind"] }, "then": { "required": ["summonId"] } },
-        { "if": { "properties": { "kind": { "const": "revive" } }, "required": ["kind"] }, "then": { "required": ["percent"] } },
-        { "if": { "properties": { "kind": { "const": "loot" } }, "required": ["kind"] }, "then": { "anyOf": [{ "required": ["amount"] }, { "required": ["percent"] }] } },
-        { "if": { "properties": { "kind": { "const": "custom" } }, "required": ["kind"] }, "then": { "required": ["customId"] } }
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "damage"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "multiplier",
+              "damageType"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "heal"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "anyOf": [
+              {
+                "required": [
+                  "multiplier"
+                ]
+              },
+              {
+                "required": [
+                  "percent"
+                ]
+              },
+              {
+                "required": [
+                  "amount"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "shield"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "anyOf": [
+              {
+                "required": [
+                  "multiplier"
+                ]
+              },
+              {
+                "required": [
+                  "percent"
+                ]
+              },
+              {
+                "required": [
+                  "amount"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "enum": [
+                  "applyStatus",
+                  "removeStatus"
+                ]
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "status"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "enum": [
+                  "buffStat",
+                  "debuffStat"
+                ]
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "stat"
+            ],
+            "anyOf": [
+              {
+                "required": [
+                  "amount"
+                ]
+              },
+              {
+                "required": [
+                  "percent"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "enum": [
+                  "momentum",
+                  "light"
+                ]
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "amount"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "pool"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "anyOf": [
+              {
+                "required": [
+                  "amount"
+                ]
+              },
+              {
+                "required": [
+                  "percent"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "timeline"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "energy"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "summon"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "summonId"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "revive"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "percent"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "loot"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "anyOf": [
+              {
+                "required": [
+                  "amount"
+                ]
+              },
+              {
+                "required": [
+                  "percent"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "custom"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "customId"
+            ]
+          }
+        }
       ]
     },
     "effectList": {
       "type": "array",
       "description": "Effect lines resolved in order.",
-      "items": { "$ref": "#/$defs/effect" }
+      "items": {
+        "$ref": "#/$defs/effect"
+      }
     },
     "tuningNumber": {
       "description": "A number that is a tuning starting point. Either the bare number, or {value, note} when the reason for the value should travel with it.",
       "oneOf": [
-        { "type": "number" },
+        {
+          "type": "number"
+        },
         {
           "type": "object",
           "properties": {
-            "value": { "type": "number" },
-            "note": { "type": "string", "minLength": 1 }
+            "value": {
+              "type": "number"
+            },
+            "note": {
+              "type": "string",
+              "minLength": 1
+            }
           },
-          "required": ["value", "note"],
+          "required": [
+            "value",
+            "note"
+          ],
           "additionalProperties": false
         }
       ]
@@ -334,26 +1268,42 @@
       "type": "object",
       "description": "An inclusive integer range.",
       "properties": {
-        "min": { "type": "integer" },
-        "max": { "type": "integer" }
+        "min": {
+          "type": "integer"
+        },
+        "max": {
+          "type": "integer"
+        }
       },
-      "required": ["min", "max"],
+      "required": [
+        "min",
+        "max"
+      ],
       "additionalProperties": false
     },
     "gradeRange": {
       "type": "object",
       "description": "An inclusive range of grades in ladder order.",
       "properties": {
-        "min": { "$ref": "#/$defs/grade" },
-        "max": { "$ref": "#/$defs/grade" }
+        "min": {
+          "$ref": "#/$defs/grade"
+        },
+        "max": {
+          "$ref": "#/$defs/grade"
+        }
       },
-      "required": ["min", "max"],
+      "required": [
+        "min",
+        "max"
+      ],
       "additionalProperties": false
     },
     "vec3": {
       "type": "array",
       "description": "An [x, y, z] position in metres, scene units.",
-      "items": { "type": "number" },
+      "items": {
+        "type": "number"
+      },
       "minItems": 3,
       "maxItems": 3
     }

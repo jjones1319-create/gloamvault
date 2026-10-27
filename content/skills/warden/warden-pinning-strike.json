@@ -1,0 +1,66 @@
+{
+  "id": "warden-pinning-strike",
+  "classId": "warden",
+  "school": "vanguard",
+  "tier": 3,
+  "name": "Pinning Strike",
+  "description": "1.9× Pierce to one enemy in any row; Root 2 turns (it cannot swap rows or flee).",
+  "type": "active",
+  "cost": 20,
+  "weight": 1000,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1.9,
+      "damageType": "pierce",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "root",
+      "duration": 2
+    }
+  ],
+  "prerequisiteId": "warden-sweeping-spear",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "requirements": {
+    "weaponTypes": [
+      "spear"
+    ]
+  },
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Root 3 turns; +10% damage per turn of Root remaining when struck.",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "root",
+        "duration": 3
+      },
+      {
+        "kind": "custom",
+        "customId": "damage-per-status-turn-remaining",
+        "status": "root",
+        "percent": 10,
+        "note": "this skill deals +percent per turn of the status left on the target when it lands"
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "control",
+    "reach"
+  ],
+  "xpTags": [
+    "strength"
+  ],
+  "aiHints": {
+    "role": "control",
+    "priority": 65
+  }
+}

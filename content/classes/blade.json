@@ -1,0 +1,88 @@
+{
+  "id": "blade",
+  "name": "Blade",
+  "role": "melee striker: the party's damage, paid for in Defense",
+  "description": "Two swords or one great one, and Mail instead of a shield. The Blade stands in the front row and turns every turn into damage: a hundred light cuts that fill the Momentum bar, or one heavy swing that decides the fight.",
+  "attributeMods": {
+    "strength": 2,
+    "agility": 2
+  },
+  "pool": "stamina",
+  "armorFamily": "mail",
+  "weaponTypes": [
+    "sword",
+    "axe",
+    "greatsword",
+    "greataxe",
+    "dagger"
+  ],
+  "schools": [
+    {
+      "id": "iron-dance",
+      "name": "Iron Dance",
+      "philosophy": "Dual-wield, light 800-weight strikes, many hits. Every strike is a step; the dance ends when the Momentum bar is full."
+    },
+    {
+      "id": "executioner",
+      "name": "Executioner",
+      "philosophy": "Two-handed heavy strikes, execute thresholds and crits. One swing, decided before it starts."
+    },
+    {
+      "id": "bloodletter",
+      "name": "Bloodletter",
+      "philosophy": "Bleed, lifesteal and berserk at low HP. Blood out is blood in: the sustain school and the solo Blade's school."
+    }
+  ],
+  "ultimateSkillId": "blade-crimson-crescendo",
+  "starterKit": [
+    "copper-longsword",
+    "copper-dagger",
+    "copper-coif",
+    "copper-hauberk",
+    "copper-chausses",
+    "copper-treads",
+    "copper-mitts",
+    "ring-of-might",
+    "small-hp-potion",
+    "torch",
+    "repair-kit",
+    "bandage"
+  ],
+  "starterSkillIds": [
+    "blade-twin-cut",
+    "blade-open-vein",
+    "blade-flowing-guard"
+  ],
+  "fieldSkillAffinities": [
+    {
+      "fieldSkill": "fieldRepair",
+      "rankBonus": 2
+    },
+    {
+      "fieldSkill": "cooking",
+      "rankBonus": 2
+    }
+  ],
+  "monsterTechniqueIds": [],
+  "aiRuleDefault": "IF self HP < 30% THEN item small hp potion on self; IF enemy status bleed THEN twin cut on weakest enemy; ELSE open vein on front enemy",
+  "visual": {
+    "gearSetId": "blade-copper-mail",
+    "palette": [
+      "#3f3f46",
+      "#8a4b2a",
+      "#e7dfc8",
+      "#71717a"
+    ],
+    "notes": "An X silhouette: two hilts crossed above the shoulders, or one long two-hander diagonal; a single spaulder, bare forearms, no shield."
+  },
+  "pros": [
+    "Highest sustained single-target damage of the four",
+    "Two tempos: 800-weight dual strikes or 1,400-weight executes",
+    "Bloodletter sustain clears floors without potions"
+  ],
+  "cons": [
+    "Mail is weak to Blunt and there is no shield",
+    "No ranged answer: a back-row spitter is untouchable until the front row falls",
+    "Two weapons wear twice as fast as one"
+  ]
+}

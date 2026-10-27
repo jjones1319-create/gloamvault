@@ -1,0 +1,91 @@
+{
+  "id": "blade-flurry",
+  "classId": "blade",
+  "school": "iron-dance",
+  "tier": 2,
+  "name": "Flurry",
+  "description": "Three hits of 0.55× Slash (1.65× in all) on a front-row enemy; each hit that lands +3 Momentum.",
+  "type": "active",
+  "cost": 14,
+  "weight": 800,
+  "target": "enemyFront",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 0.55,
+      "damageType": "slash",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "damage",
+      "multiplier": 0.55,
+      "damageType": "slash",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "damage",
+      "multiplier": 0.55,
+      "damageType": "slash",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "custom",
+      "customId": "momentum-per-hit-landed",
+      "amount": 3,
+      "target": "self",
+      "note": "amount Momentum for every hit of this skill that lands"
+    }
+  ],
+  "prerequisiteId": "blade-twin-cut",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "requirements": {
+    "dualWield": true
+  },
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Four hits.",
+    "effects": [
+      {
+        "kind": "damage",
+        "multiplier": 0.55,
+        "damageType": "slash",
+        "scalesWith": "strength",
+        "note": "Mastery restates every hit: four of 0.55×"
+      },
+      {
+        "kind": "damage",
+        "multiplier": 0.55,
+        "damageType": "slash",
+        "scalesWith": "strength"
+      },
+      {
+        "kind": "damage",
+        "multiplier": 0.55,
+        "damageType": "slash",
+        "scalesWith": "strength"
+      },
+      {
+        "kind": "damage",
+        "multiplier": 0.55,
+        "damageType": "slash",
+        "scalesWith": "strength"
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "momentum"
+  ],
+  "xpTags": [
+    "strength",
+    "agility"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 65
+  }
+}

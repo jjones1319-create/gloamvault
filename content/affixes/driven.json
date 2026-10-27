@@ -1,0 +1,41 @@
+{
+  "id": "driven",
+  "name": "Driven",
+  "position": "prefix",
+  "lines": [
+    {
+      "bandMin": "F",
+      "bandMax": "D",
+      "stat": "momentumGain",
+      "unit": "percent",
+      "min": 3,
+      "max": 5
+    },
+    {
+      "bandMin": "C",
+      "bandMax": "A",
+      "stat": "momentumGain",
+      "unit": "percent",
+      "min": 5,
+      "max": 10
+    },
+    {
+      "bandMin": "S",
+      "bandMax": "God",
+      "stat": "momentumGain",
+      "unit": "percent",
+      "min": 10,
+      "max": 15
+    }
+  ],
+  "slots": [
+    "mainHand",
+    "offHand",
+    "gloves",
+    "talisman"
+  ],
+  "weight": 3,
+  "tags": [
+    "momentum"
+  ]
+}

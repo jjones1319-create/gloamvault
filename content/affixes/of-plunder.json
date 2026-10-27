@@ -1,0 +1,52 @@
+{
+  "id": "of-plunder",
+  "name": "of Plunder",
+  "position": "suffix",
+  "lines": [
+    {
+      "bandMin": "F",
+      "bandMax": "D",
+      "effect": {
+        "kind": "custom",
+        "customId": "drop-shape-pp",
+        "target": "self",
+        "note": "drop shape toward higher grades, pp; 08 writes +0.5 at F–D, rounded half up to 1 (integer lines); stacks with Luck under its cap"
+      },
+      "min": 1,
+      "max": 1
+    },
+    {
+      "bandMin": "C",
+      "bandMax": "A",
+      "effect": {
+        "kind": "custom",
+        "customId": "drop-shape-pp",
+        "target": "self",
+        "note": "drop shape toward higher grades, pp; 08 writes +0.5 at F–D, rounded half up to 1 (integer lines); stacks with Luck under its cap"
+      },
+      "min": 1,
+      "max": 1
+    },
+    {
+      "bandMin": "S",
+      "bandMax": "God",
+      "effect": {
+        "kind": "custom",
+        "customId": "drop-shape-pp",
+        "target": "self",
+        "note": "drop shape toward higher grades, pp; 08 writes +0.5 at F–D, rounded half up to 1 (integer lines); stacks with Luck under its cap"
+      },
+      "min": 2,
+      "max": 2
+    }
+  ],
+  "slots": [
+    "ring",
+    "talisman"
+  ],
+  "weight": 1,
+  "tags": [
+    "loot",
+    "grade"
+  ]
+}

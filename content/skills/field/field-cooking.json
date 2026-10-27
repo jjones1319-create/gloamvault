@@ -1,0 +1,33 @@
+{
+  "id": "field-cooking",
+  "classId": "field",
+  "school": "field",
+  "tier": 1,
+  "name": "Cooking",
+  "description": "Rest-room meals: +5% to one stat for the next floor. +1% per 2 ranks; rank 7: two stats. Blade and Mender +2 at start.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Rank 10 is the line in the description; the per-rank numbers live in tuning.json (skills.fieldSkills).",
+    "effects": []
+  },
+  "tags": [
+    "field",
+    "utility"
+  ],
+  "xpTags": [],
+  "aiHints": {
+    "role": "utility",
+    "priority": 0
+  }
+}

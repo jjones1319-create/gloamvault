@@ -81,7 +81,9 @@ describe('economy in R (03 §7.4, §7.6, §8)', () => {
     expect(chestBandGrade(20)).toBe('B')
     expect(chestBandGrade(33)).toBe('A')
     expect(chestBandGrade(40)).toBe('A')
-    expect(retreatToll(t, 250)).toBe(25)
+    // D-083 (James): leaving from the entrance or a floor's end is free; the toll percent stays a Pact knob.
+    expect(retreatToll(t, 250)).toBe(0)
+    expect(retreatToll(t, 250, 10)).toBe(25)
     expect(retreatToll(t, 250, 25)).toBe(63)
   })
 })

@@ -1,0 +1,158 @@
+{
+  "id": "plague-rat",
+  "name": "Plague Rat",
+  "familyId": "cellar-vermin",
+  "dungeonId": "gravehollow-keep",
+  "zoneId": "the-cellars",
+  "role": "fodder",
+  "size": "small",
+  "rows": [
+    "front"
+  ],
+  "levelBand": {
+    "min": 1,
+    "max": 4
+  },
+  "multipliers": {
+    "hp": 0.8,
+    "attack": 0.8,
+    "defense": 0.5
+  },
+  "speed": 115,
+  "xpClass": 1,
+  "goldMultiplier": 1,
+  "ambushModifier": 15,
+  "attacks": [
+    {
+      "id": "foul-bite",
+      "name": "Foul Bite",
+      "damageType": "pierce",
+      "weight": 800,
+      "multiplier": 0.8,
+      "target": "enemyFront",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "poison",
+          "chance": 60,
+          "duration": 3
+        }
+      ],
+      "aiWeight": 70,
+      "tell": null
+    },
+    {
+      "id": "retch",
+      "name": "Retch",
+      "damageType": "poison",
+      "weight": 1000,
+      "multiplier": 0.6,
+      "target": "enemy",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "poison",
+          "duration": 2
+        }
+      ],
+      "aiWeight": 30,
+      "tell": null
+    },
+    {
+      "id": "death-cloud",
+      "name": "Death Cloud",
+      "damageType": "poison",
+      "weight": 800,
+      "multiplier": 0.3,
+      "target": "partyFront",
+      "effects": [],
+      "aiWeight": 0,
+      "tell": null
+    }
+  ],
+  "resist": [],
+  "weak": [
+    "fire"
+  ],
+  "immune": [
+    "poison"
+  ],
+  "statusImmune": [
+    "poison"
+  ],
+  "behavior": {
+    "rules": [
+      {
+        "if": "self HP reaches 0",
+        "then": "death-cloud"
+      },
+      {
+        "if": "a hero without Poison is in reach",
+        "then": "foul-bite"
+      },
+      {
+        "if": "always",
+        "then": "foul-bite"
+      }
+    ],
+    "fleesAtPercent": 0
+  },
+  "parts": {
+    "common": {
+      "materialId": "rawhide",
+      "chance": 35,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "rare": {
+      "itemId": "plague-gland",
+      "chance": 4,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "breakLimb": {
+      "name": "swollen flank",
+      "effect": {
+        "kind": "custom",
+        "customId": "no-death-cloud",
+        "note": "no death cloud"
+      }
+    }
+  },
+  "monsterTechniqueSkillIds": [],
+  "elitePool": [
+    "rabid",
+    "thorned",
+    "vampiric",
+    "shielded",
+    "commander"
+  ],
+  "boss": null,
+  "hunter": null,
+  "visual": {
+    "baseMesh": "rat",
+    "scale": 1.1,
+    "variantOf": "giant-rat",
+    "palette": [
+      "#6b7a5a",
+      "#c9c24a",
+      "#1a1a1a"
+    ],
+    "reads200px": true,
+    "animations": [
+      "Idle",
+      "Move",
+      "Attack1",
+      "Attack2",
+      "Hit",
+      "Death",
+      "Flee",
+      "Retch"
+    ],
+    "triBudget": 2500
+  }
+}

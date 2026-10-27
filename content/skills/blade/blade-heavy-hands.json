@@ -1,0 +1,52 @@
+{
+  "id": "blade-heavy-hands",
+  "classId": "blade",
+  "school": "executioner",
+  "tier": 2,
+  "name": "Heavy Hands",
+  "description": "Crit Damage +20%; your heavy swings cannot be Dodged by Dazed, Rooted or Grabbed targets.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "buffStat",
+      "stat": "critDamage",
+      "amount": 20
+    },
+    {
+      "kind": "custom",
+      "customId": "heavy-skills-undodgeable-vs-held",
+      "target": "self",
+      "note": "1,400-weight skills ignore Dodge against targets under Daze, Root, Grab, Web or a Net"
+    }
+  ],
+  "prerequisiteId": "blade-headsmans-eye",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "+35%.",
+    "effects": [
+      {
+        "kind": "buffStat",
+        "stat": "critDamage",
+        "amount": 35
+      }
+    ]
+  },
+  "tags": [
+    "buff"
+  ],
+  "xpTags": [
+    "strength"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 0
+  }
+}

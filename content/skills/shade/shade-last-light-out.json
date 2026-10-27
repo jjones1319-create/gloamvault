@@ -1,0 +1,100 @@
+{
+  "id": "shade-last-light-out",
+  "classId": "shade",
+  "school": "shadow",
+  "tier": 3,
+  "name": "Last Light Out",
+  "description": "Five hits of 0.9× Pierce on one enemy in any row; the first hit is a guaranteed crit; Poison 3 turns and Blind 1 turn; you re-enter Veil at no cost. 100 Momentum, no Stamina; weight 800; never misses.",
+  "type": "active",
+  "cost": 0,
+  "weight": 800,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "guaranteed-crits",
+      "amount": 1,
+      "note": "the first `amount` damage lines of this skill crit"
+    },
+    {
+      "kind": "damage",
+      "multiplier": 0.9,
+      "damageType": "pierce"
+    },
+    {
+      "kind": "damage",
+      "multiplier": 0.9,
+      "damageType": "pierce"
+    },
+    {
+      "kind": "damage",
+      "multiplier": 0.9,
+      "damageType": "pierce"
+    },
+    {
+      "kind": "damage",
+      "multiplier": 0.9,
+      "damageType": "pierce"
+    },
+    {
+      "kind": "damage",
+      "multiplier": 0.9,
+      "damageType": "pierce"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "poison",
+      "duration": 3
+    },
+    {
+      "kind": "applyStatus",
+      "status": "blind",
+      "duration": 1
+    },
+    {
+      "kind": "applyStatus",
+      "status": "veil",
+      "duration": 2,
+      "target": "self",
+      "note": "re-enter Veil afterwards at no cost"
+    }
+  ],
+  "prerequisiteId": "shade-throat-cut",
+  "isUltimate": true,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Six hits; the first two crit.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "guaranteed-crits",
+        "amount": 2
+      },
+      {
+        "kind": "damage",
+        "multiplier": 0.9,
+        "damageType": "pierce",
+        "note": "a sixth hit, added to the five"
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "reach",
+    "dot",
+    "debuff",
+    "buff"
+  ],
+  "xpTags": [
+    "agility",
+    "perception"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 95
+  }
+}

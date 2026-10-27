@@ -1,0 +1,69 @@
+{
+  "id": "ranger-hunters-mark",
+  "classId": "ranger",
+  "school": "marksman",
+  "tier": 1,
+  "name": "Hunter's Mark",
+  "description": "Mark one enemy in any row for 3 turns (+20% damage taken from everyone); +5 Momentum.",
+  "type": "active",
+  "cost": 8,
+  "weight": 800,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "applyStatus",
+      "status": "mark",
+      "duration": 3
+    },
+    {
+      "kind": "momentum",
+      "amount": 5,
+      "target": "self"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "requirements": {
+    "weaponTypes": [
+      "bow",
+      "shortbow",
+      "longbow",
+      "crossbow"
+    ]
+  },
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Mark 4 turns at +25%.",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "mark",
+        "duration": 4
+      },
+      {
+        "kind": "custom",
+        "customId": "mark-damage-percent",
+        "percent": 25,
+        "target": "self",
+        "note": "Marks you apply use percent instead of the status default +20"
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "debuff",
+    "momentum",
+    "reach"
+  ],
+  "xpTags": [
+    "perception"
+  ],
+  "aiHints": {
+    "role": "debuff",
+    "priority": 70
+  }
+}

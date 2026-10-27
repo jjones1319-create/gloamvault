@@ -1,0 +1,40 @@
+{
+  "id": "sharp",
+  "name": "Sharp",
+  "position": "prefix",
+  "lines": [
+    {
+      "bandMin": "F",
+      "bandMax": "D",
+      "stat": "attackPhys",
+      "unit": "flat",
+      "min": 1,
+      "max": 3
+    },
+    {
+      "bandMin": "C",
+      "bandMax": "A",
+      "stat": "attackPhys",
+      "unit": "flat",
+      "min": 3,
+      "max": 8
+    },
+    {
+      "bandMin": "S",
+      "bandMax": "God",
+      "stat": "attackPhys",
+      "unit": "flat",
+      "min": 8,
+      "max": 20
+    }
+  ],
+  "slots": [
+    "mainHand",
+    "offHand"
+  ],
+  "weight": 5,
+  "tags": [
+    "offensive",
+    "attack"
+  ]
+}

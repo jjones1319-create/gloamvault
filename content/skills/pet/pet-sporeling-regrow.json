@@ -1,0 +1,41 @@
+{
+  "id": "pet-sporeling-regrow",
+  "classId": "pet",
+  "school": "pet",
+  "tier": 1,
+  "name": "Regrow",
+  "description": "Regen on one ally for 3 turns.",
+  "type": "active",
+  "cost": 10,
+  "weight": 1000,
+  "target": "ally",
+  "effects": [
+    {
+      "kind": "applyStatus",
+      "status": "regen",
+      "duration": 3
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "No Mastery line: pet actives do not rank (03 §9).",
+    "effects": []
+  },
+  "tags": [
+    "heal",
+    "buff"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "heal",
+    "priority": 55
+  }
+}

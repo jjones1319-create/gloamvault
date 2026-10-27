@@ -1,0 +1,42 @@
+{
+  "id": "pet-forge-beetle-rivet",
+  "classId": "pet",
+  "school": "pet",
+  "tier": 1,
+  "name": "Rivet",
+  "description": "In a rest room: +5% durability on one of the owner's items.",
+  "type": "active",
+  "cost": 10,
+  "weight": 800,
+  "target": "ally",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "pet-repair-item-percent",
+      "percent": 5,
+      "note": "out of combat, rest rooms only: restores 5% of maxDurability on one item the owner chooses; once per rest room"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "No Mastery line: pet actives do not rank (03 §9).",
+    "effects": []
+  },
+  "tags": [
+    "utility",
+    "field"
+  ],
+  "xpTags": [
+    "endurance"
+  ],
+  "aiHints": {
+    "role": "utility",
+    "priority": 20
+  }
+}

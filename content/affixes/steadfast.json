@@ -1,0 +1,52 @@
+{
+  "id": "steadfast",
+  "name": "Steadfast",
+  "position": "prefix",
+  "lines": [
+    {
+      "bandMin": "F",
+      "bandMax": "D",
+      "effect": {
+        "kind": "custom",
+        "customId": "fear-stun-resist-percent",
+        "target": "self",
+        "note": "+Fear and Stun resistance, percent"
+      },
+      "min": 10,
+      "max": 10
+    },
+    {
+      "bandMin": "C",
+      "bandMax": "A",
+      "effect": {
+        "kind": "custom",
+        "customId": "fear-stun-resist-percent",
+        "target": "self",
+        "note": "+Fear and Stun resistance, percent"
+      },
+      "min": 20,
+      "max": 20
+    },
+    {
+      "bandMin": "S",
+      "bandMax": "God",
+      "effect": {
+        "kind": "custom",
+        "customId": "fear-stun-resist-percent",
+        "target": "self",
+        "note": "+Fear and Stun resistance, percent"
+      },
+      "min": 35,
+      "max": 35
+    }
+  ],
+  "slots": [
+    "helmet",
+    "talisman"
+  ],
+  "weight": 2,
+  "tags": [
+    "defensive",
+    "status"
+  ]
+}

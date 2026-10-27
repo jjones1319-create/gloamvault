@@ -1,0 +1,58 @@
+{
+  "id": "blade-drink-deep",
+  "classId": "blade",
+  "school": "bloodletter",
+  "tier": 2,
+  "name": "Drink Deep",
+  "description": "1.3× Slash to a front-row enemy; heal 50% of the damage dealt.",
+  "type": "active",
+  "cost": 14,
+  "weight": 1000,
+  "target": "enemyFront",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1.3,
+      "damageType": "slash",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "custom",
+      "customId": "heal-percent-of-damage-dealt",
+      "percent": 50,
+      "target": "self",
+      "note": "heals the actor for percent of the damage this skill dealt"
+    }
+  ],
+  "prerequisiteId": "blade-red-thirst",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Heal 75%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "heal-percent-of-damage-dealt",
+        "percent": 75,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "heal"
+  ],
+  "xpTags": [
+    "strength",
+    "agility",
+    "vitality"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 60
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "id": "warden-formation-drill",
+  "classId": "warden",
+  "school": "vanguard",
+  "tier": 1,
+  "name": "Formation Drill",
+  "description": "Allies in your row +5 Defense; the party's row swaps cost 200 instead of 400.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "buffStat",
+      "stat": "defense",
+      "amount": 5,
+      "target": "allyRow",
+      "note": "every ally in your row, yourself included"
+    },
+    {
+      "kind": "custom",
+      "customId": "party-row-swap-weight",
+      "amount": 200,
+      "target": "allAllies",
+      "note": "the Swap row action weighs amount instead of 400 for the whole party"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "+10 Defense.",
+    "effects": [
+      {
+        "kind": "buffStat",
+        "stat": "defense",
+        "amount": 10,
+        "target": "allyRow"
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "mobility"
+  ],
+  "xpTags": [
+    "endurance"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 0
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "id": "blade-twin-cut",
+  "classId": "blade",
+  "school": "iron-dance",
+  "tier": 1,
+  "name": "Twin Cut",
+  "description": "Two hits of 0.6× Slash (1.2× in all) on a front-row enemy; +5 extra Momentum.",
+  "type": "active",
+  "cost": 9,
+  "weight": 800,
+  "target": "enemyFront",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 0.6,
+      "damageType": "slash",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "damage",
+      "multiplier": 0.6,
+      "damageType": "slash",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "momentum",
+      "amount": 5,
+      "target": "self",
+      "note": "on top of the Momentum the action itself earns"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "requirements": {
+    "dualWield": true
+  },
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "A third hit at 0.4×.",
+    "effects": [
+      {
+        "kind": "damage",
+        "multiplier": 0.6,
+        "damageType": "slash",
+        "scalesWith": "strength",
+        "note": "Mastery restates every hit: two of 0.6× and a third of 0.4×"
+      },
+      {
+        "kind": "damage",
+        "multiplier": 0.6,
+        "damageType": "slash",
+        "scalesWith": "strength"
+      },
+      {
+        "kind": "damage",
+        "multiplier": 0.4,
+        "damageType": "slash",
+        "scalesWith": "strength"
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "momentum"
+  ],
+  "xpTags": [
+    "strength",
+    "agility"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 60
+  }
+}

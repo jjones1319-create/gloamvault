@@ -1,0 +1,40 @@
+{
+  "id": "pet-crypt-bat-shriek",
+  "classId": "pet",
+  "school": "pet",
+  "tier": 1,
+  "name": "Shriek",
+  "description": "Daze one enemy (−500 energy on the timeline).",
+  "type": "active",
+  "cost": 10,
+  "weight": 800,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "applyStatus",
+      "status": "daze"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "No Mastery line: pet actives do not rank (03 §9).",
+    "effects": []
+  },
+  "tags": [
+    "singleTarget",
+    "control"
+  ],
+  "xpTags": [
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "control",
+    "priority": 50
+  }
+}

@@ -1,0 +1,169 @@
+{
+  "id": "broodmother",
+  "name": "Broodmother",
+  "familyId": "cellar-vermin",
+  "dungeonId": "gravehollow-keep",
+  "zoneId": "the-cellars",
+  "role": "monster",
+  "size": "large",
+  "rows": [
+    "front"
+  ],
+  "levelBand": {
+    "min": 2,
+    "max": 4
+  },
+  "multipliers": {
+    "hp": 4.5,
+    "attack": 1.4,
+    "defense": 1
+  },
+  "speed": 85,
+  "xpClass": 6,
+  "goldMultiplier": 4,
+  "ambushModifier": 0,
+  "attacks": [
+    {
+      "id": "crush-bite",
+      "name": "Crush Bite",
+      "damageType": "pierce",
+      "weight": 1400,
+      "multiplier": 1.6,
+      "target": "enemyFront",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "poison",
+          "duration": 3
+        }
+      ],
+      "aiWeight": 45,
+      "tell": "The Broodmother rears, fangs wide."
+    },
+    {
+      "id": "brood-call",
+      "name": "Brood Call",
+      "damageType": "blunt",
+      "weight": 1000,
+      "multiplier": 0,
+      "target": "self",
+      "effects": [
+        {
+          "kind": "summon",
+          "summonId": "cellar-spider",
+          "target": "summon"
+        },
+        {
+          "kind": "summon",
+          "summonId": "cellar-spider",
+          "target": "summon"
+        },
+        {
+          "kind": "custom",
+          "customId": "brood-call",
+          "percent": 50,
+          "note": "the two spiderlings arrive in the front row at 50% HP"
+        }
+      ],
+      "aiWeight": 30,
+      "tell": "Her abdomen pulses."
+    },
+    {
+      "id": "sweep",
+      "name": "Sweep",
+      "damageType": "blunt",
+      "weight": 1000,
+      "multiplier": 0.8,
+      "target": "partyFront",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "daze",
+          "chance": 30
+        }
+      ],
+      "aiWeight": 25,
+      "tell": null
+    }
+  ],
+  "resist": [
+    "poison",
+    "pierce"
+  ],
+  "weak": [
+    "fire",
+    "blunt"
+  ],
+  "immune": [],
+  "statusImmune": [
+    "grab",
+    "web"
+  ],
+  "behavior": {
+    "rules": [
+      {
+        "if": "self has lost 25% of its max HP since its last Brood Call",
+        "then": "brood-call"
+      },
+      {
+        "if": "always (target: the hero with the most spiderlings on them)",
+        "then": "crush-bite"
+      }
+    ],
+    "fleesAtPercent": 0
+  },
+  "parts": {
+    "common": {
+      "materialId": "leather",
+      "chance": 35,
+      "quantity": {
+        "min": 2,
+        "max": 2
+      }
+    },
+    "rare": {
+      "itemId": "spiderling-egg",
+      "chance": 4,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "breakLimb": {
+      "name": "egg sac",
+      "effect": {
+        "kind": "custom",
+        "customId": "no-brood-call",
+        "note": "no more Brood Calls (the rare roll doubles, as every break does)"
+      }
+    }
+  },
+  "monsterTechniqueSkillIds": [],
+  "elitePool": [],
+  "boss": null,
+  "hunter": null,
+  "visual": {
+    "baseMesh": "spider",
+    "scale": 3,
+    "variantOf": "cellar-spider",
+    "palette": [
+      "#141414",
+      "#e0a030",
+      "#c8102e"
+    ],
+    "reads200px": true,
+    "animations": [
+      "Idle",
+      "Move",
+      "Attack1",
+      "Attack2",
+      "Hit",
+      "Death",
+      "Drop",
+      "Brood",
+      "Sweep",
+      "Pulse"
+    ],
+    "triBudget": 7000
+  }
+}

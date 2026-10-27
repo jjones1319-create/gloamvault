@@ -1,0 +1,52 @@
+{
+  "id": "shade-sleight",
+  "classId": "shade",
+  "school": "larceny",
+  "tier": 3,
+  "name": "Sleight",
+  "description": "Steal one buff (Fortify, Haste, Shield or Regen) from an enemy in any row and give it to an ally of your choice.",
+  "type": "active",
+  "cost": 18,
+  "weight": 800,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "steal-buff",
+      "amount": 1,
+      "note": "moves `amount` strippable buff(s) from the target to the chosen ally (the lowest-HP ally on auto)"
+    }
+  ],
+  "prerequisiteId": "shade-vanish",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Steal two.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "steal-buff",
+        "amount": 2
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "reach",
+    "debuff",
+    "buff",
+    "utility"
+  ],
+  "xpTags": [
+    "agility",
+    "perception"
+  ],
+  "aiHints": {
+    "role": "debuff",
+    "priority": 50
+  }
+}

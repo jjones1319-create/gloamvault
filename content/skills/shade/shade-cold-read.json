@@ -1,0 +1,54 @@
+{
+  "id": "shade-cold-read",
+  "classId": "shade",
+  "school": "shadow",
+  "tier": 1,
+  "name": "Cold Read",
+  "description": "Crit Rate +5%; each crit you land gives +5 Momentum.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "buffStat",
+      "stat": "critRate",
+      "amount": 5
+    },
+    {
+      "kind": "custom",
+      "customId": "momentum-on-crit",
+      "amount": 5,
+      "target": "self",
+      "note": "each crit the holder lands grants +amount Momentum"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "+10% Crit Rate.",
+    "effects": [
+      {
+        "kind": "buffStat",
+        "stat": "critRate",
+        "amount": 10
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "momentum"
+  ],
+  "xpTags": [
+    "perception"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 0
+  }
+}

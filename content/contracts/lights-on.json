@@ -1,0 +1,23 @@
+{
+  "id": "lights-on",
+  "name": "Lights On",
+  "description": "Reach the stairs of any floor in your band with light ≥ 50.",
+  "cadence": "daily",
+  "kind": "light",
+  "target": {
+    "lightMin": 50,
+    "condition": "at-stairs"
+  },
+  "reward": {
+    "goldR": 0.25,
+    "keys": [
+      {
+        "kind": "standard",
+        "amount": 1
+      }
+    ],
+    "chestId": null,
+    "items": []
+  },
+  "band": null
+}

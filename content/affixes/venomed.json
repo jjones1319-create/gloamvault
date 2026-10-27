@@ -1,0 +1,53 @@
+{
+  "id": "venomed",
+  "name": "Venomed",
+  "position": "prefix",
+  "lines": [
+    {
+      "bandMin": "F",
+      "bandMax": "D",
+      "effect": {
+        "kind": "applyStatus",
+        "status": "poison",
+        "target": "enemy",
+        "note": "Pierce weapons, Whips, foci"
+      },
+      "min": 5,
+      "max": 8
+    },
+    {
+      "bandMin": "C",
+      "bandMax": "A",
+      "effect": {
+        "kind": "applyStatus",
+        "status": "poison",
+        "target": "enemy",
+        "note": "Pierce weapons, Whips, foci"
+      },
+      "min": 8,
+      "max": 12
+    },
+    {
+      "bandMin": "S",
+      "bandMax": "God",
+      "effect": {
+        "kind": "applyStatus",
+        "status": "poison",
+        "target": "enemy",
+        "note": "Pierce weapons, Whips, foci"
+      },
+      "min": 12,
+      "max": 20
+    }
+  ],
+  "slots": [
+    "mainHand",
+    "offHand"
+  ],
+  "weight": 3,
+  "tags": [
+    "offensive",
+    "status",
+    "poison"
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "id": "commander",
+  "name": "Commander",
+  "affixClass": "offensive",
+  "rule": "Every Fodder in the fight gets +20% Attack and +10 Speed while it lives; killing it applies Fear (1 turn) to them.",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "fodder-attack-speed-aura",
+      "percent": 20,
+      "amount": 10,
+      "target": "allAllies",
+      "note": "percent = Attack, amount = Speed, on fodder-role allies while the champion lives"
+    },
+    {
+      "kind": "custom",
+      "customId": "fear-fodder-on-death",
+      "status": "fear",
+      "duration": 1,
+      "target": "allAllies"
+    }
+  ],
+  "hpMultiplier": 3,
+  "goldMultiplier": 3,
+  "xpClassBonus": 2,
+  "floorMin": 1,
+  "tell": null,
+  "excludesElement": false
+}

@@ -1,0 +1,64 @@
+{
+  "id": "arcanist-attune",
+  "classId": "arcanist",
+  "school": "arcana",
+  "tier": 1,
+  "name": "Attune",
+  "description": "Mana regen 8% → 11% per own turn; items are identified on pickup; the party’s Light falls 1 less per new room.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "pool-regen-percent-bonus",
+      "amount": 3,
+      "target": "self",
+      "note": "the holder’s per-turn pool regen is +amount percentage points (8% → 11%)"
+    },
+    {
+      "kind": "custom",
+      "customId": "identify-on-pickup",
+      "target": "self",
+      "note": "items the party picks up are identified at once"
+    },
+    {
+      "kind": "custom",
+      "customId": "light-decay-reduction",
+      "amount": 1,
+      "target": "self",
+      "note": "the party’s Light falls `amount` less per new room"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Regen 13%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "pool-regen-percent-bonus",
+        "amount": 5,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "utility",
+    "buff",
+    "light"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "utility",
+    "priority": 0
+  }
+}

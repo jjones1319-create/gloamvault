@@ -1,0 +1,61 @@
+{
+  "id": "of-shadow-warding",
+  "name": "of Shadow Warding",
+  "position": "suffix",
+  "lines": [
+    {
+      "bandMin": "F",
+      "bandMax": "D",
+      "effect": {
+        "kind": "custom",
+        "customId": "element-resist-percent",
+        "damageType": "shadow",
+        "target": "self",
+        "note": "+resistance to Shadow, percent"
+      },
+      "min": 10,
+      "max": 15
+    },
+    {
+      "bandMin": "C",
+      "bandMax": "A",
+      "effect": {
+        "kind": "custom",
+        "customId": "element-resist-percent",
+        "damageType": "shadow",
+        "target": "self",
+        "note": "+resistance to Shadow, percent"
+      },
+      "min": 15,
+      "max": 25
+    },
+    {
+      "bandMin": "S",
+      "bandMax": "God",
+      "effect": {
+        "kind": "custom",
+        "customId": "element-resist-percent",
+        "damageType": "shadow",
+        "target": "self",
+        "note": "+resistance to Shadow, percent"
+      },
+      "min": 25,
+      "max": 40
+    }
+  ],
+  "slots": [
+    "offHand",
+    "helmet",
+    "chest",
+    "legs",
+    "boots",
+    "gloves",
+    "talisman"
+  ],
+  "weight": 3,
+  "tags": [
+    "defensive",
+    "resist",
+    "shadow"
+  ]
+}

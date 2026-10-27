@@ -1,0 +1,41 @@
+{
+  "id": "pet-moss-tortoise-bulwark",
+  "classId": "pet",
+  "school": "pet",
+  "tier": 1,
+  "name": "Bulwark",
+  "description": "Fortify the party for 2 turns.",
+  "type": "active",
+  "cost": 12,
+  "weight": 1000,
+  "target": "allAllies",
+  "effects": [
+    {
+      "kind": "applyStatus",
+      "status": "fortify",
+      "duration": 2
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "No Mastery line: pet actives do not rank (03 §9).",
+    "effects": []
+  },
+  "tags": [
+    "buff",
+    "aoe"
+  ],
+  "xpTags": [
+    "endurance"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 50
+  }
+}

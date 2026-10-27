@@ -1,0 +1,55 @@
+{
+  "id": "brine-crab",
+  "name": "Brine Crab",
+  "speciesFamilyId": "tidebound",
+  "gradeBand": {
+    "min": "D",
+    "max": "C"
+  },
+  "trait": {
+    "id": "pearl-shell",
+    "name": "Pearl Shell",
+    "description": "Blocks 20% of the hits on itself; grows as it takes them.",
+    "effects": [
+      {
+        "kind": "buffStat",
+        "stat": "block",
+        "amount": 20,
+        "target": "self",
+        "note": "Block is the chance to halve a physical hit (08 §2.3)"
+      }
+    ],
+    "growsBy": "endurance"
+  },
+  "actives": [
+    {
+      "skillId": "pet-brine-crab-pinch",
+      "unlockLevel": 5
+    },
+    {
+      "skillId": "pet-brine-crab-tide-shell",
+      "unlockLevel": 15
+    }
+  ],
+  "stamina": 30,
+  "baseStats": {
+    "hp": 1,
+    "attackPhys": 0.8,
+    "defense": 1,
+    "speed": 1
+  },
+  "roleLean": "guard",
+  "visual": {
+    "baseMesh": "crab",
+    "palette": [
+      "#3f6f7a",
+      "#8ab8c2",
+      "#f4efe6"
+    ]
+  },
+  "eggSource": {
+    "chestBand": "D",
+    "familyId": "tidebound"
+  },
+  "creationChoice": false
+}

@@ -1,0 +1,59 @@
+{
+  "id": "warden-punish",
+  "classId": "warden",
+  "school": "vanguard",
+  "tier": 2,
+  "name": "Punish",
+  "description": "Your counter-hits deal +50% and apply Weaken 1 turn.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "counter-hit-damage-percent",
+      "percent": 50,
+      "target": "self",
+      "note": "every counter-hit (Counter Stance and its successors) deals +percent"
+    },
+    {
+      "kind": "custom",
+      "customId": "counter-hit-applies-status",
+      "status": "weaken",
+      "duration": 1,
+      "target": "self",
+      "note": "every counter-hit applies the status for duration turns"
+    }
+  ],
+  "prerequisiteId": "warden-counter-stance",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Weaken 2 turns.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "counter-hit-applies-status",
+        "status": "weaken",
+        "duration": 2,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "debuff"
+  ],
+  "xpTags": [
+    "strength"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 0
+  }
+}

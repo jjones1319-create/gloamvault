@@ -1,0 +1,132 @@
+{
+  "id": "orc",
+  "name": "Orc",
+  "attributeMods": {
+    "strength": 2,
+    "vitality": 2,
+    "perception": -1,
+    "wisdom": -1
+  },
+  "traits": [
+    {
+      "id": "orc-bloodrage",
+      "name": "Bloodrage",
+      "description": "+15% damage dealt while below 50% HP (checked when the action resolves).",
+      "rule": {
+        "damageMultiplierBelowHpPercent": {
+          "hpPercent": 50,
+          "multiplier": 1.15
+        }
+      }
+    },
+    {
+      "id": "orc-thick-hide",
+      "name": "Thick Hide",
+      "description": "+5 Defense, counted as armor Defense (Endurance stacks on top). Never wears.",
+      "effects": [
+        {
+          "kind": "buffStat",
+          "stat": "defense",
+          "amount": 5,
+          "target": "self",
+          "note": "counted as armorDefense, not attribute Defense"
+        }
+      ]
+    },
+    {
+      "id": "orc-intimidating",
+      "name": "Intimidating",
+      "description": "Warcry-school and Fear effects the Orc applies last 20% longer; fodder-role enemies have a 10% chance to lose their first action in a fight the Orc opens.",
+      "effects": [
+        {
+          "kind": "custom",
+          "customId": "warcry-duration-percent",
+          "percent": 20,
+          "target": "self",
+          "note": "durations of effects the holder applies from the Warden's Warcry school ×1.20; Fear is covered by the rule knob"
+        }
+      ],
+      "rule": {
+        "appliedDurationMultiplier": {
+          "fear": 1.2
+        },
+        "fodderFlinchChance": 10
+      }
+    },
+    {
+      "id": "orc-dark-steady-aim",
+      "name": "Dark-steady Aim",
+      "description": "Ignores whatever Accuracy penalty heroes take in Dark and Pitch light.",
+      "rule": {
+        "darkAccuracyImmune": true
+      }
+    },
+    {
+      "id": "orc-noisy",
+      "name": "Noisy",
+      "description": "+5% chance for the whole party to be ambushed; merchants charge 10% more (after Haggling); −10% XP on Wisdom-tagged actions; −2 Detection in Radiant light.",
+      "rule": {
+        "ambushModifier": 5,
+        "shopPriceMultiplier": 1.1,
+        "xpMultiplierByAttribute": {
+          "wisdom": 0.9
+        },
+        "detectionByLightBand": {
+          "radiant": -2
+        }
+      }
+    }
+  ],
+  "restrictions": [],
+  "senses": {
+    "darkvision": false
+  },
+  "body": {
+    "heightM": 1.95,
+    "shapeKeys": [
+      "spc_orc_bulk"
+    ],
+    "boneScales": {
+      "root": 1.12,
+      "upperLeg": 0.95,
+      "lowerLeg": 0.95,
+      "shoulder": 1.15,
+      "chest": 1.12,
+      "upperChest": 1.12,
+      "upperArm": 1.1,
+      "lowerArm": 1.12,
+      "hand": 1.15,
+      "head": 0.98,
+      "neck": 1.1
+    },
+    "parts": [
+      "spc_orc_tusks",
+      "spc_orc_ears",
+      "spc_orc_topknot"
+    ],
+    "skinTones": [
+      "#6f8a4d",
+      "#6c7566",
+      "#7a5238"
+    ],
+    "facePresets": 3,
+    "gearVariants": [
+      "helmet",
+      "chest",
+      "gloves"
+    ]
+  },
+  "creationBlurb": "Marcher clan-folk. Hits hardest, and hardest of all when hurt.",
+  "chips": {
+    "pros": [
+      "Biggest hits",
+      "Rage under half",
+      "Hide +5 Def"
+    ],
+    "cons": [
+      "Noisy",
+      "Shops +10%",
+      "Blinded by light"
+    ]
+  }
+}

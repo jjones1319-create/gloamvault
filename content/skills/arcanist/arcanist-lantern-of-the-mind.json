@@ -1,0 +1,69 @@
+{
+  "id": "arcanist-lantern-of-the-mind",
+  "classId": "arcanist",
+  "school": "arcana",
+  "tier": 3,
+  "name": "Lantern of the Mind",
+  "description": "Out of combat: +20 Light, once per room. In combat: every ally is immune to Blind and Fear for 3 turns and Shadow enemies take +15% damage for 3 turns.",
+  "type": "active",
+  "cost": 14,
+  "weight": 800,
+  "target": "allAllies",
+  "effects": [
+    {
+      "kind": "light",
+      "amount": 20,
+      "note": "out of combat, once per room"
+    },
+    {
+      "kind": "custom",
+      "customId": "immune-to-status",
+      "status": "blind",
+      "duration": 3,
+      "note": "the target cannot receive `status` for `duration` turns"
+    },
+    {
+      "kind": "custom",
+      "customId": "immune-to-status",
+      "status": "fear",
+      "duration": 3
+    },
+    {
+      "kind": "custom",
+      "customId": "vulnerable-if-shadow",
+      "percent": 15,
+      "duration": 3,
+      "target": "allEnemies",
+      "note": "Shadow-family enemies take +percent% damage for `duration` turns"
+    }
+  ],
+  "prerequisiteId": "arcanist-siphon",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "+30 Light.",
+    "effects": [
+      {
+        "kind": "light",
+        "amount": 30
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "light",
+    "buff",
+    "utility"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 40
+  }
+}

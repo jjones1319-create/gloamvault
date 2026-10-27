@@ -1,0 +1,79 @@
+{
+  "id": "ranger-aimed-shot",
+  "classId": "ranger",
+  "school": "marksman",
+  "tier": 1,
+  "name": "Aimed Shot",
+  "description": "1.4× Pierce to one enemy in any row; +10% Accuracy and +10% Crit Rate for this shot; 1 arrow.",
+  "type": "active",
+  "cost": 10,
+  "weight": 1000,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "shot-accuracy-bonus",
+      "amount": 10,
+      "target": "self",
+      "note": "+amount Accuracy for this action only"
+    },
+    {
+      "kind": "custom",
+      "customId": "shot-crit-bonus",
+      "amount": 10,
+      "target": "self",
+      "note": "+amount Crit Rate for this action only"
+    },
+    {
+      "kind": "damage",
+      "multiplier": 1.4,
+      "damageType": "pierce",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "custom",
+      "customId": "consume-ammo",
+      "amount": 1,
+      "target": "self",
+      "note": "1 arrow (or bolt)"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "requirements": {
+    "weaponTypes": [
+      "bow",
+      "shortbow",
+      "longbow",
+      "crossbow"
+    ]
+  },
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "+20% Crit Rate.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "shot-crit-bonus",
+        "amount": 20,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "reach"
+  ],
+  "xpTags": [
+    "perception",
+    "agility"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 65
+  }
+}

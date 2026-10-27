@@ -1,0 +1,58 @@
+{
+  "id": "shade-envenom",
+  "classId": "shade",
+  "school": "venom",
+  "tier": 2,
+  "name": "Envenom",
+  "description": "Your next 3 hits apply Poison for 3 turns; +5 Momentum.",
+  "type": "active",
+  "cost": 12,
+  "weight": 800,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "next-hits-apply-status",
+      "status": "poison",
+      "duration": 3,
+      "amount": 3,
+      "target": "self",
+      "note": "the holder’s next `amount` hits apply `status` for `duration` turns"
+    },
+    {
+      "kind": "momentum",
+      "amount": 5
+    }
+  ],
+  "prerequisiteId": "shade-steeped-blades",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "5 hits.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "next-hits-apply-status",
+        "status": "poison",
+        "duration": 3,
+        "amount": 5,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "dot"
+  ],
+  "xpTags": [
+    "agility"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 45
+  }
+}

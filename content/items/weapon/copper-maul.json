@@ -1,0 +1,67 @@
+{
+  "id": "copper-maul",
+  "name": "Copper Maul",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "F",
+  "materialLadder": "metal",
+  "materialRung": 0,
+  "weaponType": "maul",
+  "armorFamily": null,
+  "hands": 2,
+  "damageType": "blunt",
+  "weight": 1400,
+  "baseStats": {
+    "attackPhys": 24,
+    "speed": -10
+  },
+  "requirements": {
+    "strength": 18,
+    "wisdom": 0
+  },
+  "affixSlots": 0,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 3,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1.33,
+  "value": 225,
+  "classLock": [
+    "warden",
+    "blade"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": {
+    "text": "15% Daze on hit; 10% Stun on crit",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "daze",
+        "chance": 15,
+        "target": "enemy",
+        "note": "on hit"
+      },
+      {
+        "kind": "applyStatus",
+        "status": "stun",
+        "chance": 10,
+        "target": "enemy",
+        "note": "on crit only: the sim applies uniquePower lines on every hit, so the crit gate is a hook"
+      }
+    ]
+  },
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-maul-01",
+    "tintPrimary": "#b87333",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "copper"
+  }
+}

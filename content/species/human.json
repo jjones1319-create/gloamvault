@@ -1,0 +1,59 @@
+{
+  "id": "human",
+  "name": "Human",
+  "attributeMods": {
+    "wisdom": 1,
+    "willpower": 1
+  },
+  "traits": [
+    {
+      "id": "human-quick-study",
+      "name": "Quick Study",
+      "description": "+10% to every XP gain: skill ranks, attribute points, item levels, field skills and the pet's 50% share. Multiplies after Wisdom's +1% per point.",
+      "rule": {
+        "xpMultiplier": 1.1
+      }
+    },
+    {
+      "id": "human-adaptable",
+      "name": "Adaptable",
+      "description": "One extra loadout preset (a saved 4 + 2 + stance set swappable in town and rest rooms; default 2, Humans 3) and +1 starting rank in all eight field skills (rank 2 at creation).",
+      "rule": {
+        "loadoutPresets": 3,
+        "fieldSkillStartRank": 2
+      }
+    }
+  ],
+  "restrictions": [],
+  "senses": {
+    "darkvision": false
+  },
+  "body": {
+    "heightM": 1.8,
+    "shapeKeys": [],
+    "boneScales": {
+      "root": 1
+    },
+    "parts": [],
+    "skinTones": [
+      "#e8c4a8",
+      "#b8825a",
+      "#6b4531"
+    ],
+    "facePresets": 3,
+    "gearVariants": []
+  },
+  "creationBlurb": "Emberfall's own. Learns everything a little faster and has no weak spot.",
+  "chips": {
+    "pros": [
+      "+10% all XP",
+      "No weakness",
+      "Extra loadout"
+    ],
+    "cons": [
+      "No big stat",
+      "No darkvision",
+      "Nothing flashy"
+    ]
+  }
+}

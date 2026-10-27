@@ -1,0 +1,22 @@
+{
+  "id": "regenerating",
+  "name": "Regenerating",
+  "affixClass": "defensive",
+  "rule": "+5% max HP at the start of each of its turns; suppressed for 2 turns by Burn or Bleed.",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "regen-percent-max-hp",
+      "percent": 5,
+      "duration": 2,
+      "target": "self",
+      "note": "percent of max HP healed at each turn start; duration = turns the regen is suppressed after Burn or Bleed is applied"
+    }
+  ],
+  "hpMultiplier": 3,
+  "goldMultiplier": 3,
+  "xpClassBonus": 2,
+  "floorMin": 3,
+  "tell": null,
+  "excludesElement": false
+}

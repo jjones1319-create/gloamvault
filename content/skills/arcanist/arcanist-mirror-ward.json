@@ -1,0 +1,55 @@
+{
+  "id": "arcanist-mirror-ward",
+  "classId": "arcanist",
+  "school": "arcana",
+  "tier": 2,
+  "name": "Mirror Ward",
+  "description": "Every ally gains a Shield of 12% max HP for 2 turns; 20% of the damage it absorbs is returned to the attacker as Lightning.",
+  "type": "active",
+  "cost": 16,
+  "weight": 1000,
+  "target": "allAllies",
+  "effects": [
+    {
+      "kind": "shield",
+      "percent": 12,
+      "duration": 2
+    },
+    {
+      "kind": "custom",
+      "customId": "shield-reflect-percent",
+      "percent": 20,
+      "damageType": "lightning",
+      "note": "percent% of the damage this skill’s Shield absorbs is returned to the attacker as damageType"
+    }
+  ],
+  "prerequisiteId": "arcanist-arcane-ward",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Return 30%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "shield-reflect-percent",
+        "percent": 30,
+        "damageType": "lightning"
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "shield"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "defend",
+    "priority": 55
+  }
+}

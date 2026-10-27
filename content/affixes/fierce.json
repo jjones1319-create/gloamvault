@@ -1,0 +1,41 @@
+{
+  "id": "fierce",
+  "name": "Fierce",
+  "position": "prefix",
+  "lines": [
+    {
+      "bandMin": "F",
+      "bandMax": "D",
+      "stat": "attackPhys",
+      "unit": "percent",
+      "min": 3,
+      "max": 5
+    },
+    {
+      "bandMin": "C",
+      "bandMax": "A",
+      "stat": "attackPhys",
+      "unit": "percent",
+      "min": 5,
+      "max": 8
+    },
+    {
+      "bandMin": "S",
+      "bandMax": "God",
+      "stat": "attackPhys",
+      "unit": "percent",
+      "min": 8,
+      "max": 12
+    }
+  ],
+  "slots": [
+    "mainHand",
+    "offHand",
+    "ring"
+  ],
+  "weight": 3,
+  "tags": [
+    "offensive",
+    "attack"
+  ]
+}

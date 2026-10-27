@@ -1,0 +1,65 @@
+{
+  "id": "antidote",
+  "name": "Antidote",
+  "slot": null,
+  "kind": "consumable",
+  "grade": "F",
+  "materialLadder": null,
+  "materialRung": null,
+  "weaponType": null,
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": 600,
+  "baseStats": {},
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 0,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 3,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1,
+  "value": 6,
+  "classLock": [],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": {
+    "effects": [
+      {
+        "kind": "removeStatus",
+        "status": "poison"
+      },
+      {
+        "kind": "removeStatus",
+        "status": "bleed"
+      },
+      {
+        "kind": "custom",
+        "customId": "status-resist-bonus",
+        "status": "poison",
+        "percent": 50,
+        "duration": 3,
+        "note": "+50% Poison resistance for 3 rounds"
+      }
+    ],
+    "stackMax": 10,
+    "target": "ally",
+    "inCombat": true
+  },
+  "ammo": null,
+  "visual": {
+    "meshId": "consumable-antidote-01",
+    "tintPrimary": "#5fa83a",
+    "tintSecondary": "#2b2b2b",
+    "trimMetal": "none"
+  }
+}

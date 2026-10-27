@@ -105,6 +105,7 @@ export function makeHeroActor(t: Tuning, spec: HeroSpec): Actor {
     charging: null,
     statuses: [],
     modifiers: [],
+    hooks: [],
     guarding: false,
     downed: false,
     downedTurnsLeft: 0,

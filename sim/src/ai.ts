@@ -241,6 +241,24 @@ export function decide(rule: Rule, ctx: ConditionContext): Action {
   return DEFAULT_ACTION
 }
 
+/** Every matching clause's action in rule order, then the default: the caller takes the first it can carry out (D-079). */
+export function decideAll(rule: Rule, ctx: ConditionContext): Action[] {
+  const out: Action[] = []
+  for (const clause of rule.clauses) {
+    let ok = true
+    for (const c of clause.conditions) {
+      const v = ctx.value(c)
+      if (v === null || !compare(c.cmp, v, c.value)) {
+        ok = false
+        break
+      }
+    }
+    if (ok) out.push(clause.action)
+  }
+  out.push(DEFAULT_ACTION)
+  return out
+}
+
 /** The skill or attack ids a rule refers to by name, for the linter and the loadout screen. */
 export function ruleReferences(rule: Rule): string[] {
   const out: string[] = []

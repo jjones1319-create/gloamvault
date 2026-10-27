@@ -1,0 +1,48 @@
+{
+  "id": "oak-orb",
+  "name": "Oak Orb",
+  "slot": "offHand",
+  "kind": "focus",
+  "grade": "D",
+  "materialLadder": "wood",
+  "materialRung": 2,
+  "weaponType": "focus",
+  "armorFamily": null,
+  "hands": 1,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "attackSpell": 7,
+    "mana": 9
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 10
+  },
+  "affixSlots": 1,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 5,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 2.08,
+  "value": 228,
+  "classLock": [
+    "arcanist"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "focus-orb-01",
+    "tintPrimary": "#8b6b3e",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "iron"
+  }
+}

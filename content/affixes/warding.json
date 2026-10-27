@@ -1,0 +1,45 @@
+{
+  "id": "warding",
+  "name": "Warding",
+  "position": "prefix",
+  "lines": [
+    {
+      "bandMin": "F",
+      "bandMax": "D",
+      "stat": "resistance",
+      "unit": "flat",
+      "min": 2,
+      "max": 3
+    },
+    {
+      "bandMin": "C",
+      "bandMax": "A",
+      "stat": "resistance",
+      "unit": "flat",
+      "min": 3,
+      "max": 6
+    },
+    {
+      "bandMin": "S",
+      "bandMax": "God",
+      "stat": "resistance",
+      "unit": "flat",
+      "min": 6,
+      "max": 10
+    }
+  ],
+  "slots": [
+    "offHand",
+    "helmet",
+    "chest",
+    "legs",
+    "boots",
+    "gloves",
+    "talisman"
+  ],
+  "weight": 4,
+  "tags": [
+    "defensive",
+    "resistance"
+  ]
+}

@@ -1,0 +1,95 @@
+{
+  "id": "blade-crimson-crescendo",
+  "classId": "blade",
+  "school": "bloodletter",
+  "tier": 3,
+  "name": "Crimson Crescendo",
+  "description": "3.5× Slash to one enemy in any row, then 1.0× Slash to every other enemy in both rows; Bleed 2 turns on everything hit; heal 15% max HP; if the main target dies, Momentum resets to 30 instead of 0. 100 Momentum; never misses.",
+  "type": "active",
+  "cost": 0,
+  "weight": 1000,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 3.5,
+      "damageType": "slash",
+      "target": "enemy",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "custom",
+      "customId": "damage-other-enemies",
+      "multiplier": 1,
+      "damageType": "slash",
+      "target": "allEnemies",
+      "scalesWith": "strength",
+      "note": "multiplier × Attack to every enemy except the main target"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "bleed",
+      "duration": 2,
+      "target": "allEnemies"
+    },
+    {
+      "kind": "heal",
+      "percent": 15,
+      "target": "self",
+      "note": "15% of your own max HP"
+    },
+    {
+      "kind": "custom",
+      "customId": "ultimate-momentum-floor-on-kill",
+      "amount": 30,
+      "target": "self",
+      "note": "if the main target dies, Momentum is set to amount after the Ultimate instead of 0"
+    }
+  ],
+  "prerequisiteId": "blade-hemorrhage",
+  "isUltimate": true,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "4.0× / 1.2×; heal 25%.",
+    "effects": [
+      {
+        "kind": "damage",
+        "multiplier": 4,
+        "damageType": "slash",
+        "target": "enemy",
+        "scalesWith": "strength"
+      },
+      {
+        "kind": "custom",
+        "customId": "damage-other-enemies",
+        "multiplier": 1.2,
+        "damageType": "slash",
+        "target": "allEnemies",
+        "scalesWith": "strength"
+      },
+      {
+        "kind": "heal",
+        "percent": 25,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "aoe",
+    "dot",
+    "heal"
+  ],
+  "xpTags": [
+    "strength",
+    "agility"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 90
+  }
+}

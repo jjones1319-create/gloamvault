@@ -1,0 +1,21 @@
+{
+  "id": "warded",
+  "name": "Warded",
+  "affixClass": "defensive",
+  "rule": "Immune to one element, shown on the nameplate (never the template's weakness). Hitting it with that element gives it +10 Momentum-equivalent (it acts 100 energy sooner).",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "element-immunity-random",
+      "energy": 100,
+      "target": "self",
+      "note": "one element rolled at spawn, never one the template is weak to, shown on the nameplate; a hit of that element deals 0 and pulls the champion forward by energy"
+    }
+  ],
+  "hpMultiplier": 3,
+  "goldMultiplier": 3,
+  "xpClassBonus": 2,
+  "floorMin": 3,
+  "tell": null,
+  "excludesElement": true
+}

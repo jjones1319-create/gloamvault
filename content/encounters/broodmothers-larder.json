@@ -1,0 +1,25 @@
+{
+  "id": "broodmothers-larder",
+  "tableId": "cellars-e",
+  "dungeonId": "gravehollow-keep",
+  "floorBand": {
+    "min": 2,
+    "max": 3
+  },
+  "name": "Broodmother's Larder",
+  "composition": [
+    {
+      "monsterId": "broodmother",
+      "count": 1,
+      "row": "front"
+    },
+    {
+      "monsterId": "cellar-spider",
+      "count": 2,
+      "row": "back"
+    }
+  ],
+  "weight": 8,
+  "ambushModifier": 15,
+  "eliteAllowed": false
+}

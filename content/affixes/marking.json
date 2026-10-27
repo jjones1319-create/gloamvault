@@ -1,0 +1,53 @@
+{
+  "id": "marking",
+  "name": "Marking",
+  "position": "prefix",
+  "lines": [
+    {
+      "bandMin": "F",
+      "bandMax": "D",
+      "effect": {
+        "kind": "applyStatus",
+        "status": "mark",
+        "target": "enemy",
+        "note": "Bows, Crossbows, Daggers, Whips, Throwing"
+      },
+      "min": 5,
+      "max": 5
+    },
+    {
+      "bandMin": "C",
+      "bandMax": "A",
+      "effect": {
+        "kind": "applyStatus",
+        "status": "mark",
+        "target": "enemy",
+        "note": "Bows, Crossbows, Daggers, Whips, Throwing"
+      },
+      "min": 5,
+      "max": 10
+    },
+    {
+      "bandMin": "S",
+      "bandMax": "God",
+      "effect": {
+        "kind": "applyStatus",
+        "status": "mark",
+        "target": "enemy",
+        "note": "Bows, Crossbows, Daggers, Whips, Throwing"
+      },
+      "min": 10,
+      "max": 15
+    }
+  ],
+  "slots": [
+    "mainHand",
+    "offHand"
+  ],
+  "weight": 2,
+  "tags": [
+    "offensive",
+    "status",
+    "mark"
+  ]
+}

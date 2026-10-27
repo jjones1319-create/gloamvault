@@ -1,0 +1,40 @@
+{
+  "id": "pet-wisp-cleanse",
+  "classId": "pet",
+  "school": "pet",
+  "tier": 1,
+  "name": "Cleanse",
+  "description": "Strip one debuff from an ally.",
+  "type": "active",
+  "cost": 10,
+  "weight": 800,
+  "target": "ally",
+  "effects": [
+    {
+      "kind": "dispel",
+      "amount": 1,
+      "note": "on an ally: removes one debuff (the newest), not a buff"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "No Mastery line: pet actives do not rank (03 §9).",
+    "effects": []
+  },
+  "tags": [
+    "cleanse"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "heal",
+    "priority": 55
+  }
+}

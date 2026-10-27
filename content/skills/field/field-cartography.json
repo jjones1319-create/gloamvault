@@ -1,0 +1,33 @@
+{
+  "id": "field-cartography",
+  "classId": "field",
+  "school": "field",
+  "tier": 1,
+  "name": "Cartography",
+  "description": "The minimap reveals one more ring of rooms per 3 ranks; rank 10: the stairs are marked on entry. Arcanist +2 at start; Ranger +1.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Rank 10 is the line in the description; the per-rank numbers live in tuning.json (skills.fieldSkills).",
+    "effects": []
+  },
+  "tags": [
+    "field",
+    "utility"
+  ],
+  "xpTags": [],
+  "aiHints": {
+    "role": "utility",
+    "priority": 0
+  }
+}

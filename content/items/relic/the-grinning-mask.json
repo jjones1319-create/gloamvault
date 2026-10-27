@@ -1,0 +1,54 @@
+{
+  "id": "the-grinning-mask",
+  "name": "The Grinning Mask",
+  "slot": "relic",
+  "kind": "relic",
+  "grade": "C",
+  "materialLadder": null,
+  "materialRung": null,
+  "weaponType": null,
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": 600,
+  "baseStats": {},
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 2,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 6,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1,
+  "value": 720,
+  "classLock": [],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": {
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "fear",
+        "duration": 1,
+        "target": "enemyFront"
+      }
+    ],
+    "usesPerFight": 1,
+    "target": "enemyFront"
+  },
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "relic-grin-mask-01",
+    "tintPrimary": "#f1ece4",
+    "tintSecondary": "#9b1c1c",
+    "trimMetal": "brass"
+  }
+}

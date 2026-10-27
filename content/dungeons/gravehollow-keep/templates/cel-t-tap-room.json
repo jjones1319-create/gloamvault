@@ -1,0 +1,204 @@
+{
+  "id": "cel-t-tap-room",
+  "zoneId": "the-cellars",
+  "footprint": {
+    "w": 2,
+    "h": 2
+  },
+  "doors": [
+    {
+      "side": "south",
+      "offset": 0
+    },
+    {
+      "side": "east",
+      "offset": 0
+    },
+    {
+      "side": "west",
+      "offset": 0
+    }
+  ],
+  "kinds": [
+    "boss"
+  ],
+  "camera": {
+    "position": [
+      0,
+      10.6,
+      17
+    ],
+    "lookAt": [
+      0,
+      1,
+      0
+    ],
+    "fov": 44
+  },
+  "props": [
+    {
+      "meshId": "cel_table_long",
+      "position": [
+        0,
+        0,
+        -5
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cel_table_long",
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cel_barrel",
+      "position": [
+        -3,
+        0,
+        -2
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cel_barrel",
+      "position": [
+        -1,
+        0,
+        -2.2
+      ],
+      "rotationY": 20
+    },
+    {
+      "meshId": "cel_barrel",
+      "position": [
+        1,
+        0,
+        -2.2
+      ],
+      "rotationY": 40
+    },
+    {
+      "meshId": "cel_barrel",
+      "position": [
+        3,
+        0,
+        -2
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cel_barrel",
+      "position": [
+        -6.5,
+        0,
+        5
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cel_barrel",
+      "position": [
+        6.5,
+        0,
+        5
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cel_barrel",
+      "position": [
+        -6.5,
+        0,
+        -6
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cel_barrel",
+      "position": [
+        6.5,
+        0,
+        -6
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cel_banner_grin",
+      "position": [
+        -4,
+        2.5,
+        -7.9
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cel_banner_grin",
+      "position": [
+        4,
+        2.5,
+        -7.9
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "shr_torch_sconce",
+      "position": [
+        -7.9,
+        2,
+        -4
+      ],
+      "rotationY": 90
+    },
+    {
+      "meshId": "shr_torch_sconce",
+      "position": [
+        -7.9,
+        2,
+        4
+      ],
+      "rotationY": 90
+    },
+    {
+      "meshId": "shr_torch_sconce",
+      "position": [
+        7.9,
+        2,
+        -4
+      ],
+      "rotationY": -90
+    },
+    {
+      "meshId": "shr_torch_sconce",
+      "position": [
+        7.9,
+        2,
+        4
+      ],
+      "rotationY": -90
+    },
+    {
+      "meshId": "shr_torch_sconce",
+      "position": [
+        -2,
+        2,
+        -7.9
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "shr_torch_sconce",
+      "position": [
+        2,
+        2,
+        -7.9
+      ],
+      "rotationY": 0
+    }
+  ],
+  "triBudget": 30000,
+  "drawCallBudget": 60
+}

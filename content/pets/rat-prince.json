@@ -1,0 +1,55 @@
+{
+  "id": "rat-prince",
+  "name": "Rat Prince",
+  "speciesFamilyId": "cellar-vermin",
+  "gradeBand": {
+    "min": "F",
+    "max": "E"
+  },
+  "trait": {
+    "id": "royal-hoard",
+    "name": "Royal Hoard",
+    "description": "+10% gold found; grows as the prince sniffs out coin.",
+    "effects": [
+      {
+        "kind": "loot",
+        "percent": 10,
+        "target": "allAllies",
+        "note": "gold found by the party +10%"
+      }
+    ],
+    "growsBy": "perception"
+  },
+  "actives": [
+    {
+      "skillId": "pet-rat-prince-nibble",
+      "unlockLevel": 5
+    },
+    {
+      "skillId": "pet-rat-prince-scavenge",
+      "unlockLevel": 15
+    }
+  ],
+  "stamina": 30,
+  "baseStats": {
+    "hp": 0.7,
+    "attackPhys": 0.8,
+    "defense": 0.7,
+    "speed": 1.1,
+    "detection": 1.2
+  },
+  "roleLean": "forage",
+  "visual": {
+    "baseMesh": "rat",
+    "palette": [
+      "#5a4a3a",
+      "#d9d2c5",
+      "#b0b0b0"
+    ]
+  },
+  "eggSource": {
+    "chestBand": "F",
+    "familyId": "cellar-vermin"
+  },
+  "creationChoice": true
+}

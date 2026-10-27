@@ -1,0 +1,1519 @@
+{
+  "id": "gravehollow-keep",
+  "name": "Gravehollow Keep",
+  "lore": "A border keep that sank into its own catacombs; the Grinning Company squats in its cellars, the dead still keep their own vigil below, and something older waits in the drowned vault.",
+  "levelRange": {
+    "min": 1,
+    "max": 14
+  },
+  "unlockedBy": null,
+  "zones": [
+    {
+      "id": "the-cellars",
+      "name": "The Cellars",
+      "floors": {
+        "from": 1,
+        "to": 3
+      },
+      "familyId": "cellar-vermin",
+      "hunterId": "old-gnaw",
+      "bossIds": [
+        "captain-vexa-marrow"
+      ],
+      "waystone": true,
+      "biomeKitId": "cel"
+    },
+    {
+      "id": "the-crypts",
+      "name": "The Crypts",
+      "floors": {
+        "from": 4,
+        "to": 6
+      },
+      "familyId": "restless-dead",
+      "hunterId": "wardens-hound",
+      "bossIds": [
+        "barrow-warden"
+      ],
+      "waystone": true,
+      "biomeKitId": "cry"
+    },
+    {
+      "id": "the-drowned-vault",
+      "name": "The Drowned Vault",
+      "floors": {
+        "from": 7,
+        "to": 10
+      },
+      "familyId": "tidebound",
+      "hunterId": "vault-leech",
+      "bossIds": [
+        "sister-naesa",
+        "hollow-king"
+      ],
+      "waystone": true,
+      "biomeKitId": "vlt"
+    }
+  ],
+  "floors": [
+    {
+      "merchant": false,
+      "bossId": null,
+      "lightAtArena": null,
+      "floor": 1,
+      "zoneId": "the-cellars",
+      "monsterLevel": 1,
+      "roomsMin": 5,
+      "roomsMax": 7,
+      "lightAtEntry": 100,
+      "encounterTableIds": [
+        "cellars-a",
+        "cellars-b"
+      ],
+      "eliteAffixCount": 1,
+      "trapBand": {
+        "min": 8,
+        "max": 12
+      },
+      "secretChance": 10,
+      "secretDifficulty": 10,
+      "hunterClock": 40
+    },
+    {
+      "merchant": true,
+      "bossId": null,
+      "lightAtArena": null,
+      "floor": 2,
+      "zoneId": "the-cellars",
+      "monsterLevel": 2,
+      "roomsMin": 8,
+      "roomsMax": 10,
+      "lightAtEntry": 90,
+      "encounterTableIds": [
+        "cellars-a",
+        "cellars-b",
+        "cellars-c",
+        "cellars-e"
+      ],
+      "eliteAffixCount": 1,
+      "trapBand": {
+        "min": 10,
+        "max": 14
+      },
+      "secretChance": 25,
+      "secretDifficulty": 12,
+      "hunterClock": 40
+    },
+    {
+      "merchant": false,
+      "bossId": "captain-vexa-marrow",
+      "lightAtArena": 60,
+      "floor": 3,
+      "zoneId": "the-cellars",
+      "monsterLevel": 4,
+      "roomsMin": 8,
+      "roomsMax": 11,
+      "lightAtEntry": 85,
+      "encounterTableIds": [
+        "cellars-b",
+        "cellars-c",
+        "cellars-d",
+        "cellars-e"
+      ],
+      "eliteAffixCount": 2,
+      "trapBand": {
+        "min": 12,
+        "max": 16
+      },
+      "secretChance": 25,
+      "secretDifficulty": 14,
+      "hunterClock": null
+    },
+    {
+      "merchant": false,
+      "bossId": null,
+      "lightAtArena": null,
+      "floor": 4,
+      "zoneId": "the-crypts",
+      "monsterLevel": 5,
+      "roomsMin": 9,
+      "roomsMax": 12,
+      "lightAtEntry": 75,
+      "encounterTableIds": [
+        "crypts-a"
+      ],
+      "eliteAffixCount": 2,
+      "trapBand": {
+        "min": 16,
+        "max": 20
+      },
+      "secretChance": 25,
+      "secretDifficulty": 18,
+      "hunterClock": 40
+    },
+    {
+      "merchant": true,
+      "bossId": null,
+      "lightAtArena": null,
+      "floor": 5,
+      "zoneId": "the-crypts",
+      "monsterLevel": 7,
+      "roomsMin": 9,
+      "roomsMax": 12,
+      "lightAtEntry": 70,
+      "encounterTableIds": [
+        "crypts-a",
+        "crypts-b",
+        "crypts-e"
+      ],
+      "eliteAffixCount": 2,
+      "trapBand": {
+        "min": 18,
+        "max": 22
+      },
+      "secretChance": 25,
+      "secretDifficulty": 20,
+      "hunterClock": 40
+    },
+    {
+      "merchant": false,
+      "bossId": "barrow-warden",
+      "lightAtArena": 50,
+      "floor": 6,
+      "zoneId": "the-crypts",
+      "monsterLevel": 8,
+      "roomsMin": 9,
+      "roomsMax": 12,
+      "lightAtEntry": 65,
+      "encounterTableIds": [
+        "crypts-a",
+        "crypts-b",
+        "crypts-e"
+      ],
+      "eliteAffixCount": 2,
+      "trapBand": {
+        "min": 20,
+        "max": 24
+      },
+      "secretChance": 25,
+      "secretDifficulty": 22,
+      "hunterClock": null
+    },
+    {
+      "merchant": false,
+      "bossId": null,
+      "lightAtArena": null,
+      "floor": 7,
+      "zoneId": "the-drowned-vault",
+      "monsterLevel": 10,
+      "roomsMin": 10,
+      "roomsMax": 13,
+      "lightAtEntry": 60,
+      "encounterTableIds": [
+        "vault-a"
+      ],
+      "eliteAffixCount": 3,
+      "trapBand": {
+        "min": 26,
+        "max": 30
+      },
+      "secretChance": 25,
+      "secretDifficulty": 28,
+      "hunterClock": 40
+    },
+    {
+      "merchant": true,
+      "bossId": null,
+      "lightAtArena": null,
+      "floor": 8,
+      "zoneId": "the-drowned-vault",
+      "monsterLevel": 11,
+      "roomsMin": 10,
+      "roomsMax": 14,
+      "lightAtEntry": 55,
+      "encounterTableIds": [
+        "vault-a",
+        "vault-b",
+        "vault-e"
+      ],
+      "eliteAffixCount": 3,
+      "trapBand": {
+        "min": 28,
+        "max": 32
+      },
+      "secretChance": 25,
+      "secretDifficulty": 30,
+      "hunterClock": 40
+    },
+    {
+      "merchant": false,
+      "bossId": "sister-naesa",
+      "lightAtArena": 40,
+      "floor": 9,
+      "zoneId": "the-drowned-vault",
+      "monsterLevel": 13,
+      "roomsMin": 10,
+      "roomsMax": 14,
+      "lightAtEntry": 50,
+      "encounterTableIds": [
+        "vault-a",
+        "vault-b",
+        "vault-e"
+      ],
+      "eliteAffixCount": 3,
+      "trapBand": {
+        "min": 30,
+        "max": 34
+      },
+      "secretChance": 25,
+      "secretDifficulty": 32,
+      "hunterClock": null
+    },
+    {
+      "merchant": false,
+      "bossId": "hollow-king",
+      "lightAtArena": 70,
+      "floor": 10,
+      "zoneId": "the-drowned-vault",
+      "monsterLevel": 14,
+      "roomsMin": 4,
+      "roomsMax": 4,
+      "lightAtEntry": 70,
+      "encounterTableIds": [
+        "vault-throne"
+      ],
+      "eliteAffixCount": 3,
+      "trapBand": {
+        "min": 0,
+        "max": 0
+      },
+      "secretChance": 0,
+      "secretDifficulty": 1,
+      "hunterClock": null
+    }
+  ],
+  "generator": {
+    "roomWeights": {
+      "fight": 50,
+      "elite": 8,
+      "rest": 10,
+      "merchant": 5,
+      "treasure": 7,
+      "curio": 15,
+      "trapGauntlet": 5
+    },
+    "grammar": [
+      "G1 Floor(normal) -> Entry · Spine · Stairs",
+      "G2 Floor(zoneBoss) -> Entry · Spine · Anteroom(Rest) · Boss",
+      "G3 Floor(throne) -> Entry · Antechamber(Fight) · Rest · Boss (F10: fixed, no further rules)",
+      "G4 Spine -> Seg{3-5}",
+      "G5 Seg -> Room | Room · Fork (Fork on 45% of segments, at most 3 Forks per floor)",
+      "G6 Fork -> Branch{1-2}",
+      "G7 Branch -> Room{0-2} · Cap",
+      "G8 Cap -> Treasure [40] | Curio [30] | Fight [20] | Elite [10]",
+      "G9 Room -> Fight [50] | Elite [8] | Rest [10] | Merchant [5] | Treasure [7] | Curio [15] | Gauntlet [5]",
+      "G10 Rest: exactly one per floor - if G9 rolled none, the Spine's middle Room becomes Rest; a second Rest re-rolls as Fight",
+      "G11 Merchant: on F2, F5, F8 exactly one - if none rolled, the last Spine Room before Stairs becomes Merchant; on other floors at most one",
+      "G12 KeyLock (30%): choose a Spine edge after the Rest; mark its door Locked; place the Key as the loot of a room on a Branch rooted before the lock (if no such Branch exists, insert Fork -> Branch(Fight · Cap(Fight)) at the Room before the lock and put the Key in the Cap)",
+      "G13 Secret (25%): attach Secret to a random Room with a free socket; its door difficulty = the floor's secret difficulty",
+      "G14 Roles: re-roll the last Fight room's encounter until the floor meets 06 §8.2's role mix (>= 2 Fodder-only packs, >= 1 Special, >= 1 role-Elite from F2, <= 1 Monster room)",
+      "G15 Farthest: after layout, BFS from Entry; if Stairs/Boss is not the unique farthest room by hop count, swap it with the farthest leaf and re-lay out"
+    ],
+    "keyLockChance": 30,
+    "secretChance": 25,
+    "minRooms": 4,
+    "maxRooms": 14,
+    "maxBranches": 3,
+    "bossFarthest": true,
+    "grid": {
+      "w": 8,
+      "h": 6
+    }
+  },
+  "curios": [
+    {
+      "id": "sealed-cask",
+      "name": "Sealed Cask",
+      "zoneId": "the-cellars",
+      "description": "A 2 m cask on a cradle, bunged and wax-sealed, something scratching inside.",
+      "choices": [
+        {
+          "label": "Open",
+          "requires": [],
+          "outcomes": [
+            {
+              "chance": 60,
+              "effect": {
+                "kind": "loot",
+                "amount": 5,
+                "note": "gold 0.05 R (hundredths of R, D-064)"
+              }
+            },
+            {
+              "chance": 25,
+              "effect": {
+                "kind": "custom",
+                "customId": "ambush-encounter",
+                "summonId": "plague-rat",
+                "note": "a Plague Rat ambush: the party surprised"
+              }
+            },
+            {
+              "chance": 15,
+              "effect": {
+                "kind": "custom",
+                "customId": "drop-item-of-grade",
+                "amount": 2,
+                "note": "a Fine (D) item"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Smoke them out",
+          "requires": [
+            {
+              "kind": "item",
+              "id": "torch",
+              "amount": 1,
+              "consumed": true
+            }
+          ],
+          "outcomes": [
+            {
+              "chance": 100,
+              "effect": {
+                "kind": "loot",
+                "amount": 5,
+                "note": "the purchase: the same purse, no roll"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Leave",
+          "requires": [],
+          "outcomes": []
+        }
+      ],
+      "safeItemId": "torch"
+    },
+    {
+      "id": "companys-dice-table",
+      "name": "The Company's Dice Table",
+      "zoneId": "the-cellars",
+      "description": "A barrel-head with three dice and a chalk tally.",
+      "choices": [
+        {
+          "label": "Stake 0.05 R",
+          "requires": [
+            {
+              "kind": "gold",
+              "amount": 0.05,
+              "note": "the stake: the party must carry it; the outcomes move the gold"
+            }
+          ],
+          "outcomes": [
+            {
+              "chance": 45,
+              "effect": {
+                "kind": "loot",
+                "amount": 10,
+                "note": "win 0.10 R"
+              }
+            },
+            {
+              "chance": 40,
+              "effect": {
+                "kind": "loot",
+                "amount": -5,
+                "note": "lose the stake"
+              }
+            },
+            {
+              "chance": 15,
+              "effect": {
+                "kind": "custom",
+                "customId": "ambush-encounter",
+                "summonId": "grinning-cutpurse",
+                "amount": 2,
+                "note": "a Cutpurse ambush that steals the stake (0.05 R) first; returned on the thief's death as Pickpocket gold is"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Play with loaded dice",
+          "requires": [
+            {
+              "kind": "item",
+              "id": "loaded-dice",
+              "amount": 1,
+              "consumed": true
+            }
+          ],
+          "outcomes": [
+            {
+              "chance": 100,
+              "effect": {
+                "kind": "loot",
+                "amount": 10,
+                "note": "the purchase: 100% win, the stake never at risk"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Walk away",
+          "requires": [],
+          "outcomes": []
+        }
+      ],
+      "safeItemId": "loaded-dice"
+    },
+    {
+      "id": "rat-kings-nest",
+      "name": "Rat-King's Nest",
+      "zoneId": "the-cellars",
+      "description": "Straw, rags and bones with a dozen tails knotted together.",
+      "choices": [
+        {
+          "label": "Dig",
+          "requires": [],
+          "outcomes": [
+            {
+              "chance": 50,
+              "effect": {
+                "kind": "custom",
+                "customId": "give-material",
+                "amount": 3,
+                "note": "3 Rawhide"
+              }
+            },
+            {
+              "chance": 35,
+              "effect": {
+                "kind": "custom",
+                "customId": "ambush-encounter",
+                "summonId": "plague-rat",
+                "note": "a Plague Rat swarm ambush"
+              }
+            },
+            {
+              "chance": 15,
+              "effect": {
+                "kind": "applyStatus",
+                "status": "poison",
+                "duration": 3,
+                "target": "self",
+                "note": "on the digger"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Dig carefully",
+          "requires": [
+            {
+              "kind": "fieldSkillRank",
+              "id": "foraging",
+              "min": 3
+            }
+          ],
+          "outcomes": [
+            {
+              "chance": 100,
+              "effect": {
+                "kind": "custom",
+                "customId": "give-material",
+                "amount": 3,
+                "percent": 20,
+                "note": "3 Rawhide and a rare-part roll at 20% (percent = the extra rare roll)"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Burn",
+          "requires": [
+            {
+              "kind": "item",
+              "id": "torch",
+              "amount": 1,
+              "consumed": true
+            }
+          ],
+          "outcomes": [
+            {
+              "chance": 70,
+              "effect": {
+                "kind": "custom",
+                "customId": "roll-rare-part",
+                "percent": 100,
+                "note": "one rare part of the family"
+              }
+            },
+            {
+              "chance": 30,
+              "effect": {
+                "kind": "custom",
+                "customId": "nothing"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Leave",
+          "requires": [],
+          "outcomes": []
+        }
+      ],
+      "safeItemId": null
+    },
+    {
+      "id": "hanging-cage",
+      "name": "Hanging Cage",
+      "zoneId": "the-cellars",
+      "description": "An iron cage on a chain with a prisoner who says he is not with the Company.",
+      "choices": [
+        {
+          "label": "Free him",
+          "requires": [
+            {
+              "kind": "fieldSkillRank",
+              "id": "lockpicking",
+              "min": 2,
+              "note": "Lockpicking vs 12: rank 2 is the first rank whose roll 50% + 2% × (rank × 5 − 12 / 2) beats even odds"
+            }
+          ],
+          "outcomes": [
+            {
+              "chance": 60,
+              "effect": {
+                "kind": "custom",
+                "customId": "reveal-floor",
+                "target": "room",
+                "note": "he draws the floor map: all rooms revealed"
+              }
+            },
+            {
+              "chance": 30,
+              "effect": {
+                "kind": "custom",
+                "customId": "ambush-encounter",
+                "summonId": "grinning-cutpurse",
+                "amount": 2,
+                "note": "he is a Company plant: a Cutpurse ambush"
+              }
+            },
+            {
+              "chance": 10,
+              "effect": {
+                "kind": "custom",
+                "customId": "tome-tier-1",
+                "note": "a Tier I Tome of a party class, bag draw"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Open the lock with a skeleton key",
+          "requires": [
+            {
+              "kind": "item",
+              "id": "skeleton-key",
+              "amount": 1,
+              "consumed": true
+            }
+          ],
+          "outcomes": [
+            {
+              "chance": 100,
+              "effect": {
+                "kind": "custom",
+                "customId": "reveal-floor",
+                "target": "room",
+                "note": "the purchase: the map"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Leave him",
+          "requires": [],
+          "outcomes": []
+        }
+      ],
+      "safeItemId": "skeleton-key"
+    },
+    {
+      "id": "mouldering-larder",
+      "name": "Mouldering Larder",
+      "zoneId": "the-cellars",
+      "description": "Shelves of cheese and sausage, mostly green.",
+      "choices": [
+        {
+          "label": "Eat",
+          "requires": [],
+          "outcomes": [
+            {
+              "chance": 50,
+              "effect": {
+                "kind": "custom",
+                "customId": "status-next-fights",
+                "status": "regen",
+                "amount": 2,
+                "target": "allAllies",
+                "note": "Regen at the start of the next 2 fights on this floor"
+              }
+            },
+            {
+              "chance": 30,
+              "effect": {
+                "kind": "applyStatus",
+                "status": "poison",
+                "duration": 3,
+                "target": "allAllies",
+                "note": "on everyone"
+              }
+            },
+            {
+              "chance": 20,
+              "effect": {
+                "kind": "custom",
+                "customId": "cooking-ingredient",
+                "amount": 1,
+                "note": "+1 Cooking ingredient"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Pick out what is still good",
+          "requires": [
+            {
+              "kind": "fieldSkillRank",
+              "id": "cooking",
+              "min": 2
+            }
+          ],
+          "outcomes": [
+            {
+              "chance": 100,
+              "effect": {
+                "kind": "custom",
+                "customId": "larder-feast",
+                "target": "allAllies",
+                "note": "the purchase: Regen for the next 2 fights and +1 Cooking ingredient (one outcome carries one line, so this is a composite hook)"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Leave",
+          "requires": [],
+          "outcomes": []
+        }
+      ],
+      "safeItemId": null
+    },
+    {
+      "id": "toll-shrine",
+      "name": "Toll Shrine",
+      "zoneId": "the-cellars",
+      "description": "A crude shrine to the Grinning Captain: a painted grin, coins in a bowl.",
+      "choices": [
+        {
+          "label": "Pay 0.10 R",
+          "requires": [
+            {
+              "kind": "gold",
+              "amount": 0.1
+            }
+          ],
+          "outcomes": [
+            {
+              "chance": 100,
+              "effect": {
+                "kind": "custom",
+                "customId": "floor-gold-percent",
+                "percent": 10,
+                "target": "room",
+                "note": "+10% gold found for the rest of this floor"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Deface",
+          "requires": [],
+          "outcomes": [
+            {
+              "chance": 50,
+              "effect": {
+                "kind": "custom",
+                "customId": "status-next-fights",
+                "status": "fortify",
+                "amount": 1,
+                "target": "allAllies",
+                "note": "Fortify in the next fight"
+              }
+            },
+            {
+              "chance": 50,
+              "effect": {
+                "kind": "custom",
+                "customId": "status-for-floor",
+                "status": "curse",
+                "target": "allAllies",
+                "note": "Curse for the rest of the floor"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Cleanse with holy water",
+          "requires": [
+            {
+              "kind": "item",
+              "id": "holy-water",
+              "amount": 1,
+              "consumed": true
+            }
+          ],
+          "outcomes": [
+            {
+              "chance": 100,
+              "effect": {
+                "kind": "custom",
+                "customId": "toll-shrine-cleanse",
+                "amount": 10,
+                "status": "fear",
+                "target": "allAllies",
+                "note": "the purchase: +10 light and Fear immunity for the rest of the floor (composite)"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Leave",
+          "requires": [],
+          "outcomes": []
+        }
+      ],
+      "safeItemId": "holy-water"
+    },
+    {
+      "id": "lost-lantern",
+      "name": "Lost Lantern",
+      "zoneId": "the-cellars",
+      "description": "A Company lantern, still lit, dropped in a hurry.",
+      "choices": [
+        {
+          "label": "Pick up",
+          "requires": [],
+          "outcomes": [
+            {
+              "chance": 70,
+              "effect": {
+                "kind": "light",
+                "amount": 15,
+                "target": "room"
+              }
+            },
+            {
+              "chance": 30,
+              "effect": {
+                "kind": "custom",
+                "customId": "lantern-gutters",
+                "amount": -10,
+                "summonId": "cellar-spider",
+                "target": "room",
+                "note": "it gutters: −10 light, then a Cellar Spider ambush"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Relight",
+          "requires": [
+            {
+              "kind": "item",
+              "id": "flint-and-oil",
+              "amount": 1,
+              "consumed": true
+            }
+          ],
+          "outcomes": [
+            {
+              "chance": 100,
+              "effect": {
+                "kind": "light",
+                "amount": 25,
+                "target": "room",
+                "note": "the purchase: no roll"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Leave",
+          "requires": [],
+          "outcomes": []
+        }
+      ],
+      "safeItemId": "flint-and-oil"
+    },
+    {
+      "id": "gallows-beam",
+      "name": "Gallows Beam",
+      "zoneId": "the-cellars",
+      "description": "A beam with a noose and a pair of good boots still in it.",
+      "choices": [
+        {
+          "label": "Search",
+          "requires": [],
+          "outcomes": [
+            {
+              "chance": 55,
+              "effect": {
+                "kind": "loot",
+                "amount": 8,
+                "note": "gold 0.08 R"
+              }
+            },
+            {
+              "chance": 30,
+              "effect": {
+                "kind": "custom",
+                "customId": "ambush-encounter",
+                "summonId": "cellar-spider",
+                "note": "a Cellar Spider ambush"
+              }
+            },
+            {
+              "chance": 15,
+              "effect": {
+                "kind": "custom",
+                "customId": "drop-item-of-grade",
+                "amount": 1,
+                "note": "Boots (E grade)"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Cut the tripwire, then search",
+          "requires": [
+            {
+              "kind": "detection",
+              "min": 14,
+              "note": "Detection ≥ 14 reveals the tripwire under the beam"
+            }
+          ],
+          "outcomes": [
+            {
+              "chance": 50,
+              "effect": {
+                "kind": "loot",
+                "amount": 8,
+                "note": "gold 0.08 R"
+              }
+            },
+            {
+              "chance": 50,
+              "effect": {
+                "kind": "custom",
+                "customId": "drop-item-of-grade",
+                "amount": 1,
+                "note": "Boots (E grade)"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Leave",
+          "requires": [],
+          "outcomes": []
+        }
+      ],
+      "safeItemId": null
+    }
+  ],
+  "traps": [
+    {
+      "id": "tripwire-bell",
+      "name": "Tripwire Bell",
+      "zoneId": "the-cellars",
+      "difficulty": 8,
+      "trigger": "step",
+      "triggerNote": "crossing the room's midline",
+      "revealedBy": {
+        "detection": 8,
+        "classId": null,
+        "petId": null,
+        "fieldSkillRank": null,
+        "criticalScout": true
+      },
+      "effects": [
+        {
+          "kind": "custom",
+          "customId": "floor-clock-add",
+          "amount": 4,
+          "target": "room"
+        },
+        {
+          "kind": "custom",
+          "customId": "next-fight-ambush",
+          "percent": 30,
+          "target": "room",
+          "note": "the next fight on this floor is an ambush, +30% surprise"
+        }
+      ],
+      "blocksDoor": false,
+      "disarmReward": [
+        {
+          "kind": "material",
+          "id": "rawhide",
+          "amount": 2
+        },
+        {
+          "kind": "gold",
+          "amount": 3,
+          "note": "0.01 R at R ≈ 300"
+        }
+      ]
+    },
+    {
+      "id": "loose-flagstone",
+      "name": "Loose Flagstone",
+      "zoneId": "the-cellars",
+      "difficulty": 10,
+      "trigger": "step",
+      "triggerNote": "stepping on the cel_floor_flag_b tile by the grate",
+      "revealedBy": {
+        "detection": 10,
+        "classId": null,
+        "petId": "cellar-hound",
+        "fieldSkillRank": null,
+        "criticalScout": false
+      },
+      "effects": [
+        {
+          "kind": "custom",
+          "customId": "damage-percent-max-hp",
+          "percent": 8,
+          "damageType": "blunt",
+          "note": "the lowest-Perception hero drops 2 m: 8% of max HP"
+        },
+        {
+          "kind": "applyStatus",
+          "status": "daze"
+        }
+      ],
+      "blocksDoor": false,
+      "disarmReward": [
+        {
+          "kind": "material",
+          "id": "copper",
+          "amount": 3
+        }
+      ]
+    },
+    {
+      "id": "rat-cage-drop",
+      "name": "Rat Cage Drop",
+      "zoneId": "the-cellars",
+      "difficulty": 12,
+      "trigger": "open",
+      "triggerNote": "opening a specific door (shown on the door once revealed)",
+      "revealedBy": {
+        "detection": 12,
+        "classId": null,
+        "petId": null,
+        "fieldSkillRank": null,
+        "criticalScout": false
+      },
+      "effects": [
+        {
+          "kind": "custom",
+          "customId": "ambush-encounter",
+          "summonId": "plague-rat",
+          "amount": 6,
+          "note": "a Plague Rat swarm ambush: 6 rats at ×1.0, fodder only"
+        }
+      ],
+      "blocksDoor": true,
+      "disarmReward": [
+        {
+          "kind": "material",
+          "id": "rawhide",
+          "amount": 2
+        },
+        {
+          "kind": "gold",
+          "amount": 6,
+          "note": "0.02 R at R ≈ 300"
+        }
+      ]
+    },
+    {
+      "id": "spring-spikes",
+      "name": "Spring Spikes",
+      "zoneId": "the-cellars",
+      "difficulty": 12,
+      "trigger": "open",
+      "triggerNote": "opening a trapped chest",
+      "revealedBy": {
+        "detection": 12,
+        "classId": null,
+        "petId": null,
+        "fieldSkillRank": null,
+        "criticalScout": false
+      },
+      "effects": [
+        {
+          "kind": "custom",
+          "customId": "trap-flat-damage",
+          "amount": 12,
+          "multiplier": 4,
+          "damageType": "pierce",
+          "note": "Pierce 12 + 4 × floor to the opener (amount + multiplier × F); a Skeleton Key opens the chest safely (07 §2.7)"
+        },
+        {
+          "kind": "applyStatus",
+          "status": "bleed",
+          "duration": 3
+        }
+      ],
+      "blocksDoor": false,
+      "disarmReward": [
+        {
+          "kind": "material",
+          "id": "copper",
+          "amount": 2
+        }
+      ]
+    },
+    {
+      "id": "greased-stairs",
+      "name": "Greased Stairs",
+      "zoneId": "the-cellars",
+      "difficulty": 14,
+      "trigger": "open",
+      "triggerNote": "taking the stairs down",
+      "revealedBy": {
+        "detection": 14,
+        "classId": null,
+        "petId": null,
+        "fieldSkillRank": {
+          "fieldSkill": "cartography",
+          "min": 2
+        },
+        "criticalScout": false
+      },
+      "effects": [
+        {
+          "kind": "custom",
+          "customId": "status-next-fights",
+          "status": "slow",
+          "amount": 1,
+          "duration": 2,
+          "target": "allAllies",
+          "note": "every hero is Slowed for the first 2 turns of the next floor's first fight"
+        }
+      ],
+      "blocksDoor": true,
+      "disarmReward": [
+        {
+          "kind": "item",
+          "id": "flint-and-oil",
+          "amount": 1,
+          "note": "the grease"
+        }
+      ]
+    },
+    {
+      "id": "tar-pot",
+      "name": "Tar Pot",
+      "zoneId": "the-cellars",
+      "difficulty": 16,
+      "trigger": "step",
+      "triggerNote": "a tripline by the brazier",
+      "revealedBy": {
+        "detection": 16,
+        "classId": null,
+        "petId": null,
+        "fieldSkillRank": null,
+        "criticalScout": false
+      },
+      "effects": [
+        {
+          "kind": "custom",
+          "customId": "status-flat-per-tick",
+          "status": "burn",
+          "duration": 3,
+          "amount": 6,
+          "multiplier": 2,
+          "target": "partyFront",
+          "note": "Burn 3 turns on both front-row heroes at 6 + 2 × floor per tick (a fixed magnitude; the status record ticks 20% of a hit)"
+        },
+        {
+          "kind": "light",
+          "amount": 10,
+          "target": "room",
+          "note": "it burns bright"
+        }
+      ],
+      "blocksDoor": false,
+      "disarmReward": [
+        {
+          "kind": "item",
+          "id": "flint-and-oil",
+          "amount": 1
+        },
+        {
+          "kind": "gold",
+          "amount": 6,
+          "note": "0.02 R at R ≈ 300"
+        }
+      ]
+    }
+  ],
+  "templates": [],
+  "pacts": [
+    {
+      "id": "candle-pact",
+      "name": "Candle Pact",
+      "description": "Light starts at 25; Torches give +15.",
+      "weight": 2,
+      "knobs": {
+        "lightStart": 25,
+        "torchValue": 15
+      },
+      "ruleFlags": [],
+      "reward": {
+        "goldPercent": 20,
+        "xpPercent": 0,
+        "chestShiftPp": 0
+      }
+    },
+    {
+      "id": "hungry-hunter",
+      "name": "Hungry Hunter",
+      "description": "The hunter enters at 20 ticks.",
+      "weight": 2,
+      "knobs": {
+        "hunterClock": 20
+      },
+      "ruleFlags": [],
+      "reward": {
+        "goldPercent": 15,
+        "xpPercent": 10,
+        "chestShiftPp": 0
+      }
+    },
+    {
+      "id": "brittle",
+      "name": "Brittle",
+      "description": "Durability wears ×1.5.",
+      "weight": 1,
+      "knobs": {
+        "enemyHpPercent": 100
+      },
+      "ruleFlags": [
+        "wear-x1-5"
+      ],
+      "reward": {
+        "goldPercent": 25,
+        "xpPercent": 0,
+        "chestShiftPp": 0
+      }
+    },
+    {
+      "id": "thin-line",
+      "name": "Thin Line",
+      "description": "Revives per floor −2 (minimum 0): 1 on Normal, 0 on Hard and Nightmare.",
+      "weight": 2,
+      "knobs": {
+        "revivesPerFloor": 1
+      },
+      "ruleFlags": [
+        "revives-minus-2"
+      ],
+      "reward": {
+        "goldPercent": 0,
+        "xpPercent": 15,
+        "chestShiftPp": 0
+      }
+    },
+    {
+      "id": "loud-boots",
+      "name": "Loud Boots",
+      "description": "The party is ambushed 15% more often; monsters are never ambushed.",
+      "weight": 1,
+      "knobs": {
+        "enemyHpPercent": 100
+      },
+      "ruleFlags": [
+        "loud-boots"
+      ],
+      "reward": {
+        "goldPercent": 10,
+        "xpPercent": 5,
+        "chestShiftPp": 0
+      }
+    },
+    {
+      "id": "grinning-odds",
+      "name": "Grinning Odds",
+      "description": "Elite room weight 16; elites carry +1 affix.",
+      "weight": 2,
+      "knobs": {
+        "eliteRoomWeight": 16,
+        "eliteAffixBonus": 1
+      },
+      "ruleFlags": [],
+      "reward": {
+        "goldPercent": 0,
+        "xpPercent": 20,
+        "chestShiftPp": 5
+      }
+    },
+    {
+      "id": "every-door-locked",
+      "name": "Every Door Locked",
+      "description": "A Key-and-Lock pair on every floor; chests are locked 30% of the time.",
+      "weight": 1,
+      "knobs": {
+        "enemyHpPercent": 100
+      },
+      "ruleFlags": [
+        "every-door-locked",
+        "locked-chests-30"
+      ],
+      "reward": {
+        "goldPercent": 10,
+        "xpPercent": 0,
+        "chestShiftPp": 0
+      }
+    },
+    {
+      "id": "blind-map",
+      "name": "Blind Map",
+      "description": "No minimap, no scouting, Cartography does nothing.",
+      "weight": 2,
+      "knobs": {
+        "enemyHpPercent": 100
+      },
+      "ruleFlags": [
+        "no-minimap",
+        "no-scouting",
+        "no-cartography"
+      ],
+      "reward": {
+        "goldPercent": 15,
+        "xpPercent": 10,
+        "chestShiftPp": 0
+      }
+    },
+    {
+      "id": "long-night",
+      "name": "Long Night",
+      "description": "Light drains −8 per new room.",
+      "weight": 1,
+      "knobs": {
+        "enemyHpPercent": 100
+      },
+      "ruleFlags": [
+        "light-drain-8"
+      ],
+      "reward": {
+        "goldPercent": 15,
+        "xpPercent": 0,
+        "chestShiftPp": 0
+      }
+    },
+    {
+      "id": "pack-hunters",
+      "name": "Pack Hunters",
+      "description": "Enemy count ×1.25.",
+      "weight": 2,
+      "knobs": {
+        "enemyCountPercent": 125
+      },
+      "ruleFlags": [],
+      "reward": {
+        "goldPercent": 0,
+        "xpPercent": 20,
+        "chestShiftPp": 0
+      }
+    },
+    {
+      "id": "iron-oath",
+      "name": "Iron Oath",
+      "description": "No retreat; a wipe also costs the Waystone progress of this delve.",
+      "weight": 3,
+      "knobs": {
+        "retreatTollPercent": 100
+      },
+      "ruleFlags": [
+        "no-retreat",
+        "wipe-loses-waystone"
+      ],
+      "reward": {
+        "goldPercent": 40,
+        "xpPercent": 10,
+        "chestShiftPp": 0
+      }
+    },
+    {
+      "id": "twin-hunter",
+      "name": "Twin Hunter",
+      "description": "Two hunters enter at 40 ticks from opposite ends of the floor.",
+      "weight": 3,
+      "knobs": {
+        "enemyHpPercent": 100
+      },
+      "ruleFlags": [
+        "twin-hunter"
+      ],
+      "reward": {
+        "goldPercent": 25,
+        "xpPercent": 15,
+        "chestShiftPp": 10
+      }
+    }
+  ],
+  "presets": {
+    "normal": {
+      "enemyHpPercent": 100,
+      "enemyDamagePercent": 100,
+      "enemyCountPercent": 100,
+      "enemySpeedPercent": 100,
+      "eliteRoomWeight": 8,
+      "eliteAffixBonus": 0,
+      "hunterClock": 40,
+      "lightStart": 100,
+      "torchValue": 25,
+      "revivesPerFloor": 3,
+      "trapDifficultyBonus": 0,
+      "retreatTollPercent": 0,
+      "goldPercent": 100,
+      "xpPercent": 100,
+      "chestShiftPp": 0,
+      "chestCentreShift": 0,
+      "bossExtraRareParts": 0,
+      "finalBossExtraShards": 0
+    },
+    "hard": {
+      "enemyHpPercent": 125,
+      "enemyDamagePercent": 120,
+      "enemyCountPercent": 110,
+      "enemySpeedPercent": 105,
+      "eliteRoomWeight": 11,
+      "eliteAffixBonus": 0,
+      "hunterClock": 32,
+      "lightStart": 80,
+      "torchValue": 25,
+      "revivesPerFloor": 1,
+      "trapDifficultyBonus": 4,
+      "retreatTollPercent": 15,
+      "goldPercent": 125,
+      "xpPercent": 115,
+      "chestShiftPp": 10,
+      "chestCentreShift": 0,
+      "bossExtraRareParts": 1,
+      "finalBossExtraShards": 0
+    },
+    "nightmare": {
+      "enemyHpPercent": 150,
+      "enemyDamagePercent": 145,
+      "enemyCountPercent": 125,
+      "enemySpeedPercent": 112,
+      "eliteRoomWeight": 14,
+      "eliteAffixBonus": 1,
+      "hunterClock": 24,
+      "lightStart": 60,
+      "torchValue": 20,
+      "revivesPerFloor": 0,
+      "trapDifficultyBonus": 8,
+      "retreatTollPercent": 25,
+      "goldPercent": 160,
+      "xpPercent": 130,
+      "chestShiftPp": 0,
+      "chestCentreShift": 1,
+      "bossExtraRareParts": 1,
+      "finalBossExtraShards": 1
+    }
+  },
+  "secrets": [
+    {
+      "zoneId": "the-cellars",
+      "rewards": [
+        {
+          "kind": "gold",
+          "amount": 45,
+          "note": "0.15 R at R ≈ 300"
+        },
+        {
+          "kind": "item",
+          "id": "torch",
+          "amount": 2
+        },
+        {
+          "kind": "item",
+          "grade": "D",
+          "chance": 30,
+          "note": "a Fine (D) item on the shelf"
+        }
+      ],
+      "chest": "small",
+      "blessing": null,
+      "shortcutToExit": false,
+      "revealsFloor": false,
+      "lightBonus": 0,
+      "fieldSkillXp": null,
+      "id": "smugglers-cache",
+      "name": "Smuggler's Cache",
+      "description": "A loose wall behind the wine racks: crates the Company never came back for."
+    },
+    {
+      "zoneId": "the-cellars",
+      "rewards": [],
+      "chest": null,
+      "blessing": {
+        "name": "Warm Hands",
+        "description": "Regen for every fight on this floor.",
+        "effects": [
+          {
+            "kind": "applyStatus",
+            "status": "regen",
+            "target": "allAllies",
+            "note": "applied at the start of every fight on this floor; the blessing lasts the floor"
+          }
+        ]
+      },
+      "shortcutToExit": false,
+      "revealsFloor": false,
+      "lightBonus": 10,
+      "fieldSkillXp": null,
+      "id": "hearth-shrine",
+      "name": "Hearth Shrine",
+      "description": "A cold hearth that lights for the party."
+    },
+    {
+      "zoneId": "the-cellars",
+      "rewards": [],
+      "chest": null,
+      "blessing": null,
+      "shortcutToExit": true,
+      "revealsFloor": false,
+      "lightBonus": 0,
+      "fieldSkillXp": null,
+      "id": "the-companys-bolt-hole",
+      "name": "The Company's Bolt-hole",
+      "description": "A crawlway that comes out in the Stairs room: the stairs are revealed and the route marked; taking it costs 0 ticks."
+    }
+  ]
+}

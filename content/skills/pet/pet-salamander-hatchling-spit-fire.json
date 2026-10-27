@@ -1,0 +1,46 @@
+{
+  "id": "pet-salamander-hatchling-spit-fire",
+  "classId": "pet",
+  "school": "pet",
+  "tier": 1,
+  "name": "Spit Fire",
+  "description": "Fire ×1.1; Burn 2 turns.",
+  "type": "active",
+  "cost": 10,
+  "weight": 800,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1.1,
+      "damageType": "fire"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "burn",
+      "duration": 2
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "No Mastery line: pet actives do not rank (03 §9).",
+    "effects": []
+  },
+  "tags": [
+    "singleTarget",
+    "dot"
+  ],
+  "xpTags": [
+    "strength"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 60
+  }
+}

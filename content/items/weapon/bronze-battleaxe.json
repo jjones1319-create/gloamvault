@@ -1,0 +1,50 @@
+{
+  "id": "bronze-battleaxe",
+  "name": "Bronze Battleaxe",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "E",
+  "materialLadder": "metal",
+  "materialRung": 1,
+  "weaponType": "greataxe",
+  "armorFamily": null,
+  "hands": 2,
+  "damageType": "slash",
+  "weight": 1400,
+  "baseStats": {
+    "attackPhys": 30,
+    "critDamage": 25,
+    "accuracy": -3,
+    "speed": -5
+  },
+  "requirements": {
+    "strength": 18,
+    "wisdom": 0
+  },
+  "affixSlots": 1,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 4,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1.67,
+  "value": 360,
+  "classLock": [
+    "blade"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-battleaxe-01",
+    "tintPrimary": "#cd7f32",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "bronze"
+  }
+}

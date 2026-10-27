@@ -1,0 +1,57 @@
+{
+  "id": "salamander-hatchling",
+  "name": "Salamander Hatchling",
+  "speciesFamilyId": "salamanders-and-fire-elementals",
+  "gradeBand": {
+    "min": "B",
+    "max": "A"
+  },
+  "trait": {
+    "id": "ember-belly",
+    "name": "Ember Belly",
+    "description": "Immune to Fire damage; grows as it bathes in it.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "pet-resist",
+        "damageType": "fire",
+        "percent": -100,
+        "target": "self",
+        "note": "Fire damage the pet takes −100% (immune)"
+      }
+    ],
+    "growsBy": "strength"
+  },
+  "actives": [
+    {
+      "skillId": "pet-salamander-hatchling-spit-fire",
+      "unlockLevel": 5
+    },
+    {
+      "skillId": "pet-salamander-hatchling-molten-hide",
+      "unlockLevel": 15
+    }
+  ],
+  "stamina": 30,
+  "baseStats": {
+    "hp": 0.9,
+    "attackPhys": 1,
+    "attackSpell": 1,
+    "defense": 0.8,
+    "speed": 1.1
+  },
+  "roleLean": "fierce",
+  "visual": {
+    "baseMesh": "salamander",
+    "palette": [
+      "#5a2f2a",
+      "#c2452d",
+      "#ffb347"
+    ]
+  },
+  "eggSource": {
+    "chestBand": "B",
+    "familyId": "salamanders-and-fire-elementals"
+  },
+  "creationChoice": false
+}

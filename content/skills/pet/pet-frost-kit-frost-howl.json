@@ -1,0 +1,47 @@
+{
+  "id": "pet-frost-kit-frost-howl",
+  "classId": "pet",
+  "school": "pet",
+  "tier": 1,
+  "name": "Frost Howl",
+  "description": "Frost ×1.0 to the target's whole row; Chill 2 turns.",
+  "type": "active",
+  "cost": 12,
+  "weight": 1000,
+  "target": "enemyRow",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1,
+      "damageType": "frost",
+      "note": "Frost Nip widened to the row: the third active rule 28 requires of an A–S species; 06 §9 lists only two — Proposed"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "chill",
+      "duration": 2
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "No Mastery line: pet actives do not rank (03 §9).",
+    "effects": []
+  },
+  "tags": [
+    "aoe",
+    "debuff"
+  ],
+  "xpTags": [
+    "agility"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 60
+  }
+}

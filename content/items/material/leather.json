@@ -1,0 +1,43 @@
+{
+  "id": "leather",
+  "name": "Leather",
+  "slot": null,
+  "kind": "material",
+  "grade": "E",
+  "materialLadder": "hide",
+  "materialRung": 1,
+  "weaponType": null,
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {},
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 1,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 4,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1,
+  "value": 20,
+  "classLock": [],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "material-hide-leather-01",
+    "tintPrimary": "#7a4b2a",
+    "tintSecondary": "#2b2b2b",
+    "trimMetal": "none"
+  }
+}

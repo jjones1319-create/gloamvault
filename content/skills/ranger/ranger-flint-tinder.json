@@ -1,0 +1,53 @@
+{
+  "id": "ranger-flint-tinder",
+  "classId": "ranger",
+  "school": "pathfinder",
+  "tier": 1,
+  "name": "Flint & Tinder",
+  "description": "In the corridor: Light +10 without spending a torch. In combat: lights the room for this fight — monsters lose their Dark-band Accuracy and Damage bonuses.",
+  "type": "active",
+  "cost": 8,
+  "weight": 800,
+  "target": "room",
+  "effects": [
+    {
+      "kind": "light",
+      "amount": 10,
+      "target": "room"
+    },
+    {
+      "kind": "custom",
+      "customId": "negate-dark-band-bonuses",
+      "target": "room",
+      "note": "combat use: for this fight the monsters get none of the Dark or Pitch band bonuses"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Light +15.",
+    "effects": [
+      {
+        "kind": "light",
+        "amount": 15,
+        "target": "room"
+      }
+    ]
+  },
+  "tags": [
+    "light",
+    "utility"
+  ],
+  "xpTags": [
+    "perception"
+  ],
+  "aiHints": {
+    "role": "utility",
+    "priority": 30
+  }
+}

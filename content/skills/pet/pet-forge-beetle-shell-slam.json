@@ -1,0 +1,40 @@
+{
+  "id": "pet-forge-beetle-shell-slam",
+  "classId": "pet",
+  "school": "pet",
+  "tier": 1,
+  "name": "Shell Slam",
+  "description": "Blunt ×1.2.",
+  "type": "active",
+  "cost": 10,
+  "weight": 1000,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1.2,
+      "damageType": "blunt"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "No Mastery line: pet actives do not rank (03 §9).",
+    "effects": []
+  },
+  "tags": [
+    "singleTarget"
+  ],
+  "xpTags": [
+    "strength"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 55
+  }
+}

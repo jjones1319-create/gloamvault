@@ -5,99 +5,326 @@
   "description": "A dungeon: its zones and floors, the floor generator's knobs, its curios, traps, room templates, Pacts and difficulty presets (03-GAME-DESIGN §4, §11, §12; the content of 07-DUNGEONS.md §2, §6). One file per dungeon at content/dungeons/<dungeon>/dungeon.json; its room templates may be split out to content/dungeons/<dungeon>/templates/<id>.json (each validating against #/$defs/template) and are merged by the loader. Monsters and encounters are separate files that point here by dungeonId.",
   "type": "object",
   "properties": {
-    "id": { "$ref": "common.schema.json#/$defs/id" },
-    "name": { "type": "string", "minLength": 1 },
-    "lore": { "type": "string", "description": "The Waystone blurb.", "minLength": 1 },
-    "levelRange": { "$ref": "common.schema.json#/$defs/intRange", "description": "Monster levels from the first floor to the last (§11.4: Gravehollow L1–14)." },
-    "unlockedBy": { "$ref": "common.schema.json#/$defs/nullableId", "description": "The dungeon whose final boss opens this one (§11.4); null for the first." },
-    "zones": { "type": "array", "items": { "$ref": "#/$defs/zone" }, "minItems": 1 },
-    "floors": { "type": "array", "items": { "$ref": "#/$defs/floor" }, "minItems": 1 },
-    "generator": { "$ref": "#/$defs/generator" },
-    "curios": { "type": "array", "items": { "$ref": "#/$defs/curio" } },
-    "traps": { "type": "array", "items": { "$ref": "#/$defs/trap" } },
-    "templates": { "type": "array", "description": "Room templates written inline; templates/<id>.json files are added to this list by the loader.", "items": { "$ref": "#/$defs/template" } },
-    "pacts": { "type": "array", "description": "The Pact modifier menu (§11.2, 07 §6.2); may be empty until Phase 7.", "items": { "$ref": "#/$defs/pact" } },
+    "id": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "lore": {
+      "type": "string",
+      "description": "The Waystone blurb.",
+      "minLength": 1
+    },
+    "levelRange": {
+      "$ref": "common.schema.json#/$defs/intRange",
+      "description": "Monster levels from the first floor to the last (§11.4: Gravehollow L1–14)."
+    },
+    "unlockedBy": {
+      "$ref": "common.schema.json#/$defs/nullableId",
+      "description": "The dungeon whose final boss opens this one (§11.4); null for the first."
+    },
+    "zones": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/zone"
+      },
+      "minItems": 1
+    },
+    "floors": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/floor"
+      },
+      "minItems": 1
+    },
+    "generator": {
+      "$ref": "#/$defs/generator"
+    },
+    "curios": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/curio"
+      }
+    },
+    "traps": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/trap"
+      }
+    },
+    "templates": {
+      "type": "array",
+      "description": "Room templates written inline; templates/<id>.json files are added to this list by the loader.",
+      "items": {
+        "$ref": "#/$defs/template"
+      }
+    },
+    "pacts": {
+      "type": "array",
+      "description": "The Pact modifier menu (§11.2, 07 §6.2); may be empty until Phase 7.",
+      "items": {
+        "$ref": "#/$defs/pact"
+      }
+    },
     "presets": {
       "type": "object",
       "description": "The three launch difficulty presets as knob sets (§11.2, §12.1, 07 §6.1). Normal is the baseline.",
       "properties": {
-        "normal": { "$ref": "#/$defs/knobs" },
-        "hard": { "$ref": "#/$defs/knobs" },
-        "nightmare": { "$ref": "#/$defs/knobs" }
+        "normal": {
+          "$ref": "#/$defs/knobs"
+        },
+        "hard": {
+          "$ref": "#/$defs/knobs"
+        },
+        "nightmare": {
+          "$ref": "#/$defs/knobs"
+        }
       },
-      "required": ["normal", "hard", "nightmare"],
+      "required": [
+        "normal",
+        "hard",
+        "nightmare"
+      ],
       "additionalProperties": false
+    },
+    "secrets": {
+      "type": "array",
+      "description": "Secret rooms (03 §4.3, 07 §2.6): what a found secret holds. Secrets reward, never gate. Optional until Phase 3 writes them.",
+      "items": {
+        "$ref": "#/$defs/secret"
+      }
     }
   },
-  "required": ["id", "name", "lore", "levelRange", "unlockedBy", "zones", "floors", "generator", "curios", "traps", "templates", "pacts", "presets"],
+  "required": [
+    "id",
+    "name",
+    "lore",
+    "levelRange",
+    "unlockedBy",
+    "zones",
+    "floors",
+    "generator",
+    "curios",
+    "traps",
+    "templates",
+    "pacts",
+    "presets"
+  ],
   "additionalProperties": false,
   "$defs": {
     "zone": {
       "type": "object",
       "description": "3–4 floors with one monster family, at most one hunter and one or more bosses (§1, §11.3; 07 §2.3). A zone that carries the dungeon's last floor lists its zone boss and the final boss; the throne floor may also be its own hunter-less zone.",
       "properties": {
-        "id": { "$ref": "common.schema.json#/$defs/id" },
-        "name": { "type": "string", "minLength": 1 },
+        "id": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
         "floors": {
           "type": "object",
           "properties": {
-            "from": { "type": "integer", "minimum": 1 },
-            "to": { "type": "integer", "minimum": 1 }
+            "from": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "to": {
+              "type": "integer",
+              "minimum": 1
+            }
           },
-          "required": ["from", "to"],
+          "required": [
+            "from",
+            "to"
+          ],
           "additionalProperties": false
         },
-        "familyId": { "$ref": "common.schema.json#/$defs/id" },
-        "hunterId": { "$ref": "common.schema.json#/$defs/nullableId", "description": "Monster id with the hunter block; null for a zone with no hunter (the throne floor)." },
+        "familyId": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "hunterId": {
+          "$ref": "common.schema.json#/$defs/nullableId",
+          "description": "Monster id with the hunter block; null for a zone with no hunter (the throne floor)."
+        },
         "bossIds": {
           "type": "array",
           "description": "Monster ids with the boss block, in floor order; each sits on the floor whose bossId names it. The linter checks every one exists and is placed on a floor of this zone.",
-          "items": { "$ref": "common.schema.json#/$defs/id" },
+          "items": {
+            "$ref": "common.schema.json#/$defs/id"
+          },
           "minItems": 1,
           "uniqueItems": true
         },
-        "waystone": { "type": "boolean", "description": "Whether beating the zone boss opens a Waystone to start later delves here." },
-        "biomeKitId": { "$ref": "common.schema.json#/$defs/id", "description": "The art kit (tiles, props, lighting) the zone's templates use (07 §2.2)." }
+        "waystone": {
+          "type": "boolean",
+          "description": "Whether beating the zone boss opens a Waystone to start later delves here."
+        },
+        "biomeKitId": {
+          "$ref": "common.schema.json#/$defs/id",
+          "description": "The art kit (tiles, props, lighting) the zone's templates use (07 §2.2)."
+        }
       },
-      "required": ["id", "name", "floors", "familyId", "hunterId", "bossIds", "waystone", "biomeKitId"],
+      "required": [
+        "id",
+        "name",
+        "floors",
+        "familyId",
+        "hunterId",
+        "bossIds",
+        "waystone",
+        "biomeKitId"
+      ],
       "additionalProperties": false
     },
     "floor": {
       "type": "object",
       "properties": {
-        "floor": { "type": "integer", "minimum": 1 },
-        "zoneId": { "$ref": "common.schema.json#/$defs/id" },
-        "monsterLevel": { "type": "integer", "description": "The floor band level (§11.2; 06: F1 L1 · F2 L2 · F3 L4 …).", "minimum": 1 },
-        "roomsMin": { "type": "integer", "minimum": 3 },
-        "roomsMax": { "type": "integer", "minimum": 3 },
-        "lightAtEntry": { "$ref": "common.schema.json#/$defs/percent", "description": "Light 0–100 the entry lantern sets when the party arrives below it (§4.2, 07 §2.3)." },
+        "floor": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "zoneId": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "monsterLevel": {
+          "type": "integer",
+          "description": "The floor band level (§11.2; 06: F1 L1 · F2 L2 · F3 L4 …).",
+          "minimum": 1
+        },
+        "roomsMin": {
+          "type": "integer",
+          "minimum": 3
+        },
+        "roomsMax": {
+          "type": "integer",
+          "minimum": 3
+        },
+        "lightAtEntry": {
+          "$ref": "common.schema.json#/$defs/percent",
+          "description": "Light 0–100 the entry lantern sets when the party arrives below it (§4.2, 07 §2.3)."
+        },
         "encounterTableIds": {
           "type": "array",
           "description": "The tables this floor draws from with equal weight, never the same twice in a row (07 §2.3); each matches encounters' tableId.",
-          "items": { "$ref": "common.schema.json#/$defs/id" },
+          "items": {
+            "$ref": "common.schema.json#/$defs/id"
+          },
           "minItems": 1,
           "uniqueItems": true
         },
-        "eliteAffixCount": { "type": "integer", "description": "Affixes an Elite room's champion carries (§11.1: 1 on floors 1–2, 2 on 3–6, 3 on 7+).", "minimum": 0, "maximum": 4 },
-        "trapBand": { "$ref": "common.schema.json#/$defs/intRange", "description": "Trap difficulty range on this floor (§4.3: 8–60 by band)." },
-        "secretChance": { "$ref": "common.schema.json#/$defs/percent", "description": "Chance of a secret room (§4.3: about 25)." },
-        "secretDifficulty": { "type": "integer", "description": "Detection needed to see the secret door (07 §2.3, §2.6).", "minimum": 1, "maximum": 100 },
-        "merchant": { "type": "boolean", "description": "A Merchant room is placed; always true on the floor before a zone boss (§8.4)." },
+        "eliteAffixCount": {
+          "type": "integer",
+          "description": "Affixes an Elite room's champion carries (§11.1: 1 on floors 1–2, 2 on 3–6, 3 on 7+).",
+          "minimum": 0,
+          "maximum": 4
+        },
+        "trapBand": {
+          "$ref": "common.schema.json#/$defs/intRange",
+          "description": "Trap difficulty range on this floor (§4.3: 8–60 by band)."
+        },
+        "secretChance": {
+          "$ref": "common.schema.json#/$defs/percent",
+          "description": "Chance of a secret room (§4.3: about 25)."
+        },
+        "secretDifficulty": {
+          "type": "integer",
+          "description": "Detection needed to see the secret door (07 §2.3, §2.6).",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "merchant": {
+          "type": "boolean",
+          "description": "A Merchant room is placed; always true on the floor before a zone boss (§8.4)."
+        },
         "hunterClock": {
           "description": "Floor-clock ticks before the zone's hunter enters (§4.5: 40); null for no hunter (boss floors).",
-          "anyOf": [{ "type": "integer", "minimum": 1 }, { "type": "null" }]
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
-        "bossId": { "$ref": "common.schema.json#/$defs/nullableId", "description": "The boss on this floor (one of the zone's bossIds), or null." },
+        "bossId": {
+          "$ref": "common.schema.json#/$defs/nullableId",
+          "description": "The boss on this floor (one of the zone's bossIds), or null."
+        },
         "lightAtArena": {
           "description": "The light the boss arena sets on entry (07 §2.8); null on floors without a boss.",
-          "anyOf": [{ "$ref": "common.schema.json#/$defs/percent" }, { "type": "null" }]
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/percent"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       },
-      "required": ["floor", "zoneId", "monsterLevel", "roomsMin", "roomsMax", "lightAtEntry", "encounterTableIds", "eliteAffixCount", "trapBand", "secretChance", "secretDifficulty", "merchant", "hunterClock", "bossId", "lightAtArena"],
+      "required": [
+        "floor",
+        "zoneId",
+        "monsterLevel",
+        "roomsMin",
+        "roomsMax",
+        "lightAtEntry",
+        "encounterTableIds",
+        "eliteAffixCount",
+        "trapBand",
+        "secretChance",
+        "secretDifficulty",
+        "merchant",
+        "hunterClock",
+        "bossId",
+        "lightAtArena"
+      ],
       "additionalProperties": false,
       "allOf": [
-        { "if": { "properties": { "bossId": { "type": "null" } }, "required": ["bossId"] }, "then": { "properties": { "lightAtArena": { "type": "null" } } } },
-        { "if": { "properties": { "bossId": { "type": "string" } }, "required": ["bossId"] }, "then": { "properties": { "hunterClock": { "type": "null" } } } }
+        {
+          "if": {
+            "properties": {
+              "bossId": {
+                "type": "null"
+              }
+            },
+            "required": [
+              "bossId"
+            ]
+          },
+          "then": {
+            "properties": {
+              "lightAtArena": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "bossId": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "bossId"
+            ]
+          },
+          "then": {
+            "properties": {
+              "hunterClock": {
+                "type": "null"
+              }
+            }
+          }
+        }
       ]
     },
     "generator": {
@@ -107,49 +334,109 @@
         "roomWeights": {
           "type": "object",
           "description": "Roll weights for the rolled room kinds (§4.6); the linter checks they sum to 100. Fixed kinds (entry, stairs, boss, secret, keyRoom, lockedDoor) are placed by the grammar and are left out or 0.",
-          "propertyNames": { "$ref": "common.schema.json#/$defs/roomKind" },
-          "additionalProperties": { "$ref": "common.schema.json#/$defs/percent" }
+          "propertyNames": {
+            "$ref": "common.schema.json#/$defs/roomKind"
+          },
+          "additionalProperties": {
+            "$ref": "common.schema.json#/$defs/percent"
+          }
         },
         "grammar": {
           "type": "array",
           "description": "Rewrite rules, one per string, applied in order by the generator (e.g. 'START -> entry PATH stairs', 'PATH -> room PATH | room').",
-          "items": { "type": "string", "minLength": 1 },
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
           "minItems": 1
         },
-        "keyLockChance": { "$ref": "common.schema.json#/$defs/percent", "description": "Chance of one Key-and-Lock pair per floor (§11.1: 30)." },
-        "secretChance": { "$ref": "common.schema.json#/$defs/percent", "description": "Default secret-room chance when a floor does not override it (§11.1: 25)." },
-        "minRooms": { "type": "integer", "minimum": 3 },
-        "maxRooms": { "type": "integer", "minimum": 3 },
-        "maxBranches": { "type": "integer", "description": "Side branches off the guaranteed path (§11.1: up to 3).", "minimum": 0 },
-        "bossFarthest": { "type": "boolean", "description": "Boss rooms are farthest from the entry by room count (§11.1)." },
+        "keyLockChance": {
+          "$ref": "common.schema.json#/$defs/percent",
+          "description": "Chance of one Key-and-Lock pair per floor (§11.1: 30)."
+        },
+        "secretChance": {
+          "$ref": "common.schema.json#/$defs/percent",
+          "description": "Default secret-room chance when a floor does not override it (§11.1: 25)."
+        },
+        "minRooms": {
+          "type": "integer",
+          "minimum": 3
+        },
+        "maxRooms": {
+          "type": "integer",
+          "minimum": 3
+        },
+        "maxBranches": {
+          "type": "integer",
+          "description": "Side branches off the guaranteed path (§11.1: up to 3).",
+          "minimum": 0
+        },
+        "bossFarthest": {
+          "type": "boolean",
+          "description": "Boss rooms are farthest from the entry by room count (§11.1)."
+        },
         "grid": {
           "type": "object",
           "description": "The coarse layout grid in cells (07 §2.10: 8 × 6).",
           "properties": {
-            "w": { "type": "integer", "minimum": 1 },
-            "h": { "type": "integer", "minimum": 1 }
+            "w": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "h": {
+              "type": "integer",
+              "minimum": 1
+            }
           },
-          "required": ["w", "h"],
+          "required": [
+            "w",
+            "h"
+          ],
           "additionalProperties": false
         }
       },
-      "required": ["roomWeights", "grammar", "keyLockChance", "secretChance", "minRooms", "maxRooms", "maxBranches", "bossFarthest", "grid"],
+      "required": [
+        "roomWeights",
+        "grammar",
+        "keyLockChance",
+        "secretChance",
+        "minRooms",
+        "maxRooms",
+        "maxBranches",
+        "bossFarthest",
+        "grid"
+      ],
       "additionalProperties": false
     },
     "curio": {
       "type": "object",
       "description": "An interactable with a choice (§4.6, 07 §2.4). A safe item or a gate on a choice turns the gamble into a purchase.",
       "properties": {
-        "id": { "$ref": "common.schema.json#/$defs/id" },
-        "name": { "type": "string", "minLength": 1 },
-        "zoneId": { "$ref": "common.schema.json#/$defs/nullableId", "description": "The zone whose floors roll it; null for any zone of the dungeon." },
-        "description": { "type": "string", "minLength": 1 },
+        "id": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "zoneId": {
+          "$ref": "common.schema.json#/$defs/nullableId",
+          "description": "The zone whose floors roll it; null for any zone of the dungeon."
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
         "choices": {
           "type": "array",
           "items": {
             "type": "object",
             "properties": {
-              "label": { "type": "string", "description": "The button text.", "minLength": 1 },
+              "label": {
+                "type": "string",
+                "description": "The button text.",
+                "minLength": 1
+              },
               "requires": {
                 "$ref": "common.schema.json#/$defs/requirementList",
                 "description": "Gates on the choice (07 §2.4: a Torch consumed, Foraging rank 3+, Detection ≥ 14, Strength ≥ 14, Lockpicking vs 12, a 0.05 R stake). A choice whose only requirement is the curio's safeItemId is the purchase. Empty means always offered."
@@ -160,85 +447,197 @@
                 "items": {
                   "type": "object",
                   "properties": {
-                    "chance": { "$ref": "common.schema.json#/$defs/percent" },
-                    "effect": { "$ref": "common.schema.json#/$defs/effect" }
+                    "chance": {
+                      "$ref": "common.schema.json#/$defs/percent"
+                    },
+                    "effect": {
+                      "$ref": "common.schema.json#/$defs/effect"
+                    }
                   },
-                  "required": ["chance", "effect"],
+                  "required": [
+                    "chance",
+                    "effect"
+                  ],
                   "additionalProperties": false
                 }
               }
             },
-            "required": ["label", "requires", "outcomes"],
+            "required": [
+              "label",
+              "requires",
+              "outcomes"
+            ],
             "additionalProperties": false
           },
           "minItems": 2
         },
-        "safeItemId": { "$ref": "common.schema.json#/$defs/nullableId", "description": "The item that makes the good outcome certain (§4.6: Holy Water on a sarcophagus); null when the safe choice is a skill rank or there is none." }
+        "safeItemId": {
+          "$ref": "common.schema.json#/$defs/nullableId",
+          "description": "The item that makes the good outcome certain (§4.6: Holy Water on a sarcophagus); null when the safe choice is a skill rank or there is none."
+        }
       },
-      "required": ["id", "name", "zoneId", "description", "choices", "safeItemId"],
+      "required": [
+        "id",
+        "name",
+        "zoneId",
+        "description",
+        "choices",
+        "safeItemId"
+      ],
       "additionalProperties": false
     },
     "trap": {
       "type": "object",
       "description": "A trap (§4.3, 07 §2.5): revealed on entering when best Detection ≥ difficulty (or by the listed class, pet or field skill); disarmed by Trap Disarm; otherwise it fires on its trigger.",
       "properties": {
-        "id": { "$ref": "common.schema.json#/$defs/id" },
-        "name": { "type": "string", "minLength": 1 },
-        "zoneId": { "$ref": "common.schema.json#/$defs/nullableId", "description": "The zone whose floors roll it; null for any zone." },
-        "difficulty": { "type": "integer", "description": "8–60 by floor band; the Disarm roll is 50% + 2% × (rank × 5 − difficulty / 2).", "minimum": 1, "maximum": 100 },
+        "id": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "zoneId": {
+          "$ref": "common.schema.json#/$defs/nullableId",
+          "description": "The zone whose floors roll it; null for any zone."
+        },
+        "difficulty": {
+          "type": "integer",
+          "description": "8–60 by floor band; the Disarm roll is 50% + 2% × (rank × 5 − difficulty / 2).",
+          "minimum": 1,
+          "maximum": 100
+        },
         "trigger": {
           "type": "string",
           "description": "What fires it when unrevealed: enter (the room), step (a tile or the midline), open (a door, chest or niche), loot (picking up the room's treasure), time (standing in the room for a tick, or the light being low on entry).",
-          "enum": ["enter", "step", "open", "loot", "time"]
+          "enum": [
+            "enter",
+            "step",
+            "open",
+            "loot",
+            "time"
+          ]
         },
-        "triggerNote": { "type": "string", "description": "The exact trigger as the designer wrote it ('the whole party crossing the N doorway'); the sim owns a hook per trap id.", "minLength": 1 },
+        "triggerNote": {
+          "type": "string",
+          "description": "The exact trigger as the designer wrote it ('the whole party crossing the N doorway'); the sim owns a hook per trap id.",
+          "minLength": 1
+        },
         "revealedBy": {
           "type": "object",
           "description": "How the party sees it before it fires. Detection is always a reveal; the rest are 'always' reveals.",
           "properties": {
-            "detection": { "type": "integer", "description": "Best party Detection that reveals it; usually the difficulty.", "minimum": 1, "maximum": 100 },
-            "classId": { "$ref": "common.schema.json#/$defs/nullableId", "description": "A class that always reveals it (an Arcanist reads the Warding Glyph); null when none." },
-            "petId": { "$ref": "common.schema.json#/$defs/nullableId", "description": "A pet species that always reveals it (a Cellar Hound smells the Loose Flagstone); null when none." },
+            "detection": {
+              "type": "integer",
+              "description": "Best party Detection that reveals it; usually the difficulty.",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "classId": {
+              "$ref": "common.schema.json#/$defs/nullableId",
+              "description": "A class that always reveals it (an Arcanist reads the Warding Glyph); null when none."
+            },
+            "petId": {
+              "$ref": "common.schema.json#/$defs/nullableId",
+              "description": "A pet species that always reveals it (a Cellar Hound smells the Loose Flagstone); null when none."
+            },
             "fieldSkillRank": {
               "description": "A field-skill rank that always reveals it (Cartography rank 2+); null when none.",
               "anyOf": [
-                { "type": "null" },
+                {
+                  "type": "null"
+                },
                 {
                   "type": "object",
                   "properties": {
-                    "fieldSkill": { "$ref": "common.schema.json#/$defs/fieldSkill" },
-                    "min": { "type": "integer", "minimum": 1, "maximum": 10 }
+                    "fieldSkill": {
+                      "$ref": "common.schema.json#/$defs/fieldSkill"
+                    },
+                    "min": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 10
+                    }
                   },
-                  "required": ["fieldSkill", "min"],
+                  "required": [
+                    "fieldSkill",
+                    "min"
+                  ],
                   "additionalProperties": false
                 }
               ]
             },
-            "criticalScout": { "type": "boolean", "description": "A critical scout from the previous room reveals it." }
+            "criticalScout": {
+              "type": "boolean",
+              "description": "A critical scout from the previous room reveals it."
+            }
           },
-          "required": ["detection", "classId", "petId", "fieldSkillRank", "criticalScout"],
+          "required": [
+            "detection",
+            "classId",
+            "petId",
+            "fieldSkillRank",
+            "criticalScout"
+          ],
           "additionalProperties": false
         },
-        "effects": { "type": "array", "description": "What triggering it does, in order (a failed disarm fires them at half). Target defaults to the lowest-Perception hero; a line's target overrides (partyFront, allAllies, room).", "items": { "$ref": "common.schema.json#/$defs/effect" }, "minItems": 1 },
-        "blocksDoor": { "type": "boolean", "description": "Whether it must be disarmed or triggered to pass." },
-        "disarmReward": { "$ref": "common.schema.json#/$defs/rewardList", "description": "What a successful disarm yields besides field-skill XP (07 §2.5: '2 Rawhide, 0.01 R' is a material line and a gold line)." }
+        "effects": {
+          "type": "array",
+          "description": "What triggering it does, in order (a failed disarm fires them at half). Target defaults to the lowest-Perception hero; a line's target overrides (partyFront, allAllies, room).",
+          "items": {
+            "$ref": "common.schema.json#/$defs/effect"
+          },
+          "minItems": 1
+        },
+        "blocksDoor": {
+          "type": "boolean",
+          "description": "Whether it must be disarmed or triggered to pass."
+        },
+        "disarmReward": {
+          "$ref": "common.schema.json#/$defs/rewardList",
+          "description": "What a successful disarm yields besides field-skill XP (07 §2.5: '2 Rawhide, 0.01 R' is a material line and a gold line)."
+        }
       },
-      "required": ["id", "name", "zoneId", "difficulty", "trigger", "triggerNote", "revealedBy", "effects", "blocksDoor", "disarmReward"],
+      "required": [
+        "id",
+        "name",
+        "zoneId",
+        "difficulty",
+        "trigger",
+        "triggerNote",
+        "revealedBy",
+        "effects",
+        "blocksDoor",
+        "disarmReward"
+      ],
       "additionalProperties": false
     },
     "template": {
       "type": "object",
       "description": "A room set piece on the coarse grid (§11.1 step 3, 07 §2.2): footprint, door sockets, the kinds it can host, the fixed camera, its props and its render budgets.",
       "properties": {
-        "id": { "$ref": "common.schema.json#/$defs/id" },
-        "zoneId": { "$ref": "common.schema.json#/$defs/id" },
+        "id": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "zoneId": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
         "footprint": {
           "type": "object",
           "properties": {
-            "w": { "type": "integer", "minimum": 1 },
-            "h": { "type": "integer", "minimum": 1 }
+            "w": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "h": {
+              "type": "integer",
+              "minimum": 1
+            }
           },
-          "required": ["w", "h"],
+          "required": [
+            "w",
+            "h"
+          ],
           "additionalProperties": false
         },
         "doors": {
@@ -247,10 +646,25 @@
           "items": {
             "type": "object",
             "properties": {
-              "side": { "type": "string", "enum": ["north", "east", "south", "west"] },
-              "offset": { "type": "integer", "description": "Cells from the side's left/top corner.", "minimum": 0 }
+              "side": {
+                "type": "string",
+                "enum": [
+                  "north",
+                  "east",
+                  "south",
+                  "west"
+                ]
+              },
+              "offset": {
+                "type": "integer",
+                "description": "Cells from the side's left/top corner.",
+                "minimum": 0
+              }
             },
-            "required": ["side", "offset"],
+            "required": [
+              "side",
+              "offset"
+            ],
             "additionalProperties": false
           },
           "minItems": 1
@@ -258,7 +672,9 @@
         "kinds": {
           "type": "array",
           "description": "Room kinds this template can be dressed as.",
-          "items": { "$ref": "common.schema.json#/$defs/roomKind" },
+          "items": {
+            "$ref": "common.schema.json#/$defs/roomKind"
+          },
           "minItems": 1,
           "uniqueItems": true
         },
@@ -266,11 +682,24 @@
           "type": "object",
           "description": "The fixed cinematic camera (§4.1).",
           "properties": {
-            "position": { "$ref": "common.schema.json#/$defs/vec3" },
-            "lookAt": { "$ref": "common.schema.json#/$defs/vec3" },
-            "fov": { "type": "number", "description": "Vertical field of view in degrees.", "exclusiveMinimum": 0, "maximum": 120 }
+            "position": {
+              "$ref": "common.schema.json#/$defs/vec3"
+            },
+            "lookAt": {
+              "$ref": "common.schema.json#/$defs/vec3"
+            },
+            "fov": {
+              "type": "number",
+              "description": "Vertical field of view in degrees.",
+              "exclusiveMinimum": 0,
+              "maximum": 120
+            }
           },
-          "required": ["position", "lookAt", "fov"],
+          "required": [
+            "position",
+            "lookAt",
+            "fov"
+          ],
           "additionalProperties": false
         },
         "props": {
@@ -278,74 +707,333 @@
           "items": {
             "type": "object",
             "properties": {
-              "meshId": { "type": "string", "minLength": 1 },
-              "position": { "$ref": "common.schema.json#/$defs/vec3" },
-              "rotationY": { "type": "number", "description": "Degrees." },
-              "lightSource": { "type": "boolean", "description": "A brazier or the like that restores light (§4.2)." }
+              "meshId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "position": {
+                "$ref": "common.schema.json#/$defs/vec3"
+              },
+              "rotationY": {
+                "type": "number",
+                "description": "Degrees."
+              },
+              "lightSource": {
+                "type": "boolean",
+                "description": "A brazier or the like that restores light (§4.2)."
+              }
             },
-            "required": ["meshId", "position", "rotationY"],
+            "required": [
+              "meshId",
+              "position",
+              "rotationY"
+            ],
             "additionalProperties": false
           }
         },
-        "triBudget": { "type": "integer", "description": "Static triangles the dressed room may hold after instancing (07 §2.2: under 30 k).", "minimum": 1 },
-        "drawCallBudget": { "type": "integer", "description": "Draw calls the dressed room may issue (07 §2.2: under 60).", "minimum": 1 }
+        "triBudget": {
+          "type": "integer",
+          "description": "Static triangles the dressed room may hold after instancing (07 §2.2: under 30 k).",
+          "minimum": 1
+        },
+        "drawCallBudget": {
+          "type": "integer",
+          "description": "Draw calls the dressed room may issue (07 §2.2: under 60).",
+          "minimum": 1
+        }
       },
-      "required": ["id", "zoneId", "footprint", "doors", "kinds", "camera", "props", "triBudget", "drawCallBudget"],
+      "required": [
+        "id",
+        "zoneId",
+        "footprint",
+        "doors",
+        "kinds",
+        "camera",
+        "props",
+        "triBudget",
+        "drawCallBudget"
+      ],
       "additionalProperties": false
     },
     "knobs": {
       "type": "object",
       "description": "The difficulty scalars (§11.2, 07 §6.1). Percentages are of Normal (100 = unchanged); every key is optional so a Pact may move one knob.",
       "properties": {
-        "enemyHpPercent": { "type": "integer", "minimum": 10, "maximum": 1000 },
-        "enemyDamagePercent": { "type": "integer", "minimum": 10, "maximum": 1000 },
-        "enemyCountPercent": { "type": "integer", "description": "After party scaling, rounded, minimum 1.", "minimum": 10, "maximum": 1000 },
-        "enemySpeedPercent": { "type": "integer", "minimum": 10, "maximum": 1000 },
-        "eliteRoomWeight": { "$ref": "common.schema.json#/$defs/percent", "description": "Replaces generator.roomWeights.elite (07 §6.1: 8 / 11 / 14); the difference comes out of fight." },
-        "eliteAffixBonus": { "type": "integer", "description": "Added to every floor's eliteAffixCount (cap 4).", "minimum": 0, "maximum": 3 },
-        "hunterClock": { "type": "integer", "description": "Overrides every floor's hunterClock (07 §6.1: 40 / 32 / 24).", "minimum": 1 },
-        "lightStart": { "$ref": "common.schema.json#/$defs/percent", "description": "Light at delve start, overriding the first floor's lightAtEntry (07 §6.1: 100 / 80 / 60)." },
-        "torchValue": { "type": "integer", "description": "Light a Torch restores (07 §6.1: 25 / 25 / 20).", "minimum": 1, "maximum": 100 },
-        "revivesPerFloor": { "type": "integer", "description": "Party revive budget per floor (§12.1: Normal 3, Hard 1, Nightmare 0).", "minimum": 0 },
-        "trapDifficultyBonus": { "type": "integer", "description": "Added to every rolled trap difficulty (07 §6.1: 0 / 4 / 8).", "minimum": 0 },
-        "retreatTollPercent": { "$ref": "common.schema.json#/$defs/percent", "description": "Share of the delve's gold a Waystone-less retreat costs (§12.3: 10 / 15 / 25)." },
-        "goldPercent": { "type": "integer", "description": "Gold found, in percent of Normal (07 §6.1: 100 / 125 / 160).", "minimum": 10, "maximum": 1000 },
-        "xpPercent": { "type": "integer", "description": "XP before the D curve, in percent of Normal (07 §6.1: 100 / 115 / 130).", "minimum": 10, "maximum": 1000 },
-        "chestShiftPp": { "type": "integer", "description": "Percentage points moved from an in-dungeon chest's centre toward +1 grade (07 §6.1 Hard: 10).", "minimum": 0, "maximum": 100 },
-        "chestCentreShift": { "type": "integer", "description": "Grades an in-dungeon chest's centre moves up (07 §6.1 Nightmare: 1).", "minimum": 0, "maximum": 2 },
-        "bossExtraRareParts": { "type": "integer", "description": "Extra rare parts on a boss's first kill (07 §6.1: 0 / 1 / 1).", "minimum": 0 },
-        "finalBossExtraShards": { "type": "integer", "description": "Extra Divine Shards on a final boss's first kill (07 §6.1 Nightmare: 1).", "minimum": 0 }
+        "enemyHpPercent": {
+          "type": "integer",
+          "minimum": 10,
+          "maximum": 1000
+        },
+        "enemyDamagePercent": {
+          "type": "integer",
+          "minimum": 10,
+          "maximum": 1000
+        },
+        "enemyCountPercent": {
+          "type": "integer",
+          "description": "After party scaling, rounded, minimum 1.",
+          "minimum": 10,
+          "maximum": 1000
+        },
+        "enemySpeedPercent": {
+          "type": "integer",
+          "minimum": 10,
+          "maximum": 1000
+        },
+        "eliteRoomWeight": {
+          "$ref": "common.schema.json#/$defs/percent",
+          "description": "Replaces generator.roomWeights.elite (07 §6.1: 8 / 11 / 14); the difference comes out of fight."
+        },
+        "eliteAffixBonus": {
+          "type": "integer",
+          "description": "Added to every floor's eliteAffixCount (cap 4).",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "hunterClock": {
+          "type": "integer",
+          "description": "Overrides every floor's hunterClock (07 §6.1: 40 / 32 / 24).",
+          "minimum": 1
+        },
+        "lightStart": {
+          "$ref": "common.schema.json#/$defs/percent",
+          "description": "Light at delve start, overriding the first floor's lightAtEntry (07 §6.1: 100 / 80 / 60)."
+        },
+        "torchValue": {
+          "type": "integer",
+          "description": "Light a Torch restores (07 §6.1: 25 / 25 / 20).",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "revivesPerFloor": {
+          "type": "integer",
+          "description": "Party revive budget per floor (§12.1: Normal 3, Hard 1, Nightmare 0).",
+          "minimum": 0
+        },
+        "trapDifficultyBonus": {
+          "type": "integer",
+          "description": "Added to every rolled trap difficulty (07 §6.1: 0 / 4 / 8).",
+          "minimum": 0
+        },
+        "retreatTollPercent": {
+          "$ref": "common.schema.json#/$defs/percent",
+          "description": "Share of the delve's gold a Waystone-less retreat costs (§12.3: 10 / 15 / 25)."
+        },
+        "goldPercent": {
+          "type": "integer",
+          "description": "Gold found, in percent of Normal (07 §6.1: 100 / 125 / 160).",
+          "minimum": 10,
+          "maximum": 1000
+        },
+        "xpPercent": {
+          "type": "integer",
+          "description": "XP before the D curve, in percent of Normal (07 §6.1: 100 / 115 / 130).",
+          "minimum": 10,
+          "maximum": 1000
+        },
+        "chestShiftPp": {
+          "type": "integer",
+          "description": "Percentage points moved from an in-dungeon chest's centre toward +1 grade (07 §6.1 Hard: 10).",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "chestCentreShift": {
+          "type": "integer",
+          "description": "Grades an in-dungeon chest's centre moves up (07 §6.1 Nightmare: 1).",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "bossExtraRareParts": {
+          "type": "integer",
+          "description": "Extra rare parts on a boss's first kill (07 §6.1: 0 / 1 / 1).",
+          "minimum": 0
+        },
+        "finalBossExtraShards": {
+          "type": "integer",
+          "description": "Extra Divine Shards on a final boss's first kill (07 §6.1 Nightmare: 1).",
+          "minimum": 0
+        }
       },
-      "minProperties": 1,
       "additionalProperties": false
     },
     "pact": {
       "type": "object",
       "description": "A named modifier the party opts into for a reward (§11.2, 07 §6.2). Weights sum to the party's Oath; the sim applies the chest shift at Oath 6 and 12.",
       "properties": {
-        "id": { "$ref": "common.schema.json#/$defs/id" },
-        "name": { "type": "string", "minLength": 1 },
-        "description": { "type": "string", "minLength": 1 },
-        "weight": { "type": "integer", "description": "1–3; 3 only for a Pact that can end the delve by itself.", "minimum": 1, "maximum": 3 },
-        "knobs": { "$ref": "#/$defs/knobs" },
+        "id": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "weight": {
+          "type": "integer",
+          "description": "1–3; 3 only for a Pact that can end the delve by itself.",
+          "minimum": 1,
+          "maximum": 3
+        },
+        "knobs": {
+          "$ref": "#/$defs/knobs"
+        },
         "ruleFlags": {
           "type": "array",
           "description": "Rule flags the sim implements by name where a knob cannot say it ('no-minimap', 'no-retreat', 'twin-hunter', 'wear-x1.5'); empty when the knobs say everything.",
-          "items": { "$ref": "common.schema.json#/$defs/id" },
+          "items": {
+            "$ref": "common.schema.json#/$defs/id"
+          },
           "uniqueItems": true
         },
         "reward": {
           "type": "object",
           "properties": {
-            "goldPercent": { "type": "integer", "description": "Extra gold found, in percent.", "minimum": 0 },
-            "xpPercent": { "type": "integer", "description": "Extra XP, in percent.", "minimum": 0 },
-            "chestShiftPp": { "type": "integer", "description": "Percentage points in-dungeon chests shift toward +1 grade.", "minimum": 0, "maximum": 100 }
+            "goldPercent": {
+              "type": "integer",
+              "description": "Extra gold found, in percent.",
+              "minimum": 0
+            },
+            "xpPercent": {
+              "type": "integer",
+              "description": "Extra XP, in percent.",
+              "minimum": 0
+            },
+            "chestShiftPp": {
+              "type": "integer",
+              "description": "Percentage points in-dungeon chests shift toward +1 grade.",
+              "minimum": 0,
+              "maximum": 100
+            }
           },
-          "required": ["goldPercent", "xpPercent", "chestShiftPp"],
+          "required": [
+            "goldPercent",
+            "xpPercent",
+            "chestShiftPp"
+          ],
           "additionalProperties": false
         }
       },
-      "required": ["id", "name", "description", "weight", "knobs", "ruleFlags", "reward"],
+      "required": [
+        "id",
+        "name",
+        "description",
+        "weight",
+        "knobs",
+        "ruleFlags",
+        "reward"
+      ],
+      "additionalProperties": false
+    },
+    "secret": {
+      "type": "object",
+      "description": "A secret room's contents (07 §2.6): reward lines, a floor-long blessing, a shortcut to the exit or a map reveal.",
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "zoneId": {
+          "$ref": "common.schema.json#/$defs/nullableId",
+          "description": "The zone whose floors roll it; null for any zone."
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rewards": {
+          "$ref": "common.schema.json#/$defs/rewardList",
+          "description": "Gold, materials, items, a key."
+        },
+        "chest": {
+          "description": "A chest in the room, or null.",
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "enum": [
+                "small",
+                "large"
+              ]
+            }
+          ]
+        },
+        "blessing": {
+          "description": "A buff that lasts the floor (Warm Hands, Vigil, Undertow), or null.",
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "description": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "effects": {
+                  "$ref": "common.schema.json#/$defs/effectList"
+                }
+              },
+              "required": [
+                "name",
+                "description",
+                "effects"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "shortcutToExit": {
+          "type": "boolean",
+          "description": "A crawlway or stair to the exit room: reveals it and costs no ticks."
+        },
+        "revealsFloor": {
+          "type": "boolean",
+          "description": "Reveals the whole floor map."
+        },
+        "lightBonus": {
+          "type": "integer",
+          "description": "Light restored on finding it (0 for none).",
+          "minimum": -100,
+          "maximum": 100
+        },
+        "fieldSkillXp": {
+          "description": "A field skill the find trains (Cartography for a lore tablet), or null.",
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "common.schema.json#/$defs/fieldSkill"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "zoneId",
+        "description",
+        "rewards",
+        "chest",
+        "blessing",
+        "shortcutToExit",
+        "revealsFloor",
+        "lightBonus",
+        "fieldSkillXp"
+      ],
       "additionalProperties": false
     }
   }

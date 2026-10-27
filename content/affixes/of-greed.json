@@ -1,0 +1,54 @@
+{
+  "id": "of-greed",
+  "name": "of Greed",
+  "position": "suffix",
+  "lines": [
+    {
+      "bandMin": "F",
+      "bandMax": "D",
+      "effect": {
+        "kind": "custom",
+        "customId": "gold-found-percent",
+        "target": "self",
+        "note": "+gold found, percent"
+      },
+      "min": 3,
+      "max": 5
+    },
+    {
+      "bandMin": "C",
+      "bandMax": "A",
+      "effect": {
+        "kind": "custom",
+        "customId": "gold-found-percent",
+        "target": "self",
+        "note": "+gold found, percent"
+      },
+      "min": 5,
+      "max": 10
+    },
+    {
+      "bandMin": "S",
+      "bandMax": "God",
+      "effect": {
+        "kind": "custom",
+        "customId": "gold-found-percent",
+        "target": "self",
+        "note": "+gold found, percent"
+      },
+      "min": 10,
+      "max": 15
+    }
+  ],
+  "slots": [
+    "boots",
+    "ring",
+    "talisman",
+    "relic"
+  ],
+  "weight": 3,
+  "tags": [
+    "loot",
+    "gold"
+  ]
+}

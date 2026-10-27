@@ -1,0 +1,48 @@
+{
+  "id": "steel-censer",
+  "name": "Steel Censer",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "C",
+  "materialLadder": "metal",
+  "materialRung": 3,
+  "weaponType": "censer",
+  "armorFamily": null,
+  "hands": 1,
+  "damageType": "blunt",
+  "weight": 1000,
+  "baseStats": {
+    "attackPhys": 25,
+    "attackSpell": 25
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 12
+  },
+  "affixSlots": 2,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 6,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 2.6,
+  "value": 600,
+  "classLock": [
+    "mender"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-censer-01",
+    "tintPrimary": "#a8b0ba",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "steel"
+  }
+}

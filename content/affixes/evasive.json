@@ -1,0 +1,44 @@
+{
+  "id": "evasive",
+  "name": "Evasive",
+  "position": "prefix",
+  "lines": [
+    {
+      "bandMin": "F",
+      "bandMax": "D",
+      "stat": "dodge",
+      "unit": "flat",
+      "min": 1,
+      "max": 2
+    },
+    {
+      "bandMin": "C",
+      "bandMax": "A",
+      "stat": "dodge",
+      "unit": "flat",
+      "min": 2,
+      "max": 4
+    },
+    {
+      "bandMin": "S",
+      "bandMax": "God",
+      "stat": "dodge",
+      "unit": "flat",
+      "min": 4,
+      "max": 6
+    }
+  ],
+  "slots": [
+    "helmet",
+    "chest",
+    "legs",
+    "boots",
+    "gloves",
+    "ring"
+  ],
+  "weight": 3,
+  "tags": [
+    "defensive",
+    "dodge"
+  ]
+}

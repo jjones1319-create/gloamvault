@@ -1,0 +1,60 @@
+{
+  "id": "blade-wind-up",
+  "classId": "blade",
+  "school": "executioner",
+  "tier": 1,
+  "name": "Wind-up",
+  "description": "Your next Executioner skill deals +40% and cannot be interrupted (no energy push-back from hits while you wait); +10 Momentum.",
+  "type": "active",
+  "cost": 8,
+  "weight": 800,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "next-school-skill-damage-percent",
+      "percent": 40,
+      "target": "self",
+      "note": "the next active of the owner's school deals +percent"
+    },
+    {
+      "kind": "custom",
+      "customId": "next-skill-uninterruptible",
+      "target": "self",
+      "note": "no energy push-back from hits until that skill resolves"
+    },
+    {
+      "kind": "momentum",
+      "amount": 10
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "+60%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "next-school-skill-damage-percent",
+        "percent": 60,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "momentum"
+  ],
+  "xpTags": [
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 45
+  }
+}

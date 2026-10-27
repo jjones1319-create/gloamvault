@@ -25,7 +25,7 @@ content/
   sets/<id>.json
   monsters/<id>.json
   elite-affixes/<id>.json
-  dungeons/<dungeon>/dungeon.json
+  dungeons/<dungeon>/dungeon.json  zones, floors, the generator, curios, traps, secrets, Pacts, presets
   dungeons/<dungeon>/templates/<id>.json
   encounters/<id>.json
   pets/<id>.json
@@ -42,6 +42,8 @@ content/
 - **Every object is `additionalProperties: false`.** A typo is a lint error, not a silently ignored field.
 - **Cross-file references** are plain ids (`classId`, `skillId`, `monsterId`, `affixId`, `setId`, `tableId`, reward and requirement `id`s …). The schema checks the shape; the linter checks the target exists.
 - `hero.schema.json` describes a **save record**, not content. It reuses `item.schema.json#/$defs/itemInstance` and `pet.schema.json#/$defs/petInstance`; the loader migrates by `saveVersion`.
+- **Deferred records** end in `.json.later` (the ten-floor `dungeon.full.json.later`, the two Phase 7 contracts): the loader and the linter ignore them, so a record that references content from a later phase can wait beside the shipped one without dangling (D-072, D-076). Renaming it to `.json` ships it.
+- **Generators**: the six classes and their skills (`tools/content/gen-class-<class>.ts`) and every item, affix, set and the loot table (`tools/content/gen-items.ts`) are written by re-runnable scripts; a sheet or table change is a re-run, never a hand edit of that JSON (CLAUDE.md "re-runnable builds"). The species, pets, monsters, dungeon, encounters, chests and contracts are hand-kept JSON.
 
 ## The effect DSL
 
@@ -60,7 +62,7 @@ Skills, monster attacks, statuses, traits, elite affixes, set bonuses, curios, t
 | `summon` | `summonId` | add a monster to the acting side |
 | `revive` | `percent` | revive a downed ally at that HP |
 | `loot` | `amount` or `percent` | gold or drop-odds change |
-| `custom` | `customId` | a hand-written sim hook, named so the linter can list them |
+| `custom` | `customId`, optionally `itemId` | a hand-written sim hook, named so the linter can list them; `itemId` names the item or material the hook grants or consumes (rule 2 resolves it) |
 
 `target` on a line overrides the owner's target; `scalesWith` names the attribute whose points above 10 add to the line; `note` is for the designer and ignored by the sim. The `target` enum covers rows on both sides (`partyFront`, `partyBack`, `allyRow`, `enemyRow`, `enemyRowBack`), `enemyRandom`, `summon`, `downedAlly`/`allDowned` (within the revive window) and `fallenAlly` (past it); "single + behind" is two lines, `enemy` then `enemyRowBack`.
 
@@ -76,7 +78,7 @@ Two more shared shapes live beside it. A **`requirement`** (`{kind, id?, min?, a
 3. A status file's `id` is one of the `status` enum and every enum value has a file (`content/statuses/` holds all 27).
 
 **Classes and skills**
-4. Every class has exactly **45 skills** with its `classId`: 3 schools × 5 tiers × 3 per tier.
+4. Every class has exactly **3 non-Ultimate skills per school in each tier it ships** (3 schools × 5 tiers × 3 = the 45 of `04`; the Ultimate is the 46th, `03` §7.1); Tiers I–III are required, IV–V warn until Phase 7 (D-070).
 5. Each Tier II–V skill's `prerequisiteId` is a Tier N−1 skill of the **same class and school**; Tier I skills have `null`.
 6. Exactly **one** skill per class has `isUltimate: true`, it is at **Tier III**, and it is the class's `ultimateSkillId`.
 7. `starterSkillIds` are three Tier I skills of that class. **Monster techniques:** every id in a class's `monsterTechniqueIds` is a skill file of that class at **Tier III or IV** with a non-null `monsterTechniqueOf`; that monster's `monsterTechniqueSkillIds` contains the skill; and every id in any monster's `monsterTechniqueSkillIds` points back the same way (a monster may teach several classes). A class should meet two or more techniques per dungeon (`06` §8.8) — a warning, not a failure.
@@ -85,7 +87,7 @@ Two more shared shapes live beside it. A **`requirement`** (`{kind, id?, min?, a
 
 **Monsters, elite affixes, dungeons, encounters**
 10. Every monster family has **all five roles** (fodder, elite, special, monster, boss) across its monsters; every zone's `hunterId` (when not null) is a monster with `role: hunter` and **every id in `bossIds` exists** and is a monster with `role: boss` and `zoneId` of that zone.
-11. A boss's phases are in descending `atHpPercent` starting at 100; every phase `attacks[]` id and every behavior `then` that is not `flee`/`guard`/`swap row` is one of the monster's `attacks[].id`; a zone boss has 2 phases, a final boss 3; each `adds[].monsterId` exists. Every reward line in `everyKill`/`firstKill` resolves (rule 2); a God item appears only as a chance line with `chance ≤ 4`.
+11. A boss's phases are in descending `atHpPercent` starting at 100; every phase `attacks[]` id and every behavior `then` that is not `flee`/`guard`/`swap row` is one of the monster's `attacks[].id`; a zone boss has 2 phases, a final boss 3 — "final" meaning the boss of the last floor of a dungeon with all three zones written (a partial dungeon's last boss is a zone boss and warns; D-072); each `adds[].monsterId` exists. Every reward line in `everyKill`/`firstKill` resolves (rule 2); a God item appears only as a chance line with `chance ≤ 4`.
 12. `generator.roomWeights` sum to **100** over the rolled kinds; `bossFarthest` is true; `minRooms ≤ maxRooms` and every floor's `roomsMin/Max` sit inside them.
 13. Floors are numbered 1..n without gaps, each inside its zone's `floors` range; zones tile the dungeon's floors; every zone's `bossIds` each appear as exactly one floor's `bossId` inside the zone, in order, the last on the zone's last floor; a floor with a `bossId` has `hunterClock: null` and the floor before it has `merchant: true`; a zone with `hunterId: null` has `hunterClock: null` on every floor.
 14. `eliteAffixCount` follows the band (1 on floors 1–2, 2 on 3–6, 3 on 7+; dungeons 2–4 one higher); every `elitePool` id resolves to a `content/elite-affixes/` file whose `floorMin` ≤ the monster's lowest floor; a monster's pool holds at most one `defensive` and one `control` affix beyond the count the sim will draw; a boss, hunter or Monster-role template has an empty `elitePool`. Exactly **12** elite affixes exist.
@@ -98,11 +100,11 @@ Two more shared shapes live beside it. A **`requirement`** (`{kind, id?, min?, a
 19. `affixSlots` matches the grade (F 0 · E 1 · D 1 · C 2 · B 2 · A 3 · S 3 · SS 4 · God 4) and `maxPlusN` the grade (F 3 · E 4 · D 5 · C 6 · B 7 · A 8 · S 9 · SS 10 · God 10).
 20. `affixes.length ≤ affixSlots`; each rolled `value` lies within the affix line whose band covers the item's grade; the affix lists the item's `slot`; a set piece spends one slot on its set line.
 21. `durability ≤ maxDurability`.
-22. `materialRung` equals the grade's index on the ladder (F 0 … God 8) and is null exactly when `materialLadder` is null; across items that share a `visual.meshId`, `baseStats` scale by the grade multipliers (F 1.00 · E 1.35 · D 1.80 · C 2.45 · B 3.30 · A 4.45 · S 6.00 · SS 8.10 · God 11.0) relative to the F piece, rounded to integers.
+22. `materialRung` equals the grade's index on the ladder (F 0 … God 8) and is null exactly when `materialLadder` is null; across items that share a `visual.meshId`, `baseStats` scale by the grade multipliers (F 1.00 · E 1.35 · D 1.80 · C 2.45 · B 3.30 · A 4.45 · S 6.00 · SS 8.10 · God 11.0) relative to the F piece, rounded to integers; a line equal to the F piece's is a **flat** line and passes (percentages and penalties do not ride the ladder, `08`), and a shield's `block` may step +`equipment.shields.blockStepPerGrade` pp per grade (`08` §2.3; D-072).
 23. God items are `unique: true` with a `uniquePower`, one per slot, and **never appear in any random table**: no chest `table` gives God above 0, no loot table's `gradeShape` reaches God from its centre, no encounter or curio `loot` names a God item; a boss's `everyKill` may name one only as a chance line (rule 11).
 24. An affix's `lines[]` bands do not overlap and run in ladder order.
 25. A set's `pieces` all exist, carry its `setId`, sit in the five armor slots of its `family` (or the two ring slots of a `ringPair`), and share the set's `classIds` lock; `gradeMin ≤ gradeMax` when both are set.
-26. Each chest `oddsByBand[].table` sums to **100** and contains no grade below `centreGrade`; a Grand chest's table is the Standard's shifted one grade up; `pity.plusOneWithin < plusTwoWithin`.
+26. Each chest `oddsByBand[].table` sums to **100** and contains no grade below `centreGrade`; a Grand **gear or egg** chest's table is `08` §10's shape **+1 45 · +2 35 · +3 15 · +4 5** with any God share folded into SS (crates and tomes carry no shape; D-072); `pity.plusOneWithin < plusTwoWithin`.
 27. **A loot table's `gradeShape` sums to 100** (`centre + minus1 + plus1 + plus2 + plus3`); `minus1` is 0 when the centre is F (the fold goes into `centre`); `partChance` and `itemChance` match the band rows of `08` §11 unless a note says why not.
 
 **Pets and heroes**
@@ -111,12 +113,13 @@ Two more shared shapes live beside it. A **`requirement`** (`{kind, id?, min?, a
 30. A hero record (only checked in `npm run lint -- --saves`): skills' `classId` matches the hero's class or is `field`; loadout ids are known skills of the right `type`; equipped items' `slot` matches the equipment key and `classLock` allows the class; `ring` holds ring items; `level` ≤ the level its total skill ranks allow; `titles` resolve to title ids some reward line grants.
 
 **Custom hooks and tuning**
-31. Every `customId` used in any effect line anywhere in the content has a handler file `sim/src/skills/custom/<customId>.ts` (`09` §6); checked once that folder exists (Phase 2 creates it).
+31. Every `customId` used in any effect line anywhere in the content has a handler file `sim/src/skills/custom/<customId>.ts` (`09` §6; the handler contract is `sim/src/skills/custom/README.md`); checked once that folder exists (Phase 2 creates it).
 32. `content/tuning.json` validates against `tuning.schema.json`: every section carries its `source`; every leaf is a number, a `{value, note}` pair (a non-empty `note` and nothing else), a boolean, a string of at most 240 characters or null; an object with a `value` key is always read as such a pair, never as a table.
+33. Each dungeon's `secrets[]` (07 §2.6) have unique ids, a `zoneId` that is one of the dungeon's zones or null, reward ids that resolve, and each grants something (rewards, a chest, a blessing with effect lines, a shortcut, a map reveal or light); an item reward names an id or a grade.
 
 Rules 11, 14, 19, 22, 23 and 27 are implemented as far as the content can be checked (`tools/lint/rules.ts` says in each what it reads); rule 27's `partChance`/`itemChance` band comparison waits for the loot tables of Phase 3.
 
-**The Phase 2 fixture set.** `sim/test/fixtures/content/` mirrors this layout with test content (one class, two species, seven Cellars monsters, one zone); `sim/test/fixtures/assemble.ts` merges it with the real schemas, statuses and `tuning.json` into a temporary root that `lintCorpus(root, { skipRules: [4, 10, 14] })` and the sim's loader both read. It is not shipped; Phase 3 promotes its records into `content/` (D-068).
+**The Phase 2 fixture set.** `sim/test/fixtures/content/` mirrors this layout with test content (one class, two species, seven Cellars monsters, one zone); `sim/test/fixtures/assemble.ts` merges it with the real schemas, statuses and `tuning.json` into a temporary root that `lintCorpus(root, { skipRules: [4, 10, 14] })` and the sim's loader both read. It is not shipped; Phase 3 promoted its records into `content/` (D-068) and keeps it as the sim's small, stable test corpus.
 
 **Gating (D-049).** The rules that demand a *complete* set — rule 3 (all 27 statuses), rule 9 (all eight field skills), rule 14's "exactly 12 elite affixes" and rule 18's "the 12 launch Pacts" — apply only once at least one file of that kind exists; an empty kind is a Phase 1 state, not an error. Every other rule applies to whatever files exist, and a dangling reference always fails, even when the referenced kind has no files yet.
 

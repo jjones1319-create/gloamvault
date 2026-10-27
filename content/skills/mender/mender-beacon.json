@@ -1,0 +1,54 @@
+{
+  "id": "mender-beacon",
+  "classId": "mender",
+  "school": "vigil",
+  "tier": 3,
+  "name": "Beacon",
+  "description": "Out of combat: +20 Light, once per room. In combat: Mark 2 turns on every enemy.",
+  "type": "active",
+  "cost": 18,
+  "weight": 800,
+  "target": "allEnemies",
+  "effects": [
+    {
+      "kind": "light",
+      "amount": 20,
+      "note": "out of combat, once per room"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "mark",
+      "duration": 2
+    }
+  ],
+  "prerequisiteId": "mender-steadfast",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Mark 3 turns.",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "mark",
+        "duration": 3
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "light",
+    "debuff",
+    "utility"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "debuff",
+    "priority": 50
+  }
+}

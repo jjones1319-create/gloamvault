@@ -1,0 +1,50 @@
+{
+  "id": "shade-crippling-dust",
+  "classId": "shade",
+  "school": "venom",
+  "tier": 1,
+  "name": "Crippling Dust",
+  "description": "Blind one enemy in any row for 2 turns (−30% Accuracy).",
+  "type": "active",
+  "cost": 11,
+  "weight": 800,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "applyStatus",
+      "status": "blind",
+      "duration": 2
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Two targets.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "additional-targets",
+        "amount": 1,
+        "note": "the skill’s lines also land on `amount` more distinct enemies (nearest first)"
+      }
+    ]
+  },
+  "tags": [
+    "control",
+    "debuff",
+    "reach"
+  ],
+  "xpTags": [
+    "agility",
+    "perception"
+  ],
+  "aiHints": {
+    "role": "debuff",
+    "priority": 50
+  }
+}

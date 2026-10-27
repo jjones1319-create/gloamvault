@@ -1,0 +1,61 @@
+{
+  "id": "warden-crushing-rebuke",
+  "classId": "warden",
+  "school": "bulwark",
+  "tier": 3,
+  "name": "Crushing Rebuke",
+  "description": "2.0× Blunt, plus 100% of all the damage you blocked since your last turn (capped at +2.0× Attack).",
+  "type": "active",
+  "cost": 22,
+  "weight": 1000,
+  "target": "enemyFront",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 2,
+      "damageType": "blunt",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "custom",
+      "customId": "damage-plus-blocked-since-last-turn",
+      "multiplier": 2,
+      "damageType": "blunt",
+      "percent": 100,
+      "note": "adds percent of the damage blocked since the last turn, capped at multiplier × Attack"
+    }
+  ],
+  "prerequisiteId": "warden-shove",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "requirements": {
+    "shield": true
+  },
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Cap +3.0×.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "damage-plus-blocked-since-last-turn",
+        "multiplier": 3,
+        "damageType": "blunt",
+        "percent": 100
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget"
+  ],
+  "xpTags": [
+    "strength",
+    "endurance"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 60
+  }
+}

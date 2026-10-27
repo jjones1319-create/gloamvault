@@ -1,0 +1,56 @@
+{
+  "id": "ranger-caltrop-toss",
+  "classId": "ranger",
+  "school": "trapper",
+  "tier": 1,
+  "name": "Caltrop Toss",
+  "description": "Scatter caltrops over the enemy front row: for 3 turns every enemy standing there takes 0.5× Pierce at the start of its turn.",
+  "type": "active",
+  "cost": 12,
+  "weight": 1000,
+  "target": "enemyFront",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "field-trap-row-dot",
+      "multiplier": 0.5,
+      "damageType": "pierce",
+      "duration": 3,
+      "target": "enemyRow",
+      "scalesWith": "strength",
+      "note": "a field trap on the targeted row: each enemy in it takes multiplier × Attack at its turn start for duration turns"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Also Slow 1 turn on each tick.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "field-trap-tick-status",
+        "status": "slow",
+        "duration": 1,
+        "target": "enemyRow",
+        "note": "each tick of this skill’s field trap also applies the status"
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "dot"
+  ],
+  "xpTags": [
+    "perception",
+    "agility"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 50
+  }
+}

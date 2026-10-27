@@ -1,0 +1,56 @@
+{
+  "id": "warden-voice-of-iron",
+  "classId": "warden",
+  "school": "warcry",
+  "tier": 3,
+  "name": "Voice of Iron",
+  "description": "Your shouts cannot be Silenced; enemies Taunted by you deal −10% damage to you.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "school-ignores-silence",
+      "target": "self",
+      "note": "Warcry actives may be used while Silenced"
+    },
+    {
+      "kind": "custom",
+      "customId": "taunted-enemies-damage-to-you-percent",
+      "percent": -10,
+      "target": "self",
+      "note": "damage from an enemy you have Taunted is scaled by percent"
+    }
+  ],
+  "prerequisiteId": "warden-dread-bellow",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "−20%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "taunted-enemies-damage-to-you-percent",
+        "percent": -20,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "taunt"
+  ],
+  "xpTags": [
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "defend",
+    "priority": 0
+  }
+}

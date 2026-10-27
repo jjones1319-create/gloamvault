@@ -41,6 +41,12 @@ export type Tables = {
   tiers: number
   perTier: number
   eliteBands: EliteBand[]
+  /** 08 §2.3: Block steps this many pp per grade on a shield's ladder (rule 22). */
+  blockStepPerGrade: number
+  /** D-082: the hero level curve. */
+  heroXpBase: number
+  heroXpGrowth: number
+  heroLevelCap: number
   eliteAffixPool: number
   launchPacts: number
   activesByGrade: Map<string, number>
@@ -158,6 +164,10 @@ export function buildTables(corpus: Corpus): Tables {
   return {
     grades,
     gradeRows,
+    blockStepPerGrade: tnum(at(tuning, 'equipment', 'shields', 'blockStepPerGrade')) ?? 2,
+    heroXpBase: tnum(at(tuning, 'xp', 'heroLevel', 'xpToNextBase')) ?? 60,
+    heroXpGrowth: tnum(at(tuning, 'xp', 'heroLevel', 'xpToNextGrowth')) ?? 1.28,
+    heroLevelCap: tnum(at(tuning, 'xp', 'heroLevel', 'cap')) ?? 99,
     statuses: enumOf('status'),
     fieldSkills: enumOf('fieldSkill'),
     roomKinds: enumOf('roomKind'),
@@ -552,6 +562,15 @@ function rule2(ctx: Ctx): Failure[] {
     if (s !== undefined && !ctx.encounterTableIds.has(s)) out.push(fail(file, R, `${label} '${s}' is carried by no encounter's tableId`))
   }
 
+  // Secret rooms (07 §2.6): the zone and every reward id must resolve.
+  for (const d of ctx.dungeons.values()) {
+    for (const s of objs(d.json.secrets)) {
+      const sid = str(s.id) ?? '?'
+      if (s.zoneId !== null && s.zoneId !== undefined) needZone(d.file, `secret '${sid}' zoneId`, d.id, s.zoneId)
+      needRewards(d.file, `secret '${sid}' rewards`, s.rewards)
+    }
+  }
+
   // Summon lines anywhere in the content.
   for (const r of ctx.records) {
     walk(r.json, (o, where) => {
@@ -659,9 +678,15 @@ function rule2(ctx: Ctx): Failure[] {
   }
 
   for (const p of ctx.pets.values()) {
-    need(p.file, 'speciesFamilyId', p.json.speciesFamilyId, 'family')
+    // 06 §9 lists all sixteen pets while Phase 3 ships one zone: a family no monster carries yet warns (the egg cannot drop until it does; D-074).
+    for (const [label, value] of [
+      ['speciesFamilyId', p.json.speciesFamilyId],
+      ['eggSource.familyId', at(p.json, 'eggSource', 'familyId')],
+    ] as const) {
+      const s = str(value)
+      if (s !== undefined && !ctx.families.has(s)) ctx.warnings.push(fail(p.file, R, `${label} '${s}' is carried by no monster yet (the egg cannot drop until its family exists)`))
+    }
     for (const a of objs(p.json.actives)) need(p.file, 'actives[].skillId', a.skillId, 'skill')
-    need(p.file, 'eggSource.familyId', at(p.json, 'eggSource', 'familyId'), 'family')
   }
 
   for (const lt of ctx.lootTables.values()) {
@@ -739,20 +764,24 @@ function rule3(ctx: Ctx): Failure[] {
 
 function rule4(ctx: Ctx): Failure[] {
   const out: Failure[] = []
-  const { skillsPerClass, tiers, perTier, schoolsPerClass } = ctx.t
+  const { tiers, perTier, schoolsPerClass } = ctx.t
   for (const c of ctx.classes.values()) {
-    const skills = ctx.skillsByClass.get(c.id) ?? []
-    if (skills.length !== skillsPerClass) {
-      out.push(fail(c.file, 4, `class has ${skills.length} skills with classId '${c.id}', expected ${skillsPerClass} (${schoolsPerClass} schools × ${tiers} tiers × ${perTier})`))
-    }
+    const all = ctx.skillsByClass.get(c.id) ?? []
+    // The Ultimate is the class's extra skill beside the 3 × 5 × 3 (03 §7.1 "also has one Ultimate"; D-070).
+    const skills = all.filter((s) => s.json.isUltimate !== true)
     if (skills.length === 0) continue
     const schools = objs(c.json.schools).map((s) => str(s.id)).filter(defined)
+    const present = new Set(skills.map((s) => num(s.json.tier)).filter((n): n is number => n !== undefined))
+    for (let tier = 1; tier <= 3; tier++) if (!present.has(tier)) out.push(fail(c.file, 4, `class has no Tier ${tier} skills; Tiers I–III ship first (12 Phase 3)`))
+    for (let tier = 4; tier <= tiers; tier++) if (!present.has(tier)) ctx.warnings.push(fail(c.file, 4, `class has no Tier ${tier} skills yet (Phase 7 adds IV–V)`))
     for (const school of schools) {
-      for (let tier = 1; tier <= tiers; tier++) {
+      for (const tier of [...present].sort((a, b) => a - b)) {
         const n = skills.filter((s) => str(s.json.school) === school && num(s.json.tier) === tier).length
-        if (n !== perTier) out.push(fail(c.file, 4, `school '${school}' tier ${tier} has ${n} skills, expected ${perTier}`))
+        if (n !== perTier) out.push(fail(c.file, 4, `school '${school}' tier ${tier} has ${n} skills, expected ${perTier} (${schoolsPerClass} schools × ${perTier} per tier, the Ultimate aside)`))
       }
     }
+    const expected = schools.length * present.size * perTier
+    if (skills.length !== expected) out.push(fail(c.file, 4, `class has ${skills.length} non-Ultimate skills across ${present.size} tier(s), expected ${expected}`))
   }
   return out
 }
@@ -1000,9 +1029,13 @@ function rule11(ctx: Ctx): Failure[] {
       const placed = floorsOf(d).filter((x) => str(x.f.bossId) === m.id)
       if (placed.length > 0) {
         const last = maxFloor(d)
-        const isFinal = placed.some((x) => x.n === last)
+        const onLast = placed.some((x) => x.n === last)
+        // A dungeon has three zones (03 §11); a file with fewer is a partial dungeon whose last boss is a zone boss until the third zone lands (D-072).
+        const complete = objs(d.json.zones).length >= 3
+        const isFinal = onLast && complete
         const expected = isFinal ? 3 : 2
         if (phases.length !== expected) out.push(fail(m.file, 11, `${isFinal ? 'final' : 'zone'} boss has ${phases.length} phases, expected ${expected}`))
+        if (onLast && !complete) ctx.warnings.push(fail(m.file, 11, `sits on the last written floor of a ${objs(d.json.zones).length}-zone dungeon; the final-boss check (3 phases, an arena rule) waits for the third zone`))
       }
     }
     for (const list of ['everyKill', 'firstKill'] as const) {
@@ -1425,6 +1458,10 @@ function rule22(ctx: Ctx): Failure[] {
           out.push(fail(it.file, 22, `baseStats.${k} is on only one of '${it.id}' and the F piece '${base.id}' (shared mesh '${mesh}')`))
           continue
         }
+        // 08 preamble, §2, §2.3: percentages, Block and penalties "do not ride the ladder" — a line equal to the F piece's is flat (D-072).
+        if (v === fv) continue
+        // 08 §2.3: a shield's Block steps +2 pp per grade instead of riding the multiplier.
+        if (k === 'block' && v === fv + ctx.t.blockStepPerGrade * gradeIdx(ctx, grade)) continue
         const expected = fv * mult
         if (Math.abs(v - expected) >= 1) out.push(fail(it.file, 22, `baseStats.${k} is ${v}; the F piece '${base.id}' has ${fv} × ${mult} (grade ${grade}) = ${expected.toFixed(2)} (shared mesh '${mesh}')`))
       }
@@ -1566,18 +1603,31 @@ function rule26(ctx: Ctx): Failure[] {
         if (gi >= 0 && ci >= 0 && gi < ci) out.push(fail(c.file, 26, `oddsByBand[${i}] lists grade ${g}, below the centre ${centre}`))
       }
     })
-    if (str(c.json.tier) === 'grand') {
-      const standards = chests.filter((x) => str(x.json.tier) === 'standard' && str(x.json.kind) === str(c.json.kind))
+    // 08 §10 (the owner of chest odds, D-072): a Grand gear or egg chest's table is +1 45 · +2 35 · +3 15 · +4 5 with any
+    // God share folded into SS (the sim turns the +4 line into the Divine Shard from band D, D-067). Crates and tomes
+    // carry a table for the schema's sake only (08 §8.5: a Grand crate is 20 units of the same rung + a rare part).
+    const kind = str(c.json.kind)
+    if (str(c.json.tier) === 'grand' && (kind === 'gear' || kind === 'petEgg')) {
       objs(c.json.oddsByBand).forEach((entry, i) => {
         const centre = str(entry.centreGrade)
-        const candidates = standards.flatMap((sc) => objs(sc.json.oddsByBand).filter((e) => str(e.centreGrade) === centre).map((e) => ({ sc, e })))
-        if (candidates.length === 0) return
-        const table = obj(entry.table) ?? {}
-        if (!candidates.some(({ e }) => matches(shiftUp(obj(e.table) ?? {}), table))) {
-          out.push(fail(c.file, 26, `oddsByBand[${i}] (centre ${centre ?? '?'}) is not standard chest '${candidates[0]?.sc.id ?? '?'}' shifted one grade up`))
+        const ci = gradeIdx(ctx, centre)
+        if (ci < 0) return
+        const expected = new Map<string, number>()
+        for (const [step, share] of [
+          [1, 45],
+          [2, 35],
+          [3, 15],
+          [4, 5],
+        ] as const) {
+          const gi = Math.min(ci + step, grades.length - 2) // God folds into SS
+          const g = grades[gi] ?? centre ?? '?'
+          expected.set(g, (expected.get(g) ?? 0) + share)
         }
+        const table = obj(entry.table) ?? {}
+        if (!matches(expected, table)) out.push(fail(c.file, 26, `oddsByBand[${i}] (centre ${centre ?? '?'}) is not 08 §10's Grand shape ${[...expected].map(([g, v]) => `${g} ${v}`).join(' · ')}`))
       })
     }
+    void shiftUp
     const p1 = num(at(c.json, 'pity', 'plusOneWithin'))
     const p2 = num(at(c.json, 'pity', 'plusTwoWithin'))
     if (p1 !== undefined && p2 !== undefined && p1 >= p2) out.push(fail(c.file, 26, `pity.plusOneWithin ${p1} must be below plusTwoWithin ${p2}`))
@@ -1725,9 +1775,19 @@ function rule30(ctx: Ctx): Failure[] {
     objs(eq?.ring).forEach((inst, i) => checkItem(`equipment.ring[${i}]`, inst, 'ring'))
 
     const level = num(h.json.level)
-    // 03 §2.2: level N needs 8 × N ranks in total (L2 at 16, L10 at 80); D-056.
-    const maxLevel = Math.max(1, Math.floor(ranks / Math.max(1, ctx.t.ranksPerLevel)))
-    if (level !== undefined && level > maxLevel) out.push(fail(h.file, 30, `level ${level} but ${ranks} total skill ranks allow level ${maxLevel} (${ctx.t.ranksPerLevel} ranks per level)`))
+    // D-082 (Final Fantasy-style levels): the level is the one battleXp reaches on the tuning curve.
+    const xp = num(h.json.battleXp)
+    if (level !== undefined && xp !== undefined) {
+      let lv = 1
+      let left = xp
+      const cost = (n: number) => Math.round(ctx.t.heroXpBase * Math.pow(ctx.t.heroXpGrowth, n - 2))
+      while (lv < ctx.t.heroLevelCap && left >= cost(lv + 1)) {
+        left -= cost(lv + 1)
+        lv++
+      }
+      if (level !== lv) out.push(fail(h.file, 30, `level ${level} but battleXp ${xp} reaches level ${lv}`))
+    }
+    void ranks
 
     for (const title of strs(h.json.titles)) if (!ctx.rewardTitles.has(title)) out.push(fail(h.file, 30, `title '${title}' is granted by no reward line`))
   }
@@ -1779,6 +1839,33 @@ function rule32(ctx: Ctx): Failure[] {
 }
 
 // ---------------------------------------------------------------------------------------------------------------
+// Rule 33: secret rooms (07 §2.6) — unique ids per dungeon; each grants something (rewards, a chest, a blessing, a
+// shortcut, a reveal or light); a blessing carries effect lines; secrets reward, never gate.
+
+function rule33(ctx: Ctx): Failure[] {
+  const out: Failure[] = []
+  for (const d of ctx.dungeons.values()) {
+    const seen = new Set<string>()
+    for (const s of objs(d.json.secrets)) {
+      const sid = str(s.id) ?? '?'
+      if (seen.has(sid)) out.push(fail(d.file, 33, `secret id '${sid}' is used twice`))
+      seen.add(sid)
+      const rewards = objs(s.rewards)
+      const blessing = obj(s.blessing)
+      const grants = rewards.length > 0 || (s.chest !== null && s.chest !== undefined) || blessing !== undefined || s.shortcutToExit === true || s.revealsFloor === true || (num(s.lightBonus) ?? 0) !== 0 || (s.fieldSkillXp !== null && s.fieldSkillXp !== undefined)
+      if (!grants) out.push(fail(d.file, 33, `secret '${sid}' grants nothing (07 §2.6: secrets reward)`))
+      if (blessing !== undefined && objs(blessing.effects).length === 0) out.push(fail(d.file, 33, `secret '${sid}' blessing '${str(blessing.name) ?? '?'}' has no effect lines`))
+      for (const [i, r] of rewards.entries()) {
+        const chance = num(r.chance)
+        if (chance !== undefined && (chance <= 0 || chance > 100)) out.push(fail(d.file, 33, `secret '${sid}' rewards[${i}] chance ${chance} is outside 1–100`))
+        if (str(r.kind) === 'item' && r.id === undefined && r.grade === undefined) out.push(fail(d.file, 33, `secret '${sid}' rewards[${i}] is an item line with neither id nor grade`))
+      }
+    }
+  }
+  return out
+}
+
+// ---------------------------------------------------------------------------------------------------------------
 
 export const RULES: ReadonlyArray<{ n: number; run: (ctx: Ctx) => Failure[] }> = [
   { n: 1, run: rule1 },
@@ -1813,6 +1900,7 @@ export const RULES: ReadonlyArray<{ n: number; run: (ctx: Ctx) => Failure[] }> =
   { n: 30, run: rule30 },
   { n: 31, run: rule31 },
   { n: 32, run: rule32 },
+  { n: 33, run: rule33 },
 ]
 
 /** Runs every rule over the corpus. A rule that throws becomes a failure, never a silent pass. */

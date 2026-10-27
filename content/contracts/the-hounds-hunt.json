@@ -1,0 +1,24 @@
+{
+  "id": "the-hounds-hunt",
+  "name": "The Hound's Hunt",
+  "description": "Kill the zone's hunter (Old Gnaw, the Warden's Hound or the Vault Leech).",
+  "cadence": "daily",
+  "kind": "kill",
+  "target": {
+    "dungeonId": "gravehollow-keep",
+    "count": 1,
+    "condition": "zone-hunter"
+  },
+  "reward": {
+    "goldR": 0.5,
+    "keys": [
+      {
+        "kind": "grand",
+        "amount": 1
+      }
+    ],
+    "chestId": null,
+    "items": []
+  },
+  "band": null
+}

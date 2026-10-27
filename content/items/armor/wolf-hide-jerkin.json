@@ -1,0 +1,50 @@
+{
+  "id": "wolf-hide-jerkin",
+  "name": "Wolf Hide Jerkin",
+  "slot": "chest",
+  "kind": "armor",
+  "grade": "C",
+  "materialLadder": "hide",
+  "materialRung": 3,
+  "weaponType": null,
+  "armorFamily": "leather",
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "defense": 10,
+    "hp": 15,
+    "dodge": 2
+  },
+  "requirements": {
+    "strength": 11,
+    "wisdom": 0
+  },
+  "affixSlots": 2,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 6,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1.56,
+  "value": 600,
+  "classLock": [
+    "ranger",
+    "shade"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "armor-leather-chest-01",
+    "tintPrimary": "#6e6a60",
+    "tintSecondary": "#3b2a1e",
+    "trimMetal": "steel"
+  }
+}

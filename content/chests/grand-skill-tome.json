@@ -1,0 +1,57 @@
+{
+  "id": "grand-skill-tome",
+  "name": "Grand Skill Tome",
+  "kind": "skillTome",
+  "tier": "grand",
+  "priceR": 3,
+  "subtypes": [],
+  "oddsByBand": [
+    {
+      "centreGrade": "F",
+      "table": {
+        "E": 100
+      }
+    },
+    {
+      "centreGrade": "E",
+      "table": {
+        "D": 100
+      }
+    },
+    {
+      "centreGrade": "D",
+      "table": {
+        "C": 100
+      }
+    },
+    {
+      "centreGrade": "C",
+      "table": {
+        "B": 100
+      }
+    },
+    {
+      "centreGrade": "B",
+      "table": {
+        "A": 100
+      }
+    },
+    {
+      "centreGrade": "A",
+      "table": {
+        "S": 100
+      }
+    }
+  ],
+  "pity": {
+    "plusOneWithin": 10,
+    "plusTwoWithin": 40
+  },
+  "bagWithoutReplacement": true,
+  "tomeTiers": {
+    "min": 2,
+    "max": 4
+  },
+  "dupeRule": "rankXp",
+  "divineShardChance": 0
+}

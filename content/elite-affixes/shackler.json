@@ -1,0 +1,22 @@
+{
+  "id": "shackler",
+  "name": "Shackler",
+  "affixClass": "control",
+  "rule": "Its hits apply Root (2 turns) at 50%; a Rooted hero cannot swap rows or flee.",
+  "effects": [
+    {
+      "kind": "applyStatus",
+      "status": "root",
+      "chance": 50,
+      "duration": 2,
+      "target": "enemy",
+      "note": "an on-hit rider: an applyStatus line with target enemy on an elite affix rides every hit the champion lands"
+    }
+  ],
+  "hpMultiplier": 3,
+  "goldMultiplier": 3,
+  "xpClassBonus": 2,
+  "floorMin": 3,
+  "tell": null,
+  "excludesElement": false
+}

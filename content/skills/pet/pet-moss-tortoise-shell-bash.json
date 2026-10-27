@@ -1,0 +1,45 @@
+{
+  "id": "pet-moss-tortoise-shell-bash",
+  "classId": "pet",
+  "school": "pet",
+  "tier": 1,
+  "name": "Shell Bash",
+  "description": "Blunt ×1.0; Daze.",
+  "type": "active",
+  "cost": 10,
+  "weight": 1000,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1,
+      "damageType": "blunt"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "daze"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "No Mastery line: pet actives do not rank (03 §9).",
+    "effects": []
+  },
+  "tags": [
+    "singleTarget",
+    "control"
+  ],
+  "xpTags": [
+    "strength"
+  ],
+  "aiHints": {
+    "role": "control",
+    "priority": 55
+  }
+}

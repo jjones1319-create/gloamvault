@@ -1,0 +1,45 @@
+{
+  "id": "common-ring-of-finding",
+  "name": "Common Ring of Finding",
+  "slot": "ring",
+  "kind": "ring",
+  "grade": "E",
+  "materialLadder": null,
+  "materialRung": null,
+  "weaponType": null,
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "detection": 1
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 1,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 4,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1,
+  "value": 144,
+  "classLock": [],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "ring-finding-01",
+    "tintPrimary": "#cd7f32",
+    "tintSecondary": "#0ea5e9",
+    "trimMetal": "bronze"
+  }
+}

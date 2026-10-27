@@ -1,0 +1,57 @@
+{
+  "id": "shade-steeped-blades",
+  "classId": "shade",
+  "school": "venom",
+  "tier": 1,
+  "name": "Steeped Blades",
+  "description": "Poison you apply lasts +1 turn and ticks +15% harder.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "poison-duration-bonus",
+      "amount": 1,
+      "target": "self",
+      "note": "Poison the holder applies lasts +amount turns"
+    },
+    {
+      "kind": "custom",
+      "customId": "poison-tick-percent",
+      "percent": 15,
+      "target": "self",
+      "note": "Poison the holder applies ticks +percent%"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Ticks +30%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "poison-tick-percent",
+        "percent": 30,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "dot"
+  ],
+  "xpTags": [
+    "perception"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 0
+  }
+}

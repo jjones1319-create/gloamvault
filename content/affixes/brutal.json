@@ -1,0 +1,41 @@
+{
+  "id": "brutal",
+  "name": "Brutal",
+  "position": "prefix",
+  "lines": [
+    {
+      "bandMin": "F",
+      "bandMax": "D",
+      "stat": "critDamage",
+      "unit": "flat",
+      "min": 5,
+      "max": 8
+    },
+    {
+      "bandMin": "C",
+      "bandMax": "A",
+      "stat": "critDamage",
+      "unit": "flat",
+      "min": 8,
+      "max": 15
+    },
+    {
+      "bandMin": "S",
+      "bandMax": "God",
+      "stat": "critDamage",
+      "unit": "flat",
+      "min": 15,
+      "max": 25
+    }
+  ],
+  "slots": [
+    "mainHand",
+    "offHand",
+    "gloves"
+  ],
+  "weight": 3,
+  "tags": [
+    "offensive",
+    "crit"
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "id": "of-the-pack",
+  "name": "of the Pack",
+  "position": "suffix",
+  "lines": [
+    {
+      "bandMin": "F",
+      "bandMax": "D",
+      "effect": {
+        "kind": "custom",
+        "customId": "pet-stats-percent",
+        "target": "pet",
+        "note": "+pet stats, percent; \"Whips\" read as mainHand"
+      },
+      "min": 3,
+      "max": 5
+    },
+    {
+      "bandMin": "C",
+      "bandMax": "A",
+      "effect": {
+        "kind": "custom",
+        "customId": "pet-stats-percent",
+        "target": "pet",
+        "note": "+pet stats, percent; \"Whips\" read as mainHand"
+      },
+      "min": 5,
+      "max": 8
+    },
+    {
+      "bandMin": "S",
+      "bandMax": "God",
+      "effect": {
+        "kind": "custom",
+        "customId": "pet-stats-percent",
+        "target": "pet",
+        "note": "+pet stats, percent; \"Whips\" read as mainHand"
+      },
+      "min": 8,
+      "max": 12
+    }
+  ],
+  "slots": [
+    "mainHand",
+    "ring",
+    "talisman"
+  ],
+  "weight": 2,
+  "tags": [
+    "pet"
+  ]
+}

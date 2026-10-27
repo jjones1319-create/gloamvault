@@ -1,0 +1,55 @@
+{
+  "id": "mender-hymn-of-momentum",
+  "classId": "mender",
+  "school": "vigil",
+  "tier": 3,
+  "name": "Hymn of Momentum",
+  "description": "Every ally gains +20 Momentum; you lose 20. Heavy cast.",
+  "type": "active",
+  "cost": 26,
+  "weight": 1400,
+  "target": "allAllies",
+  "effects": [
+    {
+      "kind": "momentum",
+      "amount": 20,
+      "note": "every ally (the sheet’s wording excludes the Mender; allAllies includes the caster, so the self line below nets the Mender’s loss)"
+    },
+    {
+      "kind": "momentum",
+      "amount": -20,
+      "target": "self",
+      "note": "the Mender loses 20"
+    }
+  ],
+  "prerequisiteId": "mender-rally",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "You lose nothing.",
+    "effects": [
+      {
+        "kind": "momentum",
+        "amount": 0,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "buff",
+    "momentum"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 55
+  }
+}

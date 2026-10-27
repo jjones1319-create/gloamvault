@@ -1,0 +1,51 @@
+{
+  "id": "blade-blade-rhythm",
+  "classId": "blade",
+  "school": "iron-dance",
+  "tier": 2,
+  "name": "Blade Rhythm",
+  "description": "Each consecutive Iron Dance skill deals +8% damage (max 3 stacks); a basic attack or any non-Iron-Dance action resets the count.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "school-combo-damage-stacks",
+      "amount": 3,
+      "percent": 8,
+      "target": "self",
+      "note": "percent per consecutive active of the owner's school, amount = the stack cap; any other action resets"
+    }
+  ],
+  "prerequisiteId": "blade-quickstep",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Max 5 stacks.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "school-combo-damage-stacks",
+        "amount": 5,
+        "percent": 8,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff"
+  ],
+  "xpTags": [
+    "agility"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 0
+  }
+}

@@ -1,41 +1,21 @@
-import allAttributesPercent from './all-attributes-percent.ts'
-import damageTakenPercentVsUndeadShadow from './damage-taken-percent-vs-undead-shadow.ts'
-import damageTakenPercent from './damage-taken-percent.ts'
-import fearGuardInstead from './fear-guard-instead.ts'
-import freezeShatter from './freeze-shatter.ts'
-import grabHeld from './grab-held.ts'
-import healingReceivedPercent from './healing-received-percent.ts'
-import noRowSwapNoFlee from './no-row-swap-no-flee.ts'
-import partyAmbushModifier from './party-ambush-modifier.ts'
-import setSpeed from './set-speed.ts'
-import shieldAbsorb from './shield-absorb.ts'
-import shockChain from './shock-chain.ts'
-import silenceNoSkills from './silence-no-skills.ts'
-import tauntMustTarget from './taunt-must-target.ts'
-import type { CustomHandler } from './types.ts'
-import veilMissNext from './veil-miss-next.ts'
+import { GROUP as arcane } from './_group-arcane.ts'
+import { GROUP as cellars } from './_group-cellars.ts'
+import { GROUP as core } from './_group-core.ts'
+import { GROUP as faith } from './_group-faith.ts'
+import { GROUP as martial } from './_group-martial.ts'
+import type { CustomHandler, HandlerEntry } from './types.ts'
 
-/** Every custom hook by its customId; content/README.md rule 31 checks each id has a file here. */
-export const CUSTOM_HANDLERS: ReadonlyMap<string, CustomHandler> = new Map<string, CustomHandler>([
-  ['all-attributes-percent', allAttributesPercent],
-  ['damage-taken-percent', damageTakenPercent],
-  ['damage-taken-percent-vs-undead-shadow', damageTakenPercentVsUndeadShadow],
-  ['fear-guard-instead', fearGuardInstead],
-  ['freeze-shatter', freezeShatter],
-  ['grab-held', grabHeld],
-  ['healing-received-percent', healingReceivedPercent],
-  ['no-row-swap-no-flee', noRowSwapNoFlee],
-  ['party-ambush-modifier', partyAmbushModifier],
-  ['set-speed', setSpeed],
-  ['shield-absorb', shieldAbsorb],
-  ['shock-chain', shockChain],
-  ['silence-no-skills', silenceNoSkills],
-  ['taunt-must-target', tauntMustTarget],
-  ['veil-miss-next', veilMissNext],
-])
+/**
+ * Every custom hook by its customId (content/README.md rule 31: each id has a file sim/src/skills/custom/<id>.ts).
+ * The registry is the union of the group files so several passes can add handlers without touching one list;
+ * sim/test/custom-registry.test.ts checks every handler file is registered once under its own file name.
+ */
+export const HANDLER_GROUPS: Readonly<Record<string, readonly HandlerEntry[]>> = { core, martial, arcane, faith, cellars }
+
+export const CUSTOM_HANDLERS: ReadonlyMap<string, CustomHandler> = new Map<string, CustomHandler>([...core, ...martial, ...arcane, ...faith, ...cellars])
 
 export function customHandler(id: string): CustomHandler | null {
   return CUSTOM_HANDLERS.get(id) ?? null
 }
 
-export type { CustomHandler, HookContext, IncomingDamage } from './types.ts'
+export type { CustomHandler, HandlerEntry, HookContext, HookFx, IncomingDamage, StrikeOptions } from './types.ts'

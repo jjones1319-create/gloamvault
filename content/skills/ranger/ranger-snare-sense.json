@@ -1,0 +1,60 @@
+{
+  "id": "ranger-snare-sense",
+  "classId": "ranger",
+  "school": "trapper",
+  "tier": 3,
+  "name": "Snare-Sense",
+  "description": "Enemies under Root, Grab or Web take +15% damage from your party; your Detection +3.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "party-damage-percent-vs-held",
+      "percent": 15,
+      "target": "allAllies",
+      "note": "every ally’s damage to targets under Root, Grab, Web or a Net +percent"
+    },
+    {
+      "kind": "buffStat",
+      "stat": "detection",
+      "amount": 3
+    }
+  ],
+  "prerequisiteId": "ranger-tripwire",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "+25% / Detection +5.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "party-damage-percent-vs-held",
+        "percent": 25,
+        "target": "allAllies"
+      },
+      {
+        "kind": "buffStat",
+        "stat": "detection",
+        "amount": 5
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "scouting"
+  ],
+  "xpTags": [
+    "perception"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 0
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "id": "ranger-deep-tentacles-drag",
+  "classId": "ranger",
+  "school": "trapper",
+  "tier": 3,
+  "name": "Deep Tentacle's Drag",
+  "description": "Grab one back-row enemy for 1 turn and drag it into the enemy front row, swapping it with a front-row enemy; 1.2× Blunt. Monster technique: learned only while a Deep Tentacle uses the move.",
+  "type": "active",
+  "cost": 24,
+  "weight": 1000,
+  "target": "enemyBack",
+  "effects": [
+    {
+      "kind": "applyStatus",
+      "status": "grab",
+      "duration": 1
+    },
+    {
+      "kind": "rowSwap",
+      "note": "the target changes places with an enemy in the front row"
+    },
+    {
+      "kind": "damage",
+      "multiplier": 1.2,
+      "damageType": "blunt",
+      "scalesWith": "strength"
+    }
+  ],
+  "prerequisiteId": "ranger-hamstring",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Also Weaken 2 turns.",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "weaken",
+        "duration": 2
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "control",
+    "reach"
+  ],
+  "xpTags": [
+    "strength",
+    "agility"
+  ],
+  "aiHints": {
+    "role": "control",
+    "priority": 65
+  }
+}

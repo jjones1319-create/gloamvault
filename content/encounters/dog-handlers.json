@@ -1,0 +1,25 @@
+{
+  "id": "dog-handlers",
+  "tableId": "cellars-c",
+  "dungeonId": "gravehollow-keep",
+  "floorBand": {
+    "min": 2,
+    "max": 3
+  },
+  "name": "Dog Handlers",
+  "composition": [
+    {
+      "monsterId": "cellar-hound",
+      "count": 2,
+      "row": "front"
+    },
+    {
+      "monsterId": "grinning-netter",
+      "count": 1,
+      "row": "back"
+    }
+  ],
+  "weight": 15,
+  "ambushModifier": 15,
+  "eliteAllowed": true
+}

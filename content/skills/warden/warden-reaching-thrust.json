@@ -1,0 +1,53 @@
+{
+  "id": "warden-reaching-thrust",
+  "classId": "warden",
+  "school": "vanguard",
+  "tier": 1,
+  "name": "Reaching Thrust",
+  "description": "1.3× Pierce to one enemy in any row; the spear hits the back row from the front.",
+  "type": "active",
+  "cost": 10,
+  "weight": 1000,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1.3,
+      "damageType": "pierce",
+      "scalesWith": "strength"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "requirements": {
+    "weaponTypes": [
+      "spear"
+    ]
+  },
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Also applies Mark 1 turn.",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "mark",
+        "duration": 1
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "reach"
+  ],
+  "xpTags": [
+    "strength"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 60
+  }
+}

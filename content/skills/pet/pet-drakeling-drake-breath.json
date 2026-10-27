@@ -1,0 +1,40 @@
+{
+  "id": "pet-drakeling-drake-breath",
+  "classId": "pet",
+  "school": "pet",
+  "tier": 1,
+  "name": "Drake Breath",
+  "description": "Frost ×1.2 to the target's whole row.",
+  "type": "active",
+  "cost": 12,
+  "weight": 1000,
+  "target": "enemyRow",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1.2,
+      "damageType": "frost"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "No Mastery line: pet actives do not rank (03 §9).",
+    "effects": []
+  },
+  "tags": [
+    "aoe"
+  ],
+  "xpTags": [
+    "strength"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 60
+  }
+}

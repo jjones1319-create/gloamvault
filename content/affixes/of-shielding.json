@@ -1,0 +1,39 @@
+{
+  "id": "of-shielding",
+  "name": "of Shielding",
+  "position": "suffix",
+  "lines": [
+    {
+      "bandMin": "F",
+      "bandMax": "D",
+      "stat": "block",
+      "unit": "flat",
+      "min": 2,
+      "max": 3
+    },
+    {
+      "bandMin": "C",
+      "bandMax": "A",
+      "stat": "block",
+      "unit": "flat",
+      "min": 3,
+      "max": 5
+    },
+    {
+      "bandMin": "S",
+      "bandMax": "God",
+      "stat": "block",
+      "unit": "flat",
+      "min": 5,
+      "max": 8
+    }
+  ],
+  "slots": [
+    "offHand"
+  ],
+  "weight": 3,
+  "tags": [
+    "defensive",
+    "block"
+  ]
+}

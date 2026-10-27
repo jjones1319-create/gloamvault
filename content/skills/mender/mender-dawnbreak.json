@@ -1,0 +1,80 @@
+{
+  "id": "mender-dawnbreak",
+  "classId": "mender",
+  "school": "benediction",
+  "tier": 3,
+  "name": "Dawnbreak",
+  "description": "Every ally and pet heals 40% of max HP, loses every debuff and gains Regen 3 turns; every downed ally stands at 30% HP (no floor revive budget spent); every enemy takes 1.0× spell Attack as Holy with the Smite mark, and Undead and Shadow enemies also get Fear 1 turn. 100 Momentum; weight 1,000; never misses; cannot be interrupted.",
+  "type": "active",
+  "cost": 0,
+  "weight": 1000,
+  "target": "allAllies",
+  "effects": [
+    {
+      "kind": "heal",
+      "percent": 40,
+      "scalesWith": "wisdom"
+    },
+    {
+      "kind": "dispel",
+      "note": "every debuff"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "regen",
+      "duration": 3,
+      "percent": 5
+    },
+    {
+      "kind": "revive",
+      "percent": 30,
+      "target": "allDowned",
+      "note": "spends no floor revive budget"
+    },
+    {
+      "kind": "damage",
+      "multiplier": 1,
+      "damageType": "holy",
+      "target": "allEnemies"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "smite",
+      "target": "allEnemies"
+    },
+    {
+      "kind": "custom",
+      "customId": "apply-if-undead-or-shadow",
+      "status": "fear",
+      "duration": 1,
+      "target": "allEnemies",
+      "note": "applies `status` for `duration` only to Undead- or Shadow-family targets"
+    }
+  ],
+  "prerequisiteId": "mender-circle-of-mending",
+  "isUltimate": true,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "No Mastery line beyond rank scaling: the sheet names none for the Ultimate.",
+    "effects": []
+  },
+  "tags": [
+    "aoe",
+    "heal",
+    "cleanse",
+    "revive",
+    "debuff"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "heal",
+    "priority": 95
+  }
+}

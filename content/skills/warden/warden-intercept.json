@@ -1,0 +1,56 @@
+{
+  "id": "warden-intercept",
+  "classId": "warden",
+  "school": "bulwark",
+  "tier": 2,
+  "name": "Intercept",
+  "description": "For 2 turns, single-target attacks aimed at that ally hit you instead (front → back works); you take them at −10%.",
+  "type": "active",
+  "cost": 14,
+  "weight": 800,
+  "target": "ally",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "intercept-single-target",
+      "duration": 2,
+      "percent": -10,
+      "note": "single-target attacks on the ally land on the Warden at −10%"
+    }
+  ],
+  "prerequisiteId": "warden-brace",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "3 turns; also covers corridor traps that trigger on that ally.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "intercept-single-target",
+        "duration": 3,
+        "percent": -10
+      },
+      {
+        "kind": "custom",
+        "customId": "intercept-traps",
+        "duration": 3
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "shield"
+  ],
+  "xpTags": [
+    "endurance",
+    "vitality"
+  ],
+  "aiHints": {
+    "role": "defend",
+    "priority": 50
+  }
+}

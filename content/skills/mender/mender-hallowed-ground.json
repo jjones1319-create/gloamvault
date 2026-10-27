@@ -1,0 +1,68 @@
+{
+  "id": "mender-hallowed-ground",
+  "classId": "mender",
+  "school": "sanctity",
+  "tier": 3,
+  "name": "Hallowed Ground",
+  "description": "For 3 turns: any enemy that attacks the party’s front row takes 0.5× Holy; Undead cannot be raised or revived while it holds; every ally has +10% Resistance.",
+  "type": "active",
+  "cost": 24,
+  "weight": 1000,
+  "target": "allAllies",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "hallowed-ground",
+      "multiplier": 0.5,
+      "damageType": "holy",
+      "duration": 3,
+      "target": "self",
+      "note": "for `duration` turns any enemy that attacks the party’s front row takes multiplier × the caster’s spell Attack as damageType; Undead cannot be raised or revived while it holds"
+    },
+    {
+      "kind": "buffStat",
+      "stat": "resistance",
+      "amount": 10,
+      "duration": 3
+    }
+  ],
+  "prerequisiteId": "mender-ward-of-faith",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "4 turns.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "hallowed-ground",
+        "multiplier": 0.5,
+        "damageType": "holy",
+        "duration": 4,
+        "target": "self"
+      },
+      {
+        "kind": "buffStat",
+        "stat": "resistance",
+        "amount": 10,
+        "duration": 4
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "buff",
+    "control"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 50
+  }
+}

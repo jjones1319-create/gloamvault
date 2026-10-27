@@ -1,0 +1,41 @@
+{
+  "id": "pet-drakeling-greater-breath",
+  "classId": "pet",
+  "school": "pet",
+  "tier": 1,
+  "name": "Greater Breath",
+  "description": "Frost ×1.2 to every enemy.",
+  "type": "active",
+  "cost": 12,
+  "weight": 1400,
+  "target": "allEnemies",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1.2,
+      "damageType": "frost",
+      "note": "Drake Breath widened to both rows: the third active rule 28 requires of an S–SS species; 06 §9 lists only two — Proposed"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "No Mastery line: pet actives do not rank (03 §9).",
+    "effects": []
+  },
+  "tags": [
+    "aoe"
+  ],
+  "xpTags": [
+    "strength"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 65
+  }
+}

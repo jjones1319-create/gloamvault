@@ -1,0 +1,78 @@
+{
+  "id": "ranger-quivers-end",
+  "classId": "ranger",
+  "school": "marksman",
+  "tier": 3,
+  "name": "Quiver's End",
+  "description": "2.0× Pierce to every enemy in both rows, 4.0× to every Marked enemy; Root 1 turn on everything hit; ignores Dodge and Blind; spends no arrows. 100 Momentum; never misses.",
+  "type": "active",
+  "cost": 0,
+  "weight": 1400,
+  "target": "allEnemies",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 2,
+      "damageType": "pierce",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "custom",
+      "customId": "damage-multiplier-vs-status",
+      "multiplier": 4,
+      "damageType": "pierce",
+      "status": "mark",
+      "scalesWith": "strength",
+      "note": "the damage line uses multiplier instead against targets holding the status"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "root",
+      "duration": 1
+    }
+  ],
+  "prerequisiteId": "ranger-quarry",
+  "isUltimate": true,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "2.4× / 4.8×; Root 2 turns.",
+    "effects": [
+      {
+        "kind": "damage",
+        "multiplier": 2.4,
+        "damageType": "pierce",
+        "scalesWith": "strength"
+      },
+      {
+        "kind": "custom",
+        "customId": "damage-multiplier-vs-status",
+        "multiplier": 4.8,
+        "damageType": "pierce",
+        "status": "mark",
+        "scalesWith": "strength"
+      },
+      {
+        "kind": "applyStatus",
+        "status": "root",
+        "duration": 2
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "control",
+    "reach"
+  ],
+  "xpTags": [
+    "perception",
+    "agility"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 90
+  }
+}

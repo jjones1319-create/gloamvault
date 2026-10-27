@@ -1,0 +1,88 @@
+{
+  "id": "mender",
+  "name": "Mender",
+  "role": "healer / priest: sustain, cleanses, the earliest in-combat revive",
+  "description": "A censer, a holy symbol and the party’s second chance. The Mender heals by the target’s size, cleanses anything, revives mid-fight from level 5, and in the Crypts is a striker, because Holy is what the Restless Dead fear.",
+  "attributeMods": {
+    "wisdom": 2,
+    "willpower": 1,
+    "vitality": 1
+  },
+  "pool": "mana",
+  "armorFamily": "robes",
+  "weaponTypes": [
+    "censer",
+    "mace",
+    "focus",
+    "staff"
+  ],
+  "schools": [
+    {
+      "id": "benediction",
+      "name": "Benediction",
+      "philosophy": "Keep them standing. Heals that scale with the target, a Regen that outlasts the fight, a Shield for the one about to be hit, and the revive."
+    },
+    {
+      "id": "sanctity",
+      "name": "Sanctity",
+      "philosophy": "Holy damage, Smite, wards and Fear. Holy hits either row and hits Undead and Shadow twice as hard; the wards make the front row safe."
+    },
+    {
+      "id": "vigil",
+      "name": "Vigil",
+      "philosophy": "Cleanse, steady, gift. The school that makes the other six classes better: debuffs come off, Fortify goes on, Momentum changes hands, and the lantern keeps the Dark away."
+    }
+  ],
+  "ultimateSkillId": "mender-dawnbreak",
+  "starterKit": [
+    "copper-censer",
+    "copper-holy-symbol",
+    "burlap-cowl",
+    "burlap-robe",
+    "burlap-leggings",
+    "burlap-slippers",
+    "burlap-wraps",
+    "ring-of-the-well",
+    "small-hp-potion",
+    "torch",
+    "repair-kit",
+    "bandage"
+  ],
+  "starterSkillIds": [
+    "mender-mend",
+    "mender-smite",
+    "mender-cleanse"
+  ],
+  "fieldSkillAffinities": [
+    {
+      "fieldSkill": "firstAid",
+      "rankBonus": 2
+    },
+    {
+      "fieldSkill": "cooking",
+      "rankBonus": 2
+    }
+  ],
+  "monsterTechniqueIds": [],
+  "aiRuleDefault": "IF self HP < 30% THEN item small hp potion on self; IF ally HP < 50% THEN mend on lowest ally; ELSE smite front enemy",
+  "visual": {
+    "gearSetId": "mender-burlap-robes",
+    "palette": [
+      "#f1ead8",
+      "#6b1f24",
+      "#e3c46a",
+      "#b8bcc4"
+    ],
+    "notes": "A broad, grounded column: a long robe under a knee-length tabard carrying the sunburst, the censer swung low on its chain or the holy symbol raised to put a point of light at shoulder height. The tabard and the low mace keep it apart from the Arcanist at 200px."
+  },
+  "pros": [
+    "Sustain: Mend heals 18% of max HP for 10 Mana at light weight; Circle of Mending heals the whole party",
+    "The earliest in-combat revive: Breath of Life at Tier II, level 5",
+    "Cleanses everything and hands out Momentum; Holy does about 2× against Undead"
+  ],
+  "cons": [
+    "Low damage outside Holy targets: Smite on a living bandit is 1.4× of a healer’s spell Attack",
+    "Mana-hungry: a full-party emergency is most of a level-7 pool in three turns",
+    "Robes and Blunt only: the healer is the target the moment the front row falls"
+  ]
+}

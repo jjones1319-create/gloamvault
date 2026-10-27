@@ -124,6 +124,8 @@ export interface Effect {
   readonly summonId?: ContentId
   /** Name of a hand-written sim hook for a custom line (sim/src/skills/custom/<customId>.ts). */
   readonly customId?: ContentId
+  /** For a custom line that grants or consumes an item or material: its id. */
+  readonly itemId?: ContentId
   /** Overrides the owning skill's or attack's target for this line only. */
   readonly target?: Target
   /** Attribute whose points above 10 add to this line. */
@@ -770,6 +772,21 @@ export interface CurioDef {
   readonly safeItemId: ContentId | null
 }
 
+/** A secret room's contents (03 §4.3; 07 §2.6): dungeon.schema.json#/$defs/secret. Secrets reward, never gate. */
+export interface SecretDef {
+  readonly id: ContentId
+  readonly name: string
+  readonly zoneId: ContentId | null
+  readonly description: string
+  readonly rewards: readonly Reward[]
+  readonly chest: 'small' | 'large' | null
+  readonly blessing: { readonly name: string; readonly description: string; readonly effects: readonly Effect[] } | null
+  readonly shortcutToExit: boolean
+  readonly revealsFloor: boolean
+  readonly lightBonus: number
+  readonly fieldSkillXp: FieldSkill | null
+}
+
 export interface FieldSkillRankReveal {
   readonly fieldSkill: FieldSkill
   readonly min: number
@@ -889,6 +906,8 @@ export interface DungeonDef {
   readonly generator: GeneratorDef
   readonly curios: readonly CurioDef[]
   readonly traps: readonly TrapDef[]
+  /** Secret rooms (07 §2.6); optional until Phase 3 writes them. */
+  readonly secrets?: readonly SecretDef[]
   /** Inline templates plus every templates/<id>.json file, merged by the loader. */
   readonly templates: readonly TemplateDef[]
   readonly pacts: readonly PactDef[]
@@ -1238,7 +1257,10 @@ export interface HeroRecord {
   readonly name: string
   readonly speciesId: ContentId
   readonly classId: ContentId
+  /** Set by battleXp (D-082). */
   readonly level: number
+  /** Battle XP from won fights (D-082: Final Fantasy-style levels). */
+  readonly battleXp: number
   readonly attributes: AttributeValues
   readonly attributeXp: AttributeXp
   readonly creationValues: AttributeValues

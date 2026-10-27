@@ -1,0 +1,54 @@
+{
+  "id": "mender-sanctuary",
+  "classId": "mender",
+  "school": "benediction",
+  "tier": 3,
+  "name": "Sanctuary",
+  "description": "Every ally gains a Shield of 15% max HP for 2 turns; while a Sanctuary Shield holds, its holder cannot be Grabbed, Rooted or Webbed.",
+  "type": "active",
+  "cost": 24,
+  "weight": 1000,
+  "target": "allAllies",
+  "effects": [
+    {
+      "kind": "shield",
+      "percent": 15,
+      "duration": 2
+    },
+    {
+      "kind": "custom",
+      "customId": "sanctuary-shield-immunities",
+      "duration": 2,
+      "note": "while this skill’s Shield holds on the target, it cannot be Grabbed, Rooted or Webbed"
+    }
+  ],
+  "prerequisiteId": "mender-breath-of-life",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Shield 20%.",
+    "effects": [
+      {
+        "kind": "shield",
+        "percent": 20,
+        "duration": 2
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "shield",
+    "buff"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "defend",
+    "priority": 60
+  }
+}

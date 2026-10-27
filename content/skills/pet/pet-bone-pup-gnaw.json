@@ -1,0 +1,40 @@
+{
+  "id": "pet-bone-pup-gnaw",
+  "classId": "pet",
+  "school": "pet",
+  "tier": 1,
+  "name": "Gnaw",
+  "description": "Pierce ×0.9.",
+  "type": "active",
+  "cost": 8,
+  "weight": 800,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 0.9,
+      "damageType": "pierce"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "No Mastery line: pet actives do not rank (03 §9).",
+    "effects": []
+  },
+  "tags": [
+    "singleTarget"
+  ],
+  "xpTags": [
+    "strength"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 55
+  }
+}

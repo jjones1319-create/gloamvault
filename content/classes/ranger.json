@@ -1,0 +1,93 @@
+{
+  "id": "ranger",
+  "name": "Ranger",
+  "role": "ranged striker and scout: hits either row, finds the traps and secrets",
+  "description": "A bow, Leather and the sharpest eyes in the party. The Ranger shoots from the back row at any target in any row, and out of combat it makes the dungeon smaller: traps found, ambushes avoided, the next room scouted.",
+  "attributeMods": {
+    "perception": 2,
+    "agility": 1,
+    "vitality": 1
+  },
+  "pool": "stamina",
+  "armorFamily": "leather",
+  "weaponTypes": [
+    "bow",
+    "shortbow",
+    "longbow",
+    "crossbow",
+    "spear"
+  ],
+  "schools": [
+    {
+      "id": "marksman",
+      "name": "Marksman",
+      "philosophy": "Aimed shots, Marks, either-row damage and first strike. The first arrow decides who the fight is about."
+    },
+    {
+      "id": "trapper",
+      "name": "Trapper",
+      "philosophy": "Traps, nets, snares and part-breaks. Decide where the enemy stands before you decide where to shoot."
+    },
+    {
+      "id": "pathfinder",
+      "name": "Pathfinder",
+      "philosophy": "Scouting, light, foraging, party Speed and ambush avoidance. Most fights are won in the corridor before them."
+    }
+  ],
+  "ultimateSkillId": "ranger-quivers-end",
+  "starterKit": [
+    "pine-shortbow",
+    "arrows",
+    "rawhide-hood",
+    "rawhide-jerkin",
+    "rawhide-breeches",
+    "rawhide-boots",
+    "rawhide-gloves",
+    "ring-of-the-hawk",
+    "small-hp-potion",
+    "torch",
+    "repair-kit",
+    "bandage"
+  ],
+  "starterSkillIds": [
+    "ranger-aimed-shot",
+    "ranger-hunters-mark",
+    "ranger-keen-eyes"
+  ],
+  "fieldSkillAffinities": [
+    {
+      "fieldSkill": "trapDisarm",
+      "rankBonus": 2
+    },
+    {
+      "fieldSkill": "foraging",
+      "rankBonus": 2
+    },
+    {
+      "fieldSkill": "cartography",
+      "rankBonus": 1
+    }
+  ],
+  "monsterTechniqueIds": [],
+  "aiRuleDefault": "IF self HP < 30% THEN item small hp potion on self; IF enemy status mark THEN aimed shot on marked enemy; ELSE hunters mark on strongest enemy",
+  "visual": {
+    "gearSetId": "ranger-rawhide-leather",
+    "palette": [
+      "#4f6b3a",
+      "#5b4532",
+      "#ece3cf",
+      "#b08d3c"
+    ],
+    "notes": "A hood point and a bow arc: tall and narrow, the bow's curve breaking the outline on one side and the quiver angled across the back on the other."
+  },
+  "pros": [
+    "Hits either row from the back row; kills a back-row spitter on turn one",
+    "Steady Draw: the party's first strike, every fight",
+    "Detection 12 at creation: traps, secrets, treasure and fewer ambushes"
+  ],
+  "cons": [
+    "Leather Defense: two front-row hits are a third of its HP",
+    "Arrows are consumed and cost gold; an empty quiver is a basic-attack Ranger",
+    "Falls apart if ambushed or once the front row falls"
+  ]
+}

@@ -489,7 +489,7 @@
       "torchValue": 25,
       "revivesPerFloor": 3,
       "trapDifficultyBonus": 0,
-      "retreatTollPercent": 10,
+      "retreatTollPercent": 0,
       "goldPercent": 100,
       "xpPercent": 100,
       "chestShiftPp": 0,

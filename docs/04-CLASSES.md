@@ -31,7 +31,7 @@ Attribute modifiers are added to the base 10s before species and the 6 free crea
 | Class | Role | Attribute mods | Armor | Pool | Weapons | Schools | One-line pro | One-line con |
 |---|---|---|---|---|---|---|---|---|
 | **Warden** | tank | +1 Str, +2 End, +1 Vit | Plate (−20 Speed) | Stamina | 1h sword / mace / axe + shield, or spear | Bulwark · Vanguard · Warcry | Holds the front row and the enemies' attention | Slowest class in the game; low damage |
-| **Blade** | melee striker | +2 Str, +2 Agi | Mail (−10) | Stamina | swords, greatswords, axes, dual swords | Iron Dance · Executioner · Bloodletter | Highest sustained melee damage; crits and Bleed | Front row with Mail; nothing for the back row |
+| **Blade** | melee striker | +2 Str, +2 Agi | Mail (−10) | Stamina | swords, greatswords, axes, great axes, daggers (off hand), dual swords | Iron Dance · Executioner · Bloodletter | Highest sustained melee damage; crits and Bleed | Front row with Mail; nothing for the back row |
 | **Ranger** | ranged striker / scout | +2 Per, +1 Agi, +1 Vit | Leather (−3) | Stamina | bows, crossbows, spear | Marksman · Trapper · Pathfinder | Hits either row; fewest ambushes, most traps found | Weak once anything reaches the back row |
 | **Shade** | assassin / rogue | +2 Agi, +1 Per, +1 Luck | Leather (−3) | Stamina | dual daggers, short sword, throwing knives | Shadow · Venom · Larceny | Fastest actor on the strip; Poison; Lockpicking | Fragile and front-row-bound with daggers |
 | **Arcanist** | caster | +2 Wis, +1 Per, +1 Will | Robes (0) | Mana | staff, or wand + focus | Evocation · Rime · Arcana | Biggest AoE and burst; controls the timeline | Lowest Defense; heavy casts can be interrupted; Mana runs dry |

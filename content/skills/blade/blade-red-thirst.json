@@ -1,0 +1,48 @@
+{
+  "id": "blade-red-thirst",
+  "classId": "blade",
+  "school": "bloodletter",
+  "tier": 1,
+  "name": "Red Thirst",
+  "description": "Basic attacks heal you for 8% of the damage dealt.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "basic-attack-lifesteal-percent",
+      "percent": 8,
+      "target": "self"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "15%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "basic-attack-lifesteal-percent",
+        "percent": 15,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "heal"
+  ],
+  "xpTags": [
+    "vitality"
+  ],
+  "aiHints": {
+    "role": "heal",
+    "priority": 0
+  }
+}

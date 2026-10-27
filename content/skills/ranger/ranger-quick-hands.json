@@ -1,0 +1,66 @@
+{
+  "id": "ranger-quick-hands",
+  "classId": "ranger",
+  "school": "trapper",
+  "tier": 1,
+  "name": "Quick Hands",
+  "description": "Trap Disarm +2; Trapper skills cost −10%; disarming a trap in the corridor grants +10 Momentum at the start of the next fight.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "field-skill-bonus-trap-disarm",
+      "amount": 2,
+      "target": "self",
+      "note": "adds amount to the Trap Disarm rank for checks"
+    },
+    {
+      "kind": "custom",
+      "customId": "school-cost-multiplier",
+      "percent": -10,
+      "target": "self",
+      "note": "the owner's school (Trapper) costs −10%"
+    },
+    {
+      "kind": "custom",
+      "customId": "momentum-next-fight-on-disarm",
+      "amount": 10,
+      "target": "self",
+      "note": "a corridor disarm banks amount Momentum for the start of the next fight"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Trap Disarm +4.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "field-skill-bonus-trap-disarm",
+        "amount": 4,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "utility",
+    "momentum",
+    "field"
+  ],
+  "xpTags": [
+    "agility",
+    "perception"
+  ],
+  "aiHints": {
+    "role": "utility",
+    "priority": 0
+  }
+}

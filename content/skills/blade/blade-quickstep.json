@@ -1,0 +1,58 @@
+{
+  "id": "blade-quickstep",
+  "classId": "blade",
+  "school": "iron-dance",
+  "tier": 1,
+  "name": "Quickstep",
+  "description": "Your next action, whatever it is, has weight 800; +10 Momentum.",
+  "type": "active",
+  "cost": 8,
+  "weight": 800,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "next-action-weight",
+      "amount": 800,
+      "target": "self",
+      "note": "the next action resolves at weight amount instead of its own"
+    },
+    {
+      "kind": "momentum",
+      "amount": 10
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "requirements": {
+    "dualWield": true
+  },
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Also +10% Dodge for 1 turn.",
+    "effects": [
+      {
+        "kind": "buffStat",
+        "duration": 1,
+        "stat": "dodge",
+        "amount": 10
+      }
+    ]
+  },
+  "tags": [
+    "mobility",
+    "momentum",
+    "buff"
+  ],
+  "xpTags": [
+    "agility"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 40
+  }
+}

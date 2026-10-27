@@ -1,0 +1,57 @@
+{
+  "id": "arcanist-time-slip",
+  "classId": "arcanist",
+  "school": "arcana",
+  "tier": 3,
+  "name": "Time Slip",
+  "description": "One enemy in either row is Slowed 2 turns and pushed back 300 energy; a charging caster loses its cast.",
+  "type": "active",
+  "cost": 24,
+  "weight": 1000,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "applyStatus",
+      "status": "slow",
+      "duration": 2
+    },
+    {
+      "kind": "timeline",
+      "energy": -300
+    },
+    {
+      "kind": "custom",
+      "customId": "cancel-charge",
+      "note": "a target that is charging a cast loses it"
+    }
+  ],
+  "prerequisiteId": "arcanist-blink-step",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Pushback 500.",
+    "effects": [
+      {
+        "kind": "timeline",
+        "energy": -500
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "reach",
+    "control",
+    "debuff"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "control",
+    "priority": 60
+  }
+}

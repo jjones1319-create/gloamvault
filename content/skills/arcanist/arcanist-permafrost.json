@@ -1,0 +1,64 @@
+{
+  "id": "arcanist-permafrost",
+  "classId": "arcanist",
+  "school": "rime",
+  "tier": 2,
+  "name": "Permafrost",
+  "description": "Chill you apply lasts +1 turn and takes a further −10% Speed; Frost skills +8%.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "chill-duration-bonus",
+      "amount": 1,
+      "target": "self",
+      "note": "Chill the holder applies lasts +amount turns"
+    },
+    {
+      "kind": "custom",
+      "customId": "chill-speed-percent-bonus",
+      "percent": -10,
+      "target": "self",
+      "note": "Chill the holder applies moves Speed a further percent% (on top of the status’s ×0.75)"
+    },
+    {
+      "kind": "custom",
+      "customId": "school-damage-percent",
+      "percent": 8,
+      "target": "self",
+      "note": "skills of this skill’s school (Rime: Frost) deal +percent%"
+    }
+  ],
+  "prerequisiteId": "arcanist-shatter",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Frost skills +12%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "school-damage-percent",
+        "percent": 12,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "debuff"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 0
+  }
+}

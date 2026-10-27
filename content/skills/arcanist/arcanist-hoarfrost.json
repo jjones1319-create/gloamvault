@@ -1,0 +1,59 @@
+{
+  "id": "arcanist-hoarfrost",
+  "classId": "arcanist",
+  "school": "rime",
+  "tier": 3,
+  "name": "Hoarfrost",
+  "description": "At fight start every enemy in the front row is Chilled 1 turn; Chilled enemies also lose 10% Accuracy.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "fight-start-apply-status",
+      "status": "chill",
+      "duration": 1,
+      "target": "enemyFront",
+      "note": "at fight start, applies `status` for `duration` to every enemy in the row `target` names (enemyFront = the front row; allEnemies = both)"
+    },
+    {
+      "kind": "custom",
+      "customId": "chill-accuracy-penalty",
+      "amount": -10,
+      "target": "self",
+      "note": "while the holder is in the fight, Chilled enemies have `amount` pp Accuracy"
+    }
+  ],
+  "prerequisiteId": "arcanist-permafrost",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Both rows.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "fight-start-apply-status",
+        "status": "chill",
+        "duration": 1,
+        "target": "allEnemies"
+      }
+    ]
+  },
+  "tags": [
+    "debuff",
+    "control"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 0
+  }
+}

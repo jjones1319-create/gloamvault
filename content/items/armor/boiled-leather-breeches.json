@@ -1,0 +1,50 @@
+{
+  "id": "boiled-leather-breeches",
+  "name": "Boiled Leather Breeches",
+  "slot": "legs",
+  "kind": "armor",
+  "grade": "D",
+  "materialLadder": "hide",
+  "materialRung": 2,
+  "weaponType": null,
+  "armorFamily": "leather",
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "defense": 5,
+    "hp": 4,
+    "speed": 4
+  },
+  "requirements": {
+    "strength": 9,
+    "wisdom": 0
+  },
+  "affixSlots": 1,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 5,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1.25,
+  "value": 266,
+  "classLock": [
+    "ranger",
+    "shade"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "armor-leather-legs-01",
+    "tintPrimary": "#5c3a1e",
+    "tintSecondary": "#3b2a1e",
+    "trimMetal": "iron"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "id": "fine-ring-of-vigor",
+  "name": "Fine Ring of Vigor",
+  "slot": "ring",
+  "kind": "ring",
+  "grade": "D",
+  "materialLadder": null,
+  "materialRung": null,
+  "weaponType": null,
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "hp": 11
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 1,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 5,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1,
+  "value": 228,
+  "classLock": [],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "ring-vigor-01",
+    "tintPrimary": "#8a8f98",
+    "tintSecondary": "#7f1d1d",
+    "trimMetal": "iron"
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "id": "ranger-predators-patience",
+  "classId": "ranger",
+  "school": "marksman",
+  "tier": 3,
+  "name": "Predator's Patience",
+  "description": "Each of your turns spent not attacking (Guard, Item, Mark, a Pathfinder active) adds +25% to your next shot (max +75%).",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "patience-stacks",
+      "amount": 75,
+      "percent": 25,
+      "target": "self",
+      "note": "percent per non-attacking turn, amount = the cap; spent by your next damaging skill or basic attack"
+    }
+  ],
+  "prerequisiteId": "ranger-quarry",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Max +100%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "patience-stacks",
+        "amount": 100,
+        "percent": 25,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff"
+  ],
+  "xpTags": [
+    "perception",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 0
+  }
+}

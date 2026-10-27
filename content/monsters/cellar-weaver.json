@@ -1,0 +1,163 @@
+{
+  "id": "cellar-weaver",
+  "name": "Cellar Weaver",
+  "familyId": "cellar-vermin",
+  "dungeonId": "gravehollow-keep",
+  "zoneId": "the-cellars",
+  "role": "special",
+  "size": "medium",
+  "rows": [
+    "back"
+  ],
+  "levelBand": {
+    "min": 1,
+    "max": 4
+  },
+  "multipliers": {
+    "hp": 1.1,
+    "attack": 0.9,
+    "defense": 0.7
+  },
+  "speed": 100,
+  "xpClass": 2,
+  "goldMultiplier": 1.5,
+  "ambushModifier": 0,
+  "attacks": [
+    {
+      "id": "web-shot",
+      "name": "Web Shot",
+      "damageType": "blunt",
+      "weight": 1000,
+      "multiplier": 0,
+      "target": "enemy",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "web",
+          "duration": 3,
+          "note": "any row; Fire on the hero or the Weaver burns it off"
+        }
+      ],
+      "aiWeight": 50,
+      "tell": "The Weaver draws a thread taut."
+    },
+    {
+      "id": "bite",
+      "name": "Bite",
+      "damageType": "pierce",
+      "weight": 800,
+      "multiplier": 0.9,
+      "target": "enemy",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "poison",
+          "duration": 2
+        }
+      ],
+      "aiWeight": 35,
+      "tell": null
+    },
+    {
+      "id": "reel",
+      "name": "Reel",
+      "damageType": "blunt",
+      "weight": 1000,
+      "multiplier": 0,
+      "target": "enemy",
+      "effects": [
+        {
+          "kind": "custom",
+          "customId": "reel-webbed-hero-forward",
+          "note": "pulls the Webbed hero into the front row"
+        }
+      ],
+      "aiWeight": 15,
+      "tell": null
+    }
+  ],
+  "resist": [
+    "poison"
+  ],
+  "weak": [
+    "fire"
+  ],
+  "immune": [],
+  "statusImmune": [],
+  "behavior": {
+    "rules": [
+      {
+        "if": "no hero is Webbed (target: the back-row hero with the highest Attack)",
+        "then": "web-shot"
+      },
+      {
+        "if": "a hero is Webbed in the back row",
+        "then": "reel"
+      },
+      {
+        "if": "always",
+        "then": "bite"
+      }
+    ],
+    "fleesAtPercent": 0
+  },
+  "parts": {
+    "common": {
+      "materialId": "spider-silk",
+      "chance": 35,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "rare": {
+      "itemId": "weavers-gland",
+      "chance": 4,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "breakLimb": {
+      "name": "spinnerets",
+      "effect": {
+        "kind": "custom",
+        "customId": "cannot-web",
+        "note": "cannot Web for the rest of the fight"
+      }
+    }
+  },
+  "monsterTechniqueSkillIds": [],
+  "elitePool": [
+    "rabid",
+    "thorned",
+    "vampiric",
+    "shielded",
+    "commander"
+  ],
+  "boss": null,
+  "hunter": null,
+  "visual": {
+    "baseMesh": "spider",
+    "scale": 1.4,
+    "variantOf": "cellar-spider",
+    "palette": [
+      "#efe6d6",
+      "#6b4a2b",
+      "#2a6fdb"
+    ],
+    "reads200px": true,
+    "animations": [
+      "Idle",
+      "Move",
+      "Attack1",
+      "Attack2",
+      "Hit",
+      "Death",
+      "Drop",
+      "Web",
+      "Reel"
+    ],
+    "triBudget": 4000
+  }
+}

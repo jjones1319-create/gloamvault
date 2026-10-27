@@ -1,0 +1,56 @@
+{
+  "id": "arcanist-frost-floor",
+  "classId": "arcanist",
+  "school": "rime",
+  "tier": 1,
+  "name": "Frost Floor",
+  "description": "0.7× Frost to every front-row enemy; Chill 1 turn.",
+  "type": "active",
+  "cost": 12,
+  "weight": 1000,
+  "target": "enemyFront",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 0.7,
+      "damageType": "frost",
+      "target": "enemyRow",
+      "note": "the whole front row"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "chill",
+      "duration": 1,
+      "target": "enemyRow"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "0.8× each.",
+    "effects": [
+      {
+        "kind": "damage",
+        "multiplier": 0.8,
+        "damageType": "frost",
+        "target": "enemyRow"
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "debuff"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 55
+  }
+}
