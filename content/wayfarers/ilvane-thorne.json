@@ -1,0 +1,19 @@
+{
+  "id": "ilvane-thorne",
+  "name": "Ilvane Thorne",
+  "speciesId": "elf",
+  "classId": "blade",
+  "grade": "B",
+  "freePoints": {
+    "agility": 3,
+    "perception": 3,
+    "strength": 2
+  },
+  "starterSkillIds": [
+    "blade-twin-cut",
+    "blade-quickstep",
+    "blade-headsmans-eye"
+  ],
+  "aiRule": "IF self HP < 30% THEN item small hp potion on self; IF enemies count > 2 THEN quickstep; ELSE twin cut on weakest enemy",
+  "bio": "Moves like a falling leaf and cuts like the wind that drops it."
+}

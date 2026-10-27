@@ -891,13 +891,15 @@
         "gear": 0.5,
         "petEgg": 1.5,
         "materialCrate": 0.3,
-        "skillTome": 0.8
+        "skillTome": 0.8,
+        "wayfarer": 1.2
       },
       "grandPriceR": {
         "gear": 2.5,
         "petEgg": 6,
         "materialCrate": 1.2,
-        "skillTome": 3
+        "skillTome": 3,
+        "wayfarer": 5
       },
       "grandGradeShift": 1,
       "materialCrateRarePartChance": 10,
@@ -978,7 +980,9 @@
     "reconnectGraceSeconds": 90,
     "doorAutoConfirmSeconds": 15,
     "stateHashEveryCommands": 20,
-    "lootPickOrder": "lowest total item value first"
+    "lootPickOrder": "lowest total item value first",
+    "rosterMax": 12,
+    "partyNote": "D-091 (James): party members come only from the Wayfarer Chest; four places from the start (maxPlayers), up to rosterMax heroes at the Inn."
   },
   "dungeon": {
     "source": "03 §11 (D-017, D-024)",
@@ -1081,6 +1085,15 @@
       "critRate": 5,
       "critDamage": 150,
       "bossResistance": 20
+    },
+    "threat": {
+      "bossBonus": 3,
+      "hunterBonus": 3,
+      "perChampionAffix": 1,
+      "easyAtOrBelow": -2,
+      "dangerousFrom": 2,
+      "deadlyFrom": 4,
+      "note": "D-092: encounter level vs the party level (average of the living heroes, rounded down)."
     }
   },
   "death": {
@@ -1104,6 +1117,30 @@
       "keepsXpItemsInsights": true
     },
     "retreatTollPercent": 0,
-    "hardcoreDeletesHero": true
+    "hardcoreDeletesHero": true,
+    "rule": {
+      "value": "mortal",
+      "note": "D-088 (James): the default death rule for a new save; Sheltered keeps the Phase 3 revive rules and loses nobody."
+    },
+    "raise": {
+      "healerMinLevel": 10,
+      "healerPoolPercent": 50,
+      "levelLoss": 1,
+      "hpPercent": 30,
+      "clockTicks": 3,
+      "perHealerPerFloor": 1,
+      "note": "D-089: a living hero with a revive-tagged skill at level 10+ raises one dead hero out of a fight."
+    },
+    "shrine": {
+      "feeR": 0.3,
+      "feePerLevelR": 0.05,
+      "levelLoss": 2,
+      "note": "D-089: the Ember Shrine raises the dead brought home for gold and two levels."
+    },
+    "legacy": {
+      "percent": 50,
+      "note": "D-090: a hero lost for good leaves this share of their battle XP to an heir."
+    },
+    "bearersBringGear": true
   }
 }

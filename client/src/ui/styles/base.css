@@ -440,3 +440,48 @@ button {
 html[data-reduce-motion='1'] * {
   transition: none !important;
 }
+
+/* New game → how death works (D-088): two big cards, Mortal first. */
+.death-choice {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.death-choice__card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 44px;
+  padding: 14px;
+  text-align: left;
+  color: var(--ink);
+  background: var(--bg-panel);
+  border: 2px solid var(--line, rgba(255, 255, 255, 0.15));
+  border-radius: 12px;
+  font: inherit;
+  cursor: pointer;
+}
+.death-choice__card b {
+  font-size: 1.05em;
+}
+.death-choice__card span {
+  color: var(--ink-dim);
+  line-height: 1.35;
+}
+.death-choice__card--main {
+  border-color: var(--light);
+}
+.death-choice__card:focus-visible,
+.death-choice__card:hover {
+  border-color: var(--light);
+}
+.death-choice__note {
+  margin: 10px 0 0;
+  color: var(--ink-dim);
+  font-size: var(--fs-small, 14px);
+}
+@media (max-width: 640px) {
+  .death-choice {
+    grid-template-columns: 1fr;
+  }
+}

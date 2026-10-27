@@ -360,7 +360,7 @@ export const RANCH_IMPORT_GRADES = ['F', 'E', 'D', 'C', 'B', 'A'] as const
 export type RanchImportGrade = (typeof RANCH_IMPORT_GRADES)[number]
 
 /** chest.schema.json `kind`. */
-export const CHEST_KINDS = ['gear', 'petEgg', 'materialCrate', 'skillTome'] as const
+export const CHEST_KINDS = ['gear', 'petEgg', 'materialCrate', 'skillTome', 'wayfarer'] as const
 export type ChestKind = (typeof CHEST_KINDS)[number]
 
 /** chest.schema.json `tier`. */
@@ -372,7 +372,7 @@ export const CHEST_SUBTYPES = ['weapon', 'armor', 'trinket'] as const
 export type ChestSubtype = (typeof CHEST_SUBTYPES)[number]
 
 /** chest.schema.json `dupeRule`. */
-export const DUPE_RULES = ['salvage', 'bond', 'rankXp'] as const
+export const DUPE_RULES = ['salvage', 'bond', 'rankXp', 'none'] as const
 export type DupeRule = (typeof DUPE_RULES)[number]
 
 /** contract.schema.json `cadence`. */
@@ -432,3 +432,15 @@ export function gradeShift(grade: Grade, steps: number): Grade {
 export function lightBandIndex(band: LightBand): number {
   return LIGHT_BANDS.indexOf(band)
 }
+
+/** The save's death rule (D-088): Mortal, the dead stay dead; Sheltered, the Phase 3 revive rules and nobody is lost. */
+export const DEATH_RULES = ['mortal', 'sheltered'] as const
+export type DeathRule = (typeof DEATH_RULES)[number]
+
+/** wayfarer.schema.json `grade` (D-091): the Segment 1 cast is graded D to A. */
+export const WAYFARER_GRADES = ['D', 'C', 'B', 'A'] as const
+export type WayfarerGrade = (typeof WAYFARER_GRADES)[number]
+
+/** An encounter's threat against the party's level (D-092). */
+export const THREAT_BANDS = ['easy', 'even', 'dangerous', 'deadly'] as const
+export type ThreatBand = (typeof THREAT_BANDS)[number]

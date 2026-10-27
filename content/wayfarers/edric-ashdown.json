@@ -1,0 +1,20 @@
+{
+  "id": "edric-ashdown",
+  "name": "Edric Ashdown",
+  "speciesId": "human",
+  "classId": "ranger",
+  "grade": "B",
+  "freePoints": {
+    "perception": 3,
+    "agility": 2,
+    "endurance": 2,
+    "wisdom": 1
+  },
+  "starterSkillIds": [
+    "ranger-aimed-shot",
+    "ranger-caltrop-toss",
+    "ranger-hunters-mark"
+  ],
+  "aiRule": "IF self HP < 30% THEN item small hp potion on self; IF enemies count > 2 THEN caltrop toss; IF enemy status mark THEN aimed shot on marked enemy; ELSE hunters mark on strongest enemy",
+  "bio": "A poacher turned bounty-tracker: the Keep's rats pay better than the lord's deer ever did."
+}

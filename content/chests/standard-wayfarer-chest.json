@@ -1,0 +1,27 @@
+{
+  "id": "standard-wayfarer-chest",
+  "name": "Wayfarer Chest",
+  "kind": "wayfarer",
+  "tier": "standard",
+  "priceR": 1.2,
+  "subtypes": [],
+  "oddsByBand": [
+    {
+      "centreGrade": "D",
+      "table": {
+        "D": 50,
+        "C": 30,
+        "B": 15,
+        "A": 5
+      }
+    }
+  ],
+  "pity": {
+    "plusOneWithin": 10,
+    "plusTwoWithin": 40
+  },
+  "bagWithoutReplacement": false,
+  "tomeTiers": null,
+  "dupeRule": "none",
+  "divineShardChance": 0
+}

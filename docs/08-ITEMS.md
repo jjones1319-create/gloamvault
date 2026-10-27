@@ -1,6 +1,6 @@
 # 08 — Items, materials and chests
 
-*Last updated 2026-10-26 · rev. 1 · numbers are tuning starting points*
+*Last updated 2026-10-27 · rev. 2 (§10.2 the Wayfarer Chest, D-091; §10.1 pity keys per chest family) · rev. 1 2026-10-26 · numbers are tuning starting points*
 
 **How to read this file.** Every base number is written **for grade F**; every grade multiplies it by the ladder (F ×1.00 · E ×1.35 · D ×1.80 · C ×2.45 · B ×3.30 · A ×4.45 · S ×6.00 · SS ×8.10 · God ×11.0), rounded half up to an integer after the multiply. Percentages (Block, Crit, Dodge) do **not** ride the ladder; they step by a fixed amount per grade where the table says so. Ordinary pieces are named `<Material> <Type>` — "Iron Longsword", "Wolf Hide Jerkin", "Oak Shortbow" — where the material is the rung of the item's ladder at its grade (§8); named uniques exist from B up (§7) and keep their own names. Grade index **g** runs F 0 … God 8 and is used in requirement formulas. Each table here becomes one folder under `content/items/<kind>/`, one record per `<id>.json` (`10-TECH-PLAN.md` §3 owns the layout); column headers are the field names. Rules live in the rulebook (`03-GAME-DESIGN.md` §2, §6, §8); this file is the content.
 
@@ -672,6 +672,7 @@ The band-B Standard line is the rulebook's (§8.3) B 56 · A 25 · S 14 · SS 5 
 | Chest | Standard | Grand | Contents and rule |
 |---|---|---|---|
 | Pet Egg | 1.5 R | 6 R | one egg of the band's species pool (`06-MONSTERS.md` §9); grade by the Gear tables above; same pity counters (own family) |
+| Wayfarer Chest | 1.2 R | — | one **wayfarer** of the cast (`04-CLASSES.md` §7) called to the Lantern Inn: grade D 50 · C 30 · B 15 · A 5 at every band in Segment 1, then a wayfarer of that grade not already with you (a grade with nobody left re-rolls among the grades that have someone); pity read from D — a C or better within 10, a B or better within 40; refused when the Inn is full (12) or the whole cast is with you; no dupes, no Luck shift (D-091) |
 | Material Crate | 0.3 R | 1.2 R | 6 / 20 units of the band rung, ladder of choice; rare part 10% / guaranteed; no pity (deterministic) |
 | Skill Tome | 0.8 R | 3 R | **the Tome bag:** one bag per class per tier holding every skill of that tier the player does not own; Standard picks a tier at I 50 / II 35 / III 15 then draws from that bag without replacement; Grand picks II 40 / III 40 / IV 20; an empty bag passes its weight to the next tier up; when every eligible bag is empty the chest gives a Tome of Practice (rank XP equal to one full rank for a chosen skill) and says so before purchase |
 

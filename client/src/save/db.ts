@@ -19,6 +19,8 @@ export const KEYS = {
   settings: `${KEY_PREFIX}settings`,
   profile: `${KEY_PREFIX}profile`,
   delve: `${KEY_PREFIX}delve`,
+  /** Set by Erase (the save is gone on purpose: never fall back to a backup); cleared by the next save. */
+  erased: `${KEY_PREFIX}profile-erased`,
 } as const
 
 /** The real thing: one IndexedDB database of our own, so other sites on the origin cannot collide with it. */

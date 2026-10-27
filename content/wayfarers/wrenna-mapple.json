@@ -1,0 +1,19 @@
+{
+  "id": "wrenna-mapple",
+  "name": "Wrenna Mapple",
+  "speciesId": "halfling",
+  "classId": "arcanist",
+  "grade": "A",
+  "freePoints": {
+    "wisdom": 3,
+    "willpower": 3,
+    "luck": 3
+  },
+  "starterSkillIds": [
+    "arcanist-ember-lance",
+    "arcanist-arcane-ward",
+    "arcanist-quicken"
+  ],
+  "aiRule": null,
+  "bio": "The smallest scholar of the Ember Academy, and the only one who came back from the Crypts."
+}

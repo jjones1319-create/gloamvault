@@ -1,9 +1,16 @@
+import { useState } from 'preact/hooks'
+import { lowerDeathRule } from '../../../../sim/src/town.ts'
+import { act, eraseSave, ephemeral, profile, toast } from '../../game/session.ts'
 import { Choice, Toggle } from '../components/Toggle.tsx'
 import { TopBar } from '../components/TopBar.tsx'
+import { Btn, Modal } from '../kit/kit.tsx'
 import { buzz } from '../lib/haptics.ts'
 import { enterFullscreenLandscape, exitFullscreen, installPromptAvailable, isFullscreen, isStandalone, promptInstall } from '../lib/platform.ts'
 import { resetSettings, settings, updateSettings } from '../store/settings.ts'
 import { checkForUpdate, lastCheck, needRefresh } from '../store/updates.ts'
+import { navigate } from '../router.ts'
+import { DownloadSaveButton, ImportSaveButton } from './town/save-controls.tsx'
+import { deathRuleLine } from './town/text.ts'
 
 const CHECK_TEXT = {
   checking: 'Checking…',
@@ -107,6 +114,8 @@ export function SettingsScreen() {
           </div>
         </section>
 
+        <SaveGroup />
+
         <section class="group">
           <h2 class="group__title">About</h2>
           <div class="row">
@@ -128,4 +137,116 @@ export function SettingsScreen() {
       </div>
     </main>
   )
+}
+
+/**
+ * Settings → Save (10 §6, D-088): the save's death rule (Mortal may be lowered to Sheltered, never raised), the backup
+ * file both ways, and erasing the save behind a confirm (a backup is kept).
+ */
+function SaveGroup() {
+  const p = profile.value
+  const [asking, setAsking] = useState(false)
+  const [lowering, setLowering] = useState(false)
+  const has = p !== null && p.heroes.length > 0
+  return (
+    <section class="group" data-testid="settings-save">
+      <h2 class="group__title">Save</h2>
+      {p && (
+        <div class="row" data-testid="save-death-rule">
+          <span class="toggle__text">
+            <span class="toggle__label">Death rule: {p.deathRule === 'mortal' ? 'Mortal' : 'Sheltered'}</span>
+            <span class="toggle__hint">{ruleHint(p.deathRule)}</span>
+          </span>
+          {p.deathRule === 'mortal' && (
+            <Btn testid="save-lower-rule" onClick={() => setLowering(true)}>
+              Lower to Sheltered
+            </Btn>
+          )}
+        </div>
+      )}
+      <div class="row">
+        <span class="toggle__text">
+          <span class="toggle__label">Download a backup</span>
+          <span class="toggle__hint">
+            {!has ? 'No save on this phone yet.' : ephemeral.value ? 'This is a demo: nothing here is saved.' : `${p.heroes.map((h) => h.name).join(', ')} · saved automatically after everything you do`}
+          </span>
+        </span>
+        <DownloadSaveButton label="Download" disabled={!has} />
+      </div>
+      <div class="row">
+        <span class="toggle__text">
+          <span class="toggle__label">Import a save</span>
+          <span class="toggle__hint">Load a backup file. The save on this phone is kept as a backup first.</span>
+        </span>
+        <ImportSaveButton label="Import" />
+      </div>
+      <div class="row">
+        <span class="toggle__text">
+          <span class="toggle__label">Erase this save</span>
+          <span class="toggle__hint">Start over on this phone. A backup is kept.</span>
+        </span>
+        <Btn tone="danger" testid="save-erase" disabled={p === null} onClick={() => setAsking(true)}>
+          Erase
+        </Btn>
+      </div>
+      {lowering && (
+        <Modal
+          title="Lower to Sheltered?"
+          testid="save-lower-modal"
+          onClose={() => setLowering(false)}
+          actions={
+            <>
+              <Btn onClick={() => setLowering(false)}>Keep Mortal</Btn>
+              <Btn
+                tone="danger"
+                testid="save-lower-confirm"
+                onClick={() => {
+                  setLowering(false)
+                  act((_c, pp) => lowerDeathRule(pp), 'This save is Sheltered now')
+                }}
+              >
+                Lower to Sheltered
+              </Btn>
+            </>
+          }
+        >
+          <p class="prose">{ruleHint('sheltered')}</p>
+          <p class="prose">This cannot be undone: the save stays Sheltered for good.</p>
+        </Modal>
+      )}
+      {asking && (
+        <Modal
+          title="Erase this save?"
+          testid="save-erase-modal"
+          onClose={() => setAsking(false)}
+          actions={
+            <>
+              <Btn onClick={() => setAsking(false)}>Keep it</Btn>
+              <Btn
+                tone="danger"
+                testid="save-erase-confirm"
+                onClick={() => {
+                  setAsking(false)
+                  void eraseSave().then(() => {
+                    toast('The save is erased. A backup is kept.', 'info')
+                    navigate('title')
+                  })
+                }}
+              >
+                Erase
+              </Btn>
+            </>
+          }
+        >
+          <p class="prose">Your heroes, gold and gear on this phone will be gone. A backup is kept.</p>
+        </Modal>
+      )}
+    </section>
+  )
+}
+
+/** The rule's line without its name: "A hero who dies in the tower stays dead…". */
+function ruleHint(rule: 'mortal' | 'sheltered'): string {
+  const line = deathRuleLine(rule).replace(/^[A-Za-z]+: /, '')
+  return line[0]!.toUpperCase() + line.slice(1)
 }

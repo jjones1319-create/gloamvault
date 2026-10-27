@@ -4,6 +4,7 @@ import { pickGearItem, type ItemFilter } from './loot.ts'
 import type { Rng } from './rng.ts'
 import { roundHalfUp } from './stats.ts'
 import type { Tuning } from './tuning.ts'
+import { drawWayfarer } from './wayfarers.ts'
 import type { ChestDef, ChestOdds, IntRange, ItemDef, ItemInstance, LootTableDef } from './types/content.ts'
 import { ARMOR_SLOTS, GRADES, gradeIndex, type ChestSubtype, type Grade, type MaterialLadder, type WeaponType } from './types/enums.ts'
 
@@ -208,6 +209,10 @@ export type ChestResult =
   | { kind: 'shard'; amount: number }
   | { kind: 'tome'; skillId: string; tier: number }
   | { kind: 'tomeOfPractice' }
+  /** A Wayfarer Chest's writ (D-091); `heroId` is filled in by the town when the hero joins the roster. */
+  | { kind: 'wayfarer'; wayfarerId: string; grade: Grade; pityGrade: boolean; heroId: string }
+  /** A Wayfarer Chest when every wayfarer of the cast is already with the player (the town refuses the sale first). */
+  | { kind: 'nobodyLeft' }
 
 export interface TownChestInput {
   chest: ChestDef
@@ -232,6 +237,8 @@ export interface TownChestInput {
   heroSkillIds?: ReadonlySet<string>
   /** Material Crate: the ladder of choice (metal when omitted). */
   materialLadder?: MaterialLadder
+  /** Wayfarer Chest: the wayfarers already with the player (never drawn, D-091). */
+  ownedWayfarerIds?: ReadonlySet<string>
 }
 
 export interface TownChestOutcome {
@@ -428,6 +435,11 @@ export function openTownChest(content: Content, t: Tuning, rng: Rng, input: Town
     case 'skillTome': {
       const { result, tomeBag } = openTome(content, t, rng, input)
       return { result, pity: input.pity, tomeBag, odds: [] }
+    }
+    case 'wayfarer': {
+      const draw = drawWayfarer(content, rng, chest, input.bandGrade, input.pity, input.ownedWayfarerIds ?? new Set())
+      if (!draw) return { result: { kind: 'nobodyLeft' }, pity: input.pity, tomeBag: null, odds: [] }
+      return { result: { kind: 'wayfarer', wayfarerId: draw.wayfarerId, grade: draw.grade, pityGrade: draw.pityGrade, heroId: '' }, pity: draw.pity, tomeBag: null, odds: [] }
     }
   }
 }

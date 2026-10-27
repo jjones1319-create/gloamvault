@@ -1,6 +1,6 @@
 # 04 — Classes
 
-*Last updated 2026-10-26 · rev. 1 · numbers are tuning starting points*
+*Last updated 2026-10-27 · rev. 2 (§7 the Wayfarer Chest's cast, James's direction of 2026-10-27, D-091) · rev. 1 2026-10-26 · numbers are tuning starting points*
 
 Seven classes, one sheet each in `docs/classes/`. This file is the index: the rule every sheet follows, the seven at a glance, what each one covers, what parties they make, and what all of them share. The rulebook is `03-GAME-DESIGN.md`; the skill rules are its §7.
 
@@ -87,7 +87,40 @@ Tank is the thinnest column (Warden, or a Beast Tamer's pet in Guard), heal the 
 
 Every sheet has the same sections in the same order with identical table columns, so `content/skills/<class>/<id>.json` (one record per skill) can be generated from the tables and two classes can be compared section by section.
 
-## 7. Open questions (for James)
+## 7. Wayfarers: the party members a chest calls (D-091)
+
+James (2026-10-27): *"I think the only way to get new party members is through the chests … You keep all party members you got through chests and they continue to grow but can also die."* A **wayfarer** is a named adventurer of a fixed cast that the **Wayfarer Chest** (Curio Merchant, 1.2 R; `08-ITEMS.md` §10.2) calls to the Lantern Inn. Once called, a wayfarer is a hero in every way (`03` §10.4): levels, growth by use, gear, a pet from the Stables, and death under the save's rule (`03` §12). Every wayfarer is unique: one already with the player is never drawn; one lost for good returns to the pool and starts over if drawn again.
+
+This section **owns the cast** (names, species, class, grade, points, starter skills, AI rule, a line of who they are); `tools/content/gen-wayfarers.ts` transcribes it to `content/wayfarers/<id>.json` and lint rule 34 checks it. **Grade** sets the draw odds (D 50 · C 30 · B 15 · A 5) and the creation points (6 + 1 per grade above D, at most 3 on one attribute). A wayfarer arrives at the level of the player's lowest-level living hero with the class's starter kit.
+
+| Wayfarer | Species | Class | Grade | Points | Starter skills | Who they are |
+|---|---|---|---|---|---|---|
+| Bram Ostler | Human | Warden | D | End 3 · Vit 2 · Str 1 | Shield Slam · Provoke · Brace | A stablehand who once held a gate against wolves and never quite stopped standing in doorways. |
+| Murza Kettlebrand | Orc | Warden | C | Str 3 · Vit 2 · End 2 | Shield Slam · Provoke · Rallying Shout | Carries a grandmother's dented shield and every grudge it ever earned. |
+| Hilde Stonevow | Dwarf | Warden | A | End 3 · Vit 3 · Wil 3 | Shield Slam · Counter Stance · Wall Stance | Swore to hold the Keep's lower gate. The Keep fell; the vow did not. |
+| Rokk Halfmoon | Orc | Blade | D | Str 3 · Vit 2 · Agi 1 | Twin Cut · Reckless Swing · Red Thirst | Fights with two blades because the first one kept getting stuck in things. |
+| Saphrel Vey | Draconid | Blade | C | Agi 3 · Str 2 · Per 2 | Twin Cut · Open Vein · Flowing Guard | A duelist from the ash-coasts who counts scars the way merchants count coins. |
+| Ilvane Thorne | Elf | Blade | B | Agi 3 · Per 3 · Str 2 | Twin Cut · Quickstep · Headsman's Eye | Moves like a falling leaf and cuts like the wind that drops it. |
+| Pip Marrowby | Halfling | Ranger | D | Per 3 · Agi 2 · Lck 1 | Aimed Shot · Hunter's Mark · Keen Eyes | Can hit a rat at forty paces, and will tell you about it all the way home. |
+| Sereth Moss | Elf | Ranger | C | Per 3 · Agi 3 · Wis 1 | Aimed Shot · Snare · Steady Draw | Reads tracks the way scholars read books, and trusts them more. |
+| Edric Ashdown | Human | Ranger | B | Per 3 · Agi 2 · End 2 · Wis 1 | Aimed Shot · Caltrop Toss · Hunter's Mark | A poacher turned bounty-tracker: the Keep's rats pay better than the lord's deer ever did. |
+| Lirien Quill | Elf | Shade | D | Agi 3 · Lck 2 · Per 1 | Backstab · Pickpocket · Light Fingers | Picks locks to stay in practice and pockets to stay in bread. |
+| Tansy Brightfinger | Halfling | Shade | C | Agi 3 · Lck 2 · Per 2 | Veil · Backstab · Toxic Jab | Nobody watches the halfling. That is the whole trick. |
+| Vesk Umber | Draconid | Shade | B | Agi 3 · End 2 · Per 2 · Wil 1 | Toxic Jab · Crippling Dust · Steeped Blades | Smoke-scaled and silent; a cult in the deep Vault still keeps a price on that head. |
+| Orla Cinderhelm | Dwarf | Arcanist | D | Wis 3 · Wil 2 · Vit 1 | Ember Lance · Spark · Kindling | Learned fire at the forge before learning it from books, and still prefers the forge. |
+| Aldous Fenwick | Human | Arcanist | C | Wis 3 · Per 2 · Wil 2 | Frostbolt · Frost Floor · Shatter | A failed tutor with three unpaid debts and one very good frost spell. |
+| Wrenna Mapple | Halfling | Arcanist | A | Wis 3 · Wil 3 · Lck 3 | Ember Lance · Arcane Ward · Quicken | The smallest scholar of the Ember Academy, and the only one who came back from the Crypts. |
+| Varra Dawnscale | Draconid | Mender | D | Wis 3 · Wil 2 · Vit 1 | Mend · Smite · Gentle Hands | Keeps a candle lit for every patient lost, and has not run out of candles yet. |
+| Bruni Hearthward | Dwarf | Mender | C | Wis 3 · Vit 2 · Wil 2 | Mend · Soothing Word · Blessing | Sets bones, patches heads and makes a stew that has raised at least one man from the dead, he says. |
+| Uldra Greythorn | Orc | Mender | B | Wis 3 · Str 2 · Wil 2 · Vit 1 | Smite · Radiance · Mend | Traded the war-drum for the prayer-bell, and hits just as hard with either. |
+
+Each species appears three times and each class three times; six are D, six C, four B and two A. A wayfarer whose starter skills differ from the class's picks carries an AI rule that uses them (the generator's table); the others use the class default. Every starter skill works with the class's starter kit (`node tools/balance/check-starters.ts`). The cast grows with the dungeons (Phase 7 and Segment 3: S-grade wayfarers, the Beast Tamer's).
+
+**Open questions**
+1. Eighteen wayfarers for Segment 1, graded D–A — enough variety to make "hopefully redraw them" matter?
+2. Should higher grades bring more than points (a personal trait, a better starting kit)?
+
+## 8. Open questions (for James)
 
 1. **Which classes to build first.** Proposed: **Warden, Blade, Ranger, Shade, Arcanist and Mender in Segments 1–2** (every armor family, both pools, every column of §3 covered) and **the Beast Tamer in Segment 3**, once pets are timeline actors and the summon rules have something to summon. If Segment 1 needs fewer, start with Warden, Blade and Mender — the three the first thirty minutes (§13) teach the timeline with.
 2. **Monster techniques and the Insight sweet spot.** The Tier IV Insight formula peaks at enemy level 24; Gravehollow Keep ends at 14. Proposed: for monster techniques only, the sweet spot is the monster's own level — if it is using the move in front of you, the roll is at full strength. Otherwise every Tier IV technique must come from Dungeon 2 or later.

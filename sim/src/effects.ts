@@ -704,6 +704,11 @@ export function applyLine(ctx: EffectContext, actor: Actor, line0: Effect, baseT
     case 'applyStatus': {
       if (!line.status) break
       for (const tgt of targets) {
+        // D-093: a status carried by an attack rides on its hit; an action whose every swing at the target missed carries nothing.
+        if (swungAndMissed(ctx, actor, tgt)) {
+          out.notes.push(`${tgt.id}:${line.status}:missed`)
+          continue
+        }
         const sdef = statusDef(ctx.content, line.status)
         // Burn and Bleed tick a share of "the applying hit's damage" (03 §3.5): this action's last hit on the target, else
         // a hit's worth of the applier's Attack of the status's damage type when the line lands without a hit (D-077).
@@ -810,6 +815,20 @@ export function applyLine(ctx: EffectContext, actor: Actor, line0: Effect, baseT
 }
 
 /** The damage `actor` dealt to `target` with its last hit of the current action (the log since its last `action` entry), or null. */
+/** True when this action swung at the target and every swing missed (D-093); false with no swing or any hit. */
+function swungAndMissed(ctx: EffectContext, actor: Actor, target: Actor): boolean {
+  const log = ctx.state.log
+  let missed = false
+  for (let i = log.length - 1; i >= 0; i--) {
+    const e = log[i]!
+    if (e.kind === 'action' && e.actorId === actor.id) break
+    if (e.actorId !== actor.id || e.targetId !== target.id) continue
+    if (e.kind === 'damage') return false
+    if (e.kind === 'miss') missed = true
+  }
+  return missed
+}
+
 function applyingHitDamage(ctx: EffectContext, actor: Actor, target: Actor): number | null {
   const log = ctx.state.log
   for (let i = log.length - 1; i >= 0; i--) {

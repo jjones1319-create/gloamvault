@@ -1,0 +1,19 @@
+{
+  "id": "varra-dawnscale",
+  "name": "Varra Dawnscale",
+  "speciesId": "draconid",
+  "classId": "mender",
+  "grade": "D",
+  "freePoints": {
+    "wisdom": 3,
+    "willpower": 2,
+    "vitality": 1
+  },
+  "starterSkillIds": [
+    "mender-mend",
+    "mender-smite",
+    "mender-gentle-hands"
+  ],
+  "aiRule": null,
+  "bio": "Keeps a candle lit for every patient lost, and has not run out of candles yet."
+}

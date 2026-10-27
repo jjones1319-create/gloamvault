@@ -1,0 +1,20 @@
+{
+  "id": "vesk-umber",
+  "name": "Vesk Umber",
+  "speciesId": "draconid",
+  "classId": "shade",
+  "grade": "B",
+  "freePoints": {
+    "agility": 3,
+    "endurance": 2,
+    "perception": 2,
+    "willpower": 1
+  },
+  "starterSkillIds": [
+    "shade-toxic-jab",
+    "shade-crippling-dust",
+    "shade-steeped-blades"
+  ],
+  "aiRule": "IF self HP < 30% THEN item small hp potion on self; IF enemies count > 2 THEN crippling dust; ELSE toxic jab on strongest enemy",
+  "bio": "Smoke-scaled and silent; a cult in the deep Vault still keeps a price on that head."
+}

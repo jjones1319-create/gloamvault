@@ -13,3 +13,4 @@ art/renders/history/
 *.log
 .DS_Store
 Thumbs.db
+shots-dev/

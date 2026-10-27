@@ -1,0 +1,19 @@
+{
+  "id": "bram-ostler",
+  "name": "Bram Ostler",
+  "speciesId": "human",
+  "classId": "warden",
+  "grade": "D",
+  "freePoints": {
+    "endurance": 3,
+    "vitality": 2,
+    "strength": 1
+  },
+  "starterSkillIds": [
+    "warden-shield-slam",
+    "warden-provoke",
+    "warden-brace"
+  ],
+  "aiRule": null,
+  "bio": "A stablehand who once held a gate against wolves and never quite stopped standing in doorways."
+}

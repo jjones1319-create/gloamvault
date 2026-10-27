@@ -1,4 +1,5 @@
 import type { DelveCommand, DelveState, LegalDelveAction } from './delve-types.ts'
+import { secretDoorKnown } from './secret-doors.ts'
 import type { Rng } from './rng.ts'
 
 /**
@@ -12,7 +13,8 @@ import type { Rng } from './rng.ts'
 export type PolicyName = 'textbook' | 'cautious' | 'greedy' | 'random'
 
 export function choosePolicyCommand(policy: PolicyName, state: DelveState, actions: readonly LegalDelveAction[], rng: Rng): DelveCommand | null {
-  const enabled = actions.filter((a) => a.enabled)
+  // The delve's own Auto is never a choice (it would ask the policy again, forever).
+  const enabled = actions.filter((a) => a.enabled && a.command.kind !== 'auto')
   if (enabled.length === 0) return null
   if (policy === 'random') return rng.pick(enabled).command
   const find = (pred: (a: LegalDelveAction) => boolean) => enabled.find(pred)?.command ?? null
@@ -38,6 +40,11 @@ export function choosePolicyCommand(policy: PolicyName, state: DelveState, actio
     return (safe ?? gamble ?? leave ?? curioChoices[0]!).command
   }
 
+  // D-089: a healer who can raise the dead does so before anything else (Mortal).
+  const raise = find((a) => a.command.kind === 'raise')
+  if (raise) return raise
+  // D-088: under Mortal a death sends a careful party home with the body (the Shrine raises it, D-089).
+  const mortalDeath = state.options.deathRule === 'mortal' && anyFallen
   const restAt = policy === 'cautious' ? 75 : policy === 'greedy' ? 40 : 60
   if (worst < restAt || anyFallen) {
     const rest = find((a) => a.command.kind === 'rest')
@@ -50,7 +57,7 @@ export function choosePolicyCommand(policy: PolicyName, state: DelveState, actio
   // Spent (hurt, no rest here, no potion): cautious and textbook head home — out of the entrance or the floor's end,
   // whichever is nearer (D-083: only those two ways out).
   const spent = worst < (policy === 'cautious' ? 35 : 25) && !potion && !find((a) => a.command.kind === 'rest')
-  if (policy !== 'greedy' && (spent || (policy === 'cautious' && anyFallen && state.floor.revivesLeft === 0))) {
+  if (policy !== 'greedy' && (spent || mortalDeath || (policy === 'cautious' && anyFallen && state.floor.revivesLeft === 0))) {
     const retreat = find((a) => a.command.kind === 'retreat')
     if (retreat) return retreat
     const moves0 = enabled.filter((a) => a.command.kind === 'move')
@@ -119,7 +126,7 @@ function doorToward(state: DelveState, moves: readonly LegalDelveAction[], targe
     for (const d of room?.doors ?? []) {
       if (prev.has(d.to)) continue
       if (d.locked && !state.floor.hasKey) continue
-      if (d.secret && !state.floor.rooms[id]?.secretRevealed) continue
+      if (d.secret && !secretDoorKnown(state, id, d.to)) continue
       prev.set(d.to, id)
       if (targets.has(d.to)) {
         found = d.to

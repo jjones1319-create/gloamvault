@@ -29,7 +29,7 @@ describe('the fixture corpus under the content linter', () => {
   it('compiles every schema and validates every example', () => {
     const bad = result.files.filter((f) => (f.role === 'schema' || f.role === 'example') && !f.ok)
     expect(bad.map((f) => `${f.path}: ${f.errors.join('; ')}`)).toEqual([])
-    expect(result.schemaCount).toBe(18)
+    expect(result.schemaCount).toBe(19)
   })
 
   it('validates every fixture file against its schema (zero ajv errors)', () => {

@@ -1,0 +1,11 @@
+{
+  "id": "example-wayfarer",
+  "name": "Example Wayfarer",
+  "speciesId": "human",
+  "classId": "warden",
+  "grade": "D",
+  "freePoints": { "endurance": 3, "vitality": 2, "strength": 1 },
+  "starterSkillIds": ["warden-shield-slam", "warden-provoke", "warden-brace"],
+  "aiRule": null,
+  "bio": "Shows the shape of a wayfarer record; never loaded as content."
+}

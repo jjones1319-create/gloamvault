@@ -28,6 +28,7 @@ export type ContentKind =
   | 'loot-table'
   | 'contract'
   | 'status'
+  | 'wayfarer'
   | 'tuning'
   | 'hero'
 
@@ -116,6 +117,7 @@ const FOLDER_KINDS: Record<string, ContentKind> = {
   'loot-tables': 'loot-table',
   contracts: 'contract',
   statuses: 'status',
+  wayfarers: 'wayfarer',
 }
 
 /**

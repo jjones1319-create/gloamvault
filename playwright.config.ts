@@ -5,7 +5,9 @@ import { defineConfig, devices } from '@playwright/test'
  * phone profile (the S25 Ultra at its default FHD+ resolution is about 892 x 412 CSS px landscape at DPR 2.625).
  * Builds first. Not part of `npm run verify` or the deploy (10-TECH-PLAN §7).
  */
-export const BASE = 'http://localhost:4173/gloamvault/'
+/** The preview port: 4173, or `GLOAMVAULT_PORT` when another project on the machine holds it. */
+const PORT = Number(process.env.GLOAMVAULT_PORT ?? 4173)
+export const BASE = `http://localhost:${PORT}/gloamvault/`
 
 export default defineConfig({
   testDir: 'e2e',
@@ -26,7 +28,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'npm run build && npx vite preview --port 4173 --strictPort',
+    command: `npm run build && npx vite preview --port ${PORT} --strictPort`,
     url: BASE,
     reuseExistingServer: true,
     timeout: 240_000,

@@ -25,6 +25,7 @@ import type {
   SpeciesDef,
   StatusDef,
   TemplateDef,
+  WayfarerDef,
 } from './types/content.ts'
 import type { ItemKind, Status } from './types/enums.ts'
 
@@ -46,6 +47,7 @@ export const CONTENT_KINDS = [
   'loot-table',
   'contract',
   'status',
+  'wayfarer',
   'tuning',
 ] as const
 export type ContentKind = (typeof CONTENT_KINDS)[number]
@@ -85,6 +87,8 @@ export interface Content {
   readonly lootTables: ReadonlyMap<ContentId, LootTableDef>
   readonly contracts: ReadonlyMap<ContentId, ContractDef>
   readonly statuses: ReadonlyMap<Status, StatusDef>
+  /** The Wayfarer Chest's cast (D-091). */
+  readonly wayfarers: ReadonlyMap<ContentId, WayfarerDef>
   /** classId (or 'field' / 'pet' / 'monster') → its skills sorted by tier, then id. */
   readonly skillsByClass: ReadonlyMap<ContentId, readonly SkillDef[]>
   /** familyId → monsters sorted by id. */
@@ -115,6 +119,7 @@ const FOLDER_KINDS: ReadonlyMap<string, ContentKind> = new Map<string, ContentKi
   ['loot-tables', 'loot-table'],
   ['contracts', 'contract'],
   ['statuses', 'status'],
+  ['wayfarers', 'wayfarer'],
 ])
 
 /**
@@ -291,6 +296,7 @@ export function buildContent(files: readonly RawContentFile[]): Content {
   const lootTables = indexById<LootTableDef>('loot-table', of('loot-table')).map
   const contracts = indexById<ContractDef>('contract', of('contract')).map
   const statuses = indexById<StatusDef, Status>('status', of('status')).map
+  const wayfarers = indexById<WayfarerDef>('wayfarer', of('wayfarer')).map
 
   return {
     tuning,
@@ -309,6 +315,7 @@ export function buildContent(files: readonly RawContentFile[]): Content {
     lootTables,
     contracts,
     statuses,
+    wayfarers,
     skillsByClass: groupBy(skills.values(), (s) => s.classId, (a, b) => a.tier - b.tier || compareIds(a.id, b.id)),
     monstersByFamily: groupBy(monsters.values(), (m) => m.familyId, byId),
     monstersByZone: groupBy(monsters.values(), (m) => m.zoneId, byId),
@@ -338,6 +345,7 @@ export function contentSummary(c: Content): Record<ContentKind, number> {
     'loot-table': c.lootTables.size,
     contract: c.contracts.size,
     status: c.statuses.size,
+    wayfarer: c.wayfarers.size,
     tuning: 1,
   }
 }

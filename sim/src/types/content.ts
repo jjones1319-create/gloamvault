@@ -58,6 +58,7 @@ import type {
   TrapTrigger,
   WeaponType,
   Weight,
+  WayfarerGrade,
   XpClass,
 } from './enums.ts'
 
@@ -1036,6 +1037,26 @@ export interface ChestDef {
   readonly tomeTiers: IntRange | null
   readonly dupeRule: DupeRule
   readonly divineShardChance: number
+}
+
+/**
+ * A named adventurer the Wayfarer Chest can call to the Lantern Inn (D-091): content/wayfarers/<id>.json, the cast
+ * list owned by 04-CLASSES §7. Made into a hero with createHero at the level of the weakest living hero.
+ */
+export interface WayfarerDef {
+  readonly id: ContentId
+  readonly name: string
+  readonly speciesId: ContentId
+  readonly classId: ContentId
+  readonly grade: WayfarerGrade
+  /** Creation points: 6 + 1 per grade above D, at most 3 on one attribute (03 §2.3). */
+  readonly freePoints: Readonly<Partial<Record<Attribute, number>>>
+  /** Three Tier I skills of the class. */
+  readonly starterSkillIds: readonly ContentId[]
+  /** Their own AI rule; the class default when null. */
+  readonly aiRule: string | null
+  /** One line: who they are. */
+  readonly bio: string
 }
 
 // ---------------------------------------------------------------------------------------------------------------

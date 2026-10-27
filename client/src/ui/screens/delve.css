@@ -1,0 +1,778 @@
+/*
+ * The delve screen (Delve.tsx, delve/*) outside a fight. Landscape 892 × 412 is the reference (D-052): where the
+ * party is and the light top-left, the map / menu buttons and the side column (floor map, then the room panel) on
+ * the right, the party bottom-left — the middle of the room stays clear. Every tap target is at least 44 px.
+ */
+.dv {
+  background: #17110e;
+}
+.dv-stage--in {
+  animation: dv-fade-in 0.38s ease-out;
+}
+@keyframes dv-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+html[data-reduce-motion='1'] .dv-stage--in {
+  animation: none;
+}
+
+.dv-hud {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  font-size: 14px;
+  line-height: 1.3;
+}
+.dv-hud > * {
+  pointer-events: auto;
+}
+.dv-icon {
+  flex: none;
+  display: block;
+}
+
+/* ---------- top-left: where, light, clock ---------- */
+.dv-head {
+  position: absolute;
+  top: calc(var(--sat) + 6px);
+  left: calc(var(--sal) + 8px);
+  max-width: calc(100% - 268px - var(--sal) - var(--sar) - 16px);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 5px 10px 6px;
+  border-radius: 12px;
+  background: rgba(18, 13, 16, 0.74);
+  border: 1px solid rgba(255, 236, 214, 0.1);
+}
+.dv-head__title {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 15px;
+}
+.dv-head__zone {
+  color: var(--ink-dim);
+  font-size: 13px;
+}
+.dv-head__row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.dv-light {
+  width: 148px;
+}
+.dv-light .meter {
+  height: 20px;
+}
+.dv-light .meter__text {
+  font-size: 12px;
+  line-height: 18px;
+  color: #fff3d6;
+}
+.dv-light--dark .meter,
+.dv-light--pitch .meter {
+  border-color: #6a3a2a;
+}
+.dv-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 11px;
+  background: rgba(0, 0, 0, 0.38);
+  border: 1px solid var(--line);
+  font-size: 13px;
+  white-space: nowrap;
+  color: var(--ink);
+}
+.dv-chip--warn {
+  border-color: #e6b54a;
+  color: #ffd27a;
+}
+.dv-chip--bad {
+  border-color: var(--bad);
+  color: #ffb0a0;
+  background: rgba(96, 18, 12, 0.7);
+}
+.dv-chip--good {
+  border-color: var(--good);
+  color: var(--good);
+}
+.dv-chip .gold {
+  font-size: 13px;
+}
+.dv-chip__cross {
+  color: #ff8a8a;
+  font-weight: 800;
+}
+
+/* ---------- top-right: map and menu ---------- */
+.dv-tools {
+  position: absolute;
+  top: calc(var(--sat) + 6px);
+  right: calc(var(--sar) + 8px);
+  display: flex;
+  gap: 6px;
+}
+.dv .dv-tool {
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
+  border-radius: 12px;
+  background: rgba(30, 25, 34, 0.9);
+  color: var(--ink);
+}
+
+/* ---------- the right column ---------- */
+.dv-side {
+  position: absolute;
+  top: calc(var(--sat) + 56px);
+  right: calc(var(--sar) + 8px);
+  bottom: calc(var(--sab) + 8px);
+  width: 236px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 0;
+}
+
+/* the floor map (compact and large) */
+.dv-minimap {
+  flex: none;
+  padding: 7px;
+  border-radius: 12px;
+  background: rgba(14, 10, 12, 0.82);
+  border: 1px solid rgba(255, 236, 214, 0.1);
+}
+.dv-mapgrid {
+  position: relative;
+  overflow: hidden;
+  border-radius: 6px;
+  background-color: rgba(0, 0, 0, 0.25);
+  background-image: linear-gradient(rgba(255, 236, 214, 0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 236, 214, 0.04) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+.dv-mapgrid__layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.dv-mroom {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #e8d6bc;
+}
+.dv-mroom::before {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border-radius: 6px;
+  border: 2px solid #6b5a48;
+  background: rgba(60, 48, 40, 0.55);
+}
+button.dv-mroom {
+  cursor: pointer;
+}
+.dv-mroom--visited::before {
+  background: #463629;
+  border-color: #8a6f52;
+}
+.dv-mroom--scouted {
+  color: #c8b496;
+}
+.dv-mroom--scouted::before {
+  background: rgba(40, 32, 28, 0.7);
+  border-color: #6b5a48;
+}
+.dv-mroom--glimpsed {
+  color: #8a7a68;
+}
+.dv-mroom--glimpsed::before {
+  background: rgba(20, 16, 14, 0.55);
+  border-style: dashed;
+  border-color: #5a4c40;
+}
+.dv-mroom--cleared.dv-mroom--visited {
+  color: #b9a58a;
+}
+.dv-mroom--current {
+  color: #fff3d6;
+}
+.dv-mroom--current::before {
+  background: #8a5a22;
+  border-color: var(--ember);
+  box-shadow: 0 0 10px rgba(255, 179, 71, 0.45);
+}
+.dv-mroom--go {
+  color: #ffe2a8;
+}
+.dv-mroom--go::before {
+  border-color: #ffcf73;
+  border-style: solid;
+  animation: dv-pulse 1.8s ease-in-out infinite;
+}
+.dv-mroom--blocked {
+  color: #e09080;
+}
+.dv-mroom--blocked::before {
+  border-color: #a04030;
+}
+.dv-mroom--hunter::before {
+  box-shadow: inset 0 0 0 2px #e05252;
+}
+.dv-mroom__icon {
+  position: absolute;
+  z-index: 1;
+  transform: translate(-50%, -50%);
+  line-height: 0;
+}
+.dv-mroom__marks {
+  position: absolute;
+  z-index: 1;
+  right: 4px;
+  top: 4px;
+  display: flex;
+  gap: 1px;
+}
+.dv-mark--key {
+  color: #ffd84d;
+}
+.dv-mark--hunter {
+  color: #ff6a5a;
+}
+.dv-mark--lock {
+  color: #ff8a7a;
+}
+.dv-mdoor {
+  position: absolute;
+  z-index: 2;
+  border-radius: 2px;
+  background: #c9a57a;
+  pointer-events: none;
+}
+.dv-mdoor--locked {
+  background: #d04a3a;
+}
+.dv-mdoor--secret {
+  background: #9fd0ff;
+}
+@keyframes dv-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 207, 115, 0);
+  }
+  50% {
+    box-shadow: 0 0 0 3px rgba(255, 207, 115, 0.4);
+  }
+}
+html[data-reduce-motion='1'] .dv-mroom--go::before {
+  animation: none;
+}
+.dv-bigmap {
+  display: flex;
+  gap: 14px;
+  align-items: stretch;
+}
+.dv-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 120px;
+  font-size: 13px;
+}
+.dv-legend__hint {
+  margin: 0;
+  color: var(--ink-dim);
+}
+.dv-legend ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.dv-legend li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #e8d6bc;
+}
+.dv-legend__hunter {
+  color: #ff8a7a !important;
+}
+.dv-legend__close {
+  margin-top: auto;
+}
+
+/* the room panel */
+.dv-panel {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 8px 9px 9px;
+  border-radius: 12px;
+  background: rgba(18, 13, 16, 0.86);
+  border: 1px solid rgba(255, 236, 214, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.dv-panel__head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ember);
+}
+.dv-panel__title {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-size: 16px;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dv-panel__kind {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-dim);
+}
+.dv-panel__line {
+  margin: 0;
+  color: var(--ink-dim);
+  font-size: 13px;
+  line-height: 1.3;
+}
+.dv-facts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 13px;
+}
+.dv-facts li {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+.dv-facts .dv-icon {
+  margin-top: 1px;
+  color: var(--ink-dim);
+}
+.dv-fact--warn {
+  color: #ffd27a;
+}
+.dv-fact--warn .dv-icon {
+  color: #ffb347;
+}
+.dv-fact--good {
+  color: #c6e8be;
+}
+.dv-fact--bad {
+  color: #ff9a8a;
+}
+.dv-fact--bad .dv-icon {
+  color: #ff6a5a;
+}
+.dv-acts {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.dv .dv-act {
+  width: 100%;
+  min-height: 44px;
+  padding: 6px 10px;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 1px;
+  text-align: left;
+  font-size: 14px;
+  line-height: 1.2;
+  border-radius: 10px;
+}
+.dv-act__why {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-dim);
+}
+.btn--primary .dv-act__why {
+  color: #ffe9c9;
+}
+.dv .dv-auto {
+  align-self: flex-start;
+  min-height: 44px;
+  padding: 0 10px;
+  font-size: 13px;
+}
+
+/* ---------- bottom-left: the party ---------- */
+.dv-party {
+  position: absolute;
+  left: calc(var(--sal) + 8px);
+  bottom: calc(var(--sab) + 8px);
+  max-width: calc(100% - 268px - var(--sal) - var(--sar) - 16px);
+  display: flex;
+  gap: 6px;
+}
+.dv-hero {
+  width: 146px;
+  min-width: 0;
+  padding: 5px 7px 6px;
+  border-radius: 10px;
+  background: rgba(18, 13, 16, 0.8);
+  border: 1px solid rgba(255, 236, 214, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.dv-hero__name {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.dv-hero__name b {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dv-hero__level {
+  color: var(--ink-dim);
+  font-size: 12px;
+}
+.dv-hero__tag {
+  margin-left: auto;
+  color: var(--bad);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.dv-hero .meter {
+  min-width: 0;
+}
+.dv-hero .meter:not(.meter--compact) {
+  height: 16px;
+}
+.dv-hero .meter__text {
+  font-size: 11px;
+  line-height: 14px;
+}
+.dv-pool--stamina .meter__fill {
+  background: var(--pool-stamina);
+}
+.dv-hero--fallen {
+  opacity: 0.72;
+  filter: grayscale(0.6);
+}
+
+/* ---------- a fight's result (in the right column) ---------- */
+.dv-result {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 12px;
+  background: rgba(18, 13, 16, 0.92);
+  border: 1px solid var(--line);
+}
+.dv-result__title {
+  margin: 0;
+  font-size: 22px;
+  letter-spacing: 0.04em;
+}
+.dv-result__title--good {
+  color: var(--ember);
+}
+.dv-result__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.dv-levelup {
+  margin-bottom: 6px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, rgba(185, 140, 255, 0.3), rgba(185, 140, 255, 0.08));
+  border: 1px solid var(--xp);
+  color: #f1e6ff;
+}
+.dv-levelup b {
+  color: #dcc6ff;
+}
+.dv-levelup small {
+  display: block;
+  margin-top: 2px;
+  color: var(--ink-dim);
+}
+.dv-levelup--inline {
+  display: inline-block;
+  margin: 0 6px 6px 0;
+}
+.dv-result__lines {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 14px;
+}
+.dv-result__line--good {
+  color: #d8eccf;
+}
+.dv-result__line--bad {
+  color: #ffa090;
+}
+.dv .dv-result__go {
+  width: 100%;
+}
+
+/* ---------- curio, the end, sheets, menu ---------- */
+.dv-curio__text {
+  margin: 0 0 10px;
+}
+.dv-curio__choices {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 8px;
+}
+.dv-over__line {
+  margin: 0 0 8px;
+}
+.dv-over__line--bad {
+  color: #ffb0a0;
+}
+.dv-over__line--good {
+  color: #d8eccf;
+}
+.dv-over__stats {
+  margin-bottom: 8px;
+}
+.dv-over__levels {
+  margin: 0 0 6px;
+}
+.dv-over__hint {
+  margin: 0;
+  color: var(--ink-dim);
+  font-size: var(--fs-small);
+}
+.dv-sheet__group {
+  margin-bottom: 10px;
+}
+.dv-sheet__title {
+  margin: 0 0 6px;
+  font-size: 14px;
+  color: var(--ember);
+}
+.dv-sheet__title small {
+  color: var(--ink-dim);
+  font-weight: 400;
+}
+.dv-sheet__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 6px;
+}
+.dv-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ---------- no delve ---------- */
+.dv-none {
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+.dv-none__text {
+  margin: 0;
+  color: var(--ink-dim);
+}
+
+/* ---------- danger you can read (D-092) ---------- */
+:root {
+  --dv-easy: #8fbf86;
+  --dv-even: #d8cbb2;
+  --dv-dangerous: #ffb347;
+  --dv-deadly: #ff5e5e;
+}
+.dv-threat {
+  position: absolute;
+  z-index: 1;
+  transform: translate(-50%, 0);
+  padding: 0 3px;
+  border-radius: 4px;
+  font-size: 9px;
+  line-height: 12px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  color: #120f14;
+  background: var(--dv-even);
+  pointer-events: none;
+}
+.dv-threat--inline {
+  position: static;
+  display: inline-block;
+  transform: none;
+}
+.dv-threat--easy {
+  background: var(--dv-easy);
+}
+.dv-threat--dangerous {
+  background: var(--dv-dangerous);
+}
+.dv-threat--deadly {
+  background: var(--dv-deadly);
+  color: #fff3ee;
+}
+.dv-mroom--dangerous:not(.dv-mroom--go)::before {
+  border-color: #c98a2e;
+}
+.dv-mroom--deadly:not(.dv-mroom--go)::before {
+  border-color: #c03a32;
+}
+.dv-mroom--deadly.dv-mroom--go::before {
+  border-color: var(--dv-deadly);
+}
+.dv-legend__threats li {
+  gap: 8px;
+}
+.dv-chip--threat-easy {
+  border-color: var(--dv-easy);
+  color: var(--dv-easy);
+}
+.dv-chip--threat-dangerous {
+  border-color: var(--dv-dangerous);
+  color: var(--dv-dangerous);
+}
+.dv-chip--threat-deadly {
+  border-color: var(--dv-deadly);
+  color: #ffb0a0;
+  background: rgba(96, 18, 12, 0.7);
+}
+.dv-chip--mortal {
+  color: #e8d6bc;
+  border-color: #6a4a4a;
+}
+.dv-act__threat {
+  font-size: 12px;
+  font-weight: 600;
+  color: #ffe9c9;
+}
+.dv-act__threat--dangerous .dv-act__warn,
+.dv-act__threat--deadly .dv-act__warn {
+  color: #fff;
+}
+.dv-act__warn {
+  font-weight: 800;
+}
+
+/* ---------- the dead (Mortal, D-088 / D-089) ---------- */
+.dv-dead {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 6px 7px 7px;
+  border-radius: 10px;
+  border: 1px solid #6a2a26;
+  background: rgba(70, 14, 12, 0.5);
+}
+.dv-dead__title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #ff9a8a;
+}
+.dv-hero--dead {
+  opacity: 0.8;
+  border-color: #6a2a26;
+  background: rgba(40, 14, 14, 0.85);
+}
+.dv-hero__tag--dead {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: #ff8a7a;
+}
+.dv-hero__carried {
+  margin: 0;
+  min-height: 25px;
+  font-size: 12px;
+  line-height: 1.2;
+  color: #c9a8a2;
+  font-style: italic;
+}
+.dv-death {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin-bottom: 6px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid #a04030;
+  background: rgba(90, 18, 14, 0.55);
+  color: #ffd2c8;
+}
+.dv-death .dv-icon {
+  margin-top: 1px;
+  color: #ff8a7a;
+}
+.dv-over__deaths {
+  list-style: none;
+  margin: 0 0 8px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.dv-over__deaths li {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  color: #e8d6bc;
+}
+.dv-over__deaths .dv-icon {
+  margin-top: 2px;
+  color: #c9a8a2;
+}
+.dv-over__deaths--lost li {
+  color: #ffb0a0;
+}
+.dv-over__deaths--lost .dv-icon {
+  color: #ff6a5a;
+}

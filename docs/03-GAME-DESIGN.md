@@ -1,6 +1,6 @@
 # 03 — Game Design (the rulebook)
 
-*Last updated 2026-10-27 · rev. 3 (James's direction of 2026-10-27: Final Fantasy-style levels, leaving by the entrance or a floor's end, a very difficult tower best taken with a party, turn-based combat — D-082–D-085; and the Phase 3 balance pass, D-077–D-084) · rev. 2 (Claude, from James's brief of 2026-10-26 and the three research reports in `docs/research/`; rev. 2 after the independent review — ownership table, status table, promotion counts, First Aid, Pacts). Every number in this document is a **tuning starting point**, never a commitment; the simulator and the balance runner decide the final values. Each section ends with **Open questions** for James.*
+*Last updated 2026-10-27 · rev. 4 (James's direction during Phase 4: the Mortal and Sheltered death rules, raising the dead, the chosen hero and legacies, party members from the Wayfarer Chest, the threat read — D-088–D-093; §5.3, §8.2, §8.3, §10.3–§10.4, §12, §13) · rev. 3 (James's direction of 2026-10-27: Final Fantasy-style levels, leaving by the entrance or a floor's end, a very difficult tower best taken with a party, turn-based combat — D-082–D-085; and the Phase 3 balance pass, D-077–D-084) · rev. 2 (Claude, from James's brief of 2026-10-26 and the three research reports in `docs/research/`; rev. 2 after the independent review — ownership table, status table, promotion counts, First Aid, Pacts). Every number in this document is a **tuning starting point**, never a commitment; the simulator and the balance runner decide the final values. Each section ends with **Open questions** for James.*
 
 **Who owns what (when two docs disagree, the owner wins and the other is fixed):**
 
@@ -262,7 +262,7 @@ XP is granted only for **meaningful actions**: an action that resolves against a
 ### 5.3 Co-op fairness and death
 
 - Kill credit is by **participation** (damage, healing, buffs, tanking) never last hit; budgets are per player.
-- **Death never costs XP** (Valheim's 5% is its most-hated rule). Death costs durability (§6.4) and unbanked gold (§12.2).
+- **Under Sheltered, death never costs XP** (Valheim's 5% is its most-hated rule); death costs durability (§6.4) and unbanked gold (§12.2). **Under Mortal** (D-088, James), the dead stay dead: a raise costs levels (§12.4) and a hero lost for good leaves a legacy of half their battle XP (§12.5).
 - Wisdom raises all XP by 1% per point above 10 (the learning stat); the Human species adds +10%.
 
 **Open questions**
@@ -428,7 +428,8 @@ Found in the dungeon only: on monsters, in treasure rooms, in curios, from selli
 | **Stables** (Tomas Reed) | hatch eggs, bond, stance training, treats; later the **Ranch Shrine** that imports Wildsong Ranch monsters (`14-IDEAS.md`) |
 | **Bank** | deposit/withdraw gold; the delve's "insurance" |
 | **Quest Board** | daily/weekly contracts (kill X of family Y, clear floor Z with light ≥ 50) paying gold and chest keys |
-| **The Lantern Inn** | rest (free full heal), save, party lobby and invite codes (§10), the AI-rule editor |
+| **The Lantern Inn** | rest (free full heal), save, the roster (up to 12 heroes) and the party of four, the AI-rule editor, party lobby and invite codes (§10); **Choose a new hero** when the chosen hero is gone (§12.5) |
+| **The Ember Shrine** (Mother Cendra) | raise the dead carried home, for gold and two levels; lay them to rest and pass their legacy on; the Memorial of the lost (§12.4–§12.5, D-089–D-090) |
 | **Waystone** | choose dungeon → zone → start a delve; the overworld map (`07-DUNGEONS.md` §1) |
 
 ### 8.3 Chests (gold only — no real money anywhere)
@@ -439,6 +440,7 @@ Found in the dungeon only: on monsters, in treasure rooms, in curios, from selli
 | **Pet Egg** | 1.5 R | 6 R | one egg of the band's species pool (§9) |
 | **Material Crate** | 0.3 R | 1.2 R | a stack of your band's material + a 10% rare part |
 | **Skill Tome** | 0.8 R | 3 R | one Tome of your class from a **bag without replacement** per tier (Marvel Snap's rule) — Standard draws Tier I–III, Grand Tier II–IV |
+| **Wayfarer Chest** | 1.2 R | — | a sealed writ that calls one **wayfarer** of the cast to the Lantern Inn: a new party member (§10.4, D-091); odds by grade on the Odds sheet; a wayfarer already with you is never drawn |
 
 - **Odds** (Standard Gear Chest at band B): B 56% · A 25% · S 14% · SS 5% · God 0%. Grand chests use the table in `08` §10 (one grade up, plus a **Divine Shard** line). Band-relative, so a chest never sells an outgrown item.
 - **Pity, two layers:** (1) a ≥ +1-grade item within every 10 Standard chests and a ≥ +2 within 40 (Hearthstone's shape), counters **shown**; (2) Tomes draw from a bag, so a class's Tier III list completes in a known number of chests.
@@ -490,7 +492,16 @@ The sim is a pure, deterministic, integer function `step(state, command, rng) �
 
 ### 10.3 Solo
 
-Solo is a party of one hero and one pet against encounters sized for the party count (§11.2). Nothing is gated behind co-op; the Inn's "hire a companion" (an AI hero from a short roster, paid per delve in gold) fills a second slot for players who want a party alone — Segment 3.
+Solo is a party of one hero and one pet against encounters sized for the party count (§11.2). Nothing is gated behind co-op. A player who wants a party alone fills it with **wayfarers** from the Wayfarer Chest (§10.4); rev. 2's hired companions are superseded (D-091).
+
+### 10.4 Party members: the chosen hero and wayfarers (D-090, D-091 — James, 2026-10-27)
+
+James: *"I think the only way to get new party members is through the chests. You get your initial hero from selection … You keep all party members you got through chests and they continue to grow but can also die."*
+
+- **The chosen hero** is made at the selection (§2.3) — the save's first hero, or a new one after the chosen hero is gone (§12.5).
+- **Wayfarers** are named adventurers of a fixed cast (`content/wayfarers/`, the list in `04-CLASSES.md` §7): 18 in Segment 1, three per class across the six species, graded **D, C, B or A** (+1 creation point per grade above D). The **Wayfarer Chest** (1.2 R) rolls a grade (D 50 · C 30 · B 15 · A 5), then a wayfarer of that grade who is not already with you; a grade with nobody left re-rolls among the grades that have someone; pity as the egg chest, read from D (a C or better within 10 chests, a B or better within 40).
+- A wayfarer arrives at the **level of your lowest-level living hero** with their class's starter kit, joins the party if it has room, and from then on is a hero in every way: levels (D-082), growth by use, gear, a pet from the Stables, death.
+- The **Lantern Inn** holds up to **12** heroes; the party has **four** places from the start (no unlocks — D-084's schedule is superseded). Co-op (Segment 3) lets friends bring their heroes into the same four places.
 
 **Open questions**
 1. Loot pick order vs. host decides vs. roll — pick order (recommended) is fair and needs no UI dialog.
@@ -538,36 +549,86 @@ Travel: the overworld map at the Waystone; a dungeon unlocks when the previous f
 
 ## 12. Death, retreat, difficulty
 
+### 12.0 The death rule (D-088 — James, 2026-10-27)
+
+James: *"if your hero dies in the dungeon they die for good. This adds danger which I like (maybe make this a difficulty level choice)."* Every save chooses at New game:
+
+| Rule | What a death means | For whom |
+|---|---|---|
+| **Mortal** (recommended) | A hero who dies in the dungeon is **dead**. The living carry the body; a powerful healer can raise it in the dungeon, the Ember Shrine can raise it in town, both for levels (§12.4). If the **whole party** falls, nobody carries anyone: they are **lost for good** (§12.2). | the game James asked for |
+| **Sheltered** | The rev. 3 rules: the fallen get back up after the fight from the floor's revive budget, at a rest room or by First Aid; a wipe wakes the party at the Lantern Inn; nobody is ever lost. | a gentler game, friends new to it |
+
+Settings may **lower** Mortal to Sheltered, never raise it. The title's Continue line shows the rule. The rest of this section says which rule a line belongs to when it matters.
+
 ### 12.1 In a fight
 
-- **Downed** at 0 HP. An ally can **revive** within **3 of the downed hero's turns** (a Mender revive skill, a Phoenix Feather, or First Aid at rank ≥ 5 as a weight-1,000 action) at 30% HP; First Aid at any rank revives out of combat. Past that, the hero is **fallen** for the fight.
-- Fallen heroes revive at 30% HP after the fight if anyone survived. **Three party revives per floor** on Normal (the budget is shown; Hard has 1, Nightmare 0): a fallen hero's post-fight revive spends one; at 0 budget a fallen hero stays down until a rest room or town.
-- **Flee:** a party vote; chance = 50% + the party's average Speed − the enemies' average Speed; failure costs everyone a turn. Not from bosses.
+- **Downed** at 0 HP (both rules). An ally can **revive** within **3 of the downed hero's turns** (a Mender revive skill, a Phoenix Feather, or First Aid at rank ≥ 5 as a weight-1,000 action) at 30% HP — under Mortal this is the last chance and costs nothing. A downed hero still inside the window when the fight is **won** gets up at 30%.
+- Past the window the hero has **fallen**. *Sheltered:* fallen heroes revive at 30% HP after the fight if anyone survived, spending one of **three party revives per floor** on Normal (Hard 1, Nightmare 0); at 0 budget a fallen hero stays down until a rest room or town. *Mortal:* the fallen hero is **dead**; there is no revive budget, rest rooms and First Aid do not raise the dead, and the party carries the body (§12.4).
+- **Flee** (both rules; James: *"You obviously will … need to flee battles as well"*): a party vote; chance = 50% + the party's average Speed − the enemies' average Speed, + the best Smoke Pellet bonus, clamped 5–95%; the Flee button shows it (D-092). Failure costs everyone a turn. Not from bosses. The fled room keeps its monsters; the downed come out at 10% HP, the dead are carried.
+- A status carried by an attack lands only if the attack hits (D-093).
 
 ### 12.2 A wipe
 
-All heroes fallen = **wipe**: the party wakes at the Lantern Inn. You lose the **unbanked gold** of that delve and every equipped item takes **−10% durability**. You keep every item found, every XP point, every Insight. The zone's Waystone progress stands. *(Rogue Legacy / Moonlighter gold loss + Diablo 3's durability hit; Children of Morta's kept progress — the gentlest rule that still makes the bank and the blacksmith matter.)*
+All heroes fallen = **wipe**. Both rules lose the delve's **unbanked gold** (the purse carried in and the gold found) and every equipped item takes **−10% durability**; gear found in the delve still reaches the armory.
 
-**Hardcore** (per hero, optional): a wipe deletes the hero; the armory stays. A badge, nothing else.
+- **Sheltered:** the party wakes at the Lantern Inn and keeps every XP point and Insight. *(Rogue Legacy / Moonlighter gold loss + Diablo 3's durability hit; Children of Morta's kept progress.)*
+- **Mortal:** every hero in the party is **lost for good**. The Lantern Inn's bearers bring back what the Vault leaves — the heroes' worn gear (to the armory) and their pets (to the Stables) — never the heroes. Each lost hero leaves a **legacy** and a line on the **Memorial** (§12.5).
+
+The per-hero Hardcore badge of rev. 2 is superseded by the Mortal rule.
 
 ### 12.3 Retreat
 
-**Leaving (D-083 — James, 2026-10-27):** the party leaves only by **walking out of a floor's entrance room** or **teleporting out at the floor's end** (the stairs room, or the boss's room once the boss is down). Both keep everything carried and are free on Normal (Hard and Nightmare keep a 15% / 25% toll). Reaching a floor's way down records it, and the next delve may **start on the floor below** — the tower remembers. Not from a fight. *(Rev. 2's "from any room, 10% toll" is superseded.)*
+**Leaving (D-083 — James, 2026-10-27):** the party leaves only by **walking out of a floor's entrance room** or **teleporting out at the floor's end** (the stairs room, or the boss's room once the boss is down). Both keep everything carried and are free on Normal (Hard and Nightmare keep a 15% / 25% toll). Reaching a floor's way down records it, and the next delve may **start on the floor below** — the tower remembers. Not from a fight. Under Mortal, a party that loses a hero far from both exits must decide whether to push on to the floor's end or walk the body back. *(Rev. 2's "from any room, 10% toll" is superseded.)*
+
+### 12.4 Raising the dead (D-089 — James: *"You can resurrect them … if you have a powerful enough healer or take them to a shrine, but they will lose levels either way"*)
+
+| Where | Who | Cost | Limits |
+|---|---|---|---|
+| **In the dungeon** | a living hero who knows a **revive** skill (the Mender's Breath of Life or Dawnbreak; Rebirth and Miracle with Tiers IV–V) and has reached **level 10** | half the healer's pool; the floor clock +3; the raised hero **loses 1 level** and stands at 30% HP | out of a fight; once per healer per floor |
+| **In town: the Ember Shrine** (Mother Cendra) | anyone carried home dead | **0.3 R + 0.05 R per level** in gold; the raised hero **loses 2 levels** | always; the dead cannot join a party until raised or laid to rest |
+
+Losing a level takes back exactly what the level gave (D-082: +1 to the class's attributes in turn, +1 Vitality on even levels, +3 HP); battle XP drops to the start of the new level; skills, ranks, gear and attributes grown by use stay; never below level 1. `tuning.json` → `death.raise`, `death.shrine`.
+
+### 12.5 The chosen hero, legacies and the Memorial (D-090)
+
+- The hero made at New game is the player's **chosen hero**. One chosen hero lives at a time; the selection (species, class, three skills, points, name) opens again only when the chosen hero is gone. Only the save's first hero brings a creation egg; later chosen heroes take a pet from the Stables.
+- Every other party member is a **wayfarer** from the Wayfarer Chest (§10.4).
+- A hero lost for good (a wipe under Mortal, or **laid to rest** at the Shrine) leaves a **legacy** of **50%** of their battle XP. A wayfarer's legacy goes to a living hero the player picks; the chosen hero's goes to the **next chosen hero** when they are made (James: *"When/if your character dies you can choose a new character and can gain some of their experience back"*), or to a living hero if the player prefers.
+- The Shrine's **Memorial** keeps each lost hero's name, class, level and where they fell. A lost wayfarer returns to the Wayfarer Chest's pool (*"hopefully redraw them"*) and starts over if drawn again.
+
+### 12.6 Danger you can read (D-092 — James: *"Encounters should feel threatening and dangerous if you go too far"*)
+
+An encounter's **threat** compares its level — its highest monster level, +1 per champion affix, +3 for a boss or the hunter — with the **party's level** (the average of the living heroes, rounded down):
+
+| Band | Encounter level − party level |
+|---|---|
+| **Easy** | −2 or lower |
+| **Even** | −1 to +1 |
+| **Dangerous** | +2 to +3 |
+| **Deadly** | +4 or higher |
+
+It shows on the fight's opening banner, on scouted rooms and the map, on the Waystone's floors and at the stairs; under Mortal a Dangerous or Deadly floor adds *"Heroes who die here stay dead."* Going too far is deadly by construction: floors climb in level faster than a party that dives without grinding, champions gain affixes with depth (§11.1), the floor clock brings the hunter (§4.5), and under Mortal a wipe deep in the tower loses the party. `tuning.json` → `dungeon.threat`.
 
 ---
 
-### 12.4 Open questions from James's direction of 2026-10-27
+### 12.7 Open questions from James's direction of 2026-10-27
 
-1. **The party-member unlock schedule** (D-084, Proposed): the second hero when floor 1 is first finished, the third at the first Cellars boss kill, the fourth at the first Crypts boss kill?
+1. ~~**The party-member unlock schedule** (D-084, Proposed).~~ *Answered by James on 2026-10-27: party members come only from chests (D-091).*
 2. **Gravehollow at 8 floors** instead of 10 (D-085, Proposed): Cellars F1–3, Crypts F4–6, Drowned Vault F7–8 with the Hollow King on F8?
 3. **Battle XP shared or whole** (D-082 reading): shared (each standing hero takes XP × 3 ÷ standing heroes, so a solo hero levels faster per fight) or every hero takes the whole fight's XP?
+4. **The names Mortal and Sheltered**, and whether Settings may lower Mortal (D-088).
+5. **The raise costs** (D-089): a healer at level 10 for −1 level; the Shrine for 0.3 R + 0.05 R per level and −2 levels.
+6. **A Mortal wipe's gear and pets** (D-088): the bearers bring them home (built), or they are lost with the heroes?
+7. **The legacy** at 50% of battle XP (D-090).
+8. **The Wayfarer Chest** (D-091): 1.2 R; 18 wayfarers graded D–A; arriving at the weakest living hero's level; the Inn holds 12.
+9. **The threat bands** (D-092) at −2 / ±1 / +2 / +4 levels.
 
 ## 13. The first thirty minutes
 
-1. Title → **New hero**: pick a species (six cards, pros and cons in one line each), a class (seven cards), three Tier I skills, a pet egg of three. Two minutes.
+1. Title → **New game**: choose how death works — **Mortal** (recommended: the dead stay dead) or **Sheltered** (D-088) — then **New hero**: pick a species (six cards, pros and cons in one line each), a class (six cards; the seventh arrives later), three Tier I skills, a pet egg of three, six points and a name. Two minutes.
 2. Emberfall at dusk; Hesper the blacksmith hands you a Crude sword and says the Keep's cellars are paying bounties. The Waystone offers **Gravehollow Keep — the Cellars**.
 3. Floor 1: three rooms, the first fight teaches the timeline strip (a rat is faster than you; your Warden pet is slower), the second a trap your Perception reveals, the third the stairs. Floor 2 adds a curio and a Dim-light ambush. Floor 3 ends with **the Grinning Captain**.
-4. Back in town with ~R gold: Repair all (watch the pips go green), buy one Tier I skill, open one Standard chest, hatch the egg. The status screen shows what grew. The Waystone now offers the Crypts.
+4. Back in town with ~R gold: Repair all (watch the pips go green), buy one Tier I skill, open one Standard chest, hatch the egg. The status screen shows what grew. A **Wayfarer Chest** (1.2 R) is the first goal after that: the first party member (D-091). The threat chips on the Waystone say how far the party can safely go (D-092).
 
 ---
 

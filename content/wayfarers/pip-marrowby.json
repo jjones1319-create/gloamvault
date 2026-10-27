@@ -1,0 +1,19 @@
+{
+  "id": "pip-marrowby",
+  "name": "Pip Marrowby",
+  "speciesId": "halfling",
+  "classId": "ranger",
+  "grade": "D",
+  "freePoints": {
+    "perception": 3,
+    "agility": 2,
+    "luck": 1
+  },
+  "starterSkillIds": [
+    "ranger-aimed-shot",
+    "ranger-hunters-mark",
+    "ranger-keen-eyes"
+  ],
+  "aiRule": null,
+  "bio": "Can hit a rat at forty paces, and will tell you about it all the way home."
+}

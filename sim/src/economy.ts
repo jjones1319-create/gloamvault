@@ -67,7 +67,7 @@ export function townPrice(t: Tuning, priceR: number, r: number, hagglingRank: nu
   return roundHalfUp((goldFor(priceR, r) * buyPricePercent(t, hagglingRank, shopMultiplierPercent)) / 100)
 }
 
-export type ChestFamily = 'gear' | 'petEgg' | 'materialCrate' | 'skillTome'
+export type ChestFamily = 'gear' | 'petEgg' | 'materialCrate' | 'skillTome' | 'wayfarer'
 
 export function chestPriceR(t: Tuning, family: ChestFamily, grand: boolean): number {
   return grand ? t.economy.chests.grandPriceR[family] : t.economy.chests.standardPriceR[family]

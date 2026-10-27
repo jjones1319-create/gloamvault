@@ -1,0 +1,980 @@
+/*
+ * The fight HUD (FightHud.tsx, fight/*). Landscape 892 × 412 CSS px is the reference (D-052): the party down the
+ * left, the strip and the controls across the top, the enemies and the side commands on the right, the action bar
+ * along the bottom, and the 3D room showing through the middle. Every button is at least 44 px tall.
+ */
+.fx-hud {
+  --fx-panel: rgba(16, 12, 20, 0.82);
+  --fx-line: rgba(255, 236, 214, 0.12);
+  --fx-hero: #ffb347;
+  --fx-pet: #e6b54a;
+  --fx-foe: #e05252;
+  --fx-gold: #ffd84d;
+  --fx-stamina: var(--pool-stamina, #e6b54a);
+  --fx-mana: var(--pool-mana, #5b8cff);
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 196px minmax(0, 1fr) 178px 62px;
+  grid-template-rows: 44px minmax(0, 1fr) 58px;
+  grid-template-areas:
+    'party top  top  top'
+    'party mid  foes side'
+    'bar   bar  bar  bar';
+  gap: 6px;
+  padding: calc(var(--sat, 0px) + 6px) calc(var(--sar, 0px) + 8px) calc(var(--sab, 0px) + 6px) calc(var(--sal, 0px) + 8px);
+  pointer-events: none;
+  font-size: 14px;
+  line-height: 1.25;
+  color: var(--ink);
+}
+.fx-hud--empty {
+  display: none;
+}
+.fx-hud > * {
+  pointer-events: auto;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* ---------- top: the strip and the controls ---------- */
+.fx-top {
+  grid-area: top;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+}
+.fx-top > * {
+  pointer-events: auto;
+}
+.fx-strip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px 3px 6px;
+  border-radius: 12px;
+  background: var(--fx-panel);
+  border: 1px solid var(--fx-line);
+  min-width: 0;
+  overflow: hidden;
+}
+.fx-strip__round {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink-dim);
+  white-space: nowrap;
+  margin-right: 4px;
+  letter-spacing: 0.02em;
+}
+.fx-strip__chip {
+  position: relative;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  border: 1px solid transparent;
+}
+.fx-strip__chip--hero {
+  background: var(--fx-hero);
+  color: #2a1606;
+}
+.fx-strip__chip--pet {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #5c4719;
+  color: #ffe6a8;
+  border-color: var(--fx-pet);
+}
+.fx-strip__chip--pet.fx-strip__chip--now {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+}
+.fx-strip__chip--enemy {
+  background: #6e1f1f;
+  color: #ffe0dc;
+  border-color: var(--fx-foe);
+}
+.fx-strip__chip--boss {
+  border: 2px solid var(--fx-gold);
+  box-shadow: 0 0 8px rgba(255, 216, 77, 0.5);
+}
+.fx-strip__chip--boss::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  width: 14px;
+  height: 7px;
+  transform: translateX(-50%);
+  background: var(--fx-gold);
+  clip-path: polygon(0 100%, 0 20%, 25% 60%, 50% 0, 75% 60%, 100% 20%, 100% 100%);
+}
+.fx-strip__chip--now {
+  width: 36px;
+  height: 36px;
+  font-size: 13px;
+  border-radius: 10px;
+  box-shadow: 0 0 0 2px #fff3dc, 0 0 12px rgba(255, 220, 160, 0.55);
+  margin-right: 4px;
+}
+.fx-controls {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+}
+.fx-speed {
+  display: flex;
+  gap: 2px;
+}
+.fx-ctl {
+  min-height: 44px;
+  min-width: 36px;
+  padding: 0 8px;
+  border-radius: 10px;
+  border: 1px solid var(--fx-line);
+  background: var(--fx-panel);
+  color: var(--ink-dim);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.fx-ctl--auto {
+  min-width: 58px;
+}
+.fx-ctl--on {
+  color: #fff6e6;
+  background: var(--ember-deep);
+  border-color: var(--fx-hero);
+}
+.fx-ctl:active {
+  transform: translateY(1px);
+}
+
+/* ---------- middle: banner, tip, feed ---------- */
+.fx-mid {
+  grid-area: mid;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  pointer-events: none;
+}
+.fx-mid > * {
+  pointer-events: auto;
+}
+.fx-banner {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 100%;
+  border-radius: 999px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fx-banner--turn {
+  padding: 6px 22px;
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #fff6e6;
+  background: linear-gradient(180deg, #ea8a35, #c2410c);
+  border: 1px solid #ffd59a;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
+  box-shadow: 0 0 0 3px rgba(255, 179, 71, 0.25), 0 6px 26px rgba(255, 120, 30, 0.5);
+  animation:
+    fx-banner-in 0.28s ease-out,
+    fx-banner-glow 1.6s ease-in-out 0.3s infinite alternate;
+}
+.fx-banner--aim {
+  padding: 0 4px 0 16px;
+  min-height: 46px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffe9c7;
+  background: rgba(42, 30, 20, 0.92);
+  border: 1px solid var(--fx-hero);
+}
+.fx-banner--acting {
+  padding: 4px 16px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink-dim);
+  background: var(--fx-panel);
+  border: 1px solid var(--fx-line);
+}
+.fx-cancel {
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--fx-line);
+  background: #3a2b1f;
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+}
+.fx-tip {
+  max-width: 100%;
+  padding: 6px 12px;
+  border-radius: 10px;
+  background: rgba(36, 29, 42, 0.95);
+  border: 1px solid var(--fx-line);
+  color: var(--ink);
+  font-size: 13px;
+  line-height: 1.3;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+}
+.fx-feed {
+  position: relative;
+  margin-top: auto;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 1px;
+  min-height: 64px;
+  padding: 5px 10px;
+  border-radius: 10px;
+  background: rgba(10, 8, 12, 0.74);
+  border: 1px solid var(--fx-line);
+}
+.fx-feed--playing {
+  cursor: pointer;
+  border-color: rgba(255, 179, 71, 0.4);
+}
+.fx-feed__line {
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--ink-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fx-feed__line--new {
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 14px;
+  white-space: normal;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+.fx-feed__line--hint {
+  font-style: italic;
+}
+.fx-feed__skip {
+  position: absolute;
+  right: 12px;
+  top: -9px;
+  padding: 0 8px;
+  border-radius: 8px;
+  background: #2a1e14;
+  border: 1px solid rgba(255, 179, 71, 0.5);
+  line-height: 16px;
+  font-size: 10px;
+  color: var(--fx-hero);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ---------- cards ---------- */
+.fx-party,
+.fx-foes {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  padding: 3px;
+  margin: -3px;
+}
+.fx-party {
+  grid-area: party;
+}
+.fx-foes {
+  grid-area: foes;
+}
+.fx-card {
+  position: relative;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 5px 7px 6px;
+  border-radius: 10px;
+  background: var(--fx-panel);
+  border: 1px solid var(--fx-line);
+  transition:
+    opacity 0.2s,
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+.fx-card .meter {
+  min-width: 0;
+}
+.fx-card__head {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  min-height: 18px;
+}
+.fx-card__name {
+  font-weight: 700;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  flex: 0 1 auto;
+}
+.fx-card__num {
+  flex: none;
+  font-weight: 800;
+  font-size: 14px;
+  color: #ffd27a;
+}
+.fx-foes__row {
+  flex: none;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  padding: 0 4px;
+  line-height: 13px;
+  text-shadow: 0 1px 2px #000;
+}
+.fx-card__row {
+  flex: none;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-dim);
+  padding: 0 4px;
+  border-radius: 4px;
+  border: 1px solid var(--fx-line);
+  line-height: 14px;
+}
+.fx-card--active {
+  border-color: var(--fx-hero);
+  box-shadow: 0 0 0 1px var(--fx-hero), 0 0 16px rgba(255, 160, 60, 0.45);
+}
+.fx-card--acting {
+  border-color: rgba(255, 243, 220, 0.6);
+  box-shadow: 0 0 10px rgba(255, 243, 220, 0.25);
+}
+.fx-card--valid {
+  cursor: pointer;
+  border-color: #ffd27a;
+  box-shadow: 0 0 0 2px rgba(255, 210, 122, 0.85), 0 0 18px rgba(255, 190, 90, 0.5);
+  animation: fx-pulse 1s ease-in-out infinite alternate;
+}
+.fx-card--enemy.fx-card--valid {
+  border-color: #ff8a7a;
+  box-shadow: 0 0 0 2px rgba(255, 120, 100, 0.9), 0 0 18px rgba(255, 90, 70, 0.5);
+}
+.fx-card--dim {
+  opacity: 0.42;
+}
+.fx-card--down > .meter,
+.fx-card--down > .fx-card__bars {
+  filter: grayscale(1);
+  opacity: 0.6;
+}
+.fx-card--down > .fx-card__head .fx-card__name {
+  color: var(--ink-dim);
+}
+.fx-card--boss {
+  border-color: rgba(255, 216, 77, 0.55);
+}
+.fx-card__bars {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+.fx-gauge {
+  flex: 1 1 0;
+  min-width: 0;
+  display: block;
+}
+.fx-gauge .meter {
+  min-width: 0;
+  height: 6px;
+}
+.fx-gauge--stamina .meter__fill {
+  background: var(--fx-stamina);
+}
+.fx-gauge--mana .meter__fill {
+  background: var(--fx-mana);
+}
+.fx-gauge--ready .meter {
+  border-color: #ff9ad0;
+  box-shadow: 0 0 8px rgba(255, 94, 168, 0.85);
+  animation: fx-ready 0.9s ease-in-out infinite alternate;
+}
+
+/* states */
+.fx-badge {
+  flex: none;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 15px;
+  padding: 0 5px;
+  border-radius: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  color: #120f14;
+  background: #cfc6b8;
+}
+.fx-badge--guard {
+  background: #8ab4f8;
+}
+.fx-badge--cast {
+  background: #c58cff;
+}
+.fx-badge--held {
+  background: #e0a35f;
+}
+.fx-badge--down {
+  background: #ff6b5e;
+}
+.fx-badge--fallen {
+  background: #6e6872;
+  color: #eee;
+}
+.fx-badge--boss {
+  background: var(--fx-gold);
+}
+
+/* status chips */
+.fx-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  min-width: 0;
+}
+.fx-status--inline {
+  flex: 0 1 auto;
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+.fx-chip {
+  --tint: #a69e92;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  border: 1px solid var(--tint);
+  background: rgba(0, 0, 0, 0.5);
+  color: #f1ebe0;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 16px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.fx-chip::after {
+  /* a larger tap area than the chip itself */
+  content: '';
+  position: absolute;
+  inset: -8px -2px;
+}
+.fx-chip--good {
+  --tint: #7bd389;
+}
+.fx-chip--bad {
+  --tint: #ff7a6e;
+}
+.fx-chip__stacks {
+  font-size: 10px;
+  color: #ffd27a;
+}
+.fx-chip__turns {
+  font-style: normal;
+  font-size: 10px;
+  min-width: 13px;
+  height: 13px;
+  line-height: 13px;
+  border-radius: 7px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.16);
+}
+.fx-hud--aim .fx-chip {
+  pointer-events: none;
+}
+.fx-affixes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+.fx-affix {
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 15px;
+  padding: 0 5px;
+  border-radius: 5px;
+  color: #ffe9a8;
+  background: rgba(120, 90, 10, 0.6);
+  border: 1px solid #c9a227;
+}
+
+/* the pet inside its owner's card */
+.fx-card--pet {
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 6px;
+  border-radius: 8px;
+  background: rgba(60, 46, 18, 0.55);
+  border-color: rgba(230, 181, 74, 0.35);
+  min-height: 22px;
+}
+.fx-pet__name {
+  flex: 0 1 auto;
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #ffe6a8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fx-card--pet .meter {
+  flex: 1 1 40px;
+}
+.fx-pet__stance {
+  flex: none;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-dim);
+}
+
+/* tight: three or four heroes, four or more enemies */
+.fx-party--tight .fx-card,
+.fx-foes--tight .fx-card {
+  gap: 2px;
+  padding: 3px 6px 4px;
+}
+.fx-party--tight .fx-card > .meter:not(.meter--compact),
+.fx-foes--tight .fx-card > .meter:not(.meter--compact) {
+  height: 16px;
+}
+.fx-party--tight .fx-card > .meter:not(.meter--compact) .meter__text,
+.fx-foes--tight .fx-card > .meter:not(.meter--compact) .meter__text {
+  font-size: 11px;
+  line-height: 14px;
+}
+.fx-party--tight .fx-card--pet {
+  min-height: 18px;
+  padding: 1px 6px;
+}
+
+/* floating numbers */
+.fx-floaters {
+  position: absolute;
+  top: 0;
+  right: 6px;
+  bottom: 0;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+}
+.fx-float {
+  font-size: 19px;
+  font-weight: 900;
+  line-height: 1;
+  text-shadow:
+    0 2px 0 #000,
+    0 0 6px #000,
+    0 0 2px #000;
+  animation: fx-rise 1s ease-out forwards;
+  animation-delay: calc(var(--i, 0) * 70ms);
+  white-space: nowrap;
+}
+.fx-float--damage {
+  color: #ff6b5e;
+}
+.fx-float--crit {
+  color: #ffd34d;
+  font-size: 22px;
+}
+.fx-float--heal {
+  color: #7bea8c;
+}
+.fx-float--miss {
+  color: #e8e2d6;
+  font-style: italic;
+  font-size: 16px;
+}
+.fx-float--status {
+  color: #d8c4ff;
+  font-size: 13px;
+}
+.fx-float--info {
+  color: #a9cdff;
+  font-size: 13px;
+}
+
+/* ---------- commands ---------- */
+.fx-bar {
+  grid-area: bar;
+  display: flex;
+  gap: 6px;
+  min-width: 0;
+}
+.fx-side {
+  grid-area: side;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.fx-act {
+  position: relative;
+  min-height: 44px;
+  min-width: 0;
+  padding: 4px 8px;
+  border-radius: 12px;
+  border: 1px solid var(--fx-line);
+  background: rgba(30, 25, 34, 0.94);
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.15;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  cursor: pointer;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+.fx-act:active:not(.fx-act--off) {
+  transform: translateY(1px);
+  filter: brightness(1.2);
+}
+.fx-act--off {
+  opacity: 0.45;
+  cursor: default;
+}
+.fx-act--armed {
+  border-color: var(--fx-hero);
+  box-shadow: 0 0 0 2px var(--fx-hero), 0 0 16px rgba(255, 160, 60, 0.5);
+  background: linear-gradient(180deg, #4a3014, #2a1a0c);
+}
+.fx-bar--busy .fx-act--off {
+  opacity: 0.38;
+}
+.fx-act__name {
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fx-act__sub {
+  display: flex;
+  gap: 6px;
+  max-width: 100%;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fx-act__sub--reason {
+  color: #ff9d8f;
+  display: block;
+}
+.fx-act--attack {
+  flex: 0 0 104px;
+  font-size: 16px;
+  border-color: #8a5420;
+  background: linear-gradient(180deg, #44301b, #24180e);
+}
+.fx-act--skill {
+  flex: 1 1 0;
+  max-width: 240px;
+  align-items: flex-start;
+  text-align: left;
+  padding: 4px 10px;
+  font-size: 15px;
+  border-top: 3px solid #6b6170;
+}
+.fx-act--skill:has(.fx-cost--stamina) {
+  border-top-color: var(--fx-stamina);
+}
+.fx-act--skill:has(.fx-cost--mana) {
+  border-top-color: var(--fx-mana);
+}
+.fx-cost {
+  font-weight: 800;
+}
+.fx-cost--stamina {
+  color: var(--fx-stamina);
+}
+.fx-cost--mana {
+  color: #8fb0ff;
+}
+.fx-weight--light {
+  color: #9ee6a8;
+}
+.fx-weight--heavy {
+  color: #ffb08a;
+}
+.fx-act--ult {
+  flex: 0 0 176px;
+  color: #fff;
+  border-color: #ffc2e6;
+  background: linear-gradient(180deg, #9a4dff, #e2468f);
+  box-shadow: 0 0 18px rgba(255, 94, 168, 0.6);
+  animation: fx-ready 1.1s ease-in-out infinite alternate;
+}
+.fx-act--ult .fx-act__sub {
+  color: #ffe2f1;
+}
+.fx-act--free {
+  flex: 0 0 92px;
+  border-color: #c08457;
+}
+.fx-act--side {
+  flex: 1 1 0;
+  padding: 2px;
+  font-size: 13px;
+  border-radius: 10px;
+}
+.fx-act--side .fx-act__sub--reason {
+  display: none;
+}
+
+/* ---------- sheets ---------- */
+.fx-sheet {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.fx-sheet__row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-height: 52px;
+  padding: 7px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: #241d2a;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+.fx-sheet__row--on {
+  border-color: var(--ember);
+}
+.fx-sheet__row--off,
+.fx-sheet__row:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.fx-sheet__name {
+  font-weight: 700;
+}
+.fx-sheet__count {
+  color: var(--ember);
+}
+.fx-sheet__desc {
+  font-size: 13px;
+  color: var(--ink-dim);
+}
+.fx-sheet__note,
+.fx-sheet__empty,
+.fx-sheet__text {
+  font-size: 13px;
+  color: var(--ink-dim);
+  margin: 8px 0 0;
+}
+.fx-sheet__text {
+  color: var(--ink);
+  font-size: 15px;
+}
+
+/* The kit's modal card grows past a 412 px screen (its max-height: 100% does not bind in the auto grid row, and the
+   body has no min-height: 0), pushing the action row off the bottom; the fight's own sheets cap the card and let the
+   body scroll instead (reported to the lead). */
+.modal__card:has(.fx-rule__text),
+.modal__card:has(.fx-sheet),
+.modal__card:has(.fx-sheet__text) {
+  max-height: calc(100dvh - 24px - var(--sat, 0px) - var(--sab, 0px));
+}
+.modal__card:has(.fx-rule__text) .modal__body,
+.modal__card:has(.fx-sheet) .modal__body,
+.modal__card:has(.fx-sheet__text) .modal__body {
+  min-height: 0;
+}
+
+/* the AI rule editor */
+.fx-rule__help,
+.fx-rule__words,
+.fx-rule__note,
+.fx-rule__label {
+  font-size: 13px;
+  color: var(--ink-dim);
+  margin: 4px 0 6px;
+}
+.fx-rule__help code {
+  color: var(--ink);
+  font-size: 12px;
+}
+.fx-rule__text {
+  width: 100%;
+  min-height: 88px;
+  resize: vertical;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: #120f14;
+  color: var(--ink);
+  font: 14px/1.35 ui-monospace, Consolas, monospace;
+  user-select: text;
+}
+.fx-rule__errors {
+  margin: 6px 0;
+  padding-left: 18px;
+  color: #ff8f80;
+  font-size: 13px;
+}
+.fx-rule__ok {
+  margin: 6px 0;
+  color: var(--good);
+  font-size: 13px;
+}
+.fx-rule__warn {
+  margin: 4px 0;
+  color: #e6b54a;
+  font-size: 13px;
+}
+.fx-rule__read {
+  margin: 0 0 6px;
+  padding-left: 20px;
+  font-size: 13px;
+}
+.fx-rule__words summary {
+  min-height: 32px;
+  line-height: 32px;
+  cursor: pointer;
+  color: var(--ember);
+}
+.fx-rule__words p {
+  margin: 2px 0 6px;
+}
+
+/* ---------- motion ---------- */
+@keyframes fx-banner-in {
+  from {
+    transform: translateY(-8px) scale(0.94);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes fx-banner-glow {
+  from {
+    box-shadow: 0 0 0 3px rgba(255, 179, 71, 0.2), 0 6px 20px rgba(255, 120, 30, 0.4);
+  }
+  to {
+    box-shadow: 0 0 0 5px rgba(255, 179, 71, 0.35), 0 6px 30px rgba(255, 120, 30, 0.65);
+  }
+}
+@keyframes fx-pulse {
+  from {
+    filter: brightness(1);
+  }
+  to {
+    filter: brightness(1.22);
+  }
+}
+@keyframes fx-ready {
+  from {
+    filter: brightness(1);
+  }
+  to {
+    filter: brightness(1.25);
+  }
+}
+@keyframes fx-rise {
+  0% {
+    transform: translateY(6px) scale(0.85);
+    opacity: 0;
+  }
+  15% {
+    transform: translateY(0) scale(1.08);
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-26px) scale(1);
+    opacity: 0;
+  }
+}
+html[data-reduce-motion='1'] .fx-hud *,
+html[data-reduce-motion='1'] .fx-hud {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* D-092: the encounter's threat against the party. */
+.fx-threat {
+  align-self: center;
+  flex: none;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid currentColor;
+}
+.fx-threat--easy {
+  color: #9bd59b;
+}
+.fx-threat--even {
+  color: #e8e2d6;
+}
+.fx-threat--dangerous {
+  color: #ffb347;
+}
+.fx-threat--deadly {
+  color: #ff5e5e;
+  background: rgba(90, 0, 0, 0.55);
+}

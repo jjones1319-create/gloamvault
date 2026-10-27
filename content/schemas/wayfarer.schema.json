@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gloamvault.dev/schemas/wayfarer.schema.json",
+  "title": "Wayfarer",
+  "description": "A named adventurer the Wayfarer Chest can call to the Lantern Inn (03-GAME-DESIGN §10.4, D-091): a hero in every way once called. One file per wayfarer under content/wayfarers/<id>.json; the cast list is owned by docs/04-CLASSES.md §7 and written by tools/content/gen-wayfarers.ts.",
+  "type": "object",
+  "properties": {
+    "id": { "$ref": "common.schema.json#/$defs/id" },
+    "name": { "type": "string", "minLength": 1, "maxLength": 24, "description": "Unique across the cast (rule 34)." },
+    "speciesId": { "$ref": "common.schema.json#/$defs/id" },
+    "classId": { "$ref": "common.schema.json#/$defs/id" },
+    "grade": { "type": "string", "enum": ["D", "C", "B", "A"], "description": "Sets the draw odds and the creation points: 6 + 1 per grade above D." },
+    "freePoints": {
+      "type": "object",
+      "description": "Creation points by attribute, 1–3 each (03 §2.3); the total is 6 + 1 per grade above D (rule 34).",
+      "propertyNames": { "$ref": "common.schema.json#/$defs/attribute" },
+      "additionalProperties": { "type": "integer", "minimum": 1, "maximum": 3 },
+      "minProperties": 1
+    },
+    "starterSkillIds": {
+      "type": "array",
+      "description": "Three Tier I skills of the class, at least one active (rule 34).",
+      "items": { "$ref": "common.schema.json#/$defs/id" },
+      "minItems": 3,
+      "maxItems": 3,
+      "uniqueItems": true
+    },
+    "aiRule": {
+      "description": "Their own AI rule (the grammar of sim/src/ai.ts); null for the class's default rule.",
+      "anyOf": [{ "type": "string", "minLength": 1, "maxLength": 400 }, { "type": "null" }]
+    },
+    "bio": { "type": "string", "minLength": 1, "maxLength": 160, "description": "One line: who they are." }
+  },
+  "required": ["id", "name", "speciesId", "classId", "grade", "freePoints", "starterSkillIds", "aiRule", "bio"],
+  "additionalProperties": false
+}

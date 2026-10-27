@@ -3,7 +3,8 @@ import type { FloorGraph } from './generator.ts'
 import type { DungeonChest } from './loot.ts'
 import type { RngState } from './rng.ts'
 import type { HeroRecord, ItemInstance } from './types/content.ts'
-import type { Difficulty, Stance, Status, Target } from './types/enums.ts'
+import type { ThreatRead } from './threat.ts'
+import type { DeathRule, Difficulty, Stance, Status, Target } from './types/enums.ts'
 
 /**
  * A delve (03-GAME-DESIGN §1, §4, §11, §12): one trip into a zone, floor by floor, as plain serialisable data.
@@ -21,6 +22,8 @@ export type DelveCommand =
   | { kind: 'fieldRepair'; heroIndex: number; slot: string }
   | { kind: 'useItem'; heroIndex: number; instanceId: string }
   | { kind: 'firstAid'; heroIndex: number; targetIndex: number }
+  /** D-089: a healer of level 10+ with a revive skill raises a dead hero out of a fight (Mortal). */
+  | { kind: 'raise'; heroIndex: number; targetIndex: number }
   | { kind: 'stance'; heroIndex: number; stance: Stance }
   | { kind: 'buy'; offerIndex: number }
   | { kind: 'descend' }
@@ -33,6 +36,8 @@ export interface LegalDelveAction {
   label: string
   enabled: boolean
   reason?: string
+  /** A move into a room whose fight the party knows of (visited or scouted): how dangerous it reads (D-092). */
+  threat?: ThreatRead
 }
 
 export interface TrapState {
@@ -108,6 +113,8 @@ export interface FloorRun {
   goldPercentBonus: number
   /** Extra surprise for the next fight when `ruleFlags` carries 'next-fight-ambush' (a Tripwire Bell: 30). */
   ambushPercent: number
+  /** Raises from the dead this floor by healer index (D-089: once per healer per floor). */
+  raisesUsed: Record<string, number>
 }
 
 /**
@@ -178,6 +185,10 @@ export interface DelveStats {
   hookStubs: Record<string, number>
   /** The deepest floor whose way down (stairs or a beaten boss) the party reached: the next delve may start below it (D-083). */
   deepestFloorCompleted: number
+  /** Heroes still fallen when a fight ended, wipes included: under Mortal each one died (D-088). */
+  falls: number
+  /** Dead heroes raised by a healer in the dungeon (D-089). */
+  raises: number
 }
 
 export type DelvePhase =
@@ -213,6 +224,8 @@ export interface DelveOptions {
   firstDelve?: boolean
   /** Stop the delve after this floor (the zone's last floor by default). */
   lastFloor?: number
+  /** The save's death rule (D-088): Mortal, the dead stay dead; Sheltered (the default here), the Phase 3 revives. */
+  deathRule?: DeathRule
 }
 
 export interface DelveState {

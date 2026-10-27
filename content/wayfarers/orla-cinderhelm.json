@@ -1,0 +1,19 @@
+{
+  "id": "orla-cinderhelm",
+  "name": "Orla Cinderhelm",
+  "speciesId": "dwarf",
+  "classId": "arcanist",
+  "grade": "D",
+  "freePoints": {
+    "wisdom": 3,
+    "willpower": 2,
+    "vitality": 1
+  },
+  "starterSkillIds": [
+    "arcanist-ember-lance",
+    "arcanist-spark",
+    "arcanist-kindling"
+  ],
+  "aiRule": "IF self HP < 30% THEN item small hp potion on self; IF enemies count > 2 THEN spark on weakest enemy; ELSE ember lance on weakest enemy",
+  "bio": "Learned fire at the forge before learning it from books, and still prefers the forge."
+}

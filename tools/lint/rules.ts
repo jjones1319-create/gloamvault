@@ -76,6 +76,7 @@ export type Ctx = {
   lootTables: Map<string, Rec>
   contracts: Map<string, Rec>
   statuses: Map<string, Rec>
+  wayfarers: Map<string, Rec>
   /** Template files (dungeons/<d>/templates/*.json). */
   templateFiles: { file: string; dungeonFolder: string; json: JsonObject }[]
   /** Hero save records (only with --saves). */
@@ -300,6 +301,7 @@ export function buildCtx(corpus: Corpus): Ctx {
     lootTables: indexOf(recsOf(corpus, 'loot-table')),
     contracts: indexOf(recsOf(corpus, 'contract')),
     statuses: indexOf(recsOf(corpus, 'status')),
+    wayfarers: indexOf(recsOf(corpus, 'wayfarer')),
     templateFiles,
     heroes,
     records,
@@ -346,6 +348,8 @@ function mapFor(ctx: Ctx, kind: ContentKind): Map<string, Rec> | undefined {
       return ctx.contracts
     case 'status':
       return ctx.statuses
+    case 'wayfarer':
+      return ctx.wayfarers
     default:
       return undefined
   }
@@ -1866,6 +1870,61 @@ function rule33(ctx: Ctx): Failure[] {
 }
 
 // ---------------------------------------------------------------------------------------------------------------
+// Rule 34: the Wayfarer Chest's cast (D-091) — each wayfarer's species, class and three Tier I skills resolve (at
+// least one active, at most two passives); creation points are 6 + 1 per grade above D; names are unique; and every
+// grade a wayfarer chest's table names has someone in the cast.
+
+const WAYFARER_GRADE_ORDER = ['D', 'C', 'B', 'A'] as const
+
+function rule34(ctx: Ctx): Failure[] {
+  const out: Failure[] = []
+  const names = new Map<string, string>()
+  const byGrade = new Map<string, number>()
+  for (const w of ctx.wayfarers.values()) {
+    const species = str(w.json.speciesId)
+    const classId = str(w.json.classId)
+    if (species !== undefined && !ctx.species.has(species)) out.push(fail(w.file, 34, `species '${species}' does not exist`))
+    if (classId !== undefined && !ctx.classes.has(classId)) out.push(fail(w.file, 34, `class '${classId}' does not exist`))
+    let actives = 0
+    let passives = 0
+    for (const id of strs(w.json.starterSkillIds)) {
+      const sk = ctx.skills.get(id)
+      if (!sk) {
+        out.push(fail(w.file, 34, `starter skill '${id}' does not exist`))
+        continue
+      }
+      if (str(sk.json.classId) !== classId) out.push(fail(w.file, 34, `starter skill '${id}' belongs to ${str(sk.json.classId) ?? '?'}, not ${classId ?? '?'}`))
+      if (num(sk.json.tier) !== 1) out.push(fail(w.file, 34, `starter skill '${id}' is Tier ${num(sk.json.tier) ?? '?'}, expected Tier I`))
+      if (sk.json.isUltimate === true) out.push(fail(w.file, 34, `starter skill '${id}' is an Ultimate`))
+      if (str(sk.json.type) === 'passive') passives++
+      else actives++
+    }
+    if (actives < 1) out.push(fail(w.file, 34, 'needs at least one active starter skill'))
+    if (passives > 2) out.push(fail(w.file, 34, `has ${passives} passive starters; the loadout holds two`))
+    const grade = str(w.json.grade) ?? 'D'
+    byGrade.set(grade, (byGrade.get(grade) ?? 0) + 1)
+    const expected = ctx.t.freePoints + Math.max(0, WAYFARER_GRADE_ORDER.indexOf(grade as (typeof WAYFARER_GRADE_ORDER)[number]))
+    const spent = sum(Object.values(obj(w.json.freePoints) ?? {}))
+    if (spent !== expected) out.push(fail(w.file, 34, `spends ${spent} creation points; a grade ${grade} wayfarer has ${expected} (6 + 1 per grade above D)`))
+    const name = (str(w.json.name) ?? '').toLowerCase()
+    const first = names.get(name)
+    if (first !== undefined) out.push(fail(w.file, 34, `name '${str(w.json.name) ?? ''}' is also used by ${first}`))
+    else names.set(name, w.file)
+  }
+  for (const c of ctx.chests.values()) {
+    if (str(c.json.kind) !== 'wayfarer') continue
+    objs(c.json.oddsByBand).forEach((entry, i) => {
+      for (const [g, v] of Object.entries(obj(entry.table) ?? {})) {
+        if ((num(v) ?? 0) <= 0) continue
+        if (!(WAYFARER_GRADE_ORDER as readonly string[]).includes(g)) out.push(fail(c.file, 34, `oddsByBand[${i}] lists grade ${g}; wayfarers are graded D–A`))
+        else if (ctx.wayfarers.size > 0 && (byGrade.get(g) ?? 0) === 0) out.push(fail(c.file, 34, `oddsByBand[${i}] gives grade ${g} ${num(v) ?? 0}% but no wayfarer of the cast is grade ${g}`))
+      }
+    })
+  }
+  return out
+}
+
+// ---------------------------------------------------------------------------------------------------------------
 
 export const RULES: ReadonlyArray<{ n: number; run: (ctx: Ctx) => Failure[] }> = [
   { n: 1, run: rule1 },
@@ -1901,6 +1960,7 @@ export const RULES: ReadonlyArray<{ n: number; run: (ctx: Ctx) => Failure[] }> =
   { n: 31, run: rule31 },
   { n: 32, run: rule32 },
   { n: 33, run: rule33 },
+  { n: 34, run: rule34 },
 ]
 
 /** Runs every rule over the corpus. A rule that throws becomes a failure, never a silent pass. */

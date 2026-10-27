@@ -1,0 +1,19 @@
+{
+  "id": "lirien-quill",
+  "name": "Lirien Quill",
+  "speciesId": "elf",
+  "classId": "shade",
+  "grade": "D",
+  "freePoints": {
+    "agility": 3,
+    "luck": 2,
+    "perception": 1
+  },
+  "starterSkillIds": [
+    "shade-backstab",
+    "shade-pickpocket",
+    "shade-light-fingers"
+  ],
+  "aiRule": "IF self HP < 30% THEN item small hp potion on self; IF enemies count > 1 THEN pickpocket on strongest enemy; ELSE backstab on weakest enemy",
+  "bio": "Picks locks to stay in practice and pockets to stay in bread."
+}

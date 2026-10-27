@@ -5,17 +5,18 @@
 ## How to run
 
 - `npm install` once (Node 24+, npm 11+), then `npm run dev` → http://localhost:5173/gloamvault/ (add `-- --host` to open it on the phone over Wi-Fi).
-- `npm run verify` before every commit (typecheck · test · lint · build · check:build). `npm run shots` writes the screenshot set to `client/shots/` (read the PNGs). `npm run e2e` runs the Playwright smoke on the built app. `npm run icons` re-renders the PWA icons from `client/public/logo.svg`.
+- `npm run verify` before every commit (typecheck · test · lint · build · check:build). `npm run shots` writes the screenshot set to `client/shots/` (read the PNGs). `npm run e2e` runs the Playwright smoke on the built app. Both serve the build on port 4173; when another project on this machine holds that port, set `GLOAMVAULT_PORT` (e.g. `GLOAMVAULT_PORT=4183 npm run e2e`). `npm run icons` re-renders the PWA icons from `client/public/logo.svg`.
 - `npm run sim -- --seed 17 --party warden,mender --ascii` plays one delve of the Cellars on the real content in the terminal (`--party warden:dwarf:Orrin`, `--zone 1`, `--policy cautious`, `--difficulty hard`, `--quiet`; `--fixture` for the Phase 2 test set). `npm run balance -- --seeds 100 --tag <tag>` writes `tools/balance/out/<date>-<tag>.json` and `docs/balance/<date>-<tag>.md` (eight recipes, fresh and levelled; ~75 s at 100 seeds).
 - Content generators: `node tools/content/gen-class-<class>.ts` (six classes) and `node tools/content/gen-items.ts` rewrite their JSON from the tables; edit the tables, never the generated JSON.
 - Live link: **https://jjones1319-create.github.io/gloamvault/** (deployed by GitHub Actions on every push to `main`; `gh run list` shows the status).
 
 ## Where we are
 
-- **Segment:** 1 (Phases 1–4) — **in progress**, started 2026-10-26.
-- **Phase:** 3 — Content pass 1 — **done 2026-10-27** (verify green; the second balance report written). **Phase 4 — the playable vertical slice — next.**
-- **James's direction of 2026-10-27** (mid-Phase 3) is in: Final Fantasy-style levels, leaving by a floor's entrance or its end, a very difficult tower best climbed with a party of unlockable heroes, turn-based combat (D-082–D-085; `docs/13-DECISIONS.md` §A2). Phase 4 builds the screens for it.
-- **Last commit:** see `git log` (the Phase 3 commit is `P3: content pass 1 …`).
+- **Segment:** 1 (Phases 1–4) — **complete 2026-10-27**: the review is `docs/feedback/SEGMENT-1-REVIEW.md`; Segment 2 waits for James's answers (checkpoint 1).
+- **Phase:** 4 — the playable vertical slice — **done 2026-10-27** (v0.4.0; verify green: 478 tests, lint ALL GOOD, app JS 420 KB gzipped of 600; 27 screenshots read; the e2e smoke plays New game → Mortal → a hero → the first delve → home → a chest → reload).
+- **James's direction of 2026-10-27** (mid-Phase 3) is in: Final Fantasy-style levels, leaving by a floor's entrance or its end, a very difficult tower best climbed with a party, turn-based combat (D-082–D-085; `docs/13-DECISIONS.md` §A2).
+- **James's direction during Phase 4** (D-088–D-092; §A3) is in the sim and being put on screen: the **Mortal** death rule (the dead stay dead; Sheltered is the gentler choice at New game), raising the dead (a level-10 healer in the dungeon, the Ember Shrine in town, both for levels), one **chosen hero** plus **wayfarers** from the Wayfarer Chest as the only party members (18 named, D–A), **legacies** and the Memorial, the **threat** read (Easy / Even / Dangerous / Deadly) and the flee chance.
+- **Last commit:** see `git log` (the Phase 4 commit is `P4: the playable slice …`).
 - **Tools checked 2026-10-26:** Node 24.18.0 ✓ · npm 11.16.0 ✓ · git 2.51 ✓ · gh 2.102 signed in as `jjones1319-create` ✓ · Blender 5.2.2 LTS ✓ (needed from Segment 2) · Google Chrome ✓.
 
 ## Phase 3 task list (done)
@@ -36,7 +37,8 @@
 - 2026-10-26 — The design package (see `docs/`), `CLAUDE.md`, `README.md`, `PROMPT.md`, this file.
 - 2026-10-26 — Phase 1: the installable title screen, the toolchain (verify · lint · shots · e2e · icons), tuning and statuses as content. Commit `bde2c59`.
 - 2026-10-27 — Phase 2: the sim, 239 tests, the fixture content, `npm run sim`, `npm run balance`, the first balance report. Commit `cc14fbd`.
-- 2026-10-27 — Phase 3: content pass 1 (≈ 800 records), 255 custom hooks, Final Fantasy-style levels, the exits, the second balance report.
+- 2026-10-27 — Phase 3: content pass 1 (≈ 800 records), 255 custom hooks, Final Fantasy-style levels, the exits, the second balance report. Commit `f178620`.
+- 2026-10-27 — Phase 4: the playable slice — the town and the save, the new-hero, hero, town, delve and fight screens, the 3D grey-box room; James's direction during Phase 4 (Mortal / Sheltered, raising the dead, the chosen hero and the Wayfarer Chest, legacies, the threat read); the Phase 4 balance reports under both death rules; the Segment 1 review.
 
 ## What the second balance report says
 
@@ -54,23 +56,43 @@
 
 Ordinary fights land at 3–6 rounds for every fresh recipe and solo (the Phase 3 "done when"). Still off target, for Phase 4/7: elites run ~5 rounds (6–8), hunters 10–16 (few samples), weapons wear 9–19% a delve (25–35), parties earn 1.4–1.8 R per cleared delve, and the classic four clears too often because the Arcanist and Mender out-damage the Ranger 2–3× at level 1.
 
-## Next — Phase 4, the playable vertical slice (plan mode first; the task list goes here)
+## Phase 4 task list (the plan) — the playable vertical slice
 
-`12` Phase 4 plus James's direction (`12` rev. 2): the Preact screens (new hero, Emberfall with the Blacksmith, Skill Hall, Curio Merchant, Stables, Bank, Quest Board, Lantern Inn with the **party roster**, Waystone with the **floor checkpoint**), the delve map, the three.js grey-box room, the **turn-based** fight HUD (whose turn, the strip of 8, skills, Guard/Item/Row/Ultimate, Auto with the rule editor), results with the **XP bar and level-up line**, inventory, skills, pet, settings; save/load (SAVE_VERSION 1 with `battleXp`, migrations, export/import); deep links; `npm run shots` and `npm run e2e`; then `docs/feedback/SEGMENT-1-REVIEW.md`.
+The lead builds the core first; four screen passes then run in parallel, each owning its own files and checking its screens with `tools/shots/dev-shot.ts` on its own dev-server port; the lead finishes with the shot set, the e2e smoke, the docs and the review.
+
+1. [x] Core: `sim/src/town.ts` (the profile and every town action, pure, tested — the purse and the bank, the roster and party slots of D-084, the Waystone floors of D-083, start/settle a delve, Blacksmith, Skill Hall, Curio Merchant, Stables, Bank, Quest Board); `turnForecast` for the strip of 8; `client/src/save/profile.ts` (validate, repair against the loaded content, migrate, three rotating backups, export/import; tested); `client/src/game/session.ts` (signals, actions, delve stepping with the command log and replay-on-reload, deep links, a demo profile); the UI kit; routes and the app shell; the title's New game / Continue; `tools/shots/dev-shot.ts`; `client/src/scene/sceneBus.ts`.
+2. [x] Pass A — New hero (species, class, three Tier I skills, the egg, six points, a name) and the hero screens (status with the XP bar, gear with eleven slots, wear pips and auto-equip best, skills in three school columns with the loadout and the AI-rule editor, pet).
+3. [x] Pass B — Emberfall: the hub and its places (Waystone with the floor checkpoint, Blacksmith, Skill Hall, Curio Merchant with odds and pity, Stables, Bank, Quest Board, Lantern Inn with the roster and party slots), the Settings save section.
+4. [x] Pass C — The delve: the three.js grey-box room from the template with capsule heroes and monsters, the floor map, light meter and floor clock, the room's actions (doors, traps, chests, gold, rest, merchant, curios, the stairs, Walk out / Teleport out), results and the way home.
+5. [x] Pass D — The turn-based fight HUD: whose turn, the strip of 8, skills, Guard / Item / Row / Ultimate / Flee, target tap, pet stance, Auto with the rule editor, 1× / 2× / 3× playback of the fight log cued into the scene.
+6. [x] James's direction during Phase 4 (D-088–D-092): the sim (`town.ts` death/Shrine/legacies/chosen hero, `wayfarers.ts`, `threat.ts`, the Mortal rule and the raise in `delve.ts`, `loseLevels`), 18 wayfarers + schema + lint rule 34, the save fields, the session, the title's death-rule choice, the new-hero selection rules, the fight HUD's threat chip, flee chance and Dead badge, 16 new sim tests; docs `03` rev. 4, `04` §7, `08` §10.2, `10` rev. 4, `12` rev. 3, `13` §A3 + D-088–D-094; the balance runner's `--death` flag and §1b (reports `2026-10-27-phase4-sheltered.md` / `-mortal.md`).
+7. [x] Screen passes, round 2: Pass B — the Ember Shrine, the Inn and hub without slot unlocks, the Wayfarer Chest at the Curio, Waystone threat chips, Settings → lower the death rule, kit fixes; Pass C — the dead under Mortal, the raise action, threat chips on the map and the stairs, the over card's losses, dev-shot timeouts.
+8. [x] Lead: the shot set (every screen by deep link), `npm run e2e` (new hero → first delve → town → chest), the phone-size pass, the performance overlay check, docs (`10` client map as built, `03` §13 as built, D-087), verify, the `P4` commit and deploy, the phone checklist, `docs/feedback/SEGMENT-1-REVIEW.md`.
 
 ## Decisions logged this phase
 
-- D-070 Tiers I–III and secrets · D-071 persistent hooks and joints · D-072 linter/schema corrections (Grand chest = 08 §10, wearK number, flat ladder lines, partial-dungeon bosses, pets of later families) · D-073 class readings · D-074 species/pets/affixes/chests/contracts readings · D-075 item readings · D-076 Cellars readings · D-077 status timing and DoTs · D-078 06's monster baseline (supersedes D-061), braziers, part breaks · D-079 gambit and scripted-player readings · D-080 a damage line in party scaling · D-081 the crew flees, champion bonuses once · D-082 Final Fantasy-style levels (**Accepted**, James) · D-083 leaving the dungeon (**Accepted**, James) · D-084 difficulty and party members (**Accepted** direction, James; numbers Proposed) · D-085 turn-based and 8 floors (**Accepted** / Proposed) · D-086 the hook passes' joints.
+- D-070 Tiers I–III and secrets · D-071 persistent hooks and joints · D-072 linter/schema corrections (Grand chest = 08 §10, wearK number, flat ladder lines, partial-dungeon bosses, pets of later families) · D-073 class readings · D-074 species/pets/affixes/chests/contracts readings · D-075 item readings · D-076 Cellars readings · D-077 status timing and DoTs · D-078 06's monster baseline (supersedes D-061), braziers, part breaks · D-079 gambit and scripted-player readings · D-080 a damage line in party scaling · D-081 the crew flees, champion bonuses once · D-082 Final Fantasy-style levels (**Accepted**, James) · D-083 leaving the dungeon (**Accepted**, James) · D-084 difficulty and party members (**Accepted** direction, James; numbers Proposed) · D-085 turn-based and 8 floors (**Accepted** / Proposed) · D-086 the hook passes' joints · D-087 the town and the save as built · D-088 death is permanent: Mortal / Sheltered (**Accepted** direction, James) · D-089 raising the dead (**Accepted**, James; numbers Proposed) · D-090 the chosen hero and legacies (**Accepted**, James) · D-091 party members from the Wayfarer Chest, superseding D-084's unlocks (**Accepted**, James) · D-092 the threat read and fleeing (**Accepted**, James) · D-093 sim fixes found in Phase 4 · D-094 the screens as built.
 
 ## Open for James (collected for the segment review)
 
 - The consolidated list is `docs/13-DECISIONS.md` §D (Phase 3 adds a line) and `03` §12.4: the party-member unlock schedule, Gravehollow at 8 floors, battle XP shared or whole.
 - Doc conflicts the content agents resolved by the owner rule, for a yes or a change: `04` §2 omitted the Blade's Great Axe (now added); `08` §1's class columns vs the class sheets; the Warren Alpha's size and the Weaver's Web duration in `06`; the Bruiser's F2 elite pool; F9 needing a merchant before F10 (rule 13 vs `07`); the Toll Road contract wanting a sub-family; the Drakeling and Frost Kit's third active (rule 28 vs `06` §9); the Draconid's Breath as an innate skill.
 
-## Phone checklist (current phase)
+## Phone checklist (Phase 4 — the playable slice)
 
-Phase 3 changed nothing on the phone: the live app is still the Phase 1 title screen. The new content and the levels run on the PC:
+Open **https://jjones1319-create.github.io/gloamvault/** or the installed app. If a small "Update ready" note appears on the title, tap it.
 
-1. In the project folder run `npm run sim -- --seed 17 --party warden,mender`. You should see each floor's rooms, the fights, and at the end both heroes' **level** (they reach about level 5 in one run).
-2. Open `docs/balance/2026-10-27-content-pass-1.md`: the first table shows how often each party clears the Cellars; a fresh solo Warden never does, a ground one about 40% of the time.
-3. Nothing to install or update on the phone until Phase 4.
+1. The title says **Phase 4** at the bottom and offers **New game**. Tap it: a box asks **How should death work?** Tap **Mortal** (heroes who die stay dead).
+2. Make your hero: tap a species, **Next**, a class, **Next** (three skills are already picked), **Next**, an egg, **Next**, check the points and the name, **Next**, then **Create hero**. You should land in **Emberfall at dusk** with nine places in a 3 × 3 grid.
+3. Tap **Waystone**. Floor 1 shows a threat chip (Easy or Even). Tap **Enter**. You should see a 3D room with your hero and pet as simple shapes, a light meter and a floor clock at the top left, and a small map at the top right.
+4. Tap a room next to you on the small map to walk there. When a fight starts, the strip at the top shows who acts next; when it says **Your turn**, tap a skill, then tap an enemy. Try **2×**, then **Auto**.
+5. In an easy fight, tap **Flee** once: the box shows your chance. Close it with **Stay and fight**.
+6. Leave by walking back to the room you started in (**Walk out to town**) or by reaching the stairs (**Teleport out to town**). Tap **Back to Emberfall**.
+7. The hub shows what happened on the delve. Tap **Blacksmith** → **Repair all** and watch the wear pips refill.
+8. Tap **Curio Merchant** → the **Wayfarer Chest**'s **Odds**: you should see who could join you and the chance for each grade. Buy one when you have the gold (it costs more than a gear chest).
+9. Tap **Lantern Inn**: your roster (up to 12), who goes in the party (up to 4), and the badges Chosen / Wayfarer.
+10. Tap **Ember Shrine**: if a hero died and was carried home, **Raise** costs gold and two levels; **Lay to rest** passes half their experience to another hero. The Memorial lists the lost.
+11. Tap a hero's name in the hub: **Status** (the level bar), **Gear** (tap **Auto-equip**), **Skills** (the three columns and the AI rule), **Pet**.
+12. Go back into the dungeon and push to a floor whose chip says **Dangerous** or **Deadly**: the Waystone and the stairs warn that heroes who die there stay dead. If your only hero dies, the town stays yours and **Continue** offers **choose a new hero**, who gets part of the old hero's experience.
+13. **Settings → Save**: **Download** a save file. The death rule line shows Mortal; **Lower to Sheltered** is there if Mortal is too harsh (it cannot be undone).
+14. Close the app completely and open it again: **Continue** shows your heroes and "Mortal", and you are back where you were (a delve in progress resumes).

@@ -22,7 +22,7 @@ export { activeHooks, installHook, removeHook, removeHooksById, hooksOf } from '
 export type { ActiveHook, InstallOptions } from './hooks.ts'
 export { linesAtRank, rankEffectPercent } from './skill-lines.ts'
 export { battleXpForLevel, heroLevelForXp, heroLevelXpCost } from './xp.ts'
-export { applyBattleXpLevel, heroAtLevel, levelUpGains } from './hero.ts'
+export { addBattleXp, applyBattleXpLevel, heroAtLevel, levelUpGains, loseLevels } from './hero.ts'
 
 export { generateFloor, hashFloor, DEFAULT_GRAMMAR } from './generator.ts'
 export type {
@@ -44,3 +44,17 @@ export type {
   FloorGraph,
 } from './generator.ts'
 export { renderFloorAscii, roomLetter, doorCell, ROOM_LETTERS, ASCII_LEGEND } from './generator-ascii.ts'
+
+// The game loop (Phase 4): fights, delves and the town, for the client.
+export { applyFightCommand, createFight, fleeChance, legalFightActions, runFight, runFightAuto, turnForecast } from './fight.ts'
+export { canRaise, createDelve, delveSummary, hashDelve, hopsOf, isMortal, legalDelveActions, replayDelve, runDelveAuto, stepDelve } from './delve.ts'
+export type * from './delve-types.ts'
+export type * from './fight-types.ts'
+export * from './town.ts'
+// James's direction during Phase 4 (D-088–D-092): the Wayfarer Chest's cast and the threat read.
+export * from './wayfarers.ts'
+export * from './threat.ts'
+export { buildHeroActor, createHero, heroLoad, heroStats } from './hero.ts'
+export type { CreateHeroInput } from './hero.ts'
+export { tierOpenAt } from './xp.ts'
+export { lightBand } from './light.ts'

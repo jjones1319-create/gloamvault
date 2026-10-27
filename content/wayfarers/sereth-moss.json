@@ -1,0 +1,19 @@
+{
+  "id": "sereth-moss",
+  "name": "Sereth Moss",
+  "speciesId": "elf",
+  "classId": "ranger",
+  "grade": "C",
+  "freePoints": {
+    "perception": 3,
+    "agility": 3,
+    "wisdom": 1
+  },
+  "starterSkillIds": [
+    "ranger-aimed-shot",
+    "ranger-snare",
+    "ranger-steady-draw"
+  ],
+  "aiRule": "IF self HP < 30% THEN item small hp potion on self; IF self HP < 60% THEN snare on front enemy; ELSE aimed shot on weakest enemy",
+  "bio": "Reads tracks the way scholars read books, and trusts them more."
+}

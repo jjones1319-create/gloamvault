@@ -1,0 +1,19 @@
+{
+  "id": "hilde-stonevow",
+  "name": "Hilde Stonevow",
+  "speciesId": "dwarf",
+  "classId": "warden",
+  "grade": "A",
+  "freePoints": {
+    "endurance": 3,
+    "vitality": 3,
+    "willpower": 3
+  },
+  "starterSkillIds": [
+    "warden-shield-slam",
+    "warden-counter-stance",
+    "warden-wall-stance"
+  ],
+  "aiRule": "IF self HP < 30% THEN item small hp potion on self; IF self HP < 70% THEN counter stance; ELSE shield slam front enemy",
+  "bio": "Swore to hold the Keep's lower gate. The Keep fell; the vow did not."
+}

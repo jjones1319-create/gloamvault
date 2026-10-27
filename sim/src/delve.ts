@@ -8,7 +8,7 @@ import { applyFightCommand, createFight, legalFightActions, runFight, runFightAu
 import type { Actor, FightState } from './fight-types.ts'
 import { generateFloor, type FloorGraph } from './generator.ts'
 import { hashState } from './hash.ts'
-import { buildHeroActor, heroStats, speciesRules } from './hero.ts'
+import { buildHeroActor, heroStats, loseLevels, speciesRules } from './hero.ts'
 import { installHook } from './hooks.ts'
 import { applyWearBp, createItemInstance, effectiveItemStats, fieldRepair, repairItemPoints, repairKit } from './items.ts'
 import { addLight, lightAfterRoom, lightAtEntry, lightBand } from './light.ts'
@@ -20,6 +20,8 @@ import { applyFightProgress, carryHeroState } from './progress.ts'
 import { Rng, seedFor } from './rng.ts'
 import { linesAtRank } from './skill-lines.ts'
 import { clamp, roundHalfUp } from './stats.ts'
+import { secretDoorKnown } from './secret-doors.ts'
+import { roomThreat } from './threat.ts'
 import { applyStatus } from './statuses.ts'
 import type { Tuning } from './tuning.ts'
 import type { CurioDef, DifficultyKnobs, DungeonDef, Effect, HeroRecord, ItemInstance, Requirement, Reward, SecretDef, TrapDef } from './types/content.ts'
@@ -168,7 +170,19 @@ function knobsFor(dungeon: DungeonDef, options: DelveOptions): { knobs: Record<s
 }
 
 function emptyStats(): DelveState['stats'] {
-  return { rooms: 0, fights: 0, eliteFights: 0, bossFights: 0, roundsByKind: {}, ambushedParty: 0, ambushedMonsters: 0, trapsRevealed: 0, trapsTriggered: 0, trapsDisarmed: 0, curiosUsed: 0, chestsOpened: 0, torchesUsed: 0, hunterArrived: 0, hunterKilled: 0, downs: 0, wipes: 0, goldFound: 0, goldLost: 0, itemsFound: 0, partsFound: 0, insights: 0, secretsFound: 0, ticksToStairs: [], lightAtStairs: [], fled: 0, xpEvents: 0, hookStubs: {}, deepestFloorCompleted: 0 }
+  return { rooms: 0, fights: 0, eliteFights: 0, bossFights: 0, roundsByKind: {}, ambushedParty: 0, ambushedMonsters: 0, trapsRevealed: 0, trapsTriggered: 0, trapsDisarmed: 0, curiosUsed: 0, chestsOpened: 0, torchesUsed: 0, hunterArrived: 0, hunterKilled: 0, downs: 0, wipes: 0, goldFound: 0, goldLost: 0, itemsFound: 0, partsFound: 0, insights: 0, secretsFound: 0, ticksToStairs: [], lightAtStairs: [], fled: 0, xpEvents: 0, hookStubs: {}, deepestFloorCompleted: 0, falls: 0, raises: 0 }
+}
+
+/** D-088: under the Mortal rule the dead stay dead; Sheltered (the Phase 3 rules) is the default for the sim's tools. */
+export function isMortal(state: DelveState): boolean {
+  return state.options.deathRule === 'mortal'
+}
+
+/** D-089: a living hero who knows a revive-tagged skill and has reached the raise level can raise the dead. */
+export function canRaise(content: Content, h: DelveHero): boolean {
+  if (h.fallen) return false
+  if (h.record.level < content.tuning.death.raise.healerMinLevel) return false
+  return h.record.skills.some((s) => content.skills.get(s.skillId)?.tags.includes('revive') ?? false)
 }
 
 /* ---------- creation ---------- */
@@ -267,7 +281,8 @@ function beginFloor(content: Content, state: DelveState, floorNumber: number, rn
     currentRoomId: graph.entryId,
     clock: 0,
     hunter,
-    revivesLeft: state.knobs.revivesPerFloor ?? t.death.partyRevivesPerFloor[state.options.difficulty],
+    // D-088: under Mortal there is no floor revive budget; the dead are raised by a healer or at the Shrine.
+    revivesLeft: isMortal(state) ? 0 : (state.knobs.revivesPerFloor ?? t.death.partyRevivesPerFloor[state.options.difficulty]),
     hasKey: false,
     bossDefeated: false,
     lastEncounterId: null,
@@ -276,6 +291,7 @@ function beginFloor(content: Content, state: DelveState, floorNumber: number, rn
     shortcutTo: null,
     goldPercentBonus: 0,
     ambushPercent: 0,
+    raisesUsed: {},
   }
   // Floor-long statuses (a shrine's Curse, a blessing) end with the floor; counted ones (Greased Stairs) carry over.
   state.pendingStatuses = state.pendingStatuses.filter((p) => p.fightsLeft !== null)
@@ -1115,7 +1131,14 @@ function finishFight(content: Content, state: DelveState, rng: Rng): void {
       if (!a) return
       carryHeroState(h, a)
       if (a.fallen) {
-        if (state.floor.revivesLeft > 0) {
+        state.stats.falls += 1
+        if (isMortal(state)) {
+          // D-088: past the revive window the hero is dead; the living carry the body (a healer may raise it, D-089).
+          h.fallen = true
+          h.downed = false
+          h.hpPercent = 0
+          lines.push(`${h.record.name} has died. The party carries the body.`)
+        } else if (state.floor.revivesLeft > 0) {
           state.floor.revivesLeft -= 1
           h.fallen = false
           h.downed = false
@@ -1130,8 +1153,17 @@ function finishFight(content: Content, state: DelveState, rng: Rng): void {
       if (pet) h.petHpPercent = pet.downed || pet.hp <= 0 ? t.pets.downedReturnHpPercent : Math.max(1, Math.floor((pet.hp * 100) / Math.max(1, pet.maxHp)))
     })
     state.phase = { kind: 'result', title: 'Victory', lines }
+    // 03 §12.2: every hero down is a wipe, even when a pet finished the fight (nobody is left to carry anyone or walk on).
+    if (state.heroes.every((h) => h.fallen)) {
+      state.stats.wipes += 1
+      state.stats.goldLost += state.gold
+      for (const h of state.heroes) wipeDurability(content, h)
+      state.gold = 0
+      state.phase = { kind: 'over', outcome: 'wiped', summary: `Wiped on floor ${state.floor.number}: every hero fell` }
+    }
   } else if (outcome === 'defeat') {
     state.stats.wipes += 1
+    state.stats.falls += state.heroes.filter((h) => !h.fallen).length
     state.stats.goldLost += state.gold
     for (const h of state.heroes) {
       carryHeroState(h, fight.actors.find((x) => x.id === `hero-${state.heroes.indexOf(h)}`) ?? ({ hp: 0, maxHp: 1, pool: 0, poolMax: 1, downed: false, fallen: true, hero: undefined } as unknown as Actor))
@@ -1270,13 +1302,15 @@ export function legalDelveActions(content: Content, state: DelveState): LegalDel
   const rs = currentRoom(state)
   const blockingTrap = rs.traps.find((tr) => tr.blocksDoorTo && !tr.disarmed && !tr.triggered)
   for (const d of g.doors) {
-    if (d.secret && !rs.secretRevealed) continue
+    // A secret door, once found, works both ways: from the room it was spotted in, and back out of the secret room.
+    if (d.secret && !secretDoorKnown(state, rs.roomId, d.to)) continue
     const target = state.floor.rooms[d.to]
     const label = `Door → ${target?.scouted || target?.visited ? target.kind : '?'} ${d.to}${d.locked ? ' (locked)' : ''}${d.secret ? ' (secret)' : ''}`
     let reason: string | undefined
     if (d.locked && !state.floor.hasKey) reason = 'locked: find the key'
     if (blockingTrap && blockingTrap.blocksDoorTo === d.to) reason = 'a trap blocks this door'
-    out.push({ command: { kind: 'move', toRoomId: d.to }, label, enabled: !reason, reason })
+    const threat = roomThreat(content, state, d.to)
+    out.push({ command: { kind: 'move', toRoomId: d.to }, label: threat ? `${label} [${threat.band}]` : label, enabled: !reason, reason, ...(threat ? { threat } : {}) })
   }
   // A secret's crawlway to the exit (07 §2.6 the Company's Bolt-hole): a free move from the secret room, 0 ticks.
   if (state.floor.shortcutTo && rs.roomId === state.floor.graph.secretId && state.floor.shortcutTo !== rs.roomId) {
@@ -1311,13 +1345,26 @@ export function legalDelveActions(content: Content, state: DelveState): LegalDel
     }
     if (h.record.fieldSkills.firstAid.rank >= 1) {
       state.heroes.forEach((target, ti) => {
-        if (target.fallen || target.downed) out.push({ command: { kind: 'firstAid', heroIndex: hi, targetIndex: ti }, label: `First Aid on ${target.record.name} (${h.record.name})`, enabled: g.kind === 'rest' || state.floor.revivesLeft > 0, reason: state.floor.revivesLeft > 0 ? undefined : 'no revives left this floor' })
+        if ((target.fallen && !isMortal(state)) || target.downed) out.push({ command: { kind: 'firstAid', heroIndex: hi, targetIndex: ti }, label: `First Aid on ${target.record.name} (${h.record.name})`, enabled: g.kind === 'rest' || state.floor.revivesLeft > 0, reason: state.floor.revivesLeft > 0 ? undefined : 'no revives left this floor' })
       })
     }
     if (h.record.petInstance) {
       for (const s of ['fierce', 'guard', 'mend', 'forage'] as const) if (s !== h.record.petInstance.stance) out.push({ command: { kind: 'stance', heroIndex: hi, stance: s }, label: `${h.record.petInstance.name}: ${s} stance`, enabled: true })
     }
   })
+  // D-089: a healer of the raise level raises one of the dead the party carries (Mortal only).
+  if (isMortal(state)) {
+    const r = t.death.raise
+    state.heroes.forEach((healer, hi) => {
+      if (!canRaise(content, healer)) return
+      state.heroes.forEach((target, ti) => {
+        if (!target.fallen) return
+        const used = state.floor.raisesUsed[String(hi)] ?? 0
+        const reason = used >= r.perHealerPerFloor ? `${healer.record.name} has raised someone on this floor already` : healer.poolPercent < r.healerPoolPercent ? `${healer.record.name} needs ${r.healerPoolPercent}% of their pool` : undefined
+        out.push({ command: { kind: 'raise', heroIndex: hi, targetIndex: ti }, label: `Raise ${target.record.name} (${healer.record.name}; ${target.record.name} loses ${r.levelLoss} level${r.levelLoss === 1 ? '' : 's'})`, enabled: !reason, reason })
+      })
+    })
+  }
   rs.merchant?.forEach((o, i) => {
     if (o.soldOut) return
     const def = content.items.get(o.itemId)
@@ -1353,7 +1400,7 @@ export function stepDelve(content: Content, state: DelveState, command: DelveCom
       const pick = choosePolicyCommand(state.options.policy, state, actions, policyRng(state))
       state.commandLog.pop()
       save(state, rng)
-      if (!pick) return state
+      if (!pick || pick.kind === 'auto') return state
       return stepDelve(content, state, pick)
     }
     case 'fight': {
@@ -1384,7 +1431,7 @@ export function stepDelve(content: Content, state: DelveState, command: DelveCom
       const crawlway = door === undefined && state.floor.shortcutTo === command.toRoomId && rs.roomId === state.floor.graph.secretId
       if (!door && !crawlway) throw new Error('no such door')
       if (door) {
-        if (door.secret && !rs.secretRevealed) throw new Error('hidden door')
+        if (door.secret && !secretDoorKnown(state, rs.roomId, door.to)) throw new Error('hidden door')
         if (door.locked && !state.floor.hasKey) throw new Error('locked')
         const blocking = rs.traps.find((tr) => tr.blocksDoorTo === door.to && !tr.disarmed && !tr.triggered)
         if (blocking) throw new Error('a trap blocks the door')
@@ -1478,8 +1525,11 @@ export function stepDelve(content: Content, state: DelveState, command: DelveCom
       rs.restUsed = true
       for (const h of state.heroes) {
         if (h.fallen) {
-          h.fallen = false
-          h.hpPercent = t.death.postFightReviveHpPercent
+          // D-088: a rest raises nobody under Mortal.
+          if (!isMortal(state)) {
+            h.fallen = false
+            h.hpPercent = t.death.postFightReviveHpPercent
+          }
         } else h.hpPercent = Math.min(100, h.hpPercent + t.exploration.rest.restorePercent)
         h.poolPercent = Math.min(100, h.poolPercent + t.exploration.rest.restorePercent)
         if (command.treat && h.record.petInstance && !h.treatUsed) h.treatUsed = true
@@ -1548,10 +1598,34 @@ export function stepDelve(content: Content, state: DelveState, command: DelveCom
       logEvent(state, 'item', `${h.record.name} uses ${name}${texts.length ? `: ${texts.join(', ')}` : ''}`)
       break
     }
+    case 'raise': {
+      if (state.phase.kind !== 'room') throw new Error('raise the dead between fights')
+      if (!isMortal(state)) throw new Error('nobody is dead under the Sheltered rule')
+      const r = t.death.raise
+      const healer = state.heroes[command.heroIndex]
+      const target = state.heroes[command.targetIndex]
+      if (!healer || !target || !target.fallen) throw new Error('nobody to raise')
+      if (!canRaise(content, healer)) throw new Error(`a healer of level ${r.healerMinLevel} with a revive skill raises the dead`)
+      const key = String(command.heroIndex)
+      if ((state.floor.raisesUsed[key] ?? 0) >= r.perHealerPerFloor) throw new Error('once per healer per floor')
+      if (healer.poolPercent < r.healerPoolPercent) throw new Error('not enough pool')
+      healer.poolPercent -= r.healerPoolPercent
+      state.floor.raisesUsed[key] = (state.floor.raisesUsed[key] ?? 0) + 1
+      const before = target.record.level
+      target.record = loseLevels(content, t, target.record, r.levelLoss)
+      target.fallen = false
+      target.downed = false
+      target.hpPercent = r.hpPercent
+      state.stats.raises += 1
+      tickClock(content, state, r.clockTicks, rng)
+      logEvent(state, 'raise', `${healer.record.name} raises ${target.record.name} from the dead (level ${before} → ${target.record.level})`, { healer: healer.record.id, target: target.record.id, from: before, to: target.record.level })
+      break
+    }
     case 'firstAid': {
       const h = state.heroes[command.heroIndex]
       const target = state.heroes[command.targetIndex]
       if (!h || !target || (!target.fallen && !target.downed)) throw new Error('nothing to do')
+      if (target.fallen && isMortal(state)) throw new Error('First Aid cannot raise the dead')
       const inRest = graphRoom(state, state.floor.currentRoomId).kind === 'rest'
       if (!inRest) {
         if (state.floor.revivesLeft <= 0) throw new Error('no revives left')

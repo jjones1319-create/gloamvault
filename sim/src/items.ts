@@ -133,6 +133,21 @@ export function rollAffixes(content: Content, rng: Rng, def: ItemDef): RolledAff
 // Effective lines (03 §6.2 +N, §6.4 bands)
 // ---------------------------------------------------------------------------------------------------------------
 
+/** Weapon types any class may hold in the off hand (08 §1: daggers are "dual", throwing knives "may be held off-hand"). */
+const OFF_HAND_WEAPON_TYPES: ReadonlySet<string> = new Set(['dagger', 'throwingKnife'])
+
+/**
+ * True when the item may go in the off hand (03 §6.1 the hand rule; 08 §1): a shield or a focus, a dual weapon
+ * (dagger, throwing knives), a hand crossbow, or a shortsword in a Blade's hand. Two-handed weapons never.
+ */
+export function canHoldOffHand(def: ItemDef, classId: string): boolean {
+  if (def.slot === 'offHand') return true
+  if (def.kind !== 'weapon' || def.hands !== 1) return false
+  if (def.weaponType !== null && OFF_HAND_WEAPON_TYPES.has(def.weaponType)) return true
+  if (def.weaponType === 'crossbow' && def.id.endsWith('hand-crossbow')) return true
+  return classId === 'blade' && def.weaponType === 'sword' && def.id.endsWith('shortsword')
+}
+
 export interface EffectiveItemStats {
   /** Flat derived-stat lines: base × +N × band, plus flat affix lines × band. */
   stats: Partial<Record<DerivedStat, number>>

@@ -26,8 +26,31 @@ const SHOTS: Shot[] = [
   { name: 'settings', hash: '#settings' },
   { name: 'settings-large-text', hash: '#settings', settings: { textSize: 'large' } },
   { name: 'phone', hash: '#phone' },
-  { name: 'deep-link-pending', hash: '#delve=gravehollow&zone=1&seed=17&party=warden,mender&auto=1' },
   { name: 'title-portrait', hash: '#title', portrait: true },
+  // New game asks how death works first (D-088).
+  { name: 'title-death-rule', hash: '#title', settings: { installCardDismissed: true }, act: async (page) => page.getByTestId('new-game').click() },
+  // Phase 4: the game. `demo=1` is an ephemeral level-1 Warden with gold and an egg; a delve link with a seed is an ephemeral party.
+  { name: 'new-hero', hash: '#new-hero' },
+  { name: 'town', hash: '#town&demo=1' },
+  { name: 'town-waystone', hash: '#town&place=waystone&demo=1' },
+  { name: 'town-blacksmith', hash: '#town&place=blacksmith&demo=1' },
+  { name: 'town-skills', hash: '#town&place=skills&demo=1' },
+  { name: 'town-curio', hash: '#town&place=curio&demo=1' },
+  { name: 'town-inn', hash: '#town&place=inn&demo=1' },
+  // James's direction during Phase 4 (D-088–D-092): the Shrine, the Wayfarer Chest's odds, the Stables and the Bank.
+  { name: 'town-shrine', hash: '#town&place=shrine&demo=1' },
+  { name: 'town-curio-wayfarer-odds', hash: '#town&place=curio&demo=1', act: async (page) => page.getByTestId('cm-odds-standard-wayfarer-chest').click() },
+  { name: 'town-stables', hash: '#town&place=stables&demo=1' },
+  { name: 'town-bank', hash: '#town&place=bank&demo=1' },
+  { name: 'hero-pet', hash: '#hero=hero-1&tab=pet&demo=1' },
+  { name: 'hero-wayfarer', hash: '#hero=hero-2&tab=status&demo=1' },
+  { name: 'hero-status', hash: '#hero=hero-1&tab=status&demo=1' },
+  { name: 'hero-gear', hash: '#hero=hero-1&tab=gear&demo=1' },
+  { name: 'hero-skills', hash: '#hero=hero-1&tab=skills&demo=1' },
+  { name: 'delve-room', hash: '#delve=gravehollow&zone=1&seed=17&party=warden,mender' },
+  { name: 'delve-room-perf', hash: '#delve=gravehollow&zone=1&seed=17&party=warden,mender', settings: { perfOverlay: true, installCardDismissed: true } },
+  { name: 'delve-fight', hash: '#delve=gravehollow&zone=1&seed=17&party=warden,mender&auto=1' },
+  { name: 'delve-fight-four', hash: '#delve=gravehollow&zone=1&seed=21&party=warden,blade,mender,arcanist&level=5&auto=1' },
 ]
 
 const args = process.argv.slice(2)
@@ -35,7 +58,8 @@ const skipBuild = args.includes('--skip-build')
 const onlyIdx = args.indexOf('--only')
 const only = onlyIdx >= 0 ? new Set((args[onlyIdx + 1] ?? '').split(',').filter(Boolean)) : null
 const OUT = join('client', 'shots')
-const PORT = 4173
+/** The preview port: 4173, or `GLOAMVAULT_PORT` when another project on the machine holds it. */
+const PORT = Number(process.env.GLOAMVAULT_PORT ?? 4173)
 const BASE = '/gloamvault/'
 
 mkdirSync(OUT, { recursive: true })
@@ -62,6 +86,9 @@ try {
       isMobile: true,
       hasTouch: true,
       userAgent: 'Mozilla/5.0 (Linux; Android 16; SM-S938B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Mobile Safari/537.36',
+      // Every shot is a fresh install, so the service worker's one-time "Ready to play offline" note would cover the top
+      // bar in each picture; the screens are the subject here (the e2e smoke keeps the worker).
+      serviceWorkers: 'block',
     })
     const page = await context.newPage()
     const errors: string[] = []

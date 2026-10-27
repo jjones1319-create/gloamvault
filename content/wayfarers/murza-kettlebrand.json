@@ -1,0 +1,19 @@
+{
+  "id": "murza-kettlebrand",
+  "name": "Murza Kettlebrand",
+  "speciesId": "orc",
+  "classId": "warden",
+  "grade": "C",
+  "freePoints": {
+    "strength": 3,
+    "vitality": 2,
+    "endurance": 2
+  },
+  "starterSkillIds": [
+    "warden-shield-slam",
+    "warden-provoke",
+    "warden-rallying-shout"
+  ],
+  "aiRule": "IF self HP < 30% THEN item small hp potion on self; IF ally HP < 40% THEN rallying shout; IF allies count > 1 AND ally HP < 60% THEN provoke; ELSE shield slam front enemy",
+  "bio": "Carries a grandmother's dented shield and every grudge it ever earned."
+}

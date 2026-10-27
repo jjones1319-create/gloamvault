@@ -1,6 +1,6 @@
 # 10 — Tech Plan
 
-*Last updated 2026-10-27 · rev. 3 (Claude; rev. 2 after Phase 1 built the skeleton: the §3 layout notes on the Vite root, the three TypeScript projects and Node-direct tools, and the §7 screenshot viewport — D-048, D-052; rev. 3 after Phase 2 built the sim: the §3 module map). The engine decision is D-002 in `13-DECISIONS.md`; the research behind it is `docs/research/2026-10-26-tech-engine-android-coop.md` (which recommended Godot + APK under an "APK on GitHub" framing — §1 below says why the web path wins for James specifically).*
+*Last updated 2026-10-27 · rev. 4 (Phase 4: the town, the save, the screens and the client map as built; James's death and party rules, D-087–D-094) · rev. 3 (Claude; rev. 2 after Phase 1 built the skeleton: the §3 layout notes on the Vite root, the three TypeScript projects and Node-direct tools, and the §7 screenshot viewport — D-048, D-052; rev. 3 after Phase 2 built the sim: the §3 module map). The engine decision is D-002 in `13-DECISIONS.md`; the research behind it is `docs/research/2026-10-26-tech-engine-android-coop.md` (which recommended Godot + APK under an "APK on GitHub" framing — §1 below says why the web path wins for James specifically).*
 
 ## 1. The decision: a web app installed from GitHub Pages
 
@@ -79,6 +79,25 @@ Rules: `sim/` never imports `client/`; `client/` reads sim state and sends comma
 
 Tools: `tools/sim/run.ts` (`npm run sim`), `tools/balance/run.ts` (`npm run balance` → `tools/balance/out/` + `docs/balance/`), `tools/sim/loadContent.ts` (the fs loader); the Phase 2 fixture content and its assembler live in `sim/test/fixtures/`.
 
+**Phase 4 adds** (the playable slice; D-087–D-094): in `sim/src/`, `town.ts` (the profile and every town action: the purse and the bank, the roster with the chosen hero and wayfarers, the party, the dead at the Shrine, legacies and the Memorial, start and settle a delve, the Blacksmith, the Skill Hall, the Curio Merchant, the Stables, the Quest Board), `wayfarers.ts` (the Wayfarer Chest's cast, odds and draw), `threat.ts` (the threat read), `armory.ts` (auto-equip and the gear verdict); `fight.ts` gains `turnForecast` and `fleeChance`, `delve.ts` the Mortal rule and the raise, `hero.ts` `loseLevels` and `addBattleXp`. The client as built:
+
+| Where | What |
+|---|---|
+| `client/src/game/session.ts` | the one door the screens go through: the profile, the delve and its version as signals; `act` / `actWith` for town actions (a TownError becomes a toast); delve stepping with the command log and replay on reload; deep links (`#delve=…&seed=…&party=…&level=…&learn=…&death=…&auto=1`) and the demo town (`#town&demo=1`), both ephemeral |
+| `client/src/save/` | `db.ts` (idb-keyval under `gloamvault/`, the erase marker), `profile.ts` (valibot envelope, repair against the loaded content, three rotating backups, export and import), `settings.ts` |
+| `client/src/ui/app.tsx`, `router.ts`, `main.tsx` | hash routes (title, settings, phone, new-hero, town, hero, delve), the ready flag the shots wait for, the boot (deep link, demo or save) |
+| `client/src/ui/kit/` | the shared kit: Page, Btn, Meter, WearPips, Grade, Tabs, Modal, Tile, Section, Chip, Stat, the gold badge, toasts |
+| `client/src/ui/screens/Title.tsx` | New game (the death rule first, D-088) or Continue |
+| `client/src/ui/screens/NewHero.tsx`, `newhero/` | the selection: species, class, three skills, the egg (first hero only), points and name, review (D-090) |
+| `client/src/ui/screens/Hero.tsx`, `hero/` | status with the XP bar, gear with eleven slots and auto-equip, skills in three school columns with the loadout and the AI-rule editor, the pet |
+| `client/src/ui/screens/Town.tsx`, `town/` | Emberfall's hub and its nine places: Waystone (floors with their threat), Blacksmith, Skill Hall, Curio Merchant (odds, pity, the Wayfarer Chest), Stables, Bank, Quest Board, Lantern Inn (roster and party), Ember Shrine (raise, lay to rest, legacies, the Memorial) |
+| `client/src/ui/screens/Delve.tsx`, `delve/` | the delve overlay: header (floor, light, clock, threat), party strip, minimap and the big map, room panel with grouped actions, curio, result and end cards |
+| `client/src/ui/screens/delve/FightHud.tsx`, `delve/fight/` | the turn-based fight HUD: whose turn, the strip of 8, cards with statuses, skills, Guard / Item / Row / Ultimate / Flee (with its chance), target taps, pet stance, Auto and the rule editor, 1× / 2× / 3× playback cued into the scene, the threat chip |
+| `client/src/game/fightView.ts` | pure helpers the HUD reads (beats, presence, strip chips, targets) |
+| `client/src/scene/room.ts`, `scene/room/`, `ui/components/RoomStage.tsx`, `scene/sceneBus.ts` | the grey-box 3D room from its template, capsule heroes, pets and monsters, the light rig driven by the light meter, the fight's cues |
+
+`tools/shots/dev-shot.ts` shoots one deep link from a running dev server (the passes used it); `tools/content/gen-wayfarers.ts` writes the cast; `tools/balance/debug-seed.ts` replays one runner seed step by step.
+
 As built in Phase 1 (D-048): one `package.json` at the root (no workspaces); the **Vite root is `client/`** (`client/index.html`, `client/src`, `client/public`; `dist/` at the repo root); `sim/` and `content/` are imported by relative path. **Three TypeScript projects** under one `tsc -b`: `tsconfig.sim.json` compiles `sim/src` with `lib: ["ES2023"]` and no DOM types, so a browser call in the sim is a type error; `tsconfig.client.json` (DOM, Preact JSX); `tsconfig.tools.json` (`tools/**`, `sim/test`, `e2e`, the configs). Tools run on **Node 24 directly** (`node tools/lint/index.ts`; type stripping, so imports carry `.ts` and the code uses only erasable syntax), no `tsx`. The sim's `Tuning` type is derived from `content/tuning.json` itself (`typeof` on a type-only import) so a renamed key fails the typecheck; the sim never reads the file at runtime — the client (`import.meta.glob`) and the tools (`readFileSync`) load content and pass it in.
 
 ## 4. Rendering budgets for the Galaxy S25 Ultra (WebGL2 in Chrome)
@@ -113,7 +132,7 @@ Pacing rules live in the rulebook §10.2 (grouped decision windows, 20 s timer, 
 
 ## 6. Saves and data
 
-- Profile (banked gold, armory, heroes, pets, settings, unlocked Waystones) in IndexedDB under `gloamvault/profile`; a delve in progress as `seed + command log + content version` (tiny, replayable).
+- Profile (the death rule, the roster with the chosen hero and wayfarers, the party, the purse and the bank, the armory, materials, eggs and stabled pets, chest pity and Tome bags, the dead at the Shrine, legacies, the Memorial, the tower's progress, the town's RNG) in IndexedDB under `gloamvault/profile`, three rotating backups (`gloamvault/profile-backup-0..2`), an erase marker; a delve in progress as its options, the party's starting records and the command log (tiny, replayed on reload). Settings live apart under `gloamvault/settings`.
 - `SAVE_VERSION` bumped on every schema change with a migration and a fixture test; everything loaded is validated and clamped; never crash on bad data.
 - Backup: Settings → *Share save…* / *Download save (.json)* / *Import a save…*; a reminder every ~7 days of play. A hero can be shared by code/QR later (Wildsong's `shareCode` pattern).
 - **Wildsong Ranch import** (Segment 3, `14-IDEAS.md`): read a Wildsong share code (its `src/save/shareCode.ts` format) → map LIF/POW/INT/SKI/SPD/DEF onto a pet of grade ≤ A → tag *Ranch-raised*. One-way.

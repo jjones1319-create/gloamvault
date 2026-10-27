@@ -1,0 +1,19 @@
+{
+  "id": "rokk-halfmoon",
+  "name": "Rokk Halfmoon",
+  "speciesId": "orc",
+  "classId": "blade",
+  "grade": "D",
+  "freePoints": {
+    "strength": 3,
+    "vitality": 2,
+    "agility": 1
+  },
+  "starterSkillIds": [
+    "blade-twin-cut",
+    "blade-reckless-swing",
+    "blade-red-thirst"
+  ],
+  "aiRule": "IF self HP < 30% THEN item small hp potion on self; IF self HP > 60% THEN reckless swing on front enemy; ELSE twin cut on weakest enemy",
+  "bio": "Fights with two blades because the first one kept getting stuck in things."
+}

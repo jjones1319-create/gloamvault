@@ -1,0 +1,19 @@
+{
+  "id": "tansy-brightfinger",
+  "name": "Tansy Brightfinger",
+  "speciesId": "halfling",
+  "classId": "shade",
+  "grade": "C",
+  "freePoints": {
+    "agility": 3,
+    "luck": 2,
+    "perception": 2
+  },
+  "starterSkillIds": [
+    "shade-veil",
+    "shade-backstab",
+    "shade-toxic-jab"
+  ],
+  "aiRule": null,
+  "bio": "Nobody watches the halfling. That is the whole trick."
+}

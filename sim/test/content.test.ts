@@ -148,6 +148,7 @@ describe('loadExamplesAsContent', () => {
       'loot-table': 1,
       contract: 1,
       status: 1,
+      wayfarer: 1,
       tuning: 1,
     })
     // Every example file but hero.example.json is one record (templates are inline in the dungeon example).

@@ -1,5 +1,6 @@
 import { decide, decideAll, parseBehavior, parseRule, type Action, type Condition, type TargetSelector } from './ai.ts'
 import type { Content } from './content.ts'
+import { actorHands, requirementProblemFor } from './requirements.ts'
 import { alliesOf, applyLine, canAct, canFlee, canSwapRow, canUseSkills, enemiesOf, gainMomentum, heal, hookCtx, isActive, log, lowestHpPercent, reachableEnemies, releaseHolds, speedOf, statOf, type EffectContext, type LineSource } from './effects.ts'
 import { activeHooks, dropTurnStartHooks } from './hooks.ts'
 import type { Actor, FightCommand, FightEvent, FightOptions, FightState, LegalFightAction, PendingAction, Side } from './fight-types.ts'
@@ -9,7 +10,7 @@ import { customHandler } from './skills/custom/index.ts'
 import { linesAtRank } from './skill-lines.ts'
 import { actionSkippedBy, countDownStatuses, pendingTicks } from './statuses.ts'
 import { clamp, roundHalfUp } from './stats.ts'
-import { advance, beginCharge, finishCharge, initialEnergy, interruptCharge, type TimelineActor } from './timeline.ts'
+import { advance, beginCharge, finishCharge, forecast, initialEnergy, interruptCharge, type TimelineActor } from './timeline.ts'
 import type { Tuning } from './tuning.ts'
 import type { Effect, MonsterAttack, SkillDef } from './types/content.ts'
 import type { Stance, Target } from './types/enums.ts'
@@ -107,6 +108,16 @@ export function runFight(content: Content, t: Tuning, state: FightState): FightS
   }
   state.rng = rng.state
   return state
+}
+
+/**
+ * The next `count` turns as the timeline sees them now (the HUD's strip of 8, 03 §3.1): a dry run of the energy queue
+ * at each actor's current Speed and a normal weight per turn; the fight's RNG is not touched.
+ */
+export function turnForecast(content: Content, t: Tuning, state: FightState, count = 8): string[] {
+  const ctx = makeCtx(content, t, state, new Rng(state.rng))
+  const views: TimelineActor[] = state.actors.filter(onTimeline).map((a) => ({ id: a.id, speed: speedOf(ctx, a), energy: a.energy, alive: true, charging: a.charging ? { weight: a.charging.weight, chargePaid: a.charging.chargePaid } : null }))
+  return forecast(views, count, t.combat.weights.normal)
 }
 
 function takeTurn(ctx: EffectContext, actor: Actor): void {
@@ -528,16 +539,31 @@ function doItem(ctx: EffectContext, actor: Actor, instanceId: string, target: Ac
   spendWeight(ctx, actor, t.combat.weights.item)
 }
 
-function doFlee(ctx: EffectContext, actor: Actor): void {
-  const { t, state, rng } = ctx
-  state.counters.fleeAttempts += 1
+/** 03 §12.1: 50% + the party's average Speed − the enemies', + the best Smoke Pellet bonus, clamped 5–95%. */
+function fleeChanceOf(ctx: EffectContext, actor: Actor): number {
+  const { t, state } = ctx
   const heroes = state.actors.filter((a) => a.side === 'party' && isActive(a))
   const enemies = enemiesOf(state, actor)
   const avg = (list: Actor[]) => (list.length ? roundHalfUp(list.reduce((s, a) => s + speedOf(ctx, a), 0) / list.length) : 100)
   // A Smoke Pellet (flee-chance-bonus hooks on the party): the best single bonus counts.
   let bonus = 0
   for (const h of heroes) for (const hk of h.hooks) if (hk.customId === 'flee-chance-bonus') bonus = Math.max(bonus, hk.line.amount ?? 0)
-  const chance = clamp(t.death.flee.basePercent + avg(heroes) - avg(enemies) + bonus, 5, 95)
+  return clamp(t.death.flee.basePercent + avg(heroes) - avg(enemies) + bonus, 5, 95)
+}
+
+/** The party's chance to flee now (D-092: the Flee button shows it), or 0 when this fight cannot be fled. */
+export function fleeChance(content: Content, t: Tuning, state: FightState): number {
+  const ctx = makeCtx(content, t, state, new Rng(state.rng))
+  const hero = state.actors.find((a) => a.side === 'party' && a.kind === 'hero' && isActive(a))
+  if (!hero || !canFlee(ctx, hero)) return 0
+  return fleeChanceOf(ctx, hero)
+}
+
+function doFlee(ctx: EffectContext, actor: Actor): void {
+  const { t, state, rng } = ctx
+  state.counters.fleeAttempts += 1
+  const heroes = state.actors.filter((a) => a.side === 'party' && isActive(a))
+  const chance = fleeChanceOf(ctx, actor)
   if (rng.pct(chance)) {
     for (const h of state.actors.filter((a) => a.side === 'party')) h.fled = true
     log(ctx, { kind: 'flee', actorId: actor.id, text: `The party flees (${chance}%)` })
@@ -801,6 +827,7 @@ function heroActionFrom(ctx: EffectContext, actor: Actor, action: Action, strict
   const usable = (skill: SkillDef): boolean => {
     if (!canUseSkills(ctx, actor)) return false
     if (skill.type !== 'active') return false
+    if (requirementProblemFor(skill, actorHands(h))) return false
     const cost = skillCost(ctx.t, skill, h.ranks[skill.id] ?? 1)
     return actor.pool >= cost
   }
@@ -969,7 +996,9 @@ export function legalFightActions(content: Content, t: Tuning, state: FightState
     const needsEnemy = skill.target.startsWith('enemy') || skill.target === 'allEnemies'
     const targets = needsEnemy ? reachableEnemies(ctx, actor, reach || skill.tags.includes('reach')).map((e) => e.id) : skill.target === 'ally' || skill.target === 'allyLowest' ? alliesOf(state, actor).map((a) => a.id) : skill.target === 'downedAlly' ? state.actors.filter((a) => a.side === actor.side && a.downed).map((a) => a.id) : []
     let reason: string | undefined
+    const gear = requirementProblemFor(skill, actorHands(h))
     if (silenced) reason = 'silenced'
+    else if (gear) reason = gear
     else if (actor.pool < cost) reason = `needs ${cost} ${actor.poolKind}`
     else if (needsEnemy && targets.length === 0) reason = 'nothing in reach'
     out.push({ command: { kind: 'skill', slot, targetId: targets[0] ?? null }, label: `${skill.name} (${cost})`, targets, enabled: !reason, reason })
@@ -1033,6 +1062,8 @@ function resolveCommand(ctx: EffectContext, actor: Actor, command: FightCommand)
       const skill = id ? ctx.content.skills.get(id) : undefined
       if (!skill || skill.type !== 'active') throw new Error('no skill in that slot')
       if (!canUseSkills(ctx, actor)) throw new Error('silenced')
+      const gear = requirementProblemFor(skill, actorHands(h))
+      if (gear) throw new Error(gear)
       const rank = h.ranks[skill.id] ?? 1
       if (actor.pool < skillCost(ctx.t, skill, rank)) throw new Error('not enough pool')
       return { kind: 'skill', skill, rank, target: need(command.targetId, true), slot: command.slot }

@@ -84,6 +84,7 @@ const EXAMPLE_SCHEMA_NAMES: ReadonlyMap<string, ContentKind | null> = new Map<st
   ['species', 'species'],
   ['status', 'status'],
   ['tuning', 'tuning'],
+  ['wayfarer', 'wayfarer'],
 ])
 
 /** The content kind of an example file by its name, or null when it is not content (hero, common, not an example). */

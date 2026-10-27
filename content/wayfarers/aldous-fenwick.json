@@ -1,0 +1,19 @@
+{
+  "id": "aldous-fenwick",
+  "name": "Aldous Fenwick",
+  "speciesId": "human",
+  "classId": "arcanist",
+  "grade": "C",
+  "freePoints": {
+    "wisdom": 3,
+    "perception": 2,
+    "willpower": 2
+  },
+  "starterSkillIds": [
+    "arcanist-frostbolt",
+    "arcanist-frost-floor",
+    "arcanist-shatter"
+  ],
+  "aiRule": "IF self HP < 30% THEN item small hp potion on self; IF enemies count > 2 THEN frost floor; ELSE frostbolt on strongest enemy",
+  "bio": "A failed tutor with three unpaid debts and one very good frost spell."
+}

@@ -1,0 +1,423 @@
+/* The UI kit (kit.tsx). Landscape phone first: 892 × 412 CSS px is the reference viewport (D-052). */
+:root {
+  --grade-f: #9b9488;
+  --grade-e: #7bd389;
+  --grade-d: #5fa8ff;
+  --grade-c: #c58cff;
+  --grade-b: #ffb347;
+  --grade-a: #ff7a59;
+  --grade-s: #ffd84d;
+  --grade-ss: #ff5ea8;
+  --grade-god: #ffffff;
+  --hp: #e25555;
+  --pool-stamina: #e6b54a;
+  --pool-mana: #5b8cff;
+  --xp: #b98cff;
+  --light: #ffcf73;
+  --gap: 10px;
+}
+
+.page__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 8px calc(12px + var(--sar)) calc(12px + var(--sab)) calc(12px + var(--sal));
+}
+.topbar__spacer {
+  width: var(--tap);
+}
+.topbar__actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* buttons: the base .btn is in base.css; tones here */
+.btn--plain {
+}
+.btn--quiet {
+  background: transparent;
+  border-color: transparent;
+  color: var(--ink-dim);
+}
+.btn--danger {
+  border-color: var(--bad);
+  color: var(--bad);
+}
+
+/* gold */
+.gold {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-variant-numeric: tabular-nums;
+  color: var(--ember);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.gold__coin {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #ffe7a0, #e0a020 60%, #8a5a00);
+  box-shadow: 0 0 0 1px #5a3a00;
+  flex: none;
+}
+.gold__bank {
+  color: var(--ink-dim);
+  font-weight: 400;
+  font-size: var(--fs-small);
+}
+
+/* meters */
+.meter {
+  position: relative;
+  height: 20px;
+  border-radius: 6px;
+  background: #0b090d;
+  border: 1px solid var(--line);
+  overflow: hidden;
+  min-width: 80px;
+}
+.meter--compact {
+  height: 7px;
+  min-width: 40px;
+  border-radius: 4px;
+}
+.meter__fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--hp);
+  transition: width 0.25s ease-out;
+}
+html[data-reduce-motion='1'] .meter__fill {
+  transition: none;
+}
+.meter--pool .meter__fill {
+  background: var(--pool-mana);
+}
+.meter--xp .meter__fill {
+  background: var(--xp);
+}
+.meter--light .meter__fill {
+  background: linear-gradient(90deg, #6b4a1a, var(--light));
+}
+.meter--momentum .meter__fill {
+  background: linear-gradient(90deg, #8a3dff, #ff5ea8);
+}
+.meter--enemy .meter__fill {
+  background: #c94040;
+}
+.meter__text {
+  position: relative;
+  display: block;
+  font-size: 14px;
+  line-height: 18px;
+  padding: 0 6px;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 1px 1px #000;
+}
+
+/* wear pips */
+.pips {
+  display: inline-flex;
+  gap: 2px;
+  vertical-align: middle;
+}
+.pips__pip {
+  width: 7px;
+  height: 10px;
+  border-radius: 2px;
+  background: #2a2430;
+}
+.pips--good .pips__pip--on {
+  background: var(--good);
+}
+.pips--warn .pips__pip--on {
+  background: #e6b54a;
+}
+.pips--bad .pips__pip--on {
+  background: var(--bad);
+}
+.pips--broken .pips__pip {
+  background: #4a4450;
+}
+
+/* grades */
+.grade {
+  display: inline-block;
+  min-width: 24px;
+  padding: 0 5px;
+  border-radius: 5px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 20px;
+  color: #120f14;
+  background: var(--grade-f);
+}
+.grade--e {
+  background: var(--grade-e);
+}
+.grade--d {
+  background: var(--grade-d);
+}
+.grade--c {
+  background: var(--grade-c);
+}
+.grade--b {
+  background: var(--grade-b);
+}
+.grade--a {
+  background: var(--grade-a);
+}
+.grade--s {
+  background: var(--grade-s);
+}
+.grade--ss {
+  background: var(--grade-ss);
+}
+.grade--god {
+  background: var(--grade-god);
+}
+
+/* tabs */
+.tabs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+.tabs__tab {
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--bg-raised);
+  color: var(--ink-dim);
+  white-space: nowrap;
+}
+.tabs__tab--on {
+  color: var(--ink);
+  border-color: var(--ember);
+  background: #2a1e14;
+}
+
+/* modal */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
+  place-items: center;
+  background: rgba(8, 6, 10, 0.72);
+  padding: calc(12px + var(--sat)) calc(12px + var(--sar)) calc(12px + var(--sab)) calc(12px + var(--sal));
+}
+.modal__card {
+  width: min(560px, 100%);
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+}
+.modal__title {
+  margin: 0;
+  padding: 12px 16px 6px;
+  font-size: var(--fs-h1);
+}
+.modal__body {
+  min-height: 0;
+  padding: 4px 16px 10px;
+  overflow-y: auto;
+}
+.modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 8px 12px 12px;
+  flex-wrap: wrap;
+}
+
+/* tiles */
+.tile {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  min-height: 64px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--bg-raised);
+  text-align: left;
+  color: var(--ink);
+}
+.tile:disabled {
+  opacity: 0.45;
+}
+.tile--on {
+  border-color: var(--ember);
+  background: #2a1e14;
+  box-shadow: 0 0 0 1px var(--ember) inset;
+}
+.tile__icon {
+  font-size: 22px;
+  line-height: 1;
+}
+.tile__title {
+  font-weight: 600;
+}
+.tile__sub {
+  font-size: var(--fs-small);
+  color: var(--ink-dim);
+}
+.tile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--gap);
+}
+
+/* sections and lists */
+.section {
+  margin-bottom: 14px;
+}
+.section__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.section__title {
+  margin: 0;
+  font-size: 15px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+.empty {
+  color: var(--ink-dim);
+  font-style: italic;
+  margin: 6px 0;
+}
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 14px;
+}
+.split--wide-left {
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+}
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.list__row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: var(--bg-raised);
+  border: 1px solid var(--line);
+}
+.list__row--on {
+  border-color: var(--ember);
+}
+.list__main {
+  flex: 1;
+  min-width: 0;
+}
+.list__sub {
+  display: block;
+  font-size: var(--fs-small);
+  color: var(--ink-dim);
+}
+.chip--label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 26px;
+  padding: 1px 10px;
+  border-radius: 13px;
+  font-size: var(--fs-small);
+  line-height: 1.3;
+  vertical-align: middle;
+  cursor: default;
+}
+.chip--label.chip--note {
+  padding: 1px 10px;
+}
+/* Settings' segmented choices (components/Toggle.tsx) are buttons: 44 px to tap. */
+.choice__options .chip {
+  min-height: 44px;
+}
+.chip--good {
+  border-color: var(--good);
+  color: var(--good);
+}
+.chip--bad {
+  border-color: var(--bad);
+  color: var(--bad);
+}
+.chip--warn {
+  border-color: #e6b54a;
+  color: #e6b54a;
+}
+
+/* stats */
+.stat {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 3px 0;
+  border-bottom: 1px dashed #2c2632;
+  font-size: var(--fs-small);
+}
+.stat__label {
+  color: var(--ink-dim);
+}
+.stat__value {
+  font-variant-numeric: tabular-nums;
+}
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 16px;
+}
+
+/* toasts */
+.toasts {
+  position: fixed;
+  left: 50%;
+  top: calc(56px + var(--sat));
+  transform: translateX(-50%);
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  pointer-events: none;
+  width: min(520px, 90vw);
+}
+.toasts__toast {
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #241d2a;
+  border: 1px solid var(--line);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  text-align: center;
+}
+.toasts__toast--good {
+  border-color: var(--good);
+}
+.toasts__toast--bad {
+  border-color: var(--bad);
+}

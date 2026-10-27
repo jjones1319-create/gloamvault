@@ -1,0 +1,19 @@
+{
+  "id": "saphrel-vey",
+  "name": "Saphrel Vey",
+  "speciesId": "draconid",
+  "classId": "blade",
+  "grade": "C",
+  "freePoints": {
+    "agility": 3,
+    "strength": 2,
+    "perception": 2
+  },
+  "starterSkillIds": [
+    "blade-twin-cut",
+    "blade-open-vein",
+    "blade-flowing-guard"
+  ],
+  "aiRule": null,
+  "bio": "A duelist from the ash-coasts who counts scars the way merchants count coins."
+}

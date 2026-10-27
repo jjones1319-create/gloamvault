@@ -103,8 +103,8 @@ function expectSchemaFail(r: LintResult, rel: string, instancePath: string, mess
 describe('the real content/', () => {
   const result = lintCorpus(repoRoot)
 
-  it('loads 18 schemas, each with an example, and the cross-file rules pass', () => {
-    expect(result.schemaCount).toBe(18)
+  it('loads 19 schemas, each with an example, and the cross-file rules pass', () => {
+    expect(result.schemaCount).toBe(19)
     const badSchemas = result.files.filter((f) => f.role === 'schema' && !f.ok)
     expect(badSchemas.map((f) => `${f.path}: ${f.errors.join('; ')}`)).toEqual([])
     expect(result.failures.map((x) => `${x.file}: ${x.rule}. ${x.message}`)).toEqual([])
@@ -120,7 +120,7 @@ describe('the real content/', () => {
     const bad = result.files.filter((f) => f.role === 'content' && !f.ok)
     expect(bad.map((f) => `${f.path}\n  ${f.errors.join('\n  ')}`)).toEqual([])
     expect(result.ok).toBe(true)
-    expect(formatResult(result).split('\n').at(-1)).toMatch(/^ALL GOOD: 18 schemas, \d+ files$/)
+    expect(formatResult(result).split('\n').at(-1)).toMatch(/^ALL GOOD: 19 schemas, \d+ files$/)
   })
 
   it('the CLI prints one line per file, the summary line, and exits with the result', () => {
@@ -135,7 +135,7 @@ describe('the real content/', () => {
     }
     const lines = stdout.trim().split('\n')
     expect(lines.filter((l) => /^(ok|FAIL) content\//.test(l)).length).toBe(result.files.length)
-    expect(lines.at(-1)).toMatch(/^(ALL GOOD: 18 schemas, \d+ files|\d+ failure\(s\))$/)
+    expect(lines.at(-1)).toMatch(/^(ALL GOOD: 19 schemas, \d+ files|\d+ failure\(s\))$/)
     expect(status).toBe(result.ok ? 0 : 1)
   })
 

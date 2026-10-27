@@ -1,7 +1,7 @@
 import type { Content } from './content.ts'
 import type { Actor, EquippedItem, FightRow, HeroActorData, HeroEquipment } from './fight-types.ts'
 import { installHook } from './hooks.ts'
-import { createItemInstance, effectiveItemStats } from './items.ts'
+import { canHoldOffHand, createItemInstance, effectiveItemStats } from './items.ts'
 import type { Rng } from './rng.ts'
 import { linesAtRank, rankEffectPercent } from './skill-lines.ts'
 import { battleXpForLevel, heroLevelForXp } from './xp.ts'
@@ -44,6 +44,8 @@ export interface CreateHeroInput {
   classId: string
   /** The six free creation points, at most 3 on one attribute (03 §2.3). */
   freePoints?: Partial<Record<Attribute, number>>
+  /** Points beyond the six: a wayfarer's grade (D-091, +1 per grade above D). */
+  bonusFreePoints?: number
   /** Three Tier I skills; the class's recommended three when omitted. */
   starterSkillIds?: readonly string[]
   /** The creation egg (03 §2.3: one of three at F); null for none yet. */
@@ -64,7 +66,7 @@ function requireSpecies(content: Content, id: string): SpeciesDef {
   return s
 }
 
-export function creationAttributes(t: Tuning, species: SpeciesDef, cls: ClassDef, freePoints: Partial<Record<Attribute, number>> = {}): AttributeValues {
+export function creationAttributes(t: Tuning, species: SpeciesDef, cls: ClassDef, freePoints: Partial<Record<Attribute, number>> = {}, bonusPoints = 0): AttributeValues {
   const out: Record<Attribute, number> = { ...ALL_TENS }
   let spent = 0
   for (const a of ATTRIBUTES) {
@@ -73,15 +75,17 @@ export function creationAttributes(t: Tuning, species: SpeciesDef, cls: ClassDef
     spent += free
     out[a] = t.attributes.base + (species.attributeMods[a] ?? 0) + (cls.attributeMods[a] ?? 0) + free
   }
-  if (spent > t.attributes.creation.freePoints) throw new Error(`only ${t.attributes.creation.freePoints} free points`)
+  if (spent > t.attributes.creation.freePoints + bonusPoints) throw new Error(`only ${t.attributes.creation.freePoints + bonusPoints} free points`)
   return out
 }
 
 const EMPTY_EQUIPMENT: Equipment = { mainHand: null, offHand: null, helmet: null, chest: null, legs: null, boots: null, gloves: null, ring: [null, null], talisman: null, relic: null }
 
 /** Puts a kit item where it goes: an equipment slot when it has one and the slot is free, else the bag (stacking). */
-function placeItem(equipment: Equipment, bag: ItemInstance[], def: ItemDef, inst: ItemInstance): Equipment {
+function placeItem(equipment: Equipment, bag: ItemInstance[], def: ItemDef, inst: ItemInstance, classId: string): Equipment {
   const slot = def.slot
+  // 08 §1: a second dual weapon (the Blade's kit dagger) is held in the off hand.
+  if (slot === 'mainHand' && equipment.mainHand !== null && equipment.offHand === null && canHoldOffHand(def, classId)) return { ...equipment, offHand: inst }
   if (slot && slot !== 'pet') {
     if (slot === 'ring') {
       if (equipment.ring[0] === null) return { ...equipment, ring: [inst, equipment.ring[1]] }
@@ -98,7 +102,7 @@ export function createHero(content: Content, t: Tuning, rng: Rng, input: CreateH
   const species = requireSpecies(content, input.speciesId)
   const cls = requireClass(content, input.classId)
   const rules = speciesRules(species)
-  const attributes = creationAttributes(t, species, cls, input.freePoints)
+  const attributes = creationAttributes(t, species, cls, input.freePoints, Math.max(0, input.bonusFreePoints ?? 0))
   const starters = input.starterSkillIds ?? cls.starterSkillIds
   if (starters.length !== 3) throw new Error('three starter skills')
   for (const id of starters) {
@@ -115,7 +119,7 @@ export function createHero(content: Content, t: Tuning, rng: Rng, input: CreateH
     if (!def) throw new Error(`starter kit item ${itemId} is missing`)
     // The kit is a unique id list; 08 §12's "2 Small HP Potions, 2 Torches" come from tuning's quantities (D-069).
     const quantity = def.consumable ? (kitQuantities[itemId] ?? 1) : 1
-    equipment = placeItem(equipment, bag, def, createItemInstance(content, rng, itemId, { quantity }))
+    equipment = placeItem(equipment, bag, def, createItemInstance(content, rng, itemId, { quantity }), cls.id)
   }
   const startRank = rules.fieldSkillStartRank ?? 1
   const fieldSkills = Object.fromEntries(
@@ -130,7 +134,11 @@ export function createHero(content: Content, t: Tuning, rng: Rng, input: CreateH
     if (!pet) throw new Error(`unknown pet ${input.eggPetId}`)
     petInstance = { petId: pet.id, name: input.petName ?? pet.name, grade: 'F', level: 1, xp: 0, bondStars: 0, traitRank: 1, stance: pet.roleLean, ranchImport: null }
   }
-  const loadout: Loadout = { actives: [starters[0] ?? null, starters[1] ?? null, starters[2] ?? null, null], passives: [null, null], stance: petInstance?.stance ?? 'fierce' }
+  // 03 §7.3: four active slots and two passive slots; a starter passive (the Blade's Flowing Guard, the Ranger's Keen
+  // Eyes) goes to a passive slot, the actives keep their order.
+  const starterActives = starters.filter((id) => content.skills.get(id)?.type !== 'passive')
+  const starterPassives = starters.filter((id) => content.skills.get(id)?.type === 'passive')
+  const loadout: Loadout = { actives: [starterActives[0] ?? null, starterActives[1] ?? null, starterActives[2] ?? null, null], passives: [starterPassives[0] ?? null, starterPassives[1] ?? null], stance: petInstance?.stance ?? 'fierce' }
   const skills = starters.map((skillId) => ({ skillId, rank: 1, xp: 0 }))
   if (rules.innateSkillId) skills.push({ skillId: rules.innateSkillId, rank: 1, xp: 0 })
   return {
@@ -472,6 +480,29 @@ export function applyBattleXpLevel(content: Content, t: Tuning, hero: HeroRecord
 /** A hero raised to a level with its growth applied (the balance runner's "grinded" heroes; a debug deep link). */
 export function heroAtLevel(content: Content, t: Tuning, hero: HeroRecord, level: number): HeroRecord {
   return applyBattleXpLevel(content, t, { ...hero, battleXp: Math.max(hero.battleXp, battleXpForLevel(t, level)) })
+}
+
+/**
+ * Takes levels back (D-089: a raise from the dead costs levels): exactly what those levels gave comes off — the
+ * class's attribute gains and the even-level Vitality, from the attributes and the creation values alike — and
+ * battle XP drops to the start of the new level. Skills and ranks, gear and use-grown attributes stay. Never below
+ * level 1 (a level-1 hero loses the XP toward level 2).
+ */
+export function loseLevels(content: Content, t: Tuning, hero: HeroRecord, levels: number): HeroRecord {
+  const to = Math.max(1, hero.level - Math.max(0, Math.floor(levels)))
+  const gains = to < hero.level ? levelUpGains(content, t, hero.classId, to, hero.level) : {}
+  const attributes = { ...hero.attributes }
+  const creationValues = { ...hero.creationValues }
+  for (const [a, v] of Object.entries(gains) as [Attribute, number][]) {
+    attributes[a] = Math.max(1, attributes[a] - v)
+    creationValues[a] = Math.max(1, creationValues[a] - v)
+  }
+  return { ...hero, level: to, battleXp: battleXpForLevel(t, to), attributes, creationValues }
+}
+
+/** Adds battle XP (a legacy, D-090) and applies the levels it reaches. */
+export function addBattleXp(content: Content, t: Tuning, hero: HeroRecord, xp: number): HeroRecord {
+  return applyBattleXpLevel(content, t, { ...hero, battleXp: hero.battleXp + Math.max(0, Math.floor(xp)) })
 }
 
 /** Superseded by D-082 (the level follows battle XP); the ranks' milestone reading of 03 §2.2 rev. 1. */

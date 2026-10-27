@@ -177,3 +177,8 @@ Where the owning doc is silent, the schemas take the simplest reading. Each is a
 - **Luck is never trainable** at the schema level: `skill.xpTags` and `hero.attributeXp` use `trainableAttribute`, the seven without Luck; a boss's `luck` reward is the one way it moves after creation.
 - **Gold on the hero** is the delve's unbanked stake only; banked gold is a profile field the hero schema does not own.
 - **`tuningNumber`** (`common`) is the shape of `content/tuning.json`, the balance runner's tables; no content schema uses it.
+
+## Wayfarers (D-091) and lint rule 34
+
+- `content/wayfarers/<id>.json` (schema `wayfarer.schema.json`): the Wayfarer Chest's cast, owned by `docs/04-CLASSES.md` §7 and written by `node tools/content/gen-wayfarers.ts` (edit the table, never the JSON). A chest of kind `wayfarer` (`chests/standard-wayfarer-chest.json`) has `dupeRule: "none"`, no sub-types, no Tome tiers and no Divine Shard.
+- **Rule 34:** each wayfarer's species and class exist; its three starter skills are Tier I skills of its class, not an Ultimate, at least one active and at most two passives; its creation points add up to 6 + 1 per grade above D; names are unique across the cast; and every grade a wayfarer chest's table gives a chance to has at least one wayfarer.
