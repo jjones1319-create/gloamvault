@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gloamvault.dev/schemas/status.schema.json",
+  "title": "Status",
+  "description": "One status effect from the standard set (03-GAME-DESIGN rev. 2 §3.5, the 27-row table), owning its numbers: when it ticks, how it stacks, what it does each tick or while held, and what cleanses it. One file per status under content/statuses/<id>.json; the id must be one of common's status enum and the folder must hold every enum value.",
+  "type": "object",
+  "properties": {
+    "id": { "$ref": "common.schema.json#/$defs/status" },
+    "name": { "type": "string", "minLength": 1 },
+    "description": { "type": "string", "description": "The tooltip line.", "minLength": 1 },
+    "kind": {
+      "type": "string",
+      "description": "The table's Kind column: dot/hot tick damage or healing; control removes or limits actions; buff/debuff move stats; mark raises damage taken or lowers healing received (Mark, Smite, Wither); state is a flag with its own rule (Veil).",
+      "enum": ["dot", "hot", "control", "buff", "debuff", "mark", "state"]
+    },
+    "element": {
+      "description": "The element whose hits apply it as their mark (§3.4: Fire → Burn, Frost → Chill, Lightning → Shock, Poison → Poison, Holy → Smite, Shadow → Wither); null for statuses no element owns.",
+      "anyOf": [{ "$ref": "common.schema.json#/$defs/element" }, { "type": "null" }]
+    },
+    "tickAt": {
+      "type": "string",
+      "description": "When per-turn effects resolve (§3.5: DoTs and HoTs at the holder's turn start; durations count down at turn end).",
+      "enum": ["turnStart", "turnEnd"]
+    },
+    "magnitudeOf": {
+      "description": "What the per-tick number is a percentage of (the table's 'Starting rule'): hitDamage — the applying hit's damage (Bleed 25%, Burn 20%); maxHp — the holder's max HP (Poison 3%, Regen X%); attack — the applier's Attack; fixed — the skill sets the number (Shield X). null for statuses with no magnitude.",
+      "anyOf": [{ "type": "string", "enum": ["hitDamage", "maxHp", "attack", "fixed"] }, { "type": "null" }]
+    },
+    "percent": {
+      "description": "The per-tick magnitude as a percentage of magnitudeOf, per stack (Bleed 25, Poison 3, Burn 20); null when magnitudeOf is null or fixed.",
+      "anyOf": [{ "type": "integer", "minimum": 0, "maximum": 1000 }, { "type": "null" }]
+    },
+    "tickDamageType": {
+      "description": "The damage type a DoT tick deals (Bleed physical slash, Burn fire, Poison poison); null for everything that does not tick damage.",
+      "anyOf": [{ "$ref": "common.schema.json#/$defs/damageType" }, { "type": "null" }]
+    },
+    "ignoresDefense": { "type": "boolean", "description": "A tick that skips the Defense step of the damage formula (§3.5: Bleed and Poison)." },
+    "stacking": {
+      "type": "string",
+      "description": "refresh: a new application resets the duration; stack: adds a stack up to maxStacks; max: keeps the stronger of the two.",
+      "enum": ["refresh", "stack", "max"]
+    },
+    "maxStacks": { "type": "integer", "description": "1 for statuses that do not stack.", "minimum": 1 },
+    "durationDefault": {
+      "description": "Turns, when the applying effect gives no duration; null for an instant (Daze) or an until-condition status (Grab, Veil).",
+      "anyOf": [{ "type": "integer", "minimum": 1 }, { "type": "null" }]
+    },
+    "endsWhen": {
+      "description": "The condition that ends an until-condition status, as the table words it ('freed', 'used', 'broken'); null for a timed status.",
+      "anyOf": [{ "type": "string", "minLength": 1 }, { "type": "null" }]
+    },
+    "effects": {
+      "$ref": "common.schema.json#/$defs/effectList",
+      "description": "What the status does beyond its magnitude: stat lines while held (Chill: speed −25%), extra rules (Shock chains) and custom hooks. A dot/hot's tick is magnitudeOf + percent, not a line here."
+    },
+    "upgradesTo": {
+      "description": "The status a second application becomes (§3.4: Chill → Freeze); null for none.",
+      "anyOf": [{ "$ref": "common.schema.json#/$defs/status" }, { "type": "null" }]
+    },
+    "cleansedBy": {
+      "type": "array",
+      "description": "Cleanse tags that remove it (every debuff has a cleanse and every buff a strip, §3.5); skills and items carry the matching tags.",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "appliesEnergyDelta": {
+      "type": "integer",
+      "description": "Timeline energy added to the holder when applied (§3.5: Daze −500, Freeze/Stun/Petrify −1000); 0 for none.",
+      "minimum": -2000,
+      "maximum": 2000
+    },
+    "skipsActionChance": { "$ref": "common.schema.json#/$defs/percent", "description": "Chance the holder loses its action each turn (§3.5: Fear 50; Stun 100); 0 for none." },
+    "immunityRoles": {
+      "type": "array",
+      "description": "Monster roles that never take this status (06 §7: bosses and hunters shrug off Petrify, Grab, Web, Root, Fear).",
+      "items": { "$ref": "common.schema.json#/$defs/role" },
+      "uniqueItems": true
+    },
+    "bossBecomes": {
+      "description": "The status a boss or hunter takes instead (06 §7: Stun → Daze, Freeze → Chill); null when it applies as is or never.",
+      "anyOf": [{ "$ref": "common.schema.json#/$defs/status" }, { "type": "null" }]
+    },
+    "visual": {
+      "type": "object",
+      "properties": {
+        "icon": { "type": "string", "minLength": 1 },
+        "tint": { "$ref": "common.schema.json#/$defs/hexColor" }
+      },
+      "required": ["icon", "tint"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["id", "name", "description", "kind", "element", "tickAt", "magnitudeOf", "percent", "tickDamageType", "ignoresDefense", "stacking", "maxStacks", "durationDefault", "endsWhen", "effects", "upgradesTo", "cleansedBy", "appliesEnergyDelta", "skipsActionChance", "immunityRoles", "bossBecomes", "visual"],
+  "additionalProperties": false,
+  "allOf": [
+    { "if": { "properties": { "stacking": { "enum": ["refresh", "max"] } }, "required": ["stacking"] }, "then": { "properties": { "maxStacks": { "const": 1 } } } },
+    { "if": { "properties": { "kind": { "enum": ["dot", "hot"] } }, "required": ["kind"] }, "then": { "properties": { "tickAt": { "const": "turnStart" }, "magnitudeOf": { "type": "string" }, "percent": { "type": "integer" } } } },
+    { "if": { "properties": { "kind": { "const": "dot" } }, "required": ["kind"] }, "then": { "properties": { "tickDamageType": { "type": "string" } } } },
+    { "if": { "properties": { "kind": { "not": { "enum": ["dot", "hot"] } } }, "required": ["kind"] }, "then": { "properties": { "tickDamageType": { "type": "null" } } } },
+    { "if": { "properties": { "magnitudeOf": { "anyOf": [{ "type": "null" }, { "const": "fixed" }] } }, "required": ["magnitudeOf"] }, "then": { "properties": { "percent": { "type": "null" } } } },
+    { "if": { "properties": { "durationDefault": { "type": "integer" } }, "required": ["durationDefault"] }, "then": { "properties": { "endsWhen": { "type": "null" } } } }
+  ]
+}

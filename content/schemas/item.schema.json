@@ -1,0 +1,252 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gloamvault.dev/schemas/item.schema.json",
+  "title": "Item",
+  "description": "An item as content (content/items/<kind>/<id>.json, the folder being the item's kind): gear, consumables, materials, stones, tomes, keys (chest keys and the Skeleton Key), ammo, eggs and treats (03-GAME-DESIGN §6; every number owned by 08-ITEMS.md). Grade is what the item is; +N, item level, affixes and durability are what was done to it — a content file carries their starting values, and $defs/itemInstance (used by hero saves) carries the rolled state.",
+  "type": "object",
+  "properties": {
+    "id": { "$ref": "common.schema.json#/$defs/id" },
+    "name": { "type": "string", "minLength": 1 },
+    "slot": {
+      "description": "The slot it equips to (§6.1); null for things that are carried, not worn.",
+      "anyOf": [{ "$ref": "common.schema.json#/$defs/slot" }, { "type": "null" }]
+    },
+    "kind": {
+      "type": "string",
+      "enum": ["weapon", "armor", "shield", "focus", "ring", "talisman", "relic", "consumable", "material", "stone", "tome", "key", "ammo", "egg", "treat"]
+    },
+    "grade": { "$ref": "common.schema.json#/$defs/grade" },
+    "materialLadder": {
+      "description": "The ladder this item promotes along (§6.5); null when it has no material (consumables, tomes, keys).",
+      "anyOf": [{ "$ref": "common.schema.json#/$defs/materialLadder" }, { "type": "null" }]
+    },
+    "materialRung": {
+      "description": "Position on the ladder, 0 = F … 8 = God (metal: 2 = Iron). The linter checks it equals the grade's index. null with materialLadder null.",
+      "anyOf": [{ "type": "integer", "minimum": 0, "maximum": 8 }, { "type": "null" }]
+    },
+    "weaponType": {
+      "anyOf": [{ "$ref": "common.schema.json#/$defs/weaponType" }, { "type": "null" }]
+    },
+    "armorFamily": {
+      "anyOf": [{ "$ref": "common.schema.json#/$defs/armorFamily" }, { "type": "null" }]
+    },
+    "hands": {
+      "description": "1 or 2 for weapons and foci (§6.1 hand rule); null otherwise.",
+      "anyOf": [{ "type": "integer", "enum": [1, 2] }, { "type": "null" }]
+    },
+    "damageType": {
+      "description": "The weapon's damage type (§6.3); null for everything that does not hit.",
+      "anyOf": [{ "$ref": "common.schema.json#/$defs/damageType" }, { "type": "null" }]
+    },
+    "weight": {
+      "description": "Timeline weight of a basic attack with this weapon, or of using this item in combat (600 for potions, kits, torches); null for armor and trinkets.",
+      "anyOf": [{ "$ref": "common.schema.json#/$defs/weight" }, { "type": "null" }]
+    },
+    "baseStats": {
+      "$ref": "common.schema.json#/$defs/derivedStatMap",
+      "description": "Flat stat lines at +0, already multiplied by the grade's Base × (§6.2). Weapons carry attackPhys or attackSpell; armor carries defense/hp/speed; shields carry block."
+    },
+    "requirements": {
+      "type": "object",
+      "description": "Attribute requirements (§6.1): each missing Strength point costs −5 Speed; spare points relieve the armor penalty. 0 means none.",
+      "properties": {
+        "strength": { "type": "integer", "minimum": 0 },
+        "wisdom": { "type": "integer", "minimum": 0 }
+      },
+      "required": ["strength", "wisdom"],
+      "additionalProperties": false
+    },
+    "affixSlots": {
+      "type": "integer",
+      "description": "Affix lines this item can hold; the linter checks it matches the grade (F 0, E–D 1, C–B 2, A–S 3, SS–God 4).",
+      "minimum": 0,
+      "maximum": 4
+    },
+    "affixes": {
+      "type": "array",
+      "description": "Rolled affix lines (§6.2). Length ≤ affixSlots.",
+      "items": { "$ref": "#/$defs/rolledAffix" },
+      "maxItems": 4
+    },
+    "plusN": { "type": "integer", "description": "Current +N; +5% of own base per level (§6.2).", "minimum": 0, "maximum": 10 },
+    "maxPlusN": { "type": "integer", "description": "Grade cap on +N (§6.2: F +3 … SS/God +10).", "minimum": 3, "maximum": 10 },
+    "itemLevel": { "type": "integer", "description": "Item level 1–10 from use; 10 = Awakened (§5.2).", "minimum": 1, "maximum": 10 },
+    "itemXp": { "type": "integer", "description": "XP toward the next item level.", "minimum": 0 },
+    "affinities": {
+      "type": "array",
+      "description": "Affinity lines gained at item levels 3/6/9: +5% vs the monster family it has fought most (§5.2).",
+      "items": {
+        "type": "object",
+        "properties": {
+          "familyId": { "$ref": "common.schema.json#/$defs/id" },
+          "percent": { "type": "integer", "minimum": 1, "maximum": 100 }
+        },
+        "required": ["familyId", "percent"],
+        "additionalProperties": false
+      },
+      "maxItems": 3
+    },
+    "durability": { "$ref": "common.schema.json#/$defs/percent", "description": "Current durability 0–100 (§6.4). The linter checks it is ≤ maxDurability." },
+    "maxDurability": { "$ref": "common.schema.json#/$defs/percent", "description": "Ceiling, starts 100, −5 each time the item reaches 0; 0 = destroyed into salvage (§6.4)." },
+    "wearK": {
+      "type": "integer",
+      "description": "Meaningful hits (landed, taken or blocked) per 1% of durability lost (§6.4). Tuned so a used item spends 25–35% per delve.",
+      "minimum": 1
+    },
+    "value": { "type": "integer", "description": "Base gold value; repair costs 0.5% of it per point.", "minimum": 0 },
+    "classLock": {
+      "$ref": "common.schema.json#/$defs/idList",
+      "description": "Class ids that may equip it; empty means universal."
+    },
+    "setId": { "$ref": "common.schema.json#/$defs/nullableId", "description": "The set this piece belongs to (§6.2), or null." },
+    "unique": { "type": "boolean", "description": "A named unique with a fixed signature line (§6.2)." },
+    "uniquePower": {
+      "description": "The signature line of a named unique or the unique power of a God item; null otherwise.",
+      "anyOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "properties": {
+            "text": { "type": "string", "minLength": 1 },
+            "effects": { "$ref": "common.schema.json#/$defs/effectList" }
+          },
+          "required": ["text", "effects"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "active": {
+      "description": "A relic's once-per-fight active (§6.1); null for everything else.",
+      "anyOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "properties": {
+            "effects": { "$ref": "common.schema.json#/$defs/effectList" },
+            "usesPerFight": { "type": "integer", "minimum": 1 },
+            "target": { "$ref": "common.schema.json#/$defs/target" }
+          },
+          "required": ["effects", "usesPerFight", "target"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "consumable": {
+      "description": "What a consumable does when used (weight 600 in combat); null for non-consumables.",
+      "anyOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "properties": {
+            "effects": { "$ref": "common.schema.json#/$defs/effectList" },
+            "stackMax": { "type": "integer", "minimum": 1 },
+            "target": { "$ref": "common.schema.json#/$defs/target" },
+            "inCombat": { "type": "boolean", "description": "Usable during a fight." }
+          },
+          "required": ["effects", "stackMax", "target", "inCombat"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "ammo": {
+      "description": "Stack size for ammunition; null otherwise. Arrows do not wear the weapon (§6.4).",
+      "anyOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "properties": { "stack": { "type": "integer", "minimum": 1 } },
+          "required": ["stack"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "visual": {
+      "type": "object",
+      "description": "How it shows on the body (§6.1: every slot is visible).",
+      "properties": {
+        "meshId": { "type": "string", "minLength": 1 },
+        "tintPrimary": { "$ref": "common.schema.json#/$defs/hexColor" },
+        "tintSecondary": { "$ref": "common.schema.json#/$defs/hexColor" },
+        "trimMetal": { "type": "string", "description": "Metal finish for trims (iron, bronze, gold …).", "minLength": 1 }
+      },
+      "required": ["meshId", "tintPrimary", "tintSecondary", "trimMetal"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["id", "name", "slot", "kind", "grade", "materialLadder", "materialRung", "weaponType", "armorFamily", "hands", "damageType", "weight", "baseStats", "requirements", "affixSlots", "affixes", "plusN", "maxPlusN", "itemLevel", "itemXp", "affinities", "durability", "maxDurability", "wearK", "value", "classLock", "setId", "unique", "uniquePower", "active", "consumable", "ammo", "visual"],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": { "properties": { "kind": { "const": "weapon" } }, "required": ["kind"] },
+      "then": {
+        "properties": {
+          "slot": { "type": "string", "enum": ["mainHand", "offHand"] },
+          "weaponType": { "$ref": "common.schema.json#/$defs/weaponType" },
+          "hands": { "type": "integer", "enum": [1, 2] },
+          "damageType": { "$ref": "common.schema.json#/$defs/damageType" },
+          "weight": { "$ref": "common.schema.json#/$defs/weight" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "kind": { "const": "armor" } }, "required": ["kind"] },
+      "then": {
+        "properties": {
+          "slot": { "type": "string", "enum": ["helmet", "chest", "legs", "boots", "gloves"] },
+          "armorFamily": { "$ref": "common.schema.json#/$defs/armorFamily" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "kind": { "const": "relic" } }, "required": ["kind"] },
+      "then": { "properties": { "active": { "type": "object" } } }
+    },
+    {
+      "if": { "properties": { "kind": { "const": "consumable" } }, "required": ["kind"] },
+      "then": { "properties": { "consumable": { "type": "object" } } }
+    }
+  ],
+  "$defs": {
+    "rolledAffix": {
+      "type": "object",
+      "description": "One rolled affix line on an item.",
+      "properties": {
+        "affixId": { "$ref": "common.schema.json#/$defs/id" },
+        "value": { "type": "integer", "description": "The rolled value within the affix line's min–max for the item's grade band." },
+        "locked": { "type": "boolean", "description": "Locked at the blacksmith; survives a re-roll (§6.2)." }
+      },
+      "required": ["affixId", "value", "locked"],
+      "additionalProperties": false
+    },
+    "itemInstance": {
+      "type": "object",
+      "description": "An item as it sits in a hero's equipment or bag: the content id plus everything use and care have changed.",
+      "properties": {
+        "instanceId": { "type": "string", "description": "Unique within the save.", "minLength": 1 },
+        "itemId": { "$ref": "common.schema.json#/$defs/id" },
+        "quantity": { "type": "integer", "description": "Stack size; 1 for gear.", "minimum": 1 },
+        "affixes": { "type": "array", "items": { "$ref": "#/$defs/rolledAffix" }, "maxItems": 4 },
+        "plusN": { "type": "integer", "minimum": 0, "maximum": 10 },
+        "itemLevel": { "type": "integer", "minimum": 1, "maximum": 10 },
+        "itemXp": { "type": "integer", "minimum": 0 },
+        "affinities": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "familyId": { "$ref": "common.schema.json#/$defs/id" },
+              "percent": { "type": "integer", "minimum": 1, "maximum": 100 }
+            },
+            "required": ["familyId", "percent"],
+            "additionalProperties": false
+          },
+          "maxItems": 3
+        },
+        "durability": { "$ref": "common.schema.json#/$defs/percent" },
+        "maxDurability": { "$ref": "common.schema.json#/$defs/percent" }
+      },
+      "required": ["instanceId", "itemId", "quantity", "affixes", "plusN", "itemLevel", "itemXp", "affinities", "durability", "maxDurability"],
+      "additionalProperties": false
+    }
+  }
+}

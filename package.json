@@ -1,0 +1,43 @@
+{
+  "name": "gloamvault",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Gloamvault: an original 1-4 player co-op party dungeon crawler for Android phones, installed from GitHub Pages.",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=24",
+    "npm": ">=11"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "typecheck": "tsc -b",
+    "lint": "node tools/lint/index.ts",
+    "check:build": "node tools/build/check-build.ts",
+    "verify": "npm run typecheck && npm test && npm run lint && npm run build && npm run check:build",
+    "shots": "node tools/shots/run.ts",
+    "icons": "node tools/icons/make-icons.ts",
+    "e2e": "playwright test"
+  },
+  "dependencies": {
+    "@preact/signals": "^2.11.3",
+    "idb-keyval": "^6.3.0",
+    "preact": "^10.29.8",
+    "three": "0.186.1",
+    "valibot": "^1.5.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "@preact/preset-vite": "^2.10.6",
+    "@types/node": "^24.19.2",
+    "@types/three": "^0.186.0",
+    "ajv": "^8.20.0",
+    "typescript": "~6.0.3",
+    "vite": "^8.3.4",
+    "vite-plugin-pwa": "^2.0.0",
+    "vitest": "^5.0.5"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "id": "taunt",
+  "name": "Taunt",
+  "description": "Must attack the taunter for 2 turns. Bosses listen only in their first phase.",
+  "kind": "control",
+  "element": null,
+  "tickAt": "turnEnd",
+  "magnitudeOf": null,
+  "percent": null,
+  "tickDamageType": null,
+  "ignoresDefense": false,
+  "stacking": "refresh",
+  "maxStacks": 1,
+  "durationDefault": 2,
+  "endsWhen": null,
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "taunt-must-target",
+      "note": "must target the taunter; bosses only in phase 1"
+    }
+  ],
+  "upgradesTo": null,
+  "cleansedBy": [
+    "cleanse"
+  ],
+  "appliesEnergyDelta": 0,
+  "skipsActionChance": 0,
+  "immunityRoles": [],
+  "bossBecomes": null,
+  "visual": {
+    "icon": "status-taunt",
+    "tint": "#d9534f"
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "id": "fear",
+  "name": "Fear",
+  "description": "50% chance to Guard instead of acting, for 2 turns. Willpower resists it; an Orc’s Fear lasts 20% longer.",
+  "kind": "control",
+  "element": null,
+  "tickAt": "turnEnd",
+  "magnitudeOf": null,
+  "percent": null,
+  "tickDamageType": null,
+  "ignoresDefense": false,
+  "stacking": "refresh",
+  "maxStacks": 1,
+  "durationDefault": 2,
+  "endsWhen": null,
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "fear-guard-instead",
+      "note": "a lost action becomes a Guard"
+    }
+  ],
+  "upgradesTo": null,
+  "cleansedBy": [
+    "courage",
+    "cleanse"
+  ],
+  "appliesEnergyDelta": 0,
+  "skipsActionChance": 50,
+  "immunityRoles": [
+    "boss",
+    "hunter"
+  ],
+  "bossBecomes": null,
+  "visual": {
+    "icon": "status-fear",
+    "tint": "#8e44ad"
+  }
+}

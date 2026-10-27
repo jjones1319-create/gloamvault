@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gloamvault.dev/schemas/contract.schema.json",
+  "title": "Contract",
+  "description": "A Quest Board contract (03-GAME-DESIGN §8.2; the table of 07-DUNGEONS.md §7): a templated daily or weekly condition the board fills with the player's band, paying gold in R and chest keys. One file per contract under content/contracts/<id>.json. Keys are capped per week by a rule, not here.",
+  "type": "object",
+  "properties": {
+    "id": { "$ref": "common.schema.json#/$defs/id" },
+    "name": { "type": "string", "minLength": 1 },
+    "description": { "type": "string", "description": "The condition as the board shows it ('kill 30 Vermin in the Cellars').", "minLength": 1 },
+    "cadence": { "type": "string", "enum": ["daily", "weekly"] },
+    "kind": {
+      "type": "string",
+      "description": "The condition's shape: kill (count of a family, a monster or a boss), clear (reach a floor's stairs or clear it under a condition), light (a light threshold at the stairs or at a chest), noWipe (kills or a clear with no hero Fallen), collect (sell or carry an amount).",
+      "enum": ["kill", "clear", "light", "noWipe", "collect"]
+    },
+    "target": {
+      "type": "object",
+      "description": "What the condition counts. Every key is optional; the linter checks the ones the kind needs: kill → count and one of familyId/monsterId; clear → floor or dungeonId; light → lightMin; collect → count.",
+      "properties": {
+        "familyId": { "$ref": "common.schema.json#/$defs/id", "description": "The monster family counted (Vermin)." },
+        "monsterId": { "$ref": "common.schema.json#/$defs/id", "description": "A specific monster (a hunter, a boss)." },
+        "dungeonId": { "$ref": "common.schema.json#/$defs/id" },
+        "zoneId": { "$ref": "common.schema.json#/$defs/id" },
+        "count": { "type": "integer", "minimum": 1 },
+        "floor": { "type": "integer", "description": "A specific floor; omitted means any floor in the player's band.", "minimum": 1 },
+        "lightMin": { "$ref": "common.schema.json#/$defs/percent" },
+        "lightMax": { "$ref": "common.schema.json#/$defs/percent", "description": "For 'while the light is Dark or Pitch': 25." },
+        "difficultyMin": { "$ref": "common.schema.json#/$defs/difficulty" },
+        "partyMin": { "type": "integer", "minimum": 1, "maximum": 4 },
+        "goldR": { "type": "number", "description": "For collect: unbanked gold in R to return with.", "exclusiveMinimum": 0 },
+        "condition": { "type": "string", "description": "An arena or floor condition the sim checks by name ('tide-below-step-4', 'no-sealed-sarcophagus-opened').", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "reward": {
+      "type": "object",
+      "properties": {
+        "goldR": { "type": "number", "description": "Gold in units of R at the player's band.", "minimum": 0 },
+        "keys": {
+          "type": "array",
+          "description": "Chest keys: a Standard Key opens one Standard chest free, a Grand Key one Grand chest.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "kind": { "type": "string", "enum": ["standard", "grand"] },
+              "amount": { "type": "integer", "minimum": 1 }
+            },
+            "required": ["kind", "amount"],
+            "additionalProperties": false
+          }
+        },
+        "chestId": { "$ref": "common.schema.json#/$defs/nullableId", "description": "A chest given outright (the weekly's Material Crate); null for none." },
+        "items": {
+          "type": "array",
+          "description": "Items given outright (Torches, a Skeleton Key).",
+          "items": {
+            "type": "object",
+            "properties": {
+              "itemId": { "$ref": "common.schema.json#/$defs/id" },
+              "amount": { "type": "integer", "minimum": 1 }
+            },
+            "required": ["itemId", "amount"],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": ["goldR", "keys", "chestId", "items"],
+      "additionalProperties": false
+    },
+    "band": {
+      "description": "The band the contract is written for (a weekly boss kill is band-specific); null for a template the board fills with the player's band.",
+      "anyOf": [{ "type": "integer", "minimum": 1 }, { "type": "null" }]
+    }
+  },
+  "required": ["id", "name", "description", "cadence", "kind", "target", "reward", "band"],
+  "additionalProperties": false,
+  "allOf": [
+    { "if": { "properties": { "kind": { "enum": ["kill", "noWipe", "collect"] } }, "required": ["kind"] }, "then": { "properties": { "target": { "type": "object", "anyOf": [{ "type": "object", "required": ["count"] }, { "type": "object", "required": ["goldR"] }] } } } },
+    { "if": { "properties": { "kind": { "const": "light" } }, "required": ["kind"] }, "then": { "properties": { "target": { "type": "object", "anyOf": [{ "type": "object", "required": ["lightMin"] }, { "type": "object", "required": ["lightMax"] }] } } } }
+  ]
+}

@@ -1,0 +1,568 @@
+# 03 — Game Design (the rulebook)
+
+*Last updated 2026-10-26 · rev. 2 (Claude, from James's brief of 2026-10-26 and the three research reports in `docs/research/`; rev. 2 after the independent review — ownership table, status table, promotion counts, First Aid, Pacts). Every number in this document is a **tuning starting point**, never a commitment; the simulator and the balance runner decide the final values. Each section ends with **Open questions** for James.*
+
+**Who owns what (when two docs disagree, the owner wins and the other is fixed):**
+
+| Fact | Owner |
+|---|---|
+| Rules, formulas, the status table, grades, slots, ladders, learning paths, death, co-op pacing | this file (`03`) |
+| A class's skills (names, numbers, techniques it can learn), its attribute modifiers, armor family, weapons, starter picks | `docs/classes/<class>.md` (`04` is the index) |
+| A species' modifiers, traits, restrictions, body brief | `05-SPECIES.md` |
+| Monsters, hunters, bosses (phases, attacks, first-kill drops), encounter tables, monster techniques (which monster teaches which sheet skill), pets, every creature name in every dungeon | `06-MONSTERS.md` |
+| Places: the overworld, floors, kits, room templates, curios, traps, secrets, boss **arenas** (room, arena rule, adds timing, tells, light), presets, Pacts, contracts, the generator | `07-DUNGEONS.md` |
+| Items (every number), starter kits, affixes, sets, uniques, God items, materials and promotion costs, durability constants, chest odds, loot tables | `08-ITEMS.md` |
+| Field skills' rank effects | `09-SKILLS.md` §5 |
+| Stack, budgets, file layout | `10-TECH-PLAN.md` |
+
+Content JSON is written from the owner. Where this file restates an owned fact it is a summary; if the summary and the owner disagree, fix the summary.
+
+**How to read this file.** §1 is the loop. §2 the stats (the same eight attributes as Project Ascend, re-pointed at a dungeon). §3 combat on the speed timeline. §4 exploring a floor. §5 how everything levels with use. §6 equipment: slots, the nine grades F → God, durability, materials. §7 skills and how they are learned. §8 the town economy and chests. §9 pets. §10 playing together. §11 dungeons, floors and bosses (the rules; the content is `07-DUNGEONS.md` and `06-MONSTERS.md`). §12 death and difficulty. §13 the first thirty minutes.
+
+---
+
+## 1. Core loop
+
+**Gloamvault** is a party dungeon crawler: you make a hero (species + class), descend into a dungeon floor by floor with up to three friends, fight monsters on a speed-driven timeline, find gold, gear and materials, and come back up to the town of **Emberfall** to repair, upgrade, learn, and buy chests. Everything you use gets better: your skills, your stats, your weapons, your pet.
+
+```
+TOWN (Emberfall) ──► choose dungeon & zone at the Waystone ──► DELVE (3–4 floors)
+  ▲  repair · upgrade · learn skills · open chests · stables · bank      │
+  │                                                                      │
+  └──────────── return by Waystone (or wipe: lose unbanked gold) ◄───────┘
+```
+
+- **A delve** is one trip: a zone of 3–4 floors ending in a zone boss, 20–40 minutes, pausable at any room. A floor is 5–10 minutes — the mobile session unit (GameAnalytics 2025: median session 5–6 min).
+- **A dungeon** is 10 floors in three zones, each zone with its own monster family, its own boss, and a **Waystone** that lets you start the next delve from that zone once its boss is dead. The final boss sits on the last floor. Beating it opens the next dungeon on the overworld map.
+- **Gold** is found only in the dungeon and spent only in town. It is the stake: a party wipe loses the gold carried in that delve, never your gear, XP or skills.
+- **Four verbs** carry the game: *Delve* (explore and fight), *Tend* (repair, upgrade, feed the pet), *Learn* (skills by use, by shop, by Insight), *Open* (chests).
+
+**Pillars** (from `01-VISION.md`): 1. *Stats you can feel* — faster means more turns, perception means fewer ambushes. 2. *Everything grows by use.* 3. *Care for your things.* 4. *Better together, fine alone.* 5. *Readable on a phone.*
+
+**Open questions**
+1. Delve length: 3–4 floors per delve (recommended) or whole-dungeon runs with Waystones only at zone bosses? *Proposed: zones of 3–4 floors; a party can keep going past a zone boss without returning (the Waystone is optional).*
+
+---
+
+## 2. Characters: attributes and derived stats
+
+A hero is **species × class × what you have done**. Species sets the body and the starting attribute shape; class sets the kit, the weapons and armor; use does the rest.
+
+### 2.1 The eight attributes (Project Ascend's, re-pointed at a dungeon)
+
+Attributes are integers. **10 is an ordinary adult**; heroes start between 6 and 15 by species and class; 30 is heroic; 50+ is legendary. Every attribute has **one headline effect you can feel**, then minor effects. They grow by use (§5), never by placing points after creation.
+
+| Attribute | Headline (what you feel) | Minor effects | How it trains (§5.2) |
+|---|---|---|---|
+| **Strength** | physical Attack (melee and bows) | carry capacity; cancels heavy-armor and heavy-weapon speed penalties; door/chest forcing | land melee hits; carry over 50% capacity; force things |
+| **Agility** | **Speed → more turns, sooner** | Dodge, ranged accuracy, trap-disarm speed | attack, dodge, disarm |
+| **Vitality** | HP | bleed/poison resistance, HP regen at rests | take damage; survive at low HP |
+| **Endurance** | Defense and the **Stamina** pool (physical classes) | block value, armor wear slows, exhaustion resistance | take hits (armor-absorbed counts); block; march under load |
+| **Wisdom** | spell Attack, healing, and the **Mana** pool (casting classes) | **learning rate** (skill XP and Insight chance), identify items | cast; heal; read; identify |
+| **Perception** | **ambush chance down, traps/secrets/treasure found** | Accuracy, Crit Rate, first-strike, scouting adjacent rooms | find traps/secrets/treasure; scout; land crits |
+| **Willpower** | Resistance to status and mental effects | Momentum gain, concentration (casts are not interrupted), Fear resistance | resist a status; hold a cast under a hit; stand against Fear |
+| **Luck** | Crit Rate and **loot quality** | damage variance floor, Fortune (free skill), pity luck | **not trainable** (a trainable Luck is a grind magnet); only species, gear and blessings move it |
+
+**Why these eight and not seven.** James asked for the stats "like the ones in this folder" — Project Ascend's eight. The systems research proposed Charisma for shop prices; here that job goes to the **Haggling** field skill (§7.6), which levels by use like everything else, so the attribute list stays Ascend's.
+
+### 2.2 Derived stats (what the card shows)
+
+Starting formulas at an ordinary adult (all 10s) with no gear. The sim owns these; the card shows the result.
+
+| Derived | Formula (starting point) | At all 10s | Bound |
+|---|---|---|---|
+| **HP** | 30 + 7 × Vit + 3 × Level | 103 at L1 | — |
+| **Attack (phys)** | weaponAttack + 2 × Str (Str above the weapon's requirement counts double) | weapon + 20 | — |
+| **Attack (spell)** | focusPower + 2 × Wis | focus + 20 | — |
+| **Defense** | armorDefense + 1 × End; damage taken × 100 / (100 + Def) | armor + 10 | diminishing by formula |
+| **Speed** | 100 + 5 × (Agi − 10) − armorPenalty − weaponPenalty + Str relief | 100 | floor 40, cap 300 |
+| **Stamina** (physical classes) | 30 + 3 × End; regen 10%/own turn; a basic attack restores 15% | 60 | — |
+| **Mana** (casting classes) | 30 + 3 × Wis; regen 8%/own turn; a basic attack restores 10% | 60 | — |
+| **Momentum** (0–100) | +20 when you act, +10 when hit, +5 per ally action; × (1 + 1% × (Will − 10)); Ultimate costs 100 | — | — |
+| **Crit Rate** | 5% + 40 × x / (x + 80), x = (Per − 10) + (Luck − 10), min 0 | 5% | cap 45% |
+| **Crit Damage** | 150% + 2% × (Per − 10) + 2% × (Str or Wis − 10) | 150% | — |
+| **Accuracy** | 90% + 1% × (Per − 10) | 90% | 50%–100% |
+| **Dodge** | 30 × y / (y + 60), y = (Agi − 10) + 0.5 × (Luck − 10), min 0 | 0% | cap 30% |
+| **Resistance** | 40 × z / (z + 50), z = (Will − 10) + 0.5 × (End − 10) | 0% | cap 40% |
+| **Detection** | Per + light bonus + skill/pet bonuses (compared with a trap's or secret's difficulty) | 10 | — |
+| **Variance** | damage × U(floor, 1.05); floor = 0.90 + 0.01 × (Luck − 10) | 0.90–1.05 | floor ≤ 1.00 |
+| **Fortune** | chance a skill costs nothing: 0.5% × Luck | 5% | cap 25% |
+| **Carry** | 20 + 3 × Str kg; each 10% over capacity = −10% Speed | 50 kg | — |
+
+- **Hit** = roll < Accuracy − targetDodge (never below 50%); Ultimates and most AoE never miss.
+- **Damage** = Attack × skillMultiplier × (1 + Σ bonuses) × elementMod × 100 / (100 + effectiveDefense) × critMod × variance. Same shape as Ascend §4.3 so the two sims stay cousins.
+- **Levels.** A hero's **level** is a milestone of total skill ranks gained (Elder Scrolls shape): level N needs 8 × N skill ranks in total (L2 at 16, L10 at 80, L30 at 240). Level gives the HP line above, unlocks skill tiers (§7.2) and sets the soft caps (§5.3). Levels never give attribute points — use does.
+
+### 2.3 Creation
+
+Name · species (`05-SPECIES.md`) · class (`04-CLASSES.md`, `docs/classes/`) · appearance (skin, hair, eyes, a face preset — tints on the species body, see `11-ART-PIPELINE.md`) · **6 free attribute points** placed at creation (max +3 to any one) · a starter kit of F-grade gear in the class's armor family · one F-grade pet egg chosen from three.
+
+Starting attributes = 10 + species modifiers + class modifiers + free points (`05-SPECIES.md` §2, `04-CLASSES.md` §2). A total of **92** across the eight (80 base + 4 class + 2 species net + 6 free).
+
+### 2.4 The card
+
+Species · class · level · the eight attributes with a small "+" when one grew this delve · derived stats · the four active skills + two passives equipped (§7.3) · pet and stance · eleven gear slots with wear pips (§6) · titles · AI rule (one gambit line, used when you are AFK or delegate — §10.3).
+
+**Open questions**
+1. Six free creation points (recommended) or none at all, pure species + class?
+2. Should Luck have *any* training path (e.g., +1 per dungeon final boss first-kill)? *Proposed: a permanent +1 Luck per dungeon's final boss first kill, capped at +4.*
+
+---
+
+## 3. Combat: the speed timeline
+
+### 3.1 Who acts when — the accumulator
+
+- Every actor (heroes, pets, monsters) has an **energy accumulator**. Each tick it gains its Speed; at **1,000** it acts, and the action's **weight** is subtracted: *light* 800 (daggers, quick skills), *normal* 1,000, *heavy* 1,400 (two-handers, big spells). So Speed 150 acts 1.5× as often as Speed 100, and a dagger user with Speed 150 against a greatsword user with Speed 100 gets **2.6 actions for every one** — "faster means more attacks" literally (ToME / Caves of Qud / DCSS lineage).
+- Each cost carries **±10% seeded jitter** (Caves of Qud's rule) so order is not a lockstep.
+- Haste × 1.5 Speed, Slow × 0.67. A heavy hit on an actor who is **charging** a cast pushes its accumulator back 300 (Grandia's cancel) unless its Willpower concentration check passes (§2.1).
+- **The timeline strip** shows the next 8 actors in order, so waiting is planning (FFX's CTB window).
+- An encounter begins with an **initiative roll**: everyone starts at a random 0–400; an *ambushed* side starts at 0 while the other side starts with +500 (§4.4).
+
+**Why a timeline, not rounds (Ascend uses rounds).** Ascend's PvP needed predictable rounds; this game's brief says speed should mean *more* attacks, which only an energy queue makes literally true, and co-op needs grouped decision windows (§10.2) that a queue gives naturally. Logged as D-004.
+
+### 3.2 Resources and actions
+
+| Resource | Rule |
+|---|---|
+| HP | 0 = **downed** (§12.1) |
+| Stamina / Mana | one pool per hero by class family; skills cost pool; regen at the start of your own turn; basic attacks restore some |
+| Momentum | fills by acting and being hit; the class **Ultimate** costs 100 and no pool; never misses |
+| Action | **Basic** (free; weapon weight) · **Skill** (pool cost; its own weight) · **Ultimate** (100 Momentum) · **Guard** (half damage until your next turn, +10 Momentum, restores 10% pool; weight 600) · **Item** (potion, kit, torch; weight 600) · **Swap row** (weight 400) · **Flee** (party vote, §12.1) |
+| Pet stance | changing stance is free once per fight (§9) |
+
+### 3.3 Rows and reach
+
+Two rows per side: **Front** and **Back**. Melee hits the front row unless the front row is empty or the skill says *reach/flank*; bows, thrown weapons and spells hit either row. Front-row heroes take the hits; back-row heroes are safe until the front falls. A hero's row is set in the formation screen and can be swapped for a cheap action. Enemies have the same rows; a monster family's taxonomy (§11.3) says who stands where.
+
+### 3.4 Damage types and elements
+
+- **Physical:** Slash, Pierce, Blunt — armor materials have a weak type (Mail is weak to Blunt, Plate to Pierce at the joints, Hide to Slash; `08-ITEMS.md`).
+- **Elements:** Fire, Frost, Lightning, Poison, Holy, Shadow. Every monster has resistances (×0.5), weaknesses (×1.5) and sometimes immunity (×0). Elemental marks: Fire → *Burn* (DoT), Frost → *Chill* (−Speed) → *Freeze* on a second application, Lightning → *Shock* (−Accuracy, chains), Poison → *Poison* (DoT, ignores armor), Holy → *Smite* (bonus vs Undead/Shadow), Shadow → *Wither* (−healing).
+
+### 3.5 Status effects
+
+The sim owns these in `content/statuses/<id>.json`, written from this table (starting numbers). Durations count down at the holder's turn end; DoTs and HoTs tick at the holder's turn start. **Every debuff has a cleanse and every buff has a strip**, so support skills matter. Re-applying refreshes duration; stacking statuses add a stack up to their cap.
+
+| Status | Kind | Starting rule | Duration | Stacks | Notes |
+|---|---|---|---|---|---|
+| **Bleed** | DoT (physical, ignores Defense) | 25% of the applying hit's damage per turn | 3 | 3 | cleansed by Bandage/First Aid; Undead and constructs immune |
+| **Poison** | DoT (ignores Defense) | 3% of max HP per turn | 4 | 5 | Antidote; Dwarf +30% resist; constructs immune |
+| **Burn** | DoT (Fire) | 20% of the applying hit's damage per turn | 3 | 3 | removed by Chill; Draconid immune |
+| **Chill** | debuff (Frost) | Speed ×0.75 | 3 | — | a second application becomes **Freeze** |
+| **Freeze** | control (Frost) | cannot act (energy −1,000); the next physical hit deals ×1.5 and ends it | 1 | — | bosses: Chill only |
+| **Shock** | debuff (Lightning) | Accuracy −15%; 50% of the hit chains to one other enemy | 2 | — | wet targets (Vault) +1 turn |
+| **Stun** | control | skip the next action (energy −1,000) | 1 | — | bosses take **Daze** instead |
+| **Daze** | control | energy −500 | — | — | instant |
+| **Blind** | debuff | Accuracy −30% | 2 | — | |
+| **Silence** | control | no skills or Ultimate; basic attacks and items only | 2 | — | |
+| **Taunt** | control | must target the taunter | 2 | — | bosses: phase 1 only |
+| **Shield** | buff | absorbs X damage (the skill sets X) | 3 or until broken | — | |
+| **Regen** | HoT | +X% max HP per turn (the skill sets X, Tier I ≈ 5%) | 3 | — | halved by Wither |
+| **Haste** | buff | Speed ×1.5 | 3 | — | strip removes |
+| **Slow** | debuff | Speed ×0.67 | 3 | — | |
+| **Weaken** | debuff | Attack −20% | 3 | — | |
+| **Fortify** | buff | Defense +20% | 3 | — | |
+| **Mark** | debuff | damage taken +20% | 3 | — | Rangers' and Beast Tamers' signature |
+| **Fear** | control | 50% chance to Guard instead of acting | 2 | — | Orc Intimidating +20% duration; Will resists |
+| **Grab / Net** | control (the co-op disabler, §11.3) | cannot act until the grabber takes ≥ 10% of its HP or an ally spends a free action to free | until freed | — | Stonefoot and Huge immune |
+| **Root** | control | cannot swap rows or flee | 2 | — | Dwarf immune |
+| **Web** | control | Root + Speed −30% | 2 | — | burned off by Fire |
+| **Curse** | debuff | all attributes −10% | 3 | — | Holy Water, Mender cleanse |
+| **Petrify** | control | energy −1,000; Defense +50% while petrified | 1 | — | bosses immune |
+| **Smite** | mark (Holy) | damage taken +20% (+40% if Undead or Shadow) | 2 | — | the Holy element's mark |
+| **Wither** | mark (Shadow) | healing received −50% | 3 | — | the Shadow element's mark |
+| **Veil** | state (Shade only) | the next single-target attack against the Veiled hero misses; ends when the Shade attacks | until used | — | Ultimates, AoE and DoTs ignore it |
+
+Elite affixes (`06` §2) are not statuses; they are rules on the monster.
+
+### 3.6 Length, pacing, auto
+
+- Target **3–6 "rounds"** (a round = every living hero has acted once) for ordinary fights; elites 6–8; bosses 10–15 with phases. Hard cap 30 rounds (the fight ends as a retreat).
+- Animation budget: an action resolves in ≤ 1.5 s at 1×; 2× and 3× speed toggles; "skip to result" when every hero is on auto.
+- **Auto:** each hero carries one **AI rule** line (a gambit: *IF ally HP < 40% THEN Skill 2 on lowest ally; ELSE basic attack nearest*). Auto uses it; so does a disconnected or timed-out player's hero (§10.2). The same scripted policies drive the balance runner.
+
+**Open questions**
+1. Weights 800 / 1,000 / 1,400 and jitter ±10% — tune on the sim; is ±10% enough for the order to feel alive?
+2. Should Guard also parry (reflect 10%) for shield users? *Proposed: a Warden passive, not a global rule.*
+
+---
+
+## 4. Exploring a floor
+
+### 4.1 The party moves as one
+
+A floor is a **graph of 8–14 rooms** (§11.1; the first-ever floor is a shorter fixed tutorial and the final throne floor is fixed — `07` owns each floor's count). The party stands in one room; the room is a 3D set piece with a fixed cinematic camera; the doors you can take are lit. Pick a door → the party walks through (a short real-time walk, interruptible by what is found) → the next room resolves: a fight, a trap, a curio, a treasure, a rest, a merchant, the stairs, the boss. No joystick, no one gets lost, and every move is one command — which is what makes co-op and testing cheap (D-005).
+
+The **minimap** shows explored rooms; **scouting** (§4.3) may reveal what is behind the next doors; secret doors appear when found. The **floor clock** (§4.5) ticks per room entered.
+
+### 4.2 Light
+
+One dial, read at a glance (Darkest Dungeon's torch, re-tuned). Light 0–100 falls **−5 per new room** (−1 per revisited room); a Torch item restores +25; braziers in some rooms restore +15; some curios and all boss rooms set it.
+
+| Band | Light | Scouting | Heroes ambushed | Monsters ambushed | Extra loot | Monster Accuracy / Damage | Species note |
+|---|---|---|---|---|---|---|---|
+| Radiant | 76–100 | +15% | — | +20% | — | — | — |
+| Dim | 51–75 | +5% | +5% | +10% | +10% | — | — |
+| Shadowy | 26–50 | — | +15% | — | +25% | +5% / +5% | Dwarf & Elf see one band brighter |
+| Dark | 1–25 | −10% | +25% | — | +50% | +10% / +10% | Orc & Draconid unaffected on Accuracy |
+| Pitch | 0 | −20% | +40% | — | +75% and a rare-slot roll | +10% / +20% | — |
+
+Push your luck: darkness pays in loot and costs in ambushes. Dwarves and Elves (darkvision) read one band brighter for their own rolls.
+
+### 4.3 Perception: traps, secrets, treasure, scouting
+
+**Detection** = Perception + light bonus + skills + pet (§2.2). Passive, never a "search" button (Shattered PD / NetHack auto-search lesson):
+
+- **Traps** have a difficulty 8–60 by floor band. On entering a room, every trap whose difficulty ≤ the party's **best** Detection is revealed; a revealed trap can be **disarmed** (Trap Disarm field skill: chance = 50% + 2% × (skill − difficulty/2), fail = it triggers on the disarmer at half damage) or walked around (some block a door). An unrevealed trap triggers on the hero with the lowest Perception.
+- **Secret doors** are revealed when best Detection ≥ difficulty; they lead to secret rooms that **reward, never gate** (extra treasure, a shrine, a shortcut). About 25% of floors have one; Shades and Rangers raise that.
+- **Hidden treasure** (a niche, a false floor): same check plus a *find* roll = 60 × (Det − 10) / (Det + 30) %.
+- **Scouting:** on entering a room, chance 25% (+light bonus, +5% per Ranger, +pet Forage) to reveal the contents of all adjacent rooms. A critical scout (half of successes) also reveals the room beyond.
+
+### 4.4 Ambush
+
+Each encounter rolls **surprise**: base 15% + light band modifier (§4.2) + monster family modifier (ambushers +15%) − the party's best Perception bonus (Per 10 → 0, Per 20 → −10%, Per 30 → −15%, rational curve 20 × (Per − 10) / (Per + 10)). *Ambushed* = enemies start at +500 energy and heroes at 0; the first enemy action lands before anyone can react. The reverse roll — the party surprising the monsters — uses the same curve on the party's lowest Speed penalty and gives heroes +500. Orcs are noisy (+5% to be ambushed); Shades in the party −5%.
+
+### 4.5 The floor clock, and the hunter
+
+No hunger (DCSS removed food as featuritis; Darkest Dungeon's hunger was tolerated, not loved). Instead a visible **floor clock**: it ticks once per room entered and once per fight round. At **40 ticks** a floor's **hunter** (a unique stalking monster of that family, e.g. Gravehollow's *Warden's Hound*) enters the floor and moves one room toward the party every 2 ticks; it is beatable but above the floor's band, and it drops a guaranteed rare part. Taking the stairs ends the chase (Barony's Minotaur, made fair and visible).
+
+### 4.6 Rooms and curios
+
+Room kinds and their weights per floor (§11.1): Fight 50% · Elite 8% · Rest/campfire 10% · Merchant 5% · Treasure 7% · Curio 15% · Trap gauntlet 5%; fixed: Entry, Stairs, and on the zone's last floor the Boss. **Curios** are interactable objects with a choice (a sealed sarcophagus: open / leave / use a Holy Water — outcomes from a table; Darkest Dungeon's curios, with the item key that turns a gamble into a purchase). **Rest rooms** restore 30% HP and pool, let you swap loadouts and feed the pet; one per floor; sleeping advances the floor clock 5.
+
+**Open questions**
+1. Torch −5 per new room and 40-tick hunter — tune on the generator; should the hunter also stalk on boss floors? *Proposed: no hunter on boss floors.*
+2. Should there be a hard inventory limit per delve (Etrian's cap, which forces trips home) or only the carry-weight speed penalty? *Proposed: weight penalty only, plus a 40-slot bag.*
+
+---
+
+## 5. Everything levels with use
+
+### 5.1 The one rule that prevents grinding exploits
+
+XP is granted only for **meaningful actions**: an action that resolves against a hostile at or above your **gate** (enemy level ≥ your level − 10), or resolves a dungeon event (trap, lock, curio, treasure). Hitting allies, walls, corpses, empty tiles; casting with no target; re-using a resolved curio — **zero**. (Every Elder Scrolls exploit comes from rewarding the action instead of the challenge; UO, Kenshi and DCSS show the fixes — `docs/research/…systems…` §2.)
+
+**Difficulty curve D** (Kenshi/UO shape): the gain is multiplied by D(enemyLevel − yourLevel): 0.1× at −10 or lower · 1.0× at 0 · 2.0× at +5 · **3.0× cap at +10**. Fighting above your weight is the fast route.
+
+**Per-delve use budget** (UO's rate-over-time, per delve rather than per clock): per skill, the first 20 meaningful uses pay full, uses 21–60 pay 50%, later uses 10%. It resets in town.
+
+### 5.2 Skills, attributes, items
+
+| What | Earns from | Growth | Cap |
+|---|---|---|---|
+| **Skill rank** (1–10 per skill) | each meaningful use: 10 × D | rank N needs 100 × 1.5^(N−1) XP; each rank +4% effect, −2% cost; rank 10 unlocks the skill's **Mastery** line (`09-SKILLS.md`) | — |
+| **Attributes** | tagged actions (§2.1), 1 × D per tag; Vitality from damage taken (per 10% of max HP) | point N needs 20 × 1.12^(N−10) XP (point 20 ≈ 62, point 30 ≈ 193, point 40 ≈ 600) | soft cap = creation value + 2 × Level; above it gains are ÷4 |
+| **Weapon / armor instance** (item level 1–10) | hits landed (weapons) or absorbed (armor, shield blocks) on gated enemies: 2 × D | +2% own base per level; at levels 3 / 6 / 9 an **affinity** line: +5% vs the family it has fought most (never decreases — no weapon-swap grind); level 10 = **Awakened**: eligible for promotion with full XP carried (§6.5) or salvage into a successor at 60% | per grade |
+| **Pet** | 50% of the owner's fight XP by participation + its stance's tagged actions | `09` §9 | owner's level |
+| **Field skills** (§7.6) | each successful use: lockpick, disarm, forage, repair, haggle, first aid, cook, map | same rank curve | — |
+
+**Hero level** = total skill ranks (§2.2). A level-up line reads like a status screen: *"Blade Dance → rank 4 · +1 Agility · Longsword → Lv 3 (affinity: Undead)"*.
+
+### 5.3 Co-op fairness and death
+
+- Kill credit is by **participation** (damage, healing, buffs, tanking) never last hit; budgets are per player.
+- **Death never costs XP** (Valheim's 5% is its most-hated rule). Death costs durability (§6.4) and unbanked gold (§12.2).
+- Wisdom raises all XP by 1% per point above 10 (the learning stat); the Human species adds +10%.
+
+**Open questions**
+1. Rank curve 100 × 1.5^(N−1) (rank 10 ≈ 3,800 XP ≈ 380 full-value uses) — right length for a 40-hour game?
+2. Should attributes also get a tiny trickle from *any* kill (so the status screen moves every fight)? *Proposed: +0.2 to the class's two affinity attributes per gated kill.*
+
+---
+
+## 6. Equipment
+
+### 6.1 Slots (Ascend's eleven, plus the pet)
+
+| Slot | Main stat | Lock | Visible on the body |
+|---|---|---|---|
+| **Main Hand** | Attack | class weapon types | yes — weapon mesh on the hand bone |
+| **Off Hand** | Attack (second weapon) · Block/Defense (shield) · spell Attack (focus) | class | yes |
+| **Helmet** | HP / Resistance | armor family | yes |
+| **Chest** | Defense / HP | armor family | yes |
+| **Legs** | Defense / Speed | armor family | yes |
+| **Boots** | Speed / Dodge | armor family | yes |
+| **Gloves** | Crit / Accuracy | armor family | yes |
+| **Ring ×2** | any one derived stat | universal | yes (small) |
+| **Talisman** | Resistance / Momentum gain / Detection | universal | yes — neck or belt |
+| **Relic** | an **active** effect, once per fight (Ascend's Treasure) | universal | yes — belt or back |
+| **Pet** | — | the hero's pet (§9) | yes — follows the hero |
+
+- **The hand rule:** a two-handed weapon (greatsword, maul, longbow, staff) fills both hands and carries two slots' budget; one-handed leaves the off hand for a shield, a focus, or a second weapon (Shade's paired daggers). Equal budget, different shape.
+- **Armor families** (which is also the material ladder, §6.5): **Plate** (metal; Warden), **Mail** (metal; Blade, Beast Tamer), **Leather** (hide; Ranger, Shade), **Robes** (cloth; Arcanist, Mender). Shields and bows/staves are wood + metal.
+- **Requirements:** heavy gear has a Strength requirement; below it, each missing point costs −5 Speed; above it, each spare point relieves the family's speed penalty (Plate −20, Mail −10, Leather −3, Robes 0).
+- Gear belongs to the player's **armory**; swapping between a player's heroes is free in town. "Auto-equip best" is one tap.
+
+### 6.2 The nine grades: F → God
+
+Grade is *what the item is*; +N and item level are *what you did to it* (every system that works keeps those axes apart — D4, PoE, Monster Hunter, Souls).
+
+| Grade | Colour | Name | Base × | Affix slots | Max +N | Where it comes from |
+|---|---|---|---|---|---|---|
+| **F** | grey | Crude | 1.00 | 0 | +3 | floors 1–3, starter kits, shop |
+| **E** | white | Common | 1.35 | 1 | +4 | floors 1–6, shop |
+| **D** | green | Fine | 1.80 | 1 | +5 | floors 4–10, shop |
+| **C** | blue | Superior | 2.45 | 2 | +6 | floors 8–15, shop (last grade shops sell) |
+| **B** | purple | Masterwork | 3.30 | 2 | +7 | floors 12–22, chests |
+| **A** | orange | Heroic | 4.45 | 3 | +8 | floors 18–30, chests, zone bosses |
+| **S** | red | Legendary | 6.00 | 3 | +9 | floors 26–40, Grand chests, final bosses |
+| **SS** | gold | Mythic | 8.10 | 4 | +10 | floors 35+, endgame bosses, pity only |
+| **God** | white-gold, animated | Divine | 11.0 | 4 + a **unique power** | +10 | endgame bosses and **Divine Shards** (10 forge one); never in a random table |
+
+- ×1.35 per grade is an 11× spread over nine steps — enough for four dungeons without six-digit numbers.
+- **+N** costs gold and generic stones (Whetstone F–C, Honing Oil B–A, Star Grit S–God) and adds **+5% of the item's own base per level**, so a +10 A-grade (×1.5) beats a +0 S (×1.35) and loses to a +3 S — a cared-for weapon is a real choice against a fresh find. +N never adds affix lines.
+- **Affixes** roll from the pool in `08-ITEMS.md` §5 (attribute points, derived stats, element damage, on-hit effects, "+10% gold found"). One line can be locked and the rest re-rolled at the blacksmith for gold and a stone.
+- **Drop shape** per floor band: centre grade 56% · one below 25% · one above 14% · two above 4% · three above 1%; Luck shifts +0.5 pp per point above 10 toward higher grades (cap +15 pp). God never rolls.
+- **Sets:** 2-piece and 4-piece bonuses on the five armor pieces and the ring pair, themed by family and class (`08-ITEMS.md` §6).
+- **Named uniques:** each grade from B up has a few named pieces with a fixed signature line; **God** items are one per slot at launch (eleven), each boss-bound or forged from ten Divine Shards.
+
+### 6.3 Weapon types and classes
+
+Swords (1h, Slash) · Greatswords (2h, Slash) · Axes (1h/2h, Slash, +crit dmg) · Maces/Mauls (Blunt, vs Mail) · Spears (Pierce, reach: hits the back row from the front) · Daggers (Pierce, light weight 800, dual) · Bows (Pierce, 2h, either row) · Crossbows (Pierce, heavy 1,400, high base) · Staves (2h, spell focus, +Mana) · Wands (1h, spell focus, light) · Censers (Mender: a 1h Blunt main-hand weapon that also counts as a spell focus) · Holy symbols (Mender off-hand focus) · Whips (Beast Tamer, reach) · Shields (off hand: Block = chance to halve a physical hit; Bucklers light, Tower heavy). `04-CLASSES.md` lists each class's allowed types.
+
+### 6.4 Durability: care for your things
+
+Two numbers per item: **durability** 0–100% and **maxDurability** (starts 100; erodes only with neglect).
+
+- **Wear:** weapons lose 1% per *k* meaningful hits; armor per hit taken (weighted Chest 3, Helmet 2, Legs 2, Boots 1, Gloves 1 — Diablo 2's weights); shields on blocks. Spells and arrows do not wear the weapon (D2 rule; bows wear on draw at half rate). *k* is tuned so a fully used item spends **25–35% per delve** at its band — about three delves from full to broken with no care. Each material grade multiplies *k* by 1.25 (so a Skysteel blade lasts ~3× a Copper one).
+- **Stat bands, no sudden death:** 100–60% full effect · 60–20% linear falloff to −30% stats (weapons also −10% Accuracy) · 20–1% **Damaged**: −50% and a red pip · **0% Broken**: 0 stats, still equipped, never destroyed by wear. The pip on the slot icon is green / amber / red; a toast at 20%.
+- **Neglect erodes the ceiling:** each time an item **reaches 0**, maxDurability drops 5, permanently (so a maxDurability 100 item survives twenty neglect cycles). At maxDurability 0 the item is **destroyed into salvage** (§6.5) with warnings at 20 and 10. A careful player never sees it; a careless one loses the thing they neglected — which is the brief.
+- **Repair:** town blacksmith **"Repair all"** — one tap, 0.5% of item value per point (a delve's gold covers a full party repair with ≥ 70% left) · **Repair Kit** (common drop, shop item): +25% to one item out of combat · **Field Repair** skill (§7.6): +10% to one item at a rest room for one material unit. Repair never lowers maxDurability.
+- **Death:** every equipped item takes an extra **−10%** on a party wipe (D3). That, plus unbanked gold, is the whole death penalty.
+- Pets have no durability; their equivalent is being downed (§9).
+
+### 6.5 Materials: upgrade what you have
+
+An armor piece's **material is its grade**. Upgrading it with the next material **promotes** it one grade: same item, same affixes (one line re-rolls), item XP and affinities kept, +N resets to +0 (Minecraft's Netherite logic: the item you cared for is the item you keep). Weapons promote through the metal/wood ladders the same way. **Promotion is deterministic** — fixed material count, fixed gold, no failure roll: chance never touches crafting.
+
+| Grade | Metal (weapons, Plate, Mail) | Hide (Leather) | Cloth (Robes) | Wood (bows, staves, shields) |
+|---|---|---|---|---|
+| F | Copper | Rawhide | Burlap | Pine |
+| E | Bronze | Leather | Linen | Ash |
+| D | Iron | Boiled Leather | Wool | Oak |
+| C | Steel | Wolf Hide | Silk | Yew |
+| B | Blacksteel | Wyvern Hide | Glyphweave | Ironwood |
+| A | Skysteel | Basilisk Scale | Moonweave | Ebony |
+| S | Adamantine | Drake Scale | Phoenix Weave | Elderwood |
+| SS | Orichalcum | **Dragon Scale** | Voidcloth | World-tree Bough |
+| God | Starmetal | Ancient Dragon Scale | Celestial Thread | Godwood |
+
+- **Counts per promotion**: F→E 6 · E→D 8 · D→C 10 · C→B 12 · B→A 16 · A→S 20 · S→SS 30 · SS→God 50 units, plus gold = 25% of the target grade's value; forging a fresh F piece at the blacksmith costs 4 units (D-031 accepted).
+- **Where materials come from:** every monster family maps to one material family and a floor band (`06-MONSTERS.md` §1). A kill rolls a **common part** (35%) and a **rare part** (4%, an affix stone or a special); a **part break** in combat (hit a marked limb) doubles the rare roll; bosses drop a **guaranteed stack** (5–10 units) and a rare part on first kill. Dragons (SS) drop 1–3 scales *guaranteed*. Material Crates (§8.3) and the blacksmith's weekly stock fill the gaps. Each dungeon picks one of two **regional variants** per grade (Steel / Bluesteel; Silk / Spidersilk) with identical numbers — Terraria's pairs, variety for free.
+- **Salvage:** any item → 25% of its promotion cost in its own material; an item destroyed by neglect salvages at 50%. Dupes from chests auto-salvage.
+- **Generic stones** for +N are a separate drop family (§6.2).
+
+**Open questions**
+1. Dragon Scale at SS with Ancient Dragon Scale at God (recommended) — or should dragon scale be the very top?
+2. 25–35% wear per delve (≈3 delves to broken) — too harsh for a phone? The sim reports "delves to broken" per item.
+3. Should promotion keep +N instead of resetting it? *Proposed: reset, with the stones refunded at 50%.*
+
+---
+
+## 7. Skills
+
+### 7.1 The shape of a class's list
+
+Each class has **45 skills**: three **schools** × five **tiers** × three skills per tier. Tier is fixed; **rank** 1–10 grows by use (§5.2). A school is a way of playing the class (the Warden: *Bulwark* · *Vanguard* · *Warcry*). Each Tier N skill has **one prerequisite** at Tier N−1 in its school, so the skill screen is three readable columns, not a web. Every class also has one **Ultimate** (Momentum 100) at Tier III and a handful of **monster techniques** (§7.5). The lists live in `docs/classes/<class>.md` and `content/skills/<class>/<id>.json`; `09-SKILLS.md` is the index and the rules.
+
+### 7.2 Tiers and when they open
+
+| Tier | Opens at level | How you get it |
+|---|---|---|
+| I | 1 | Skill Hall (gold), Insight, starter picks (3 at creation) |
+| II | 5 | Skill Hall (gold), Insight |
+| III | 12 | Skill Hall (gold), Insight; the Ultimate is here |
+| IV | 20 | **Insight only**, boss Tomes, Skill Chests — never sold |
+| V | 30 | endgame bosses and Divine Shards only |
+
+### 7.3 Loadout
+
+**4 active skills + 2 passives + 1 pet stance** (between Guild Wars' eight and Darkest Dungeon's four; four buttons fit a thumb). Swapping is free in town and at rest rooms. A skill you have not equipped still keeps its rank.
+
+### 7.4 Learning, path A — the Skill Hall (deterministic)
+
+Town sells Tiers I–III for gold. Prices in units of **R** (median gold from one delve at the player's band, §8.1): Tier I 0.1 R · II 0.3 R · III 1.0 R, +20% per purchase within a tier, capped at ×3 (Guild Wars). Tier IV is never sold.
+
+### 7.5 Learning, path B — Insight (random, in the dungeon)
+
+After a meaningful use of a school-X skill, roll an **Insight** for one tier-adjacent skill of X whose prerequisite you have:
+
+```
+chance = 4% × S(enemyLevel − targetTier × 6) × (1 + 1% × (Wis − 10))
+S = 1.0 at 0 · 0.5 at ±3 · 0.25 at ±6 · 0 beyond ±10        (SaGa's spark curve, flattened)
+pity: one guaranteed Insight per 60 qualifying uses
+```
+
+An Insight teaches **that player** and drops a **Skill Tome** of that skill into the **party's** loot — a spark is personal, the party gets a tradeable copy (SaGa's "moves to the dojo"). Fighting the *right* enemy with the *right* school is therefore the strategy, not fighting the strongest thing. **Monster techniques** (a few Tier III–IV per class, e.g. the Blade's *Ghoul's Grasp*) can only Insight while that monster uses the move in the fight (FFV's Blue Magic).
+
+Duplicate Tomes become rank XP for that skill (never dead loot). Tomes also come from bosses (guaranteed Tier III+ on first kill) and Skill Chests (§8.3).
+
+### 7.6 Field skills (universal, every class)
+
+Eight non-combat skills, all level-by-use, all shown on the card: **Lockpicking** (chests, doors; Shade bonus) · **Trap Disarm** (Ranger bonus) · **Foraging** (torches, herbs, cooking ingredients in rest rooms) · **Field Repair** (§6.4; Dwarf bonus) · **First Aid** (revive a downed ally out of combat at any rank; from rank 5 also in combat as a weight-1,000 action; bandages Bleed; Mender bonus) · **Haggling** (shop prices: 130% − 1% per rank → floor 85%; sell 40% + 0.5%/rank) · **Cooking** (rest-room meals: +5% to a stat for the next floor) · **Cartography** (the minimap reveals one extra ring of rooms per 3 ranks). Rank effects are owned by `09-SKILLS.md` §5; class and species starting bonuses by the class sheets and `05`.
+
+**Open questions**
+1. 4 + 2 loadout (recommended) vs 5 + 2?
+2. Insight base 4% and pity at 60 uses — tune on the sim so a 40-floor game yields roughly 60% of a class's Tier IV skills.
+3. Should Tier V exist at launch or be the first content patch? *Proposed: designed now, built in Segment 3.*
+
+---
+
+## 8. Economy: gold, town, chests
+
+### 8.1 Gold
+
+Found in the dungeon only: on monsters, in treasure rooms, in curios, from selling parts and gear. **R** = the median gold one delve yields at the player's band; the runner tunes R, prices are written in R so the economy keeps its shape when R moves. Starting point: R ≈ 300 at floors 1–3, ×1.6 per band.
+
+- Gold carried in a delve is **unbanked** until you return to town; a wipe loses it (§12.2). The **Bank** also lets you deposit *before* a delve so a run starts "insured" — the only protection from the death rule.
+- A delve, after a full repair, should leave about **one Standard chest** of gold; a Grand chest every three delves (Hades' 1.5-rooms-per-boon cadence, stretched to delves).
+
+### 8.2 Emberfall (the town)
+
+| Building | What it does |
+|---|---|
+| **Blacksmith** (Hesper Vane) | Repair all · material promotion (§6.5) · +N with stones · affix lock-and-re-roll · salvage · weekly material stock (F–C only) |
+| **Skill Hall** (Master Orrin) | sells Tier I–III skills; shows each school as a column; "Recommended loadout" per school |
+| **Curio Merchant** (Mab) | the chest vendor (§8.3); odds and pity on screen |
+| **Stables** (Tomas Reed) | hatch eggs, bond, stance training, treats; later the **Ranch Shrine** that imports Wildsong Ranch monsters (`14-IDEAS.md`) |
+| **Bank** | deposit/withdraw gold; the delve's "insurance" |
+| **Quest Board** | daily/weekly contracts (kill X of family Y, clear floor Z with light ≥ 50) paying gold and chest keys |
+| **The Lantern Inn** | rest (free full heal), save, party lobby and invite codes (§10), the AI-rule editor |
+| **Waystone** | choose dungeon → zone → start a delve; the overworld map (`07-DUNGEONS.md` §1) |
+
+### 8.3 Chests (gold only — no real money anywhere)
+
+| Chest | Standard (0.5 R) | Grand (2.5 R) | Contents |
+|---|---|---|---|
+| **Gear Chest** — Weapon / Armor / Trinket | one item | one item, one grade up | slot-targeted: choose the sub-type so dupes halve |
+| **Pet Egg** | 1.5 R | 6 R | one egg of the band's species pool (§9) |
+| **Material Crate** | 0.3 R | 1.2 R | a stack of your band's material + a 10% rare part |
+| **Skill Tome** | 0.8 R | 3 R | one Tome of your class from a **bag without replacement** per tier (Marvel Snap's rule) — Standard draws Tier I–III, Grand Tier II–IV |
+
+- **Odds** (Standard Gear Chest at band B): B 56% · A 25% · S 14% · SS 5% · God 0%. Grand chests use the table in `08` §10 (one grade up, plus a **Divine Shard** line). Band-relative, so a chest never sells an outgrown item.
+- **Pity, two layers:** (1) a ≥ +1-grade item within every 10 Standard chests and a ≥ +2 within 40 (Hearthstone's shape), counters **shown**; (2) Tomes draw from a bag, so a class's Tier III list completes in a known number of chests.
+- **Dupes:** gear → salvage; pet → +1 **bond star** (to 5, +5% pet stats each); Tome → rank XP.
+- **Transparency:** every chest has an **Odds** button with the exact table, the pity counters and the Tome bag's remaining contents. No stamina, no timers, no purchases: nothing here is bought with money, which closes the Google Play loot-box question before it opens (`10-TECH-PLAN.md` §8).
+- **In-dungeon chests** follow Slay the Spire: Small 75% centre / 25% +1; Large 0 / 75 / 25; a locked chest needs Lockpicking or a **Skeleton Key** (a Perception find, or 0.2 R in town), which also makes a trapped chest safe (Darkest Dungeon's key rule).
+
+### 8.4 Dungeon shops
+
+A wandering merchant appears in one Merchant room per floor (always on the floor before a zone boss): potions, torches, repair kits, a few F–C pieces at 1.5× town price, and he buys parts. Haggling applies.
+
+**Open questions**
+1. R ≈ 300 at floors 1–3 — set by the runner once monsters carry gold values.
+2. Should daily contracts exist at launch (a reason to come back) or wait for Segment 3? *Proposed: a simple board in Segment 2.*
+
+---
+
+## 9. Pets
+
+One pet per player, always present — in solo and in co-op (Monster Hunter's online rule; never Diablo 3's "followers are solo-only").
+
+- **A timeline actor**: its own Speed, HP, one action per turn, auto-resolved — no menu, so eight actors keep a human cadence.
+- **Stances** are the whole control surface (set between fights or as a free action once per fight): **Fierce** (attack the owner's target) · **Guard** (intercept 30% of hits aimed at the owner; taunt small enemies) · **Mend** (heal/cleanse the lowest ally for a small amount) · **Forage** (no attacks; adds its Perception to scouting, trap reveals and treasure finds, and +10% gold).
+- **Kit:** one bloodline **trait** (+10% gold found · ambushes −15% · +5 Detection …) and **two actives** unlocked at pet levels 5 and 15 from the species' list, fed by a **stamina** pool that refills between fights (Temtem's rule: the best move cannot be spammed).
+- **Downed, never dead:** at 0 HP the pet retreats for the fight and returns at 50% next fight. No hunger, no lifespan (WoW removed happiness for a reason). "Care" is a **treat** once per delve for +10% pet XP — a bonus, never a penalty.
+- **Grades:** the same nine; grade sets base stats (×1.35), how many actives (1 / 2 / 3 at F–C / B–A / S+) and trait strength. **Grade never changes** — a better pet is a new egg or a drop, so the pet hunt is a loot loop; breeding and fusion belong to **Wildsong Ranch**.
+- **Leveling:** 50% of the owner's fight XP by participation (cap: owner's level), +2% stats per level; traits also grow **by use** (a Forage pet's Perception trait grows by finding things).
+- **Species at launch:** ~16 in `06-MONSTERS.md` §9 (Cellar Hound, Ember Fox, Crypt Bat, Moss Tortoise, Brine Crab, Wisp …), each with two actives and a trait, drawn from the dungeon families so eggs feel of the place.
+- **Wildsong Ranch import** (future, `14-IDEAS.md`): a Wildsong share code maps the monster's LIF/POW/INT/SKI/SPD/DEF onto the nearest grade's budget (never above **A** at import; SS/God are dungeon-only), tagged *Ranch-raised* with a unique trait slot. One-way; the ranch owns breeding.
+
+**Open questions**
+1. One pet per player in co-op (8 actors on the party side) — or a party cap of two pets? *Proposed: one each; the sim measures fight length with 4 + 4.*
+
+---
+
+## 10. Playing together (1–4)
+
+### 10.1 The model
+
+The sim is a pure, deterministic, integer function `step(state, command, rng) → state'` with a seeded RNG. One phone is the **host**; it sequences every command (door choice, action, stance, item) and broadcasts `{seq, command}`; every client — host included — applies commands only when received, in order. A match is **seed + command log**: replays, desync detection (state hash every N commands), save-and-resume, host migration and late rejoin all fall out of it. Messages are tens of bytes; latency is hidden by a game that already waits for decisions. Transport by phase: offline → WebRTC peer-to-peer → relay (`10-TECH-PLAN.md` §5).
+
+### 10.2 Pacing rules
+
+- **Grouped decision windows:** when the next ready actors on the timeline are allies, their owners decide **at the same time**; actions resolve in timeline order (Baldur's Gate 3's grouped turns — the documented cure for co-op idle time).
+- **20-second timer** per decision; on expiry the hero runs its AI rule. A disconnected player's hero runs its AI rule until they return (90 s grace before "X dropped" is shown).
+- **Doors:** any player may propose a door; the **leader** (rotates each floor; host by default) confirms; 15 s auto-confirms the proposal with the most taps.
+- **Drop-in** at any room, never mid-fight; a joiner's hero arrives at the party's room.
+- **Loot:** gold is split evenly at banking; items drop to a **shared pile** at the end of each fight with a round-robin **pick order** (the player with the lowest total item value picks first); materials and Tomes are duplicated for everyone (parts to all, Tomes to all) so nobody fights over consumables.
+
+### 10.3 Solo
+
+Solo is a party of one hero and one pet against encounters sized for the party count (§11.2). Nothing is gated behind co-op; the Inn's "hire a companion" (an AI hero from a short roster, paid per delve in gold) fills a second slot for players who want a party alone — Segment 3.
+
+**Open questions**
+1. Loot pick order vs. host decides vs. roll — pick order (recommended) is fair and needs no UI dialog.
+2. Hired companions in solo — launch or later? *Proposed: Segment 3.*
+
+---
+
+## 11. Dungeons, floors and bosses (the rules)
+
+### 11.1 Floor generation
+
+Seeded by the host's 64-bit match seed; integer-only; identical on every phone.
+
+1. **Mission graph** (small grammar): Entry → … → Stairs, with a guaranteed path, 8–14 rooms (tutorial and throne floors excepted, `07` §2), up to 3 side branches, one Key-and-Lock pair on 30% of floors, a secret room on 25%. **Boss rooms are farthest from the entry by room count** (Darkest Dungeon's rule).
+2. **Room kinds** by weight (§4.6) with fixed slots: Entry, Stairs, one Rest per floor, a Merchant on every floor before a zone boss, the Boss on the zone's last floor; Elite rooms carry 1 affix on floors 1–2, 2 on 3–6, 3 on 7+ (Diablo 3's scaling) from a pool of 12 (`06-MONSTERS.md` §2).
+3. **Layout** on a coarse grid from room templates (door sockets must meet; backtracking on collision), decorated by a tile-variation pass.
+4. **Encounter tables** per floor band from the zone's family: 2–6 monsters sized by party count (§11.2) with at least one of each role across a floor (fodder / armored elite / disabler special / monster / boss — Vermintide's taxonomy keeps every co-op role relevant).
+
+### 11.2 Scaling
+
+- **Monster level** = floor band level (floor 1 = L1 … floor 10 = L14; dungeon 2 starts at L12). Everything about a monster derives from its level and its template.
+- **Party size:** encounter tables are written for three players; for 1 / 2 / 3 / 4 players the monster *count* scales ×0.6 / ×0.8 / ×1.0 / ×1.2 (minimum 1) and monster *HP* ×0.7 / ×0.85 / ×1.0 / ×1.15. The runner tunes so solo and 4-player fights land on the same 3–6 rounds.
+- **Difficulty knobs** (a menu of scalars like Hades' Pact, each sweepable by the runner): enemy HP %, damage %, count %, speed %, hunter clock, light start, revives per floor. Normal is the baseline; **Hard** and **Nightmare** presets and the modifier menu ("Pacts", `07` §6) ship in Phase 7.
+
+### 11.3 Monster families and bosses
+
+Each zone has one family of 8–12 monsters with every role present; each dungeon a hunter per zone, a **zone boss** per zone with 2 phases, and a **final boss** with 3 phases and an arena rule. Elites gain affixes; bosses gain the floor. The content is `06-MONSTERS.md`; the dungeons `07-DUNGEONS.md`.
+
+### 11.4 Dungeons at launch
+
+Four dungeons are designed; one is built in Segment 1–2, two more in Segment 3, the fourth after launch:
+
+1. **Gravehollow Keep** (floors 1–10, L1–14): the Cellars (vermin and the Grinning Company bandits) → the Crypts (undead and spiders) → the Drowned Vault (the Tidebound cult, constructs, oozes); final boss **the Hollow King**.
+2. **The Fungal Deep** (L12–26): capfolk, trolls, slimes, cave beasts; final boss **the Sporemother**.
+3. **Emberforge** (L24–38): salamanders, fire elementals, forge-golems, the deep dwarves; final boss **the Forge-Tyrant**.
+4. **Frostmarch Citadel** (L36–50): frost giants, wights, ice wyrms; final boss **the Pale Dragon** — the dungeon where Dragon Scale (SS) drops.
+
+Travel: the overworld map at the Waystone; a dungeon unlocks when the previous final boss is dead (solo or in a party where the host has it).
+
+**Open questions**
+1. 10 floors per dungeon in three zones (recommended) or 15 floors in five?
+2. Monster level per floor and party scaling — runner.
+
+---
+
+## 12. Death, retreat, difficulty
+
+### 12.1 In a fight
+
+- **Downed** at 0 HP. An ally can **revive** within **3 of the downed hero's turns** (a Mender revive skill, a Phoenix Feather, or First Aid at rank ≥ 5 as a weight-1,000 action) at 30% HP; First Aid at any rank revives out of combat. Past that, the hero is **fallen** for the fight.
+- Fallen heroes revive at 30% HP after the fight if anyone survived. **Three party revives per floor** on Normal (the budget is shown; Hard has 1, Nightmare 0): a fallen hero's post-fight revive spends one; at 0 budget a fallen hero stays down until a rest room or town.
+- **Flee:** a party vote; chance = 50% + the party's average Speed − the enemies' average Speed; failure costs everyone a turn. Not from bosses.
+
+### 12.2 A wipe
+
+All heroes fallen = **wipe**: the party wakes at the Lantern Inn. You lose the **unbanked gold** of that delve and every equipped item takes **−10% durability**. You keep every item found, every XP point, every Insight. The zone's Waystone progress stands. *(Rogue Legacy / Moonlighter gold loss + Diablo 3's durability hit; Children of Morta's kept progress — the gentlest rule that still makes the bank and the blacksmith matter.)*
+
+**Hardcore** (per hero, optional): a wipe deletes the hero; the armory stays. A badge, nothing else.
+
+### 12.3 Retreat
+
+From any room, **Retreat to town** keeps everything (a Waystone is a free walk; without one the party pays 10% of the delve's gold, Moonlighter's toll). Not from a boss room once the fight starts.
+
+---
+
+## 13. The first thirty minutes
+
+1. Title → **New hero**: pick a species (six cards, pros and cons in one line each), a class (seven cards), three Tier I skills, a pet egg of three. Two minutes.
+2. Emberfall at dusk; Hesper the blacksmith hands you a Crude sword and says the Keep's cellars are paying bounties. The Waystone offers **Gravehollow Keep — the Cellars**.
+3. Floor 1: three rooms, the first fight teaches the timeline strip (a rat is faster than you; your Warden pet is slower), the second a trap your Perception reveals, the third the stairs. Floor 2 adds a curio and a Dim-light ambush. Floor 3 ends with **the Grinning Captain**.
+4. Back in town with ~R gold: Repair all (watch the pips go green), buy one Tier I skill, open one Standard chest, hatch the egg. The status screen shows what grew. The Waystone now offers the Crypts.
+
+---
+
+*Decisions this file rests on are logged in `13-DECISIONS.md` (D-001 … D-040). Numbers here feed `content/` and the balance runner (`12-ROADMAP.md`, Phase 2).*

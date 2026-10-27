@@ -1,0 +1,91 @@
+# Gloamvault (Dungeon Crawler) — orientation for Claude Code
+
+A 1–4 player co-op party dungeon crawler for Android phones (Galaxy S25 Ultra or better): 3D characters from Blender on a shared rig, a deterministic speed-timeline combat sim, everything levels by use, gear from F to God that wears and is upgraded with materials, dungeon gold → chests → gear and pets. It is an installable web app (PWA) on GitHub Pages — the same path that already puts Wildsong Ranch on James's phone. James designs and directs; Claude researches, designs and builds. **This file is read automatically by Claude Code when the folder is open in VS Code. Read it first, then `README.md` → *Where we are*, then `STATUS.md`.**
+
+## The owner
+
+- James is **not a programmer**. Explain in plain words, give exact click-by-click steps when he must do something, and never ask him to edit code or open Blender's UI.
+- He tests on his phone after every phase. End every phase with a short **"Try this on your phone"** checklist, and every segment with `docs/feedback/SEGMENT-<n>-REVIEW.md` (template in `docs/feedback/`).
+- He has delegated the design choices ("make all of the choices for me; I trust your decisions"). Decide, build, log — and collect his feedback at the segment checkpoints, not mid-segment.
+- Ask before anything that **costs money, publishes something new outside this repo, or deletes his data**. Those, plus his one-time approvals (first GitHub push, the free Cloudflare account in Phase 9), are the only reasons to stop inside a segment.
+
+## How this folder works (the rules that matter most)
+
+1. **The docs are the source of truth.** `docs/03-GAME-DESIGN.md` is the rulebook and its **ownership table** (top of the file) says which doc wins when two disagree — fix the non-owner; `04`–`09` are the content; `10`–`11` the tech and art plans; `12-ROADMAP.md` the phases; `13-DECISIONS.md` the log. Anything decided is written into the owning doc **in the same turn** — a decision into `13` with a date, a status (Proposed / Accepted / Superseded) and a reason; design into the section that owns it. Never leave a decision only in chat.
+2. **When the docs are silent or ambiguous, choose** the reading closest to the pillars (`01-VISION.md`) and the nearest explicit rule, implement it, and log it in `13` as **Proposed** with the quote and the reason — never stop to ask inside a segment, never silently invent, never change an **Accepted** decision (supersede it at a checkpoint with James's yes).
+3. **Numbers are tuning starting points**, never commitments. Every number lives in `content/tuning.json` or the content JSON, not in code. Tune numbers freely when the balance runner says so; change a *formula* only with a logged decision.
+4. Every design section ends with **Open questions**. Keep the lists complete; when James answers one, strike it through and log the answer.
+5. **Content is data** (D-020): JSON under `content/` validated by `content/schemas/` with ajv (strict) and the cross-file rules in `content/README.md`. `npm run lint` must be green before any commit that touches content.
+6. **Three segments × four phases** (`12-ROADMAP.md`). Work a segment autonomously; keep `STATUS.md` current (how to run · done · in progress · next · decisions logged · open for James); commit at every milestone as `P<n>: <summary>` and push `main` (the site redeploys). If a session ends mid-phase, the next one resumes from `STATUS.md`.
+7. **Look at what you made.** A client change is not done until `npm run shots` has produced PNGs and you have read them; a Blender build is not done until its renders (card view, 200-px read, turntable, gear sheet, pose sheet, re-import check) have been looked at and the defects logged in `art/LOG.md`.
+8. **Originality.** No names, characters, monsters, art, sprites, music, UI text or data from existing games or franchises (generic fantasy words — orc, elf, skeleton, ghoul — are fine). Art is built in Blender by our scripts from CC0 bases or generated in code; samples are CC0; everything external is logged in `CREDITS.md`. Generative-3D output is reference only, never shipped (D-019).
+
+## Tech stack (keep it; ask before adding a dependency — `docs/10-TECH-PLAN.md`)
+
+- **Vite + TypeScript (strict) + Preact 10 + @preact/signals** for screens and the HUD; **three.js** (pinned current release) for the 3D scene; **vite-plugin-pwa** (`registerType: 'prompt'`, landscape manifest); **idb-keyval** + **valibot** for saves; **ajv** for the content linter; **Vitest**; **Playwright** with the installed Chrome; **Trystero** (WebRTC) and a Cloudflare Worker relay in Phase 9; Web Audio engine ported from Wildsong Ranch in Phase 8.
+- **Deterministic, pure sim.** `sim/` has no DOM, no `Math.random`, no `Date.now`, integer math, a seeded RNG whose state is in the save. `createDelve / legalActions / step / runAuto / replay / hashState`; scripted players in `sim/src/policies.ts`. The client reads sim state and sends commands; the sim never imports the client.
+- **Saves are sacred.** Any schema change bumps `SAVE_VERSION` and adds a migration plus a fixture test. Validate and clamp everything loaded; never crash on bad data. Storage keys are prefixed `gloamvault/` (all GitHub Pages sites on the account share one origin).
+- **Phone first, landscape.** 60 fps sustained on the S25 Ultra within the budgets in `10` §4; tap targets ≥ 44 px; every animation skippable; the performance overlay is a Settings toggle; works installed and offline.
+- Node 24 LTS or newer; npm ≥ 11 (so the lockfile works on GitHub's Linux runners).
+
+## Tools on this machine (Windows)
+
+- **Blender 5.2** is installed; drive it **headless only**: `& "C:\Program Files\Blender Foundation\Blender 5.2\blender.exe" -b -P script.py -- args` (check `blender --version` first; pin scripts to the API; slotted actions — the legacy action API is gone in 5.x). Scripts live in `tools/blender/`; outputs under `art/` and `client/public/models/`. Prefer **re-runnable builds** over hand edits: a character or monster is a `build_*.py` that regenerates the whole `.blend`, so changes are a re-run. Render PNGs and read them before calling anything done. Ascend's `prototype/blender/shade/` (`../ProjectAscend`) is the ancestor of these scripts; port `shade_lib.py`, `render.py`, `export.py` and its LOG's lessons.
+- **Google Chrome** is installed; Playwright drives it for `npm run shots` and `npm run e2e` (kill a leftover preview on port 4173 first).
+- No Python on PATH outside Blender; scripted edits are Node (`node script.mjs`) or PowerShell.
+- `gh` (GitHub CLI) for the repo and Actions status (`gh run list`).
+
+## Commands
+
+- `npm run dev` — http://localhost:5173/gloamvault/ (add `-- --host` to play on the phone over Wi-Fi; service workers need https or localhost).
+- `npm test` · `npm run typecheck` · `npm run lint` (content) · `npm run build` · `npm run preview`
+- `npm run verify` = typecheck + test + lint + build + check:build (bundle and precache budgets). **Run before every commit.**
+- `npm run balance` — the batch runner → `tools/balance/out/` and `docs/balance/<date>-<tag>.md`. Run after any stage, kit, monster or tuning change and read the judgement lines.
+- `npm run shots` — Playwright screenshots of the deep-link set → `client/shots/`. `npm run e2e` — the smoke suite on the built app.
+- `npm run sim -- --delve gravehollow --zone 1 --seed 17 --party warden,mender --auto` — one delve in the terminal (created in Phase 2).
+- Deep links the client honours (created in Phase 4; the list is `docs/07-DUNGEONS.md` §8 plus these): `#delve=gravehollow&zone=1&seed=17&party=warden,mender&auto=1`, `#viewer=dwarf,warden,S`, `#town`, `#autoplay=1&minutes=30`.
+
+## Map
+
+| Where | What |
+|---|---|
+| `README.md` | pitch, folder map, **Where we are**, open questions for James, glossary |
+| `PROMPT.md` | the prompts James pastes: Segment 1 / 2 / 3, Continue, and follow-ups |
+| `STATUS.md` | the checkpoint (keep it current) |
+| `docs/01-VISION.md` | pillars, audience, tone, names, art direction summary |
+| `docs/02-RESEARCH.md`, `docs/research/` | the digest and the three full reports |
+| `docs/03-GAME-DESIGN.md` | **the rulebook**: loop, stats, timeline combat, exploration, level-by-use, equipment/grades/durability/materials, skills, economy/chests, pets, co-op, dungeons rules, death, first 30 minutes |
+| `docs/04-CLASSES.md`, `docs/classes/*.md` | the seven classes, 45 skills each |
+| `docs/05-SPECIES.md` | the six species, traits, Blender briefs |
+| `docs/06-MONSTERS.md` | families, elite affixes, Gravehollow's 35 monsters + hunters + bosses, Dungeons 2–4 outlined, 16 pets |
+| `docs/07-DUNGEONS.md` | overworld, Gravehollow floor by floor, kits, templates, curios, traps, arenas, the generator grammar, Dungeons 2–4, presets and Pacts, contracts |
+| `docs/08-ITEMS.md` | weapons, armor, trinkets, relics, consumables, affixes, sets, uniques, God items, materials, durability reference, chest odds, loot tables, starter kits |
+| `docs/09-SKILLS.md` | skill rules index, field skills, learning paths |
+| `docs/10-TECH-PLAN.md` | the web-app decision, stack, architecture, budgets, multiplayer, saves, build/verify, compliance, risks |
+| `docs/11-ART-PIPELINE.md` | style guide, rig, bodies, gear, animation, monsters, environments, VFX, scripts, the review loop, acceptance bar |
+| `docs/12-ROADMAP.md` | the twelve phases in three segments, done-when criteria, checkpoints |
+| `docs/13-DECISIONS.md` | the decision log and the consolidated open questions |
+| `docs/14-IDEAS.md` | backlog incl. the Wildsong Ranch crossover |
+| `docs/feedback/` | the segment review template and the written reviews |
+| `docs/balance/` | dated balance reports (from Phase 2) |
+| `content/` | schemas, examples, README (linter rules); the game's JSON from Phase 3 |
+| `sim/`, `client/`, `tools/`, `art/` | created in Phase 1–2 per `10` §3 |
+
+## Workflow per phase
+
+1. **Start**: plan mode; re-read the phase in `12-ROADMAP.md` and every doc section it touches; write the detailed task list under the phase in `STATUS.md`.
+2. **Build** in small steps with tests. Use subagents for broad searches, reviews and parallel content conversion to keep context lean. Keep `STATUS.md` current as you go.
+3. `npm run verify` (and `npm run lint`, `npm run balance`, `npm run shots` as relevant) until green; update the docs the phase changed (rev. lines, open questions, `13`).
+4. **Commit** `P<n>: <summary>`, push `main`, confirm the deploy (`gh run list`).
+5. Write the phase's "Try this on your phone" checklist into `STATUS.md`; continue to the next phase of the segment. At the segment's last phase, write `docs/feedback/SEGMENT-<n>-REVIEW.md` and **stop**.
+6. **Design changes** inside a segment: log as Proposed (rule 2). At a checkpoint, James's answers become Accepted/Superseded and the docs are updated before the next segment starts.
+
+## Gotchas
+
+- Vite `base` must be `'/gloamvault/'` and match the repo name; the PWA manifest `id`, `scope`, `start_url` too. Never use path routing (hash only). Build asset URLs from `import.meta.env.BASE_URL`.
+- Landscape: set `orientation: "landscape"` in the manifest and request `screen.orientation.lock('landscape')` after the first tap inside fullscreen; handle rotation gracefully in the browser tab.
+- Android Chrome: audio starts on a user gesture; `navigator.vibrate` works; ask `navigator.storage.persist()` once; show our own install card if `beforeinstallprompt` is unavailable.
+- Three.js on the phone: cap pixel ratio (`10` §4); dispose geometries/textures on room transitions; one `AnimationMixer` per character; merge static kit meshes per room; `InstancedMesh` for props.
+- Windows: `.gitattributes` with `eol=lf`; npm ≥ 11 when regenerating `package-lock.json`; PowerShell for Blender wrappers.
+- Updates: never auto-reload mid-fight; the update toast only in town.
+- When compacting context, keep: the current phase and its task list, changed files, failing tests, Proposed decisions not yet logged, and the open questions for James.

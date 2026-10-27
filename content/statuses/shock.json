@@ -1,0 +1,42 @@
+{
+  "id": "shock",
+  "name": "Shock",
+  "description": "Accuracy -15% for 2 turns; half of the hit that shocked you jumps to one other enemy. Wet targets stay shocked a turn longer.",
+  "kind": "debuff",
+  "element": "lightning",
+  "tickAt": "turnEnd",
+  "magnitudeOf": null,
+  "percent": null,
+  "tickDamageType": null,
+  "ignoresDefense": false,
+  "stacking": "refresh",
+  "maxStacks": 1,
+  "durationDefault": 2,
+  "endsWhen": null,
+  "effects": [
+    {
+      "kind": "debuffStat",
+      "stat": "accuracy",
+      "amount": -15
+    },
+    {
+      "kind": "custom",
+      "customId": "shock-chain",
+      "percent": 50,
+      "note": "50% of the applying hit chains to one other enemy"
+    }
+  ],
+  "upgradesTo": null,
+  "cleansedBy": [
+    "ground",
+    "cleanse"
+  ],
+  "appliesEnergyDelta": 0,
+  "skipsActionChance": 0,
+  "immunityRoles": [],
+  "bossBecomes": null,
+  "visual": {
+    "icon": "status-shock",
+    "tint": "#ffe14d"
+  }
+}

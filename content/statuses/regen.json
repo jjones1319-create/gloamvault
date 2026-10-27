@@ -1,0 +1,29 @@
+{
+  "id": "regen",
+  "name": "Regen",
+  "description": "Heals a share of max HP at the start of each turn (5% at Tier I; the skill sets it) for 3 turns. Wither halves it.",
+  "kind": "hot",
+  "element": null,
+  "tickAt": "turnStart",
+  "magnitudeOf": "maxHp",
+  "percent": 5,
+  "tickDamageType": null,
+  "ignoresDefense": false,
+  "stacking": "refresh",
+  "maxStacks": 1,
+  "durationDefault": 3,
+  "endsWhen": null,
+  "effects": [],
+  "upgradesTo": null,
+  "cleansedBy": [
+    "strip"
+  ],
+  "appliesEnergyDelta": 0,
+  "skipsActionChance": 0,
+  "immunityRoles": [],
+  "bossBecomes": null,
+  "visual": {
+    "icon": "status-regen",
+    "tint": "#7bd389"
+  }
+}

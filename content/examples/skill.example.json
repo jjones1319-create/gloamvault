@@ -1,0 +1,28 @@
+{
+  "id": "warden-shield-slam",
+  "classId": "warden",
+  "school": "bulwark",
+  "tier": 1,
+  "name": "Shield Slam",
+  "description": "Slam the front-row enemy with your shield for 130% Blunt damage; 30% chance to Daze them (−500 energy on the timeline).",
+  "type": "active",
+  "cost": 10,
+  "weight": 1000,
+  "target": "enemyFront",
+  "effects": [
+    { "kind": "damage", "multiplier": 1.3, "damageType": "blunt", "scalesWith": "strength" },
+    { "kind": "applyStatus", "status": "daze", "chance": 30 }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "requirements": { "shield": true },
+  "rankScaling": { "effectPerRank": 4, "costPerRank": -2 },
+  "mastery": {
+    "text": "Daze 60%.",
+    "effects": [{ "kind": "applyStatus", "status": "daze", "chance": 60 }]
+  },
+  "tags": ["singleTarget", "control"],
+  "xpTags": ["strength", "endurance"],
+  "aiHints": { "role": "control", "priority": 60 }
+}

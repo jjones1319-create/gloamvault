@@ -1,0 +1,36 @@
+{
+  "id": "freeze",
+  "name": "Freeze",
+  "description": "Cannot act (-1,000 energy). The next physical hit deals x1.5 and shatters the ice. Bosses take Chill instead.",
+  "kind": "control",
+  "element": "frost",
+  "tickAt": "turnEnd",
+  "magnitudeOf": null,
+  "percent": null,
+  "tickDamageType": null,
+  "ignoresDefense": false,
+  "stacking": "refresh",
+  "maxStacks": 1,
+  "durationDefault": 1,
+  "endsWhen": null,
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "freeze-shatter",
+      "note": "the next physical hit deals x1.5 and ends the Freeze"
+    }
+  ],
+  "upgradesTo": null,
+  "cleansedBy": [
+    "fire",
+    "cleanse"
+  ],
+  "appliesEnergyDelta": -1000,
+  "skipsActionChance": 100,
+  "immunityRoles": [],
+  "bossBecomes": "chill",
+  "visual": {
+    "icon": "status-freeze",
+    "tint": "#a9e9ff"
+  }
+}

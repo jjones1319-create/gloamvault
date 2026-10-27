@@ -1,0 +1,41 @@
+{
+  "id": "smite",
+  "name": "Smite",
+  "description": "Takes +20% damage for 2 turns, +40% if Undead or Shadow. The Holy element’s mark.",
+  "kind": "mark",
+  "element": "holy",
+  "tickAt": "turnEnd",
+  "magnitudeOf": null,
+  "percent": null,
+  "tickDamageType": null,
+  "ignoresDefense": false,
+  "stacking": "refresh",
+  "maxStacks": 1,
+  "durationDefault": 2,
+  "endsWhen": null,
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "damage-taken-percent",
+      "percent": 20
+    },
+    {
+      "kind": "custom",
+      "customId": "damage-taken-percent-vs-undead-shadow",
+      "percent": 20,
+      "note": "+40% in total against Undead or Shadow"
+    }
+  ],
+  "upgradesTo": null,
+  "cleansedBy": [
+    "cleanse"
+  ],
+  "appliesEnergyDelta": 0,
+  "skipsActionChance": 0,
+  "immunityRoles": [],
+  "bossBecomes": null,
+  "visual": {
+    "icon": "status-smite",
+    "tint": "#fff3b0"
+  }
+}

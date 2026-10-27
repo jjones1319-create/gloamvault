@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gloamvault.dev/schemas/tuning.schema.json",
+  "title": "Tuning",
+  "description": "The shape of content/tuning.json: the balance runner's tables of tuning starting points from docs/03-GAME-DESIGN.md §2–§12 (CLAUDE.md rule 3: every number lives here or in content, never in code). A tree of sections whose leaves are numbers, {value, note} pairs (a number, boolean or short string with the reason it has that value), booleans, short strings (ids, colours, section sources) or null, with arrays of the same. The sim reads it through the TypeScript type derived from the file, so the key names are the contract; this schema guards the leaf shapes and the top-level sections.",
+  "type": "object",
+  "properties": {
+    "version": { "type": "integer", "minimum": 1 },
+    "source": { "type": "string", "minLength": 1 },
+    "attributes": { "$ref": "#/$defs/section" },
+    "derived": { "$ref": "#/$defs/section" },
+    "combat": { "$ref": "#/$defs/section" },
+    "exploration": { "$ref": "#/$defs/section" },
+    "xp": { "$ref": "#/$defs/section" },
+    "equipment": { "$ref": "#/$defs/section" },
+    "skills": { "$ref": "#/$defs/section" },
+    "economy": { "$ref": "#/$defs/section" },
+    "pets": { "$ref": "#/$defs/section" },
+    "coop": { "$ref": "#/$defs/section" },
+    "dungeon": { "$ref": "#/$defs/section" },
+    "death": { "$ref": "#/$defs/section" }
+  },
+  "required": ["version", "source", "attributes", "derived", "combat", "exploration", "xp", "equipment", "skills", "economy", "pets", "coop", "dungeon", "death"],
+  "additionalProperties": false,
+  "$defs": {
+    "section": {
+      "type": "object",
+      "description": "One rulebook section's numbers. `source` names the section they come from.",
+      "properties": {
+        "source": { "type": "string", "minLength": 1 }
+      },
+      "required": ["source"],
+      "additionalProperties": { "$ref": "#/$defs/node" }
+    },
+    "notedLeaf": {
+      "type": "object",
+      "description": "A leaf whose reason travels with it: the Proposed readings of the rulebook's open questions carry one (D-055).",
+      "properties": {
+        "value": {
+          "anyOf": [{ "type": "number" }, { "type": "boolean" }, { "type": "string", "minLength": 1, "maxLength": 120 }, { "type": "null" }]
+        },
+        "note": { "type": "string", "minLength": 1, "maxLength": 240 }
+      },
+      "required": ["value", "note"],
+      "additionalProperties": false
+    },
+    "node": {
+      "description": "A leaf or a nested table. A table never has a key called `value` (that shape is a notedLeaf).",
+      "anyOf": [
+        { "type": "number" },
+        { "$ref": "#/$defs/notedLeaf" },
+        { "type": "boolean" },
+        { "type": "null" },
+        { "type": "string", "minLength": 1, "maxLength": 240 },
+        { "type": "array", "items": { "$ref": "#/$defs/node" } },
+        {
+          "type": "object",
+          "propertyNames": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$" },
+          "additionalProperties": { "$ref": "#/$defs/node" },
+          "not": { "type": "object", "required": ["value"] }
+        }
+      ]
+    }
+  }
+}

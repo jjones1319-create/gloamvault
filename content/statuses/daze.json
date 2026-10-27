@@ -1,0 +1,27 @@
+{
+  "id": "daze",
+  "name": "Daze",
+  "description": "Knocked back 500 energy on the timeline: your next turn comes later.",
+  "kind": "control",
+  "element": null,
+  "tickAt": "turnEnd",
+  "magnitudeOf": null,
+  "percent": null,
+  "tickDamageType": null,
+  "ignoresDefense": false,
+  "stacking": "refresh",
+  "maxStacks": 1,
+  "durationDefault": null,
+  "endsWhen": "instant: applied once, it only moves the accumulator",
+  "effects": [],
+  "upgradesTo": null,
+  "cleansedBy": [],
+  "appliesEnergyDelta": -500,
+  "skipsActionChance": 0,
+  "immunityRoles": [],
+  "bossBecomes": null,
+  "visual": {
+    "icon": "status-daze",
+    "tint": "#e0c060"
+  }
+}

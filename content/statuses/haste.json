@@ -1,0 +1,36 @@
+{
+  "id": "haste",
+  "name": "Haste",
+  "description": "Speed x1.5 for 3 turns.",
+  "kind": "buff",
+  "element": null,
+  "tickAt": "turnEnd",
+  "magnitudeOf": null,
+  "percent": null,
+  "tickDamageType": null,
+  "ignoresDefense": false,
+  "stacking": "refresh",
+  "maxStacks": 1,
+  "durationDefault": 3,
+  "endsWhen": null,
+  "effects": [
+    {
+      "kind": "buffStat",
+      "stat": "speed",
+      "percent": 50,
+      "note": "Speed x1.5"
+    }
+  ],
+  "upgradesTo": null,
+  "cleansedBy": [
+    "strip"
+  ],
+  "appliesEnergyDelta": 0,
+  "skipsActionChance": 0,
+  "immunityRoles": [],
+  "bossBecomes": null,
+  "visual": {
+    "icon": "status-haste",
+    "tint": "#ffd166"
+  }
+}

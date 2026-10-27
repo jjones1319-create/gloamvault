@@ -1,0 +1,31 @@
+{
+  "id": "burn",
+  "name": "Burn",
+  "description": "Burns for 20% of the hit that lit it at the start of each turn, per stack. Stacks to 3; Chill puts it out. Draconids are immune.",
+  "kind": "dot",
+  "element": "fire",
+  "tickAt": "turnStart",
+  "magnitudeOf": "hitDamage",
+  "percent": 20,
+  "tickDamageType": "fire",
+  "ignoresDefense": false,
+  "stacking": "stack",
+  "maxStacks": 3,
+  "durationDefault": 3,
+  "endsWhen": null,
+  "effects": [],
+  "upgradesTo": null,
+  "cleansedBy": [
+    "chill",
+    "douse",
+    "cleanse"
+  ],
+  "appliesEnergyDelta": 0,
+  "skipsActionChance": 0,
+  "immunityRoles": [],
+  "bossBecomes": null,
+  "visual": {
+    "icon": "status-burn",
+    "tint": "#ff7a1a"
+  }
+}

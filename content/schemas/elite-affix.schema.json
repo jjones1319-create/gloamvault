@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gloamvault.dev/schemas/elite-affix.schema.json",
+  "title": "Elite affix",
+  "description": "One of the twelve champion affixes an Elite room's promoted monster carries on its nameplate (03-GAME-DESIGN §11.1; the table of 06-MONSTERS.md §2). One file per affix under content/elite-affixes/<id>.json; monsters list the ones they may spawn with in elitePool. The promotion itself (HP ×2.5, gold ×3, XP class +2, parts rolled twice) is a rule of the champion, carried here as multipliers so the sim reads one record.",
+  "type": "object",
+  "properties": {
+    "id": { "$ref": "common.schema.json#/$defs/id" },
+    "name": { "type": "string", "description": "The nameplate word ('Rabid').", "minLength": 1 },
+    "affixClass": {
+      "type": "string",
+      "description": "The composition class (06 §2): a champion carries at most one defensive and one control affix; the rest are offensive.",
+      "enum": ["offensive", "defensive", "control"]
+    },
+    "rule": { "type": "string", "description": "The rule as 06 §2 words it; the sim implements it from the effects and, where those cannot say it, by this affix's id.", "minLength": 1 },
+    "effects": {
+      "$ref": "common.schema.json#/$defs/effectList",
+      "description": "Lines the champion gains: stat buffs (Rabid: speed and attackPhys), on-hit statuses (Shackler: root 50%), auras and bursts as custom lines named by the affix id."
+    },
+    "hpMultiplier": { "type": "number", "description": "On top of the template's HP multiplier (06 §2: every champion ×2.5).", "exclusiveMinimum": 0 },
+    "goldMultiplier": { "type": "number", "description": "On top of the template's gold multiplier (06 §2: ×3).", "exclusiveMinimum": 0 },
+    "xpClassBonus": { "type": "integer", "description": "Added to the template's XP class (06 §2: +2).", "minimum": 0 },
+    "floorMin": { "type": "integer", "description": "The first floor of the dungeon it may roll on (06 §2: the five teaching affixes from F1, the rest from F3).", "minimum": 1 },
+    "tell": {
+      "description": "A one-turn visible cue before the affix's dangerous beat (Spiteful: it swells); null when it has none.",
+      "anyOf": [{ "type": "string", "minLength": 1 }, { "type": "null" }]
+    },
+    "excludesElement": { "type": "boolean", "description": "Warded: the chosen immunity never matches the template's weakness." }
+  },
+  "required": ["id", "name", "affixClass", "rule", "effects", "hpMultiplier", "goldMultiplier", "xpClassBonus", "floorMin", "tell", "excludesElement"],
+  "additionalProperties": false
+}

@@ -1,0 +1,40 @@
+{
+  "id": "weaken",
+  "name": "Weaken",
+  "description": "Attack -20% for 3 turns.",
+  "kind": "debuff",
+  "element": null,
+  "tickAt": "turnEnd",
+  "magnitudeOf": null,
+  "percent": null,
+  "tickDamageType": null,
+  "ignoresDefense": false,
+  "stacking": "refresh",
+  "maxStacks": 1,
+  "durationDefault": 3,
+  "endsWhen": null,
+  "effects": [
+    {
+      "kind": "debuffStat",
+      "stat": "attackPhys",
+      "percent": -20
+    },
+    {
+      "kind": "debuffStat",
+      "stat": "attackSpell",
+      "percent": -20
+    }
+  ],
+  "upgradesTo": null,
+  "cleansedBy": [
+    "cleanse"
+  ],
+  "appliesEnergyDelta": 0,
+  "skipsActionChance": 0,
+  "immunityRoles": [],
+  "bossBecomes": null,
+  "visual": {
+    "icon": "status-weaken",
+    "tint": "#a66a48"
+  }
+}

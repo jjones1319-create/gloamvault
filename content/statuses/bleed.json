@@ -1,0 +1,31 @@
+{
+  "id": "bleed",
+  "name": "Bleed",
+  "description": "Loses blood at the start of each turn: 25% of the hit that opened the wound, per stack, ignoring Defense. Stacks to 3; a Bandage or First Aid stops it. Undead and constructs are immune.",
+  "kind": "dot",
+  "element": null,
+  "tickAt": "turnStart",
+  "magnitudeOf": "hitDamage",
+  "percent": 25,
+  "tickDamageType": "slash",
+  "ignoresDefense": true,
+  "stacking": "stack",
+  "maxStacks": 3,
+  "durationDefault": 3,
+  "endsWhen": null,
+  "effects": [],
+  "upgradesTo": null,
+  "cleansedBy": [
+    "bandage",
+    "firstAid",
+    "cleanse"
+  ],
+  "appliesEnergyDelta": 0,
+  "skipsActionChance": 0,
+  "immunityRoles": [],
+  "bossBecomes": null,
+  "visual": {
+    "icon": "status-bleed",
+    "tint": "#b3261e"
+  }
+}

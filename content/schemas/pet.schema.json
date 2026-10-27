@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gloamvault.dev/schemas/pet.schema.json",
+  "title": "Pet",
+  "description": "A pet species (03-GAME-DESIGN §9; the sixteen of 06-MONSTERS.md §9): its trait, its actives (1–3, how many a pet uses is set by its grade), its stamina and stat shape, and where its eggs come from. One file per species under content/pets/<id>.json. Grade belongs to the hatched instance ($defs/petInstance) and never changes.",
+  "type": "object",
+  "properties": {
+    "id": { "$ref": "common.schema.json#/$defs/id" },
+    "name": { "type": "string", "minLength": 1 },
+    "speciesFamilyId": { "$ref": "common.schema.json#/$defs/id", "description": "The monster family the pet is drawn from, so eggs feel of the place (§9)." },
+    "gradeBand": { "$ref": "common.schema.json#/$defs/gradeRange", "description": "Grades this species can hatch at." },
+    "trait": {
+      "type": "object",
+      "description": "The bloodline trait (§9: +10% gold found, ambushes −15%, +5 Detection …). It grows by use in the attribute named by growsBy.",
+      "properties": {
+        "id": { "$ref": "common.schema.json#/$defs/id" },
+        "name": { "type": "string", "minLength": 1 },
+        "description": { "type": "string", "minLength": 1 },
+        "effects": { "$ref": "common.schema.json#/$defs/effectList" },
+        "growsBy": { "$ref": "common.schema.json#/$defs/attribute", "description": "The xp tag whose meaningful uses rank the trait up (a Forage pet's Perception trait grows by finding things)." }
+      },
+      "required": ["id", "name", "description", "effects", "growsBy"],
+      "additionalProperties": false
+    },
+    "actives": {
+      "type": "array",
+      "description": "The species' actives in unlock order (§9, 06 §9: Active 1 at pet level 5, Active 2 at 15). Grade decides how many a hatched pet may use — 1 at F–C, 2 at B–A, 3 at S+ — so a species lists as many as its gradeBand's top grade allows; the README's linter rule checks the count against gradeBand.max. The stamina cost lives on the skill record (classId 'pet').",
+      "items": {
+        "type": "object",
+        "properties": {
+          "skillId": { "$ref": "common.schema.json#/$defs/id", "description": "A skill with classId 'pet' (content/skills/pet/<id>.json)." },
+          "unlockLevel": { "type": "integer", "description": "Pet level at which the active opens (5, 15, and the S+ third at 25 as the starting point).", "minimum": 1, "maximum": 50 }
+        },
+        "required": ["skillId", "unlockLevel"],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "maxItems": 3
+    },
+    "stamina": { "type": "integer", "description": "The pet's stamina pool, refilled between fights (§9).", "minimum": 1 },
+    "baseStats": {
+      "type": "object",
+      "description": "Multipliers on the owner-level baseline (1.0 = an ordinary pet of its grade), derived stat → multiplier.",
+      "propertyNames": { "$ref": "common.schema.json#/$defs/derivedStat" },
+      "additionalProperties": { "type": "number", "exclusiveMinimum": 0 },
+      "minProperties": 1
+    },
+    "roleLean": { "$ref": "common.schema.json#/$defs/stance", "description": "The stance the species is best at; the default stance at hatch." },
+    "visual": {
+      "type": "object",
+      "properties": {
+        "baseMesh": { "type": "string", "minLength": 1 },
+        "palette": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/hexColor" }, "minItems": 1 }
+      },
+      "required": ["baseMesh", "palette"],
+      "additionalProperties": false
+    },
+    "eggSource": {
+      "type": "object",
+      "description": "Where its egg appears: the Pet Egg chest band and/or drops from a family (§8.3, §9).",
+      "properties": {
+        "chestBand": {
+          "description": "Centre grade of the Pet Egg chests that carry it; null when it never comes from a chest.",
+          "anyOf": [{ "$ref": "common.schema.json#/$defs/grade" }, { "type": "null" }]
+        },
+        "familyId": { "$ref": "common.schema.json#/$defs/nullableId", "description": "Monster family whose kills can drop the egg; null when none." }
+      },
+      "required": ["chestBand", "familyId"],
+      "additionalProperties": false
+    },
+    "creationChoice": { "type": "boolean", "description": "One of the F-grade eggs offered at creation (§2.3)." }
+  },
+  "required": ["id", "name", "speciesFamilyId", "gradeBand", "trait", "actives", "stamina", "baseStats", "roleLean", "visual", "eggSource", "creationChoice"],
+  "additionalProperties": false,
+  "$defs": {
+    "petInstance": {
+      "type": "object",
+      "description": "A hatched pet in a hero save (§9). Grade is fixed at hatch.",
+      "properties": {
+        "petId": { "$ref": "common.schema.json#/$defs/id" },
+        "name": { "type": "string", "description": "The player's name for it.", "minLength": 1 },
+        "grade": { "$ref": "common.schema.json#/$defs/grade" },
+        "level": { "type": "integer", "description": "Capped at the owner's level.", "minimum": 1 },
+        "xp": { "type": "integer", "minimum": 0 },
+        "bondStars": { "type": "integer", "description": "0–5; +1 per duplicate egg, +5% stats each (§8.3).", "minimum": 0, "maximum": 5 },
+        "traitRank": { "type": "integer", "minimum": 1, "maximum": 10 },
+        "stance": { "$ref": "common.schema.json#/$defs/stance" },
+        "ranchImport": {
+          "description": "Set when the pet came through the Ranch Shrine (§9); null for dungeon-born pets.",
+          "anyOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "properties": {
+                "sourceGame": { "type": "string", "const": "wildsong" },
+                "shareCode": { "type": "string", "minLength": 1 },
+                "mappedGrade": { "type": "string", "description": "Never above A at import.", "enum": ["F", "E", "D", "C", "B", "A"] }
+              },
+              "required": ["sourceGame", "shareCode", "mappedGrade"],
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "required": ["petId", "name", "grade", "level", "xp", "bondStars", "traitRank", "stance", "ranchImport"],
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "id": "veil",
+  "name": "Veil",
+  "description": "The next single-target attack against you misses. Ends when you attack. Ultimates, area attacks and damage over time ignore it.",
+  "kind": "state",
+  "element": null,
+  "tickAt": "turnEnd",
+  "magnitudeOf": null,
+  "percent": null,
+  "tickDamageType": null,
+  "ignoresDefense": false,
+  "stacking": "refresh",
+  "maxStacks": 1,
+  "durationDefault": null,
+  "endsWhen": "used: the next single-target attack against the Veiled hero misses; ends when the Shade attacks",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "veil-miss-next",
+      "note": "Ultimates, AoE and DoTs ignore it"
+    }
+  ],
+  "upgradesTo": null,
+  "cleansedBy": [
+    "strip"
+  ],
+  "appliesEnergyDelta": 0,
+  "skipsActionChance": 0,
+  "immunityRoles": [],
+  "bossBecomes": null,
+  "visual": {
+    "icon": "status-veil",
+    "tint": "#2b2b40"
+  }
+}

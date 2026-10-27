@@ -1,0 +1,118 @@
+# 12 — Roadmap: twelve phases in three segments
+
+*Last updated 2026-10-26 · rev. 1 (Claude). James asked for the build to run in **three segments**, each a third of the phases, with all feedback gathered at the end of each segment. `PROMPT.md` holds the prompts that start each segment; `STATUS.md` at the repo root is the checkpoint Claude Code keeps while it works.*
+
+## 0. How a segment runs
+
+1. James pastes the segment's prompt from `PROMPT.md` into Claude Code (VS Code, this folder open).
+2. Claude Code works through the segment's four phases **autonomously**: plan mode for each phase's task list → build in small steps with tests → `npm run verify` green → update `STATUS.md` and the docs → commit `P<n>: <summary>` and push (the site redeploys) → next phase. It never stops to ask inside a segment: when the docs are silent it chooses the reading closest to the pillars, implements it, and logs it in `13-DECISIONS.md` as **Proposed** with the quote (CLAUDE.md §How this folder works). It stops only for the three things James must do himself (first GitHub push approval, the Cloudflare account in Phase 9, a payment of any kind — there is none planned).
+3. At the end of the segment it writes `docs/feedback/SEGMENT-<n>-REVIEW.md` from the template: what was built, screenshots, the **"Try this on your phone" checklist** (10–15 minutes), the **questions for James** (every open question answered by a Proposed decision during the segment, plus the design questions the docs flag for him), and what the next segment will do. Then it **stops**.
+4. James plays, answers in chat (or by editing the review file). Claude Code logs every answer (Accepted / Superseded in `13-DECISIONS.md`, the docs updated), fixes what James flagged, and only then James pastes the next segment's prompt.
+
+If a Claude Code session ends mid-segment, James pastes the **Continue** prompt; `STATUS.md` says where it was.
+
+## 1. Segment 1 — the game exists (Phases 1–4): *play a real delve on your phone, with placeholder art*
+
+**Goal:** the rules are code, the content is data, and a solo player can make a hero, delve Gravehollow's Cellars, fight on the timeline, come back to Emberfall, repair, learn a skill, open a chest — on the phone, from the GitHub Pages link. Art is boxes and capsules with the right colours.
+
+### Phase 1 — Repo, skeleton, the link on the phone
+- Create the public repo `gloamvault` (MIT), Vite + TypeScript + Preact + three.js skeleton, `vite-plugin-pwa`, landscape manifest, GitHub Actions deploy to Pages, `npm run verify` (typecheck · test · lint · build · check:build).
+- `content/` with the seventeen schemas (and any the content needs, D-020) and the linter (`tools/lint`, ajv strict + the cross-file rules in `content/README.md`); `content/tuning.json` holding every number from `03-GAME-DESIGN.md` §2–§12.
+- Title screen with version; a "Try this on your phone" card; Settings with the performance overlay toggle.
+- **Done when:** the link opens on the S25 Ultra, installs, shows the title full-screen in landscape, and `verify` is green in CI.
+
+### Phase 2 — The rulebook as code (the sim)
+- `sim/`: seeded RNG, attributes → derived stats (§2.2), the speed timeline with weights and jitter (§3.1), rows and reach, damage and hit formulas, the status set with its tick rules, the skill effect-DSL interpreter, items (grades, affixes, +N, durability bands and wear, item XP and affinities, promotion, salvage), loot and chests with pity, exploration (floor generator from the grammar in `07` §2, light, Detection/traps/secrets/scouting, ambush, the floor clock and hunter, curios), pets with stances, party and death rules (§12), XP by use with the gate, D-curve and per-delve budgets (§5), Insight rolls (§7.5), the field skills.
+- `legalActions / step / runAuto / replay / hashState`; `policies.ts` (scripted players: textbook, cautious, greedy, random).
+- Tests: every formula; the reference tables in the rulebook become test cases; determinism (same seed + log → same hash); the generator's guarantees (`07` §8).
+- `tools/balance`: batch runner over seeds × parties × floors → JSON + `docs/balance/<date>-first-pass.md` with judgement lines.
+- **Done when:** `npm test` and `npm run balance` run green and the first balance report exists, run on a **fixture content set** — one class, one species, three Cellars monsters and one floor, taken from `content/examples/` and extended as test fixtures (not shipped content; Phase 3 re-runs the report on the real content) — with the sim's silent-line decisions logged as Proposed in `13-DECISIONS.md`.
+
+### Phase 3 — Content pass 1
+- From the docs into JSON: the six classes (Warden, Blade, Ranger, Shade, Arcanist, Mender) with Tiers I–III (27 skills each) and their Ultimates; the six species; the eight field skills; the Cellars zone of Gravehollow (floors 1–3: 12 monsters, Old Gnaw, Captain Vexa Marrow, the zone's encounter tables, 8 curios, 6 traps, 3 secret types, templates); items F–C across every slot and family, the starter kits, the affix pool, consumables, the Cellars loot tables; the four chest types; the sixteen pet species' data (three creation eggs playable); the Cellars' contracts.
+- `npm run lint` green; `npm run balance` re-run on the real content (replacing Phase 2's fixture set); a second balance report with the tuning changes made (numbers in `tuning.json` and content, never formulas, unless logged).
+- **Done when:** lint and balance are green and the report's judgement lines say the Cellars fights land at 3–6 rounds for the five party recipes in `04-CLASSES.md` and for solo.
+
+### Phase 4 — The playable vertical slice (placeholder 3D)
+- Screens (Preact): New hero (species cards with pros/cons chips, class cards, three Tier I picks, egg choice, 6 free points) · Emberfall hub with the Blacksmith (Repair all, +N, promotion, salvage), Skill Hall, Curio Merchant (Odds button, pity counters), Stables (hatch, stance), Bank, Quest Board (3 contracts), the Lantern Inn (rest, save, backup), Waystone (Gravehollow → the Cellars) · the delve map (rooms, doors, light meter, floor clock, scout reveals) · the room scene (three.js: a grey-box Cellars template, capsule heroes and monsters in the right colours and sizes, fixed camera) · the fight HUD (timeline strip of 8, four skill buttons + Guard/Item/Row/Ultimate, target tap, pet stance, 2×/3× speed, Auto with the AI-rule editor) · loot and results screens (what grew, wear, gold) · inventory and equipment (eleven slots with wear pips, auto-equip best) · skills (three school columns) · pet · settings.
+- Save/load with migrations and export/import; deep links (`#delve=gravehollow&zone=1&seed=17&auto=1`); `npm run shots` and `npm run e2e`.
+- **Done when:** the whole loop in `03` §13 (the first thirty minutes) works on the phone, screenshots are in `client/shots/`, and `SEGMENT-1-REVIEW.md` is written.
+
+**Feedback checkpoint 1.** James plays the Cellars. Questions he will be asked (at least): is the timeline readable; does speed *feel* like more turns; are fights the right length; is light/ambush understandable; does repair/upgrade feel like care, not chores; which open questions in `03` §2–§8 he wants to settle; the names (game, town, dungeon, classes).
+
+## 2. Segment 2 — the game is beautiful and whole (Phases 5–8): *all of Gravehollow, real characters, pets, chests, skills*
+
+### Phase 5 — Characters in Blender
+- `tools/blender/lib` (rig, mesh, toon, export, render — ported from Ascend's shade scripts), `hero/build_body.py` with the six species from the CC0 base meshes (shape keys, bone scales, parts, three skin tones, three face presets each), the shared clip set (17 + species specials), the six class gear sets as per-slot meshes with F/S variants, export per slot, `clips.json`.
+- The client's character assembler (body + species keys + gear slots + tints), the **character viewer** screen (turntable, min camera distance), the fight scene uses real heroes.
+- Review loop every round (`11` §8); `art/LOG.md`.
+- **Done when:** every species × class combination renders in the viewer without clipping in Idle/Run/Attack_Heavy, the acceptance bar in `11` §9 passes, and the renders are in `art/renders/`.
+
+### Phase 6 — Dungeon 3D and monsters
+- The three Gravehollow kits and ~30 room templates (built from JSON by script), lightmaps baked, torches, fog, cameras per template; props instanced.
+- The 14 monster base meshes with their variants (35 monsters, 3 hunters, 4 bosses incl. the Hollow King's throne room), each with its six clips; hit/mark/heal VFX flipbooks; the Ultimate flourishes.
+- Performance pass against `10` §4 on the phone (overlay numbers in the log; soak test 30 min).
+- **Done when:** a delve through all three zones renders at a sustained 60 fps (or 30 in battery mode) on the S25 Ultra with every monster present; screenshots in `client/shots/`.
+
+### Phase 7 — Gravehollow complete, systems complete
+- Floors 4–10: the Crypts and the Drowned Vault content, the Barrow Warden, Sister Naesa, the Hollow King (3 phases, light mechanic, returning hunters), Waystones, elite affixes scaling 1→3, the Pacts menu (Normal/Hard/Nightmare + 12 Pacts).
+- Skills Tiers IV–V designed into JSON (V unobtainable until Segment 3's endgame), Insights with pity, monster techniques, Tomes; weapon XP, affinities and Awakening; promotion through every material rung available in Gravehollow; items B–A, sets, named uniques; the pets' actives and traits growing by use; chests Grand tier, Divine Shards; daily/weekly contracts live.
+- Balance pass: the runner across all ten floors and party sizes 1–4; `docs/balance/<date>-gravehollow.md`.
+- **Done when:** a solo hero and a 4-hero (one phone, Local transport) party can clear floors 1–10 on Normal with the runner's judgement lines inside targets, and every content kind has a lint rule.
+
+### Phase 8 — Polish and juice
+- Audio: port Wildsong's engine; original music for Emberfall and the three zones (musical-words briefs in `07`), fight stingers, UI sounds; haptics on Android.
+- Onboarding (the fixed 3-room tutorial floor), tooltips for every stat ("Speed 120: you act 1.2× as often"), the status screen's growth lines, a codex (monsters seen, materials), accessibility (text size, colour-blind safe palettes, reduce motion), backup reminders, update toast rules.
+- Performance and memory polish, asset loading (room kits unloaded on transition), app icon and splash.
+- **Done when:** the e2e suite, the balance report and the phone checklist all pass; `SEGMENT-2-REVIEW.md` is written.
+
+**Feedback checkpoint 2.** James plays all of Gravehollow with real art. Questions: do the characters look good enough or should heads be commissioned; which classes feel best/worst; is durability/repair a chore; Insight rate; chest cadence; what to build first in Segment 3 (co-op vs Dungeon 2).
+
+## 3. Segment 3 — together, and beyond (Phases 9–12): *co-op, two more dungeons, the Beast Tamer, Wildsong pets, release*
+
+### Phase 9 — Co-op
+- `client/src/net/`: Transport interface; host sequencing, intents vs commands, desync hashes, snapshot + log-tail join, reconnect with tokens, host migration; the Lobby at the Lantern Inn (create → invite code; join → code); **Trystero** WebRTC transport; the **Cloudflare Worker relay** (James creates the free account; Claude Code deploys with `wrangler`); grouped decision windows, 20 s timers, AI fallback, door proposals, loot pick order, drop-in at rooms, revive budgets per floor in co-op.
+- Tests: two browser contexts in Playwright playing a delve through both transports; a 4-phone checklist for James and three friends.
+- **Done when:** two phones on different networks complete a delve together through the relay, and four browser contexts complete one in CI through Local.
+
+### Phase 10 — The Fungal Deep and Emberforge
+- Dungeon 2 (L12–26) and Dungeon 3 (L24–38) from `07` §3–§4 and `06` §4–§5: kits, templates, 6–8 monsters per zone built from the one-liners into full entries first (docs), hunters, zone bosses, final bosses (the Sporemother, the Forge-Tyrant), the signature mechanics (spore load, heat), materials C–A/S rungs, items S, Grand chests at those bands, contracts, the overworld travel and unlock rules.
+- Balance pass per dungeon.
+- **Done when:** both dungeons clear on Normal solo and with four (Local) within targets; `docs/balance/<date>-deep-and-forge.md`.
+
+### Phase 11 — Beast Tamer, pets depth, Wildsong Ranch import, endgame
+- The Beast Tamer class (gear set, 45 skills, summons as timeline actors), hired companions for solo, pet bond stars, the **Ranch Shrine** at the Stables: import a Wildsong Ranch share code → a pet of grade ≤ A tagged *Ranch-raised* (`14-IDEAS.md` has the mapping).
+- Endgame: Tier V skills, SS items and the eleven God items, Divine Shard forging, Hard/Nightmare rewards, titles and the codex completion rewards; Frostmarch Citadel **designed in full** in the docs (built after launch).
+- **Done when:** a Beast Tamer with a Ranch-raised pet clears Gravehollow; a God item can be forged from ten shards; lint has rules for every new kind.
+
+### Phase 12 — Release
+- README for players (install, backup, co-op invite codes), `CREDITS.md`, the privacy note, the odds screen final copy, store-quality icon/screenshots in the repo, a settings "Reset" and "Export everything".
+- Final balance report, the full e2e + shots set, a last performance soak, `v1.0.0` tag and GitHub Release notes.
+- **Done when:** `SEGMENT-3-REVIEW.md` is written with the launch checklist and the post-launch backlog (`14-IDEAS.md`).
+
+**Feedback checkpoint 3 (launch).** James and friends play. Questions: what to build next (Frostmarch, more classes, Wildsong two-way sync, Play Store).
+
+## 4. Milestones and what James sees
+
+| After | On the phone |
+|---|---|
+| P1 | the title screen, installed |
+| P4 | a full Cellars delve with boxes and capsules; town; chests |
+| P5 | his hero, in 3D, in the viewer, in every class and species |
+| P6 | the Cellars, Crypts and Vault in 3D with every monster |
+| P7 | the Hollow King beaten; a +N Skysteel-promoted sword; a Tier IV Insight |
+| P8 | music, tutorial, polish — "the game" |
+| P9 | a delve with a friend over the internet |
+| P10 | two new dungeons |
+| P11 | the Beast Tamer and a Wildsong monster at his side |
+| P12 | v1.0 |
+
+## 5. Risks to the schedule
+
+- **Phase 5–6 art** is the long pole and the quality risk; it is sequenced after the sim so the game is already playable and the review loop has something to show. If the renders do not meet the bar after three rounds per asset, the segment ships with the best round and the review lists what an artist would do (`11` §10).
+- **Phase 9 networking** depends on James's friends' networks; the relay is the hedge.
+- **Content volume** is mitigated by content-as-data and the linter; the docs already hold the numbers.
+
+**Open questions**
+1. Segment 3 order: co-op first (recommended — it is the game's promise) or Dungeon 2 first?
+2. Should Frostmarch Citadel be built inside Segment 3 (stretch) or after launch (recommended)?

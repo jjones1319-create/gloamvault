@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gloamvault.dev/schemas/item-set.schema.json",
+  "title": "Item set",
+  "description": "A gear set with 2-piece and 4-piece bonuses on the five armor pieces of one family, or a 2-piece bonus on a ring pair (03-GAME-DESIGN §6.2; the table of 08-ITEMS.md §6). One file per set under content/sets/<id>.json; each piece is an ordinary item file whose setId points here and whose set line spends one affix slot. Membership survives promotion; the bonuses do not ride the ladder.",
+  "type": "object",
+  "properties": {
+    "id": { "$ref": "common.schema.json#/$defs/id" },
+    "name": { "type": "string", "minLength": 1 },
+    "family": {
+      "type": "string",
+      "description": "The armor family the pieces belong to, or 'ringPair' for a two-ring set.",
+      "enum": ["plate", "mail", "leather", "robes", "ringPair"]
+    },
+    "theme": { "type": "string", "description": "The zone or family it is themed on ('the Crypts, Gravehollow F4–6').", "minLength": 1 },
+    "classIds": {
+      "$ref": "common.schema.json#/$defs/idList",
+      "description": "Classes the set is written for; empty means any class."
+    },
+    "pieces": {
+      "type": "array",
+      "description": "Item ids of the members: five armor pieces (helmet, chest, legs, boots, gloves) or two rings. The linter checks each exists, carries this setId and sits in the right slot.",
+      "items": { "$ref": "common.schema.json#/$defs/id" },
+      "minItems": 2,
+      "maxItems": 5,
+      "uniqueItems": true
+    },
+    "bonuses": {
+      "type": "object",
+      "description": "Effect lines by pieces worn. A ring pair has only '2'.",
+      "properties": {
+        "2": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/effect" }, "minItems": 1 },
+        "4": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/effect" }, "minItems": 1 }
+      },
+      "required": ["2"],
+      "additionalProperties": false
+    },
+    "bonusText": {
+      "type": "object",
+      "description": "The bonus lines as the card prints them.",
+      "properties": {
+        "2": { "type": "string", "minLength": 1 },
+        "4": { "type": "string", "minLength": 1 }
+      },
+      "required": ["2"],
+      "additionalProperties": false
+    },
+    "gradeMin": { "$ref": "common.schema.json#/$defs/grade", "description": "The lowest grade the pieces drop at (08 §6 'Grades D–B': D)." },
+    "gradeMax": {
+      "description": "The highest grade the pieces drop at; null when only the floor's shape bounds it.",
+      "anyOf": [{ "$ref": "common.schema.json#/$defs/grade" }, { "type": "null" }]
+    },
+    "dropChance": { "$ref": "common.schema.json#/$defs/percent", "description": "Share of gear rolls at grades that have sets which come up as a set piece (08 §10.1: 15)." }
+  },
+  "required": ["id", "name", "family", "theme", "classIds", "pieces", "bonuses", "bonusText", "gradeMin", "gradeMax", "dropChance"],
+  "additionalProperties": false,
+  "allOf": [
+    { "if": { "properties": { "family": { "const": "ringPair" } }, "required": ["family"] }, "then": { "properties": { "pieces": { "type": "array", "maxItems": 2 }, "bonuses": { "type": "object", "not": { "type": "object", "required": ["4"] } }, "bonusText": { "type": "object", "not": { "type": "object", "required": ["4"] } } } } },
+    { "if": { "properties": { "family": { "enum": ["plate", "mail", "leather", "robes"] } }, "required": ["family"] }, "then": { "properties": { "pieces": { "type": "array", "minItems": 5 }, "bonuses": { "type": "object", "required": ["4"] }, "bonusText": { "type": "object", "required": ["4"] } } } }
+  ]
+}

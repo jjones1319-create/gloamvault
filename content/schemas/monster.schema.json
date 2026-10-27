@@ -1,0 +1,253 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gloamvault.dev/schemas/monster.schema.json",
+  "title": "Monster",
+  "description": "A monster template (03-GAME-DESIGN §11.2–§11.3, §4.5, §6.5; the entries of 06-MONSTERS.md §3). Everything about a monster derives from its level and this template: the multipliers scale the band's baseline, the attacks are its moves, parts are what it drops. One file per monster under content/monsters/<id>.json; bosses and hunters are monsters with the boss or hunter block filled.",
+  "type": "object",
+  "properties": {
+    "id": { "$ref": "common.schema.json#/$defs/id" },
+    "name": { "type": "string", "minLength": 1 },
+    "familyId": { "$ref": "common.schema.json#/$defs/id", "description": "The monster family (one per zone; every family has all five roles). Families map to a material family and a floor band (06 §1)." },
+    "dungeonId": { "$ref": "common.schema.json#/$defs/id" },
+    "zoneId": { "$ref": "common.schema.json#/$defs/id" },
+    "role": { "$ref": "common.schema.json#/$defs/role" },
+    "size": { "$ref": "common.schema.json#/$defs/size" },
+    "rows": {
+      "type": "array",
+      "description": "Rows this monster may be placed in (§3.3).",
+      "items": { "type": "string", "enum": ["front", "back"] },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "levelBand": { "$ref": "common.schema.json#/$defs/intRange", "description": "Monster levels this template appears at." },
+    "multipliers": {
+      "type": "object",
+      "description": "Scale the level's baseline stats (1.0 = the band's ordinary monster).",
+      "properties": {
+        "hp": { "type": "number", "exclusiveMinimum": 0 },
+        "attack": { "type": "number", "exclusiveMinimum": 0 },
+        "defense": { "type": "number", "minimum": 0 }
+      },
+      "required": ["hp", "attack", "defense"],
+      "additionalProperties": false
+    },
+    "speed": { "type": "integer", "description": "Timeline Speed (§3.1), 100 = a hero at all 10s.", "minimum": 40, "maximum": 300 },
+    "xpClass": {
+      "type": "integer",
+      "description": "XP weight before the difficulty curve (§5.1): 1 fodder, 2 special, 3 elite, 6 hunter/monster, 25 boss.",
+      "enum": [1, 2, 3, 6, 25]
+    },
+    "goldMultiplier": { "type": "number", "description": "Scales the band's gold drop.", "minimum": 0 },
+    "ambushModifier": { "type": "integer", "description": "This monster's individual surprise modifier in percentage points (06 §8.3: rats +15, bats +10, constructs −15); an encounter uses the highest in it, not the sum.", "minimum": -50, "maximum": 50 },
+    "attacks": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/attack" },
+      "minItems": 1
+    },
+    "resist": { "$ref": "#/$defs/damageTypeList", "description": "Damage types taken at ×0.5 (§3.4)." },
+    "weak": { "$ref": "#/$defs/damageTypeList", "description": "Damage types taken at ×1.5." },
+    "immune": { "$ref": "#/$defs/damageTypeList", "description": "Damage types taken at ×0." },
+    "statusImmune": {
+      "type": "array",
+      "description": "Statuses that never apply (06 §7: Undead shrug off Poison and Fear, bone also Bleed).",
+      "items": { "$ref": "common.schema.json#/$defs/status" },
+      "uniqueItems": true
+    },
+    "behavior": {
+      "type": "object",
+      "description": "The monster's gambit: ordered if/then lines in the same language as hero AI rules (§3.6), first match wins; the last line is the default.",
+      "properties": {
+        "rules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "if": { "type": "string", "description": "A condition, e.g. 'self HP < 25%' or 'ally count < 2'; 'always' for the default.", "minLength": 1 },
+              "then": { "type": "string", "description": "An action: an attack id, 'flee', 'guard' or 'swap row'.", "minLength": 1 }
+            },
+            "required": ["if", "then"],
+            "additionalProperties": false
+          },
+          "minItems": 1
+        },
+        "fleesAtPercent": { "$ref": "common.schema.json#/$defs/percent", "description": "HP% at which it tries to leave the fight; 0 never flees." }
+      },
+      "required": ["rules", "fleesAtPercent"],
+      "additionalProperties": false
+    },
+    "parts": {
+      "type": "object",
+      "description": "What a kill rolls (§6.5): a common part at 35%, a rare part at 4%; a part break doubles the rare roll.",
+      "properties": {
+        "common": { "$ref": "#/$defs/drop" },
+        "rare": { "$ref": "#/$defs/drop" },
+        "breakLimb": {
+          "description": "A marked limb; hitting it in combat applies the effect and doubles the rare roll. null when the monster has none.",
+          "anyOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string", "minLength": 1 },
+                "effect": { "$ref": "common.schema.json#/$defs/effect" }
+              },
+              "required": ["name", "effect"],
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "required": ["common", "rare", "breakLimb"],
+      "additionalProperties": false
+    },
+    "monsterTechniqueSkillIds": {
+      "$ref": "common.schema.json#/$defs/idList",
+      "description": "Skill ids heroes can Insight while this monster uses the move (§7.5; 06 §3 'Technique:' lines). One monster may teach several classes (the Bone Knight teaches the Warden's Bone Knight's Stand and the Blade's Ghoul's Grasp); empty when it teaches nothing. The linter checks each is a Tier III–IV class skill whose monsterTechniqueOf is this monster."
+    },
+    "elitePool": {
+      "type": "array",
+      "description": "Elite affix ids this monster may spawn with when it fills an Elite room as the champion (06 §2). Empty for Monsters, bosses and hunters, which are never promoted.",
+      "items": { "$ref": "common.schema.json#/$defs/eliteAffixId" },
+      "uniqueItems": true
+    },
+    "boss": {
+      "description": "Boss rules; null for everything that is not a boss.",
+      "anyOf": [{ "type": "null" }, { "$ref": "#/$defs/boss" }]
+    },
+    "hunter": {
+      "description": "Floor-hunter rules (§4.5, 06 §3 'Stalking:' lines); null for everything that is not a hunter.",
+      "anyOf": [{ "type": "null" }, { "$ref": "#/$defs/hunter" }]
+    },
+    "visual": {
+      "type": "object",
+      "properties": {
+        "baseMesh": { "type": "string", "minLength": 1 },
+        "scale": { "type": "number", "exclusiveMinimum": 0 },
+        "variantOf": { "$ref": "common.schema.json#/$defs/nullableId", "description": "The monster whose mesh this re-tints or re-scales; null for a base mesh." },
+        "palette": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/hexColor" }, "minItems": 1 },
+        "reads200px": { "type": "boolean", "description": "Passed the phone readability check: the silhouette reads at 200px." },
+        "animations": { "type": "array", "items": { "type": "string", "minLength": 1 }, "minItems": 1, "uniqueItems": true },
+        "triBudget": { "type": "integer", "minimum": 1 }
+      },
+      "required": ["baseMesh", "scale", "variantOf", "palette", "reads200px", "animations", "triBudget"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["id", "name", "familyId", "dungeonId", "zoneId", "role", "size", "rows", "levelBand", "multipliers", "speed", "xpClass", "goldMultiplier", "ambushModifier", "attacks", "resist", "weak", "immune", "statusImmune", "behavior", "parts", "monsterTechniqueSkillIds", "elitePool", "boss", "hunter", "visual"],
+  "additionalProperties": false,
+  "allOf": [
+    { "if": { "properties": { "role": { "const": "boss" } }, "required": ["role"] }, "then": { "properties": { "boss": { "type": "object" }, "hunter": { "type": "null" }, "xpClass": { "const": 25 }, "elitePool": { "type": "array", "maxItems": 0 } } } },
+    { "if": { "properties": { "role": { "const": "hunter" } }, "required": ["role"] }, "then": { "properties": { "hunter": { "type": "object" }, "boss": { "type": "null" }, "elitePool": { "type": "array", "maxItems": 0 } } } },
+    { "if": { "properties": { "role": { "enum": ["fodder", "elite", "special", "monster"] } }, "required": ["role"] }, "then": { "properties": { "boss": { "type": "null" }, "hunter": { "type": "null" } } } },
+    { "if": { "properties": { "role": { "const": "monster" } }, "required": ["role"] }, "then": { "properties": { "elitePool": { "type": "array", "maxItems": 0 } } } }
+  ],
+  "$defs": {
+    "damageTypeList": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/damageType" },
+      "uniqueItems": true
+    },
+    "attack": {
+      "type": "object",
+      "properties": {
+        "id": { "$ref": "common.schema.json#/$defs/id", "description": "Unique within the monster; behavior lines and boss phases refer to it." },
+        "name": { "type": "string", "minLength": 1 },
+        "damageType": { "$ref": "common.schema.json#/$defs/damageType" },
+        "weight": { "$ref": "common.schema.json#/$defs/weight" },
+        "multiplier": { "type": "number", "description": "Scale of the monster's Attack (1.0 = a basic hit); 0 for a move that does not hit.", "minimum": 0 },
+        "target": { "$ref": "common.schema.json#/$defs/target", "description": "Who it hits; the monster's enemies are the heroes." },
+        "effects": { "$ref": "common.schema.json#/$defs/effectList", "description": "Lines beyond the hit itself (statuses, timeline pushes, summons)." },
+        "aiWeight": { "$ref": "common.schema.json#/$defs/percent", "description": "Relative pick weight among the attacks available (the phase's list for a boss) when no behavior rule chooses; 06's lines sum to 100 per phase, but the sim normalises." },
+        "tell": {
+          "description": "The one-line warning shown the turn before a telegraphed move (06 §8.10); null for an untelegraphed one.",
+          "anyOf": [{ "type": "string", "minLength": 1 }, { "type": "null" }]
+        }
+      },
+      "required": ["id", "name", "damageType", "weight", "multiplier", "target", "effects", "aiWeight", "tell"],
+      "additionalProperties": false
+    },
+    "drop": {
+      "type": "object",
+      "properties": {
+        "materialId": { "$ref": "common.schema.json#/$defs/id", "description": "Item id of the material unit." },
+        "itemId": { "$ref": "common.schema.json#/$defs/id", "description": "Item id of a rare part (an affix stone, a pet egg or a special)." },
+        "chance": { "$ref": "common.schema.json#/$defs/percent" },
+        "quantity": { "$ref": "common.schema.json#/$defs/intRange", "description": "Units per drop; bosses drop a guaranteed stack of 5–10." }
+      },
+      "required": ["chance", "quantity"],
+      "oneOf": [
+        { "required": ["materialId"], "not": { "required": ["itemId"] } },
+        { "required": ["itemId"], "not": { "required": ["materialId"] } }
+      ],
+      "additionalProperties": false
+    },
+    "boss": {
+      "type": "object",
+      "description": "Zone bosses have 2 phases, final bosses 3 and an arena rule (§11.3). The room, the arena rule's wording and add timing are 07-DUNGEONS.md §2.8's; the phases, attacks and drops are 06-MONSTERS.md's.",
+      "properties": {
+        "phases": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "atHpPercent": { "$ref": "common.schema.json#/$defs/percent", "description": "The phase begins when HP falls to this percent; the first phase is 100." },
+              "attacks": { "type": "array", "description": "Attack ids available in this phase.", "items": { "$ref": "common.schema.json#/$defs/id" }, "minItems": 1, "uniqueItems": true },
+              "adds": {
+                "type": "array",
+                "description": "Monsters summoned when the phase begins.",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "monsterId": { "$ref": "common.schema.json#/$defs/id" },
+                    "count": { "type": "integer", "minimum": 1 },
+                    "row": { "type": "string", "enum": ["front", "back"] }
+                  },
+                  "required": ["monsterId", "count", "row"],
+                  "additionalProperties": false
+                }
+              },
+              "arenaRule": {
+                "description": "A sentence the sim implements by customId-style name, e.g. 'the floor floods: back row takes 5% max HP per round'; null when none.",
+                "anyOf": [{ "type": "string", "minLength": 1 }, { "type": "null" }]
+              }
+            },
+            "required": ["atHpPercent", "attacks", "adds", "arenaRule"],
+            "additionalProperties": false
+          },
+          "minItems": 2,
+          "maxItems": 3
+        },
+        "everyKill": {
+          "$ref": "common.schema.json#/$defs/rewardList",
+          "description": "Lines every kill gives (08 §11 'Every kill'; 06: 'later kills'): the material stack, the grade-rolled item, stones, and chance lines such as the God item at 1% (a separate line per difficultyMin) or the Divine Shard at 10%."
+        },
+        "firstKill": {
+          "$ref": "common.schema.json#/$defs/rewardList",
+          "description": "Lines the first kill adds on top of everyKill (06 §3 'First-kill drops', 08 §11 'First kill adds'): the zone Relic, the Tier III+ Tome, chest keys, a title, the zone's Waystone, +1 Luck on a final boss. Hard/Nightmare extras carry difficultyMin."
+        },
+        "immunities": {
+          "type": "array",
+          "description": "Statuses a boss shrugs off (06 §7: Petrify, Grab, Web, Root, Fear; Stun becomes Daze).",
+          "items": { "$ref": "common.schema.json#/$defs/status" },
+          "uniqueItems": true
+        },
+        "cannotFlee": { "type": "boolean", "description": "Always true for bosses (§12.1); kept explicit so the sim reads one field." }
+      },
+      "required": ["phases", "everyKill", "firstKill", "immunities", "cannotFlee"],
+      "additionalProperties": false
+    },
+    "hunter": {
+      "type": "object",
+      "properties": {
+        "levelOffset": { "type": "integer", "description": "Levels above the floor's band the hunter spawns at (06 §3: level = floor + 3). The default is 3; the linter warns when it differs from the dungeon's other hunters.", "default": 3, "minimum": 0, "maximum": 10 },
+        "entersAtTick": { "type": "integer", "description": "Floor-clock tick at which it enters (§4.5: 40).", "minimum": 1 },
+        "roomsPerTick": { "type": "number", "description": "Rooms moved toward the party per tick (§4.5: one room every 2 ticks = 0.5).", "exclusiveMinimum": 0 },
+        "cannotFlee": { "type": "boolean", "description": "Whether the party may flee the hunter's fight." },
+        "guaranteedRarePart": { "type": "boolean", "description": "Drops the rare part on every kill (§4.5)." },
+        "movesDuringRest": { "type": "boolean", "description": "Keeps moving while the party rests (07 §2.7: the Vault Leech)." }
+      },
+      "required": ["levelOffset", "entersAtTick", "roomsPerTick", "cannotFlee", "guaranteedRarePart", "movesDuringRest"],
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gloamvault.dev/schemas/skill.schema.json",
+  "title": "Skill",
+  "description": "One skill: a class skill (45 per class, 3 schools × 5 tiers × 3; the sheets in docs/classes/), a field skill, a pet active, or a monster-only skill (03-GAME-DESIGN §7, §5.2). One file per skill at content/skills/<class>/<id>.json, where <class> is the classId (field, pet and monster skills under those folders). Tier is fixed; rank 1–10 lives on the hero.",
+  "type": "object",
+  "properties": {
+    "id": { "$ref": "common.schema.json#/$defs/id" },
+    "classId": {
+      "$ref": "common.schema.json#/$defs/id",
+      "description": "The class id this skill belongs to, or one of the literals 'field' (a field skill, §7.6), 'pet' (a pet active, §9) or 'monster' (a skill only monsters use)."
+    },
+    "school": {
+      "$ref": "common.schema.json#/$defs/id",
+      "description": "A school id from the class's schools[]; for 'field', 'pet' and 'monster' skills, the same literal as classId."
+    },
+    "tier": {
+      "type": "integer",
+      "description": "Tier I–V (§7.2). Field, pet and monster-only skills use 1.",
+      "minimum": 1,
+      "maximum": 5
+    },
+    "name": { "type": "string", "minLength": 1 },
+    "description": { "type": "string", "description": "The card text at rank 1.", "minLength": 1 },
+    "type": {
+      "type": "string",
+      "description": "active: takes a turn and costs pool; passive: always on while equipped in a passive slot.",
+      "enum": ["active", "passive"]
+    },
+    "cost": {
+      "type": "integer",
+      "description": "Pool cost (stamina or mana by class) at rank 1. 0 for passives and for the Ultimate, which costs 100 Momentum instead (§3.2).",
+      "minimum": 0
+    },
+    "weight": {
+      "description": "Timeline weight of the action (§3.1). Required for actives; null for passives.",
+      "anyOf": [{ "$ref": "common.schema.json#/$defs/weight" }, { "type": "null" }]
+    },
+    "target": { "$ref": "common.schema.json#/$defs/target" },
+    "effects": {
+      "$ref": "common.schema.json#/$defs/effectList",
+      "description": "What the skill does at rank 1; rankScaling grows it."
+    },
+    "prerequisiteId": {
+      "$ref": "common.schema.json#/$defs/nullableId",
+      "description": "The Tier N−1 skill of the same school that must be known first (§7.1). null at Tier I and for field skills."
+    },
+    "isUltimate": { "type": "boolean", "description": "The class's one Ultimate: Tier III, 100 Momentum, never misses (§7.1)." },
+    "monsterTechniqueOf": {
+      "$ref": "common.schema.json#/$defs/nullableId",
+      "description": "Monster id whose move this is; such a skill only Insights while that monster uses it (§7.5). null for ordinary skills."
+    },
+    "requirements": {
+      "type": "object",
+      "description": "Equipment the skill needs in hand. Omit when none.",
+      "properties": {
+        "shield": { "type": "boolean", "description": "Needs a shield in the off hand (Shield Slam)." },
+        "weaponTypes": {
+          "type": "array",
+          "description": "Needs one of these weapon types in the main hand (Executioner: greatsword or greataxe).",
+          "items": { "$ref": "common.schema.json#/$defs/weaponType" },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "dualWield": { "type": "boolean", "description": "Needs two one-handed weapons (Iron Dance)." },
+        "twoHanded": { "type": "boolean", "description": "Needs a two-handed weapon in both hands." }
+      },
+      "minProperties": 1,
+      "additionalProperties": false,
+      "not": { "required": ["dualWield", "twoHanded"] }
+    },
+    "rankScaling": {
+      "type": "object",
+      "description": "Per-rank change as signed percentages of the rank-1 value (§5.2 default: +4% effect, −2% cost).",
+      "properties": {
+        "effectPerRank": { "type": "integer", "minimum": 0, "maximum": 20 },
+        "costPerRank": { "type": "integer", "minimum": -20, "maximum": 0 }
+      },
+      "required": ["effectPerRank", "costPerRank"],
+      "additionalProperties": false
+    },
+    "mastery": {
+      "type": "object",
+      "description": "The rank-10 Mastery line (§5.2).",
+      "properties": {
+        "text": { "type": "string", "minLength": 1 },
+        "effects": { "$ref": "common.schema.json#/$defs/effectList", "description": "Lines added or replacing at rank 10." }
+      },
+      "required": ["text", "effects"],
+      "additionalProperties": false
+    },
+    "tags": {
+      "type": "array",
+      "description": "What the skill is for; the Skill Hall's 'Recommended loadout' and the AI read these.",
+      "items": {
+        "type": "string",
+        "enum": ["aoe", "singleTarget", "control", "mobility", "momentum", "light", "scouting", "heal", "cleanse", "buff", "debuff", "dot", "shield", "taunt", "reach", "summon", "revive", "utility", "field"]
+      },
+      "uniqueItems": true
+    },
+    "xpTags": {
+      "type": "array",
+      "description": "Attributes a meaningful use of this skill trains (§5.2). Luck is never trainable.",
+      "items": { "$ref": "common.schema.json#/$defs/trainableAttribute" },
+      "uniqueItems": true
+    },
+    "aiHints": {
+      "type": "object",
+      "description": "How a gambit or the balance runner's scripted policy should treat this skill.",
+      "properties": {
+        "role": { "type": "string", "enum": ["attack", "heal", "buff", "debuff", "control", "defend", "utility"] },
+        "priority": { "type": "integer", "description": "0 never picked on auto, 100 always first.", "minimum": 0, "maximum": 100 }
+      },
+      "required": ["role", "priority"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["id", "classId", "school", "tier", "name", "description", "type", "cost", "weight", "target", "effects", "prerequisiteId", "isUltimate", "monsterTechniqueOf", "rankScaling", "mastery", "tags", "xpTags", "aiHints"],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": { "properties": { "type": { "const": "active" } }, "required": ["type"] },
+      "then": {
+        "properties": {
+          "weight": { "$ref": "common.schema.json#/$defs/weight" },
+          "effects": { "type": "array", "minItems": 1 }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "type": { "const": "passive" } }, "required": ["type"] },
+      "then": {
+        "properties": {
+          "weight": { "type": "null" },
+          "cost": { "const": 0 }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "isUltimate": { "const": true } }, "required": ["isUltimate"] },
+      "then": {
+        "properties": {
+          "tier": { "const": 3 },
+          "type": { "const": "active" },
+          "cost": { "const": 0 }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gloamvault.dev/schemas/chest.schema.json",
+  "title": "Chest",
+  "description": "A chest sold by the Curio Merchant for gold (03-GAME-DESIGN §8.3): its price in R, its band-relative odds table, its pity counters and its duplicate rule. One file per chest under content/chests/<id>.json. The Odds button shows exactly these numbers.",
+  "type": "object",
+  "properties": {
+    "id": { "$ref": "common.schema.json#/$defs/id" },
+    "name": { "type": "string", "minLength": 1 },
+    "kind": { "type": "string", "enum": ["gear", "petEgg", "materialCrate", "skillTome"] },
+    "tier": { "type": "string", "description": "Grand shifts the table one grade up and adds the Divine Shard line.", "enum": ["standard", "grand"] },
+    "priceR": { "type": "number", "description": "Price in units of R, the median gold of one delve at the player's band (§8.1).", "exclusiveMinimum": 0 },
+    "subtypes": {
+      "type": "array",
+      "description": "Sub-types the buyer picks from so dupes halve (§8.3); empty for chests without a choice.",
+      "items": { "type": "string", "enum": ["weapon", "armor", "trinket"] },
+      "uniqueItems": true
+    },
+    "oddsByBand": {
+      "type": "array",
+      "description": "One table per band the chest can be bought at, keyed by the band's centre grade. The linter checks each table sums to 100 and that God is never above 0 here.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "centreGrade": { "$ref": "common.schema.json#/$defs/grade" },
+          "table": {
+            "type": "object",
+            "description": "grade → percent.",
+            "propertyNames": { "$ref": "common.schema.json#/$defs/grade" },
+            "additionalProperties": { "$ref": "common.schema.json#/$defs/percent" },
+            "minProperties": 1
+          }
+        },
+        "required": ["centreGrade", "table"],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "pity": {
+      "type": "object",
+      "description": "Shown counters (§8.3): a ≥ +1-grade item within plusOneWithin chests, a ≥ +2 within plusTwoWithin.",
+      "properties": {
+        "plusOneWithin": { "type": "integer", "minimum": 1 },
+        "plusTwoWithin": { "type": "integer", "minimum": 1 }
+      },
+      "required": ["plusOneWithin", "plusTwoWithin"],
+      "additionalProperties": false
+    },
+    "bagWithoutReplacement": { "type": "boolean", "description": "Draws from a bag that empties before refilling (§8.3: Skill Tome chests)." },
+    "tomeTiers": {
+      "description": "For Skill Tome chests, the tiers in the bag (§8.3: Standard I–III, Grand II–IV); null for other kinds.",
+      "anyOf": [{ "$ref": "common.schema.json#/$defs/intRange" }, { "type": "null" }]
+    },
+    "dupeRule": { "type": "string", "description": "What a duplicate becomes (§8.3): gear → salvage, pet → bond star, Tome → rank XP.", "enum": ["salvage", "bond", "rankXp"] },
+    "divineShardChance": { "$ref": "common.schema.json#/$defs/percent", "description": "Chance of a Divine Shard alongside the item (§8.3: Grand 5, Standard 0)." }
+  },
+  "required": ["id", "name", "kind", "tier", "priceR", "subtypes", "oddsByBand", "pity", "bagWithoutReplacement", "tomeTiers", "dupeRule", "divineShardChance"],
+  "additionalProperties": false,
+  "allOf": [
+    { "if": { "properties": { "kind": { "const": "skillTome" } }, "required": ["kind"] }, "then": { "properties": { "bagWithoutReplacement": { "const": true }, "tomeTiers": { "type": "object" }, "dupeRule": { "const": "rankXp" } } } },
+    { "if": { "properties": { "kind": { "const": "gear" } }, "required": ["kind"] }, "then": { "properties": { "dupeRule": { "const": "salvage" }, "tomeTiers": { "type": "null" } } } },
+    { "if": { "properties": { "kind": { "const": "petEgg" } }, "required": ["kind"] }, "then": { "properties": { "dupeRule": { "const": "bond" }, "tomeTiers": { "type": "null" } } } }
+  ]
+}

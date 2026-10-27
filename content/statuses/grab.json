@@ -1,0 +1,38 @@
+{
+  "id": "grab",
+  "name": "Grab",
+  "description": "Held: you cannot act until the grabber is hurt enough, an ally frees you, or the grabber is Dazed, Stunned, Blinded or killed. Stonefoot and Huge are immune.",
+  "kind": "control",
+  "element": null,
+  "tickAt": "turnEnd",
+  "magnitudeOf": null,
+  "percent": null,
+  "tickDamageType": null,
+  "ignoresDefense": false,
+  "stacking": "refresh",
+  "maxStacks": 1,
+  "durationDefault": null,
+  "endsWhen": "freed: the grabber has taken 10% of its max HP since the Grab, an ally uses Free Ally, the grabber is Dazed, Stunned, Blinded or killed, or the grabber’s role cap of turns passes (D-047)",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "grab-held",
+      "note": "cannot act; targetable only by the grabber; Net and Cocoon are Grabs"
+    }
+  ],
+  "upgradesTo": null,
+  "cleansedBy": [
+    "freeAlly"
+  ],
+  "appliesEnergyDelta": 0,
+  "skipsActionChance": 0,
+  "immunityRoles": [
+    "boss",
+    "hunter"
+  ],
+  "bossBecomes": null,
+  "visual": {
+    "icon": "status-grab",
+    "tint": "#c08457"
+  }
+}

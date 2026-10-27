@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gloamvault.dev/schemas/affix.schema.json",
+  "title": "Affix",
+  "description": "An item affix from the pool (03-GAME-DESIGN §6.2): a prefix or suffix with one roll range per grade band. One file per affix under content/affixes/<id>.json. Items carry rolled lines by affixId; the blacksmith can lock one and re-roll the rest.",
+  "type": "object",
+  "properties": {
+    "id": { "$ref": "common.schema.json#/$defs/id" },
+    "name": { "type": "string", "description": "The name fragment, e.g. 'of Vigor' or 'Keen'.", "minLength": 1 },
+    "position": {
+      "type": "string",
+      "description": "Where the fragment sits in the item's display name.",
+      "enum": ["prefix", "suffix"]
+    },
+    "lines": {
+      "type": "array",
+      "description": "One entry per grade band, non-overlapping, in ladder order. Each is either a stat roll (stat + unit + min/max) or an effect whose magnitude rolls min–max into the effect's amount or percent.",
+      "items": { "$ref": "#/$defs/line" },
+      "minItems": 1
+    },
+    "slots": {
+      "type": "array",
+      "description": "Slots this affix can roll on.",
+      "items": { "$ref": "common.schema.json#/$defs/slot" },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "weight": { "type": "integer", "description": "Roll weight in the pool, 1 rare – 5 common.", "minimum": 1, "maximum": 5 },
+    "tags": {
+      "type": "array",
+      "description": "Free grouping tags for the pool (offensive, defensive, element, gold …).",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    }
+  },
+  "required": ["id", "name", "position", "lines", "slots", "weight", "tags"],
+  "additionalProperties": false,
+  "$defs": {
+    "line": {
+      "type": "object",
+      "properties": {
+        "bandMin": { "$ref": "common.schema.json#/$defs/grade", "description": "Lowest item grade this line rolls on." },
+        "bandMax": { "$ref": "common.schema.json#/$defs/grade", "description": "Highest item grade this line rolls on." },
+        "stat": {
+          "description": "A derived stat or an attribute the line adds to.",
+          "anyOf": [{ "$ref": "common.schema.json#/$defs/derivedStat" }, { "$ref": "common.schema.json#/$defs/attribute" }]
+        },
+        "unit": { "type": "string", "description": "flat points or percent of the stat.", "enum": ["flat", "percent"] },
+        "effect": {
+          "$ref": "common.schema.json#/$defs/effect",
+          "description": "An on-hit or passive effect line (element damage, a status chance, +gold found). Its amount/percent/chance is the rolled value."
+        },
+        "min": { "type": "integer", "description": "Lowest roll in this band." },
+        "max": { "type": "integer", "description": "Highest roll in this band." }
+      },
+      "required": ["bandMin", "bandMax", "min", "max"],
+      "additionalProperties": false,
+      "oneOf": [
+        { "required": ["stat", "unit"], "not": { "required": ["effect"] } },
+        { "required": ["effect"], "not": { "anyOf": [{ "required": ["stat"] }, { "required": ["unit"] }] } }
+      ]
+    }
+  }
+}

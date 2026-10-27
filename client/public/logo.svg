@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="42%" r="55%">
+      <stop offset="0%" stop-color="#ffb347" stop-opacity="0.95"/>
+      <stop offset="45%" stop-color="#c2410c" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#120f14" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="stone" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4a4650"/>
+      <stop offset="100%" stop-color="#1f1b24"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="#120f14"/>
+  <circle cx="256" cy="214" r="190" fill="url(#glow)"/>
+  <path d="M96 440 V250 a160 160 0 0 1 320 0 V440 Z" fill="url(#stone)" stroke="#0b090d" stroke-width="10" stroke-linejoin="round"/>
+  <path d="M140 440 V262 a116 116 0 0 1 232 0 V440 Z" fill="#0b090d"/>
+  <rect x="244" y="300" width="24" height="120" rx="8" fill="#6b4a2b" stroke="#0b090d" stroke-width="6"/>
+  <path d="M256 196 c-38 44 -44 74 -22 98 c6 -18 14 -28 22 -34 c8 6 16 16 22 34 c22 -24 16 -54 -22 -98 Z" fill="#ffb347"/>
+  <path d="M256 226 c-20 26 -22 44 -10 58 c3 -10 6 -16 10 -20 c4 4 7 10 10 20 c12 -14 10 -32 -10 -58 Z" fill="#fff1c7"/>
+  <path d="M232 92 h48 l10 36 h-68 Z" fill="#8a8f98" stroke="#0b090d" stroke-width="6" stroke-linejoin="round"/>
+</svg>

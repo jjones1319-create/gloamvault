@@ -1,0 +1,30 @@
+{
+  "id": "poison",
+  "name": "Poison",
+  "description": "Takes 3% of max HP at the start of each turn, per stack, ignoring armor. Stacks to 5; an Antidote cures it. Dwarves resist it 30% more often; constructs are immune.",
+  "kind": "dot",
+  "element": "poison",
+  "tickAt": "turnStart",
+  "magnitudeOf": "maxHp",
+  "percent": 3,
+  "tickDamageType": "poison",
+  "ignoresDefense": true,
+  "stacking": "stack",
+  "maxStacks": 5,
+  "durationDefault": 4,
+  "endsWhen": null,
+  "effects": [],
+  "upgradesTo": null,
+  "cleansedBy": [
+    "antidote",
+    "cleanse"
+  ],
+  "appliesEnergyDelta": 0,
+  "skipsActionChance": 0,
+  "immunityRoles": [],
+  "bossBecomes": null,
+  "visual": {
+    "icon": "status-poison",
+    "tint": "#5fa83a"
+  }
+}

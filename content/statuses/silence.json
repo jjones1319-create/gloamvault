@@ -1,0 +1,36 @@
+{
+  "id": "silence",
+  "name": "Silence",
+  "description": "No skills and no Ultimate for 2 turns: basic attacks, Guard and items only.",
+  "kind": "control",
+  "element": null,
+  "tickAt": "turnEnd",
+  "magnitudeOf": null,
+  "percent": null,
+  "tickDamageType": null,
+  "ignoresDefense": false,
+  "stacking": "refresh",
+  "maxStacks": 1,
+  "durationDefault": 2,
+  "endsWhen": null,
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "silence-no-skills",
+      "note": "no skills or Ultimate; basic attacks, Guard and items only"
+    }
+  ],
+  "upgradesTo": null,
+  "cleansedBy": [
+    "voice",
+    "cleanse"
+  ],
+  "appliesEnergyDelta": 0,
+  "skipsActionChance": 0,
+  "immunityRoles": [],
+  "bossBecomes": null,
+  "visual": {
+    "icon": "status-silence",
+    "tint": "#9a86c8"
+  }
+}

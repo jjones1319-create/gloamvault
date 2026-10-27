@@ -1,0 +1,175 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gloamvault.dev/schemas/hero.schema.json",
+  "title": "Hero",
+  "description": "The save-side hero (03-GAME-DESIGN §2, §5, §7.3, §12.2): species × class × what they have done. Not content — a record the game writes and migrates by saveVersion. Banked gold lives in the player profile, not here; gold on this record is the delve's unbanked stake.",
+  "type": "object",
+  "properties": {
+    "saveVersion": { "type": "integer", "description": "Schema version of this record; the loader migrates older ones.", "minimum": 1 },
+    "id": { "type": "string", "description": "Unique within the player's armory.", "minLength": 1 },
+    "name": { "type": "string", "minLength": 1, "maxLength": 24 },
+    "speciesId": { "$ref": "common.schema.json#/$defs/id" },
+    "classId": { "$ref": "common.schema.json#/$defs/id" },
+    "level": { "type": "integer", "description": "A milestone of total skill ranks: level N at 8 × N ranks (§2.2).", "minimum": 1 },
+    "attributes": { "$ref": "#/$defs/attributeValues", "description": "Current attribute values." },
+    "attributeXp": {
+      "type": "object",
+      "description": "XP toward the next point, per trainable attribute (§5.2). Luck never trains and cannot appear here.",
+      "propertyNames": { "$ref": "common.schema.json#/$defs/trainableAttribute" },
+      "additionalProperties": { "type": "integer", "minimum": 0 }
+    },
+    "creationValues": { "$ref": "#/$defs/attributeValues", "description": "Attributes at creation; the soft cap is creation value + 2 × Level (§5.2)." },
+    "freePointsSpent": { "type": "integer", "description": "How many of the six free creation points (§2.3; docs/classes: 'plus species, plus 6 free points') were placed; creationValues already holds where. Below 6 means the rest are banked for a later screen.", "minimum": 0, "maximum": 6 },
+    "skills": {
+      "type": "array",
+      "description": "Every skill known, equipped or not (§7.3).",
+      "items": {
+        "type": "object",
+        "properties": {
+          "skillId": { "$ref": "common.schema.json#/$defs/id" },
+          "rank": { "type": "integer", "minimum": 1, "maximum": 10 },
+          "xp": { "type": "integer", "minimum": 0 }
+        },
+        "required": ["skillId", "rank", "xp"],
+        "additionalProperties": false
+      }
+    },
+    "loadout": { "$ref": "#/$defs/loadout", "description": "The equipped loadout: 4 actives + 2 passives + the pet stance (§7.3)." },
+    "loadoutPresets": {
+      "type": "array",
+      "description": "Saved loadouts swappable in town and at rest rooms (docs/05-SPECIES.md Human 'Adaptable': default 2, Humans 3; the fourth is reserved). The linter checks the count against the species' loadoutPresets rule.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "minLength": 1, "maxLength": 24 },
+          "loadout": { "$ref": "#/$defs/loadout" }
+        },
+        "required": ["name", "loadout"],
+        "additionalProperties": false
+      },
+      "maxItems": 4
+    },
+    "fieldSkills": {
+      "type": "object",
+      "description": "All eight field skills (§7.6), each with rank and XP.",
+      "propertyNames": { "$ref": "common.schema.json#/$defs/fieldSkill" },
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "rank": { "type": "integer", "minimum": 1, "maximum": 10 },
+          "xp": { "type": "integer", "minimum": 0 }
+        },
+        "required": ["rank", "xp"],
+        "additionalProperties": false
+      },
+      "required": ["lockpicking", "trapDisarm", "foraging", "fieldRepair", "firstAid", "haggling", "cooking", "cartography"]
+    },
+    "equipment": {
+      "type": "object",
+      "description": "The eleven slots (§6.1); the pet is petInstance. Empty slots are null.",
+      "properties": {
+        "mainHand": { "$ref": "#/$defs/slotItem" },
+        "offHand": { "$ref": "#/$defs/slotItem" },
+        "helmet": { "$ref": "#/$defs/slotItem" },
+        "chest": { "$ref": "#/$defs/slotItem" },
+        "legs": { "$ref": "#/$defs/slotItem" },
+        "boots": { "$ref": "#/$defs/slotItem" },
+        "gloves": { "$ref": "#/$defs/slotItem" },
+        "ring": { "type": "array", "items": { "$ref": "#/$defs/slotItem" }, "minItems": 2, "maxItems": 2 },
+        "talisman": { "$ref": "#/$defs/slotItem" },
+        "relic": { "$ref": "#/$defs/slotItem" }
+      },
+      "required": ["mainHand", "offHand", "helmet", "chest", "legs", "boots", "gloves", "ring", "talisman", "relic"],
+      "additionalProperties": false
+    },
+    "naturalArmor": {
+      "description": "The Draconid's Scales (docs/05-SPECIES.md §3.6): a twelfth, unremovable armor piece with its own item level and XP, no durability; null for every other species. The linter checks it is non-null exactly when the species rule sets naturalArmorBase.",
+      "anyOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "properties": {
+            "defense": { "type": "integer", "description": "Current Defense from the piece (base 8, +2% per item level, Awakened 12).", "minimum": 0 },
+            "itemLevel": { "type": "integer", "description": "1–10; 10 = Awakened.", "minimum": 1, "maximum": 10 },
+            "xp": { "type": "integer", "description": "XP toward the next item level, from hits absorbed.", "minimum": 0 },
+            "affinities": {
+              "type": "array",
+              "description": "Affinity lines at item levels 3/6/9: +5% reduction vs the family absorbed most.",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "familyId": { "$ref": "common.schema.json#/$defs/id" },
+                  "percent": { "type": "integer", "minimum": 1, "maximum": 100 }
+                },
+                "required": ["familyId", "percent"],
+                "additionalProperties": false
+              },
+              "maxItems": 3
+            }
+          },
+          "required": ["defense", "itemLevel", "xp", "affinities"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "bag": {
+      "type": "array",
+      "description": "Carried items with quantity (§4.6: a 40-slot bag; the weight penalty is the limit).",
+      "items": { "$ref": "item.schema.json#/$defs/itemInstance" },
+      "maxItems": 40
+    },
+    "gold": { "type": "integer", "description": "Unbanked gold carried this delve; lost on a wipe (§12.2).", "minimum": 0 },
+    "petInstance": {
+      "description": "The hero's pet, or null before the first egg hatches.",
+      "anyOf": [{ "type": "null" }, { "$ref": "pet.schema.json#/$defs/petInstance" }]
+    },
+    "aiRule": { "type": "string", "description": "The one gambit line used on auto, on timeout and while disconnected (§3.6, §10.2).", "minLength": 1 },
+    "titles": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+    "hardcore": { "type": "boolean", "description": "A wipe deletes the hero; the armory stays (§12.2)." },
+    "stats": {
+      "type": "object",
+      "properties": {
+        "kills": { "type": "integer", "minimum": 0 },
+        "delves": { "type": "integer", "minimum": 0 },
+        "deaths": { "type": "integer", "description": "Times fallen, not wipes.", "minimum": 0 }
+      },
+      "required": ["kills", "delves", "deaths"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["saveVersion", "id", "name", "speciesId", "classId", "level", "attributes", "attributeXp", "creationValues", "freePointsSpent", "skills", "loadout", "loadoutPresets", "fieldSkills", "equipment", "naturalArmor", "bag", "gold", "petInstance", "aiRule", "titles", "hardcore", "stats"],
+  "additionalProperties": false,
+  "$defs": {
+    "loadout": {
+      "type": "object",
+      "description": "4 actives + 2 passives + the pet stance (§7.3). An empty slot is null. The Ultimate sits on its own button and is not a slot.",
+      "properties": {
+        "actives": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/nullableId" }, "minItems": 4, "maxItems": 4 },
+        "passives": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/nullableId" }, "minItems": 2, "maxItems": 2 },
+        "stance": { "$ref": "common.schema.json#/$defs/stance" }
+      },
+      "required": ["actives", "passives", "stance"],
+      "additionalProperties": false
+    },
+    "attributeValues": {
+      "type": "object",
+      "description": "All eight attributes as integers (§2.1: 10 is an ordinary adult).",
+      "properties": {
+        "strength": { "type": "integer", "minimum": 1 },
+        "agility": { "type": "integer", "minimum": 1 },
+        "vitality": { "type": "integer", "minimum": 1 },
+        "endurance": { "type": "integer", "minimum": 1 },
+        "wisdom": { "type": "integer", "minimum": 1 },
+        "perception": { "type": "integer", "minimum": 1 },
+        "willpower": { "type": "integer", "minimum": 1 },
+        "luck": { "type": "integer", "minimum": 1 }
+      },
+      "required": ["strength", "agility", "vitality", "endurance", "wisdom", "perception", "willpower", "luck"],
+      "additionalProperties": false
+    },
+    "slotItem": {
+      "description": "An equipped item instance or an empty slot.",
+      "anyOf": [{ "type": "null" }, { "$ref": "item.schema.json#/$defs/itemInstance" }]
+    }
+  }
+}

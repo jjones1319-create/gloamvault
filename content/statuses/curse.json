@@ -1,0 +1,36 @@
+{
+  "id": "curse",
+  "name": "Curse",
+  "description": "All attributes -10% for 3 turns. Holy Water or a Mender’s cleanse lifts it.",
+  "kind": "debuff",
+  "element": null,
+  "tickAt": "turnEnd",
+  "magnitudeOf": null,
+  "percent": null,
+  "tickDamageType": null,
+  "ignoresDefense": false,
+  "stacking": "refresh",
+  "maxStacks": 1,
+  "durationDefault": 3,
+  "endsWhen": null,
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "all-attributes-percent",
+      "percent": -10
+    }
+  ],
+  "upgradesTo": null,
+  "cleansedBy": [
+    "holyWater",
+    "cleanse"
+  ],
+  "appliesEnergyDelta": 0,
+  "skipsActionChance": 0,
+  "immunityRoles": [],
+  "bossBecomes": null,
+  "visual": {
+    "icon": "status-curse",
+    "tint": "#5b2a86"
+  }
+}

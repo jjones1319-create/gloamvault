@@ -1,0 +1,38 @@
+{
+  "id": "root",
+  "name": "Root",
+  "description": "Cannot swap rows or flee for 2 turns. Dwarves are immune.",
+  "kind": "control",
+  "element": null,
+  "tickAt": "turnEnd",
+  "magnitudeOf": null,
+  "percent": null,
+  "tickDamageType": null,
+  "ignoresDefense": false,
+  "stacking": "refresh",
+  "maxStacks": 1,
+  "durationDefault": 2,
+  "endsWhen": null,
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "no-row-swap-no-flee"
+    }
+  ],
+  "upgradesTo": null,
+  "cleansedBy": [
+    "cut",
+    "cleanse"
+  ],
+  "appliesEnergyDelta": 0,
+  "skipsActionChance": 0,
+  "immunityRoles": [
+    "boss",
+    "hunter"
+  ],
+  "bossBecomes": null,
+  "visual": {
+    "icon": "status-root",
+    "tint": "#556b2f"
+  }
+}

@@ -1,0 +1,233 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gloamvault.dev/schemas/species.schema.json",
+  "title": "Species",
+  "description": "A playable species: the body, the starting attribute shape and the innate traits (03-GAME-DESIGN §2.3, §4.2, §4.4; owned by docs/05-SPECIES.md). One file per species under content/species/<id>.json. The species' 'Cons' line is a trait too (its rule carries the speedBase, manaMultiplier or weak knobs), so the card can list it.",
+  "type": "object",
+  "properties": {
+    "id": { "$ref": "common.schema.json#/$defs/id" },
+    "name": { "type": "string", "minLength": 1 },
+    "attributeMods": {
+      "$ref": "common.schema.json#/$defs/attributeMods",
+      "description": "Added to 10 at creation (§2.3). The linter checks the net sum is +2."
+    },
+    "traits": {
+      "type": "array",
+      "description": "Innate rules. Each trait carries effect lines, a typed rule object, or both.",
+      "items": { "$ref": "#/$defs/trait" },
+      "minItems": 1
+    },
+    "restrictions": {
+      "type": "array",
+      "description": "Gear the species cannot use regardless of class: a weapon type, a slot, or a shield type.",
+      "items": { "$ref": "#/$defs/restriction" }
+    },
+    "senses": {
+      "type": "object",
+      "properties": {
+        "darkvision": {
+          "type": "boolean",
+          "description": "Reads the light band one step brighter for its own rolls (§4.2: Dwarf and Elf)."
+        }
+      },
+      "required": ["darkvision"],
+      "additionalProperties": false
+    },
+    "body": {
+      "type": "object",
+      "description": "What the shared rig needs to build this species (11-ART-PIPELINE).",
+      "properties": {
+        "heightM": { "type": "number", "description": "Standing height in metres.", "exclusiveMinimum": 0 },
+        "shapeKeys": {
+          "type": "array",
+          "description": "Blend-shape names the species body uses on the shared mesh.",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "boneScales": {
+          "type": "object",
+          "description": "Per-bone scale multipliers on the shared rig, bone name → scale (1.0 = human).",
+          "propertyNames": { "type": "string", "minLength": 1 },
+          "additionalProperties": { "type": "number", "exclusiveMinimum": 0 }
+        },
+        "parts": {
+          "type": "array",
+          "description": "Extra species meshes attached to the body (tusks, ears, tail, horns).",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "skinTones": {
+          "type": "array",
+          "description": "Skin tints offered at creation.",
+          "items": { "$ref": "common.schema.json#/$defs/hexColor" },
+          "minItems": 1
+        },
+        "facePresets": { "type": "integer", "description": "How many face presets exist for the species.", "minimum": 1 },
+        "gearVariants": {
+          "type": "array",
+          "description": "Slots whose gear mesh needs a species-specific variant (a helmet over horns, boots over hooves).",
+          "items": { "$ref": "common.schema.json#/$defs/slot" },
+          "uniqueItems": true
+        }
+      },
+      "required": ["heightM", "shapeKeys", "boneScales", "parts", "skinTones", "facePresets", "gearVariants"],
+      "additionalProperties": false
+    },
+    "creationBlurb": { "type": "string", "description": "The sentence on the creation card.", "minLength": 1 },
+    "chips": {
+      "type": "object",
+      "description": "The three pros and three cons shown as chips on the creation card (§13).",
+      "properties": {
+        "pros": { "type": "array", "items": { "type": "string", "minLength": 1 }, "minItems": 3, "maxItems": 3 },
+        "cons": { "type": "array", "items": { "type": "string", "minLength": 1 }, "minItems": 3, "maxItems": 3 }
+      },
+      "required": ["pros", "cons"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["id", "name", "attributeMods", "traits", "restrictions", "senses", "body", "creationBlurb", "chips"],
+  "additionalProperties": false,
+  "$defs": {
+    "trait": {
+      "type": "object",
+      "properties": {
+        "id": { "$ref": "common.schema.json#/$defs/id" },
+        "name": { "type": "string", "minLength": 1 },
+        "description": { "type": "string", "minLength": 1 },
+        "effects": {
+          "$ref": "common.schema.json#/$defs/effectList",
+          "description": "Effect lines applied to the hero permanently (buffStat, loot …)."
+        },
+        "rule": { "$ref": "#/$defs/rule" }
+      },
+      "required": ["id", "name", "description"],
+      "anyOf": [{ "required": ["effects"] }, { "required": ["rule"] }],
+      "additionalProperties": false
+    },
+    "rule": {
+      "type": "object",
+      "description": "Typed knobs the sim reads directly (the 'Exact rule' and 'Cons' lines of docs/05-SPECIES.md §3). Multipliers are 1.0 = no change; point values are added; a trait carries only the knobs it moves.",
+      "properties": {
+        "speedBase": { "type": "integer", "description": "Replaces the 100 in the Speed formula (§2.2; Dwarf and Draconid 95, Elf Lightfoot 105).", "minimum": 40, "maximum": 300 },
+        "hpMultiplier": { "type": "number", "description": "Max HP × this (Elf and Halfling 0.9).", "exclusiveMinimum": 0 },
+        "manaMultiplier": { "type": "number", "description": "Mana pool × this (Dwarf 0.9).", "exclusiveMinimum": 0 },
+        "xpMultiplier": { "type": "number", "description": "All XP × this (§5.3: Human 1.1, Draconid 0.9).", "exclusiveMinimum": 0 },
+        "xpMultiplierByAttribute": {
+          "type": "object",
+          "description": "XP × this on actions tagged with the attribute (Orc: Wisdom-tagged 0.9), attribute → multiplier.",
+          "propertyNames": { "$ref": "common.schema.json#/$defs/trainableAttribute" },
+          "additionalProperties": { "type": "number", "exclusiveMinimum": 0 }
+        },
+        "carryMultiplier": { "type": "number", "description": "Carry capacity × this (Halfling 0.7).", "exclusiveMinimum": 0 },
+        "dodgeBonus": { "type": "integer", "description": "Flat Dodge in percentage points (Halfling Small +5, after the cap)." },
+        "dodgeCap": { "$ref": "common.schema.json#/$defs/percent", "description": "Replaces the 30% Dodge cap (Halfling 35)." },
+        "fortuneBonus": { "type": "integer", "description": "Flat Fortune in percentage points (§2.2; Halfling Lucky +5)." },
+        "detectionBonus": { "type": "integer", "description": "Flat Detection (§4.3; Elf Keen Senses +2)." },
+        "detectionByLightBand": {
+          "type": "object",
+          "description": "Detection added in a light band (Orc: −2 in Radiant), band → points.",
+          "propertyNames": { "$ref": "common.schema.json#/$defs/lightBand" },
+          "additionalProperties": { "type": "integer" }
+        },
+        "scoutingBonus": { "type": "integer", "description": "Scouting chance in percentage points (Elf +5)." },
+        "lightBandShift": { "type": "integer", "description": "Bands the species reads brighter (−1) or darker (+1) for its own rolls (§4.2 Darkvision); the loot bonus stays at the true band.", "minimum": -2, "maximum": 2 },
+        "darkAccuracyImmune": { "type": "boolean", "description": "Ignores the hero Accuracy penalty in Dark and Pitch (§4.2: Orc and Draconid)." },
+        "armorPenaltyMultiplier": {
+          "type": "object",
+          "description": "Scales the armor family's speed penalty (§6.1; Elf plate and mail 2.0), family → multiplier.",
+          "propertyNames": { "$ref": "common.schema.json#/$defs/armorFamily" },
+          "additionalProperties": { "type": "number", "minimum": 0 }
+        },
+        "heavyWeaponStrengthExtra": { "type": "integer", "description": "Extra Strength over the requirement for weight-1,400 two-handers (Halfling +2).", "minimum": 0 },
+        "shopPriceMultiplier": { "type": "number", "description": "Merchant prices × this after Haggling (Orc 1.1).", "exclusiveMinimum": 0 },
+        "promotionCostMultiplier": { "type": "number", "description": "Material promotion gold × this (Dwarf Forge-born 0.9).", "exclusiveMinimum": 0 },
+        "ambushModifier": { "type": "integer", "description": "Added to the party's chance to be ambushed in percentage points (§4.4: Orcs are noisy, +5).", "minimum": -50, "maximum": 50 },
+        "immunities": {
+          "type": "array",
+          "description": "Statuses that never apply to the hero (Dwarf Stonefoot: root; Draconid Fireblood: burn).",
+          "items": { "$ref": "common.schema.json#/$defs/status" },
+          "uniqueItems": true
+        },
+        "forcedRowMoveImmune": { "type": "boolean", "description": "Ignores knockback, pulls and enemy-forced swaps (Dwarf Stonefoot)." },
+        "resist": {
+          "type": "object",
+          "description": "Incoming damage multipliers below 1 by damage type (Dwarf poison 0.7, Draconid fire 0.5).",
+          "propertyNames": { "$ref": "common.schema.json#/$defs/damageType" },
+          "additionalProperties": { "type": "number", "minimum": 0, "maximum": 1 }
+        },
+        "weak": {
+          "type": "object",
+          "description": "Incoming damage multipliers above 1 by damage type (Draconid frost 1.25).",
+          "propertyNames": { "$ref": "common.schema.json#/$defs/damageType" },
+          "additionalProperties": { "type": "number", "minimum": 1 }
+        },
+        "statusResist": {
+          "type": "object",
+          "description": "Chance to resist a status being applied, in percentage points, signed (Dwarf poison +30, Elf fear −10), status → points.",
+          "propertyNames": { "$ref": "common.schema.json#/$defs/status" },
+          "additionalProperties": { "type": "integer", "minimum": -100, "maximum": 100 }
+        },
+        "statusDurationDelta": {
+          "type": "object",
+          "description": "Turns added to a status's duration on the hero (Elf Lightfoot: web −1, root −1; minimum 1), status → turns.",
+          "propertyNames": { "$ref": "common.schema.json#/$defs/status" },
+          "additionalProperties": { "type": "integer", "minimum": -5, "maximum": 5 }
+        },
+        "appliedDurationMultiplier": {
+          "type": "object",
+          "description": "Duration × this on statuses the hero applies (Orc Intimidating: fear 1.2), status → multiplier.",
+          "propertyNames": { "$ref": "common.schema.json#/$defs/status" },
+          "additionalProperties": { "type": "number", "exclusiveMinimum": 0 }
+        },
+        "enemyAccuracyBySize": {
+          "type": "object",
+          "description": "Accuracy penalty on single-target melee against this hero by monster size, in percentage points (Halfling Small: large −10, huge −15), size → points.",
+          "propertyNames": { "$ref": "common.schema.json#/$defs/size" },
+          "additionalProperties": { "type": "integer", "minimum": -50, "maximum": 50 }
+        },
+        "damageMultiplierBelowHpPercent": {
+          "type": "object",
+          "description": "Damage dealt × multiplier while HP is below the threshold (Orc Bloodrage: 50 → 1.15).",
+          "properties": {
+            "hpPercent": { "$ref": "common.schema.json#/$defs/percent" },
+            "multiplier": { "type": "number", "exclusiveMinimum": 0 }
+          },
+          "required": ["hpPercent", "multiplier"],
+          "additionalProperties": false
+        },
+        "fieldSkillBonus": {
+          "type": "object",
+          "description": "Effective rank bonus on a field skill (Dwarf Forge-born: fieldRepair 2; Halfling Nimble Fingers: lockpicking 2, haggling 1), field skill → ranks; may carry the rank past 10.",
+          "propertyNames": { "$ref": "common.schema.json#/$defs/fieldSkill" },
+          "additionalProperties": { "type": "integer", "minimum": 1, "maximum": 5 }
+        },
+        "fieldSkillStartRank": { "type": "integer", "description": "Starting rank of all eight field skills (Human Adaptable: 2; default 1).", "minimum": 1, "maximum": 10 },
+        "trapDisarmRerollsPerFloor": { "type": "integer", "description": "Free re-rolls of a failed Trap Disarm per floor (Halfling Lucky: 1).", "minimum": 0 },
+        "loadoutPresets": { "type": "integer", "description": "Saved loadout presets the hero may keep (default 2; Human Adaptable 3; the schema's ceiling is 4).", "minimum": 1, "maximum": 4 },
+        "innateSkillId": { "$ref": "common.schema.json#/$defs/id", "description": "A skill every hero of this species knows at rank 1, outside the loadout (Draconid Breath)." },
+        "naturalArmorBase": { "type": "integer", "description": "Base Defense of a twelfth, unremovable armor piece that levels by hits absorbed (Draconid Scales: 8); the hero record carries it as naturalArmor.", "minimum": 1 },
+        "fodderFlinchChance": { "$ref": "common.schema.json#/$defs/percent", "description": "Chance each fodder-role enemy loses its first action in a fight this hero opens (Orc Intimidating: 10)." }
+      },
+      "minProperties": 1,
+      "additionalProperties": false
+    },
+    "restriction": {
+      "type": "object",
+      "description": "Exactly one of: a weapon type (Dwarf: longbow), a slot, or a shield type (Halfling: tower; 'all' locks every shield).",
+      "properties": {
+        "kind": { "type": "string", "enum": ["weaponType", "slot", "shieldType"] },
+        "weaponType": { "$ref": "common.schema.json#/$defs/weaponType" },
+        "slot": { "$ref": "common.schema.json#/$defs/slot" },
+        "shieldType": { "type": "string", "enum": ["buckler", "kite", "tower", "all"] },
+        "reason": { "type": "string", "description": "Why, for the creation card." }
+      },
+      "required": ["kind"],
+      "additionalProperties": false,
+      "allOf": [
+        { "if": { "properties": { "kind": { "const": "weaponType" } }, "required": ["kind"] }, "then": { "required": ["weaponType"], "not": { "anyOf": [{ "required": ["slot"] }, { "required": ["shieldType"] }] } } },
+        { "if": { "properties": { "kind": { "const": "slot" } }, "required": ["kind"] }, "then": { "required": ["slot"], "not": { "anyOf": [{ "required": ["weaponType"] }, { "required": ["shieldType"] }] } } },
+        { "if": { "properties": { "kind": { "const": "shieldType" } }, "required": ["kind"] }, "then": { "required": ["shieldType"], "not": { "anyOf": [{ "required": ["slot"] }, { "required": ["weaponType"] }] } } }
+      ]
+    }
+  }
+}

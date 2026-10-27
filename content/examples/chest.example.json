@@ -1,0 +1,17 @@
+{
+  "id": "standard-gear-chest",
+  "name": "Standard Gear Chest",
+  "kind": "gear",
+  "tier": "standard",
+  "priceR": 0.5,
+  "subtypes": ["weapon", "armor", "trinket"],
+  "oddsByBand": [
+    { "centreGrade": "D", "table": { "D": 56, "C": 25, "B": 14, "A": 5, "S": 0 } },
+    { "centreGrade": "B", "table": { "B": 56, "A": 25, "S": 14, "SS": 5, "God": 0 } }
+  ],
+  "pity": { "plusOneWithin": 10, "plusTwoWithin": 40 },
+  "bagWithoutReplacement": false,
+  "tomeTiers": null,
+  "dupeRule": "salvage",
+  "divineShardChance": 0
+}

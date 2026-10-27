@@ -1,0 +1,35 @@
+{
+  "id": "shield",
+  "name": "Shield",
+  "description": "Absorbs damage set by the skill for 3 turns or until it breaks. A new Shield keeps the stronger one.",
+  "kind": "buff",
+  "element": null,
+  "tickAt": "turnEnd",
+  "magnitudeOf": "fixed",
+  "percent": null,
+  "tickDamageType": null,
+  "ignoresDefense": false,
+  "stacking": "max",
+  "maxStacks": 1,
+  "durationDefault": 3,
+  "endsWhen": null,
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "shield-absorb",
+      "note": "absorbs X damage set by the skill; ends when broken"
+    }
+  ],
+  "upgradesTo": null,
+  "cleansedBy": [
+    "strip"
+  ],
+  "appliesEnergyDelta": 0,
+  "skipsActionChance": 0,
+  "immunityRoles": [],
+  "bossBecomes": null,
+  "visual": {
+    "icon": "status-shield",
+    "tint": "#8ab4f8"
+  }
+}

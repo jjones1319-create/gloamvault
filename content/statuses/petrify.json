@@ -1,0 +1,40 @@
+{
+  "id": "petrify",
+  "name": "Petrify",
+  "description": "Turned to stone for a turn (-1,000 energy); Defense +50% while petrified. Bosses are immune.",
+  "kind": "control",
+  "element": null,
+  "tickAt": "turnEnd",
+  "magnitudeOf": null,
+  "percent": null,
+  "tickDamageType": null,
+  "ignoresDefense": false,
+  "stacking": "refresh",
+  "maxStacks": 1,
+  "durationDefault": 1,
+  "endsWhen": null,
+  "effects": [
+    {
+      "kind": "buffStat",
+      "stat": "defense",
+      "percent": 50,
+      "note": "stone is hard"
+    }
+  ],
+  "upgradesTo": null,
+  "cleansedBy": [
+    "softStone",
+    "cleanse"
+  ],
+  "appliesEnergyDelta": -1000,
+  "skipsActionChance": 100,
+  "immunityRoles": [
+    "boss",
+    "hunter"
+  ],
+  "bossBecomes": null,
+  "visual": {
+    "icon": "status-petrify",
+    "tint": "#9e9e9e"
+  }
+}

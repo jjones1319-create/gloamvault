@@ -1,0 +1,37 @@
+{
+  "id": "chill",
+  "name": "Chill",
+  "description": "Speed x0.75 for 3 turns. A second Chill becomes Freeze.",
+  "kind": "debuff",
+  "element": "frost",
+  "tickAt": "turnEnd",
+  "magnitudeOf": null,
+  "percent": null,
+  "tickDamageType": null,
+  "ignoresDefense": false,
+  "stacking": "refresh",
+  "maxStacks": 1,
+  "durationDefault": 3,
+  "endsWhen": null,
+  "effects": [
+    {
+      "kind": "debuffStat",
+      "stat": "speed",
+      "percent": -25,
+      "note": "Speed x0.75 while held"
+    }
+  ],
+  "upgradesTo": "freeze",
+  "cleansedBy": [
+    "warmth",
+    "cleanse"
+  ],
+  "appliesEnergyDelta": 0,
+  "skipsActionChance": 0,
+  "immunityRoles": [],
+  "bossBecomes": null,
+  "visual": {
+    "icon": "status-chill",
+    "tint": "#7fd3ff"
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gloamvault.dev/schemas/loot-table.schema.json",
+  "title": "Loot table",
+  "description": "The floor-band loot table of one dungeon (03-GAME-DESIGN §6.2 drop shape, §8.3 in-dungeon chests; the rows of 08-ITEMS.md §11): gold per fight, the gear chance, the grade shape, part and consumable odds, and the treasure room. One file per band under content/loot-tables/<id>.json; a floor finds its table by dungeonId and floorBand. Boss drops live on the boss monster (boss.everyKill / boss.firstKill); bossFirstKill names which monster's lines apply on the band's boss floor.",
+  "type": "object",
+  "properties": {
+    "id": { "$ref": "common.schema.json#/$defs/id" },
+    "dungeonId": { "$ref": "common.schema.json#/$defs/id" },
+    "name": { "type": "string", "minLength": 1 },
+    "floorBand": { "$ref": "common.schema.json#/$defs/intRange", "description": "Dungeon floors this table covers; the linter checks a dungeon's tables tile its floors." },
+    "monsterLevels": { "$ref": "common.schema.json#/$defs/intRange", "description": "The band's monster levels, for the card." },
+    "goldRange": { "$ref": "common.schema.json#/$defs/intRange", "description": "Gold per fight before multipliers (08 §11: Cellars 10–20)." },
+    "itemChance": { "$ref": "common.schema.json#/$defs/percent", "description": "Chance per fight of a gear item (weapon, armor, trinket); elites always drop one." },
+    "gradeShape": {
+      "type": "object",
+      "description": "The floor-drop shape around the band's centre grade (08 §11: centre 55 · −1 25 · +1 14 · +2 5 · +3 1), with a missing lower grade folded into the centre (the Cellars: F 80 · E 14 · D 5 · C 1). The linter checks the five numbers sum to 100 and that no line reaches God.",
+      "properties": {
+        "centreGrade": { "$ref": "common.schema.json#/$defs/grade" },
+        "centre": { "$ref": "common.schema.json#/$defs/percent" },
+        "minus1": { "$ref": "common.schema.json#/$defs/percent" },
+        "plus1": { "$ref": "common.schema.json#/$defs/percent" },
+        "plus2": { "$ref": "common.schema.json#/$defs/percent" },
+        "plus3": { "$ref": "common.schema.json#/$defs/percent" }
+      },
+      "required": ["centreGrade", "centre", "minus1", "plus1", "plus2", "plus3"],
+      "additionalProperties": false
+    },
+    "partChance": {
+      "type": "object",
+      "description": "Per monster (§6.5): the common part and the rare part.",
+      "properties": {
+        "common": { "$ref": "common.schema.json#/$defs/percent" },
+        "rare": { "$ref": "common.schema.json#/$defs/percent" }
+      },
+      "required": ["common", "rare"],
+      "additionalProperties": false
+    },
+    "stoneChance": { "$ref": "common.schema.json#/$defs/percent", "description": "Chance per fight of a generic +N stone of the band (08 §11: 8)." },
+    "consumableDrop": {
+      "type": "object",
+      "description": "Chance per fight of one consumable from the band's list.",
+      "properties": {
+        "chance": { "$ref": "common.schema.json#/$defs/percent" },
+        "itemIds": { "$ref": "common.schema.json#/$defs/idList" }
+      },
+      "required": ["chance", "itemIds"],
+      "additionalProperties": false
+    },
+    "treasureRoom": {
+      "type": "object",
+      "description": "The strongroom (07 §2.7, 08 §11): gold piles, the guaranteed Small chest, the Large chest and its lock, the trap, the consumable bundle and the hidden find.",
+      "properties": {
+        "goldPiles": { "$ref": "common.schema.json#/$defs/intRange", "description": "How many piles (2–4)." },
+        "goldFightsWorth": { "type": "number", "description": "The piles together are worth this many fights' gold (2).", "exclusiveMinimum": 0 },
+        "smallChestChance": { "$ref": "common.schema.json#/$defs/percent", "description": "A Small chest is present (100 = guaranteed)." },
+        "largeChestChance": { "$ref": "common.schema.json#/$defs/percent", "description": "A Large chest is present as well (20)." },
+        "largeLockedChance": { "$ref": "common.schema.json#/$defs/percent", "description": "Of Large chests, the share that are locked (50)." },
+        "trappedChance": { "$ref": "common.schema.json#/$defs/percent", "description": "Share of chests here that are trapped (07 §2.7: Cellars 20, Crypts 30, Vault 40)." },
+        "trapId": { "$ref": "common.schema.json#/$defs/nullableId", "description": "The dungeon trap a trapped chest springs (Spring Spikes); null for none." },
+        "consumableBundle": { "type": "integer", "description": "Items in the consumable bundle, from the band's consumable list (3).", "minimum": 0 },
+        "hiddenFind": {
+          "type": "object",
+          "description": "The Detection find: an extra item at +1 shape, or a Skeleton Key.",
+          "properties": {
+            "itemAtPlusOneChance": { "$ref": "common.schema.json#/$defs/percent" },
+            "skeletonKeyChance": { "$ref": "common.schema.json#/$defs/percent" }
+          },
+          "required": ["itemAtPlusOneChance", "skeletonKeyChance"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["goldPiles", "goldFightsWorth", "smallChestChance", "largeChestChance", "largeLockedChance", "trappedChance", "trapId", "consumableBundle", "hiddenFind"],
+      "additionalProperties": false
+    },
+    "darknessItemBonus": {
+      "type": "object",
+      "description": "Item chance × (1 + bonus) by light band (§4.2, 08 §11: dim +10, shadowy +25, dark +50, pitch +75), band → percent.",
+      "propertyNames": { "$ref": "common.schema.json#/$defs/lightBand" },
+      "additionalProperties": { "type": "integer", "minimum": 0, "maximum": 500 }
+    },
+    "bossFirstKill": { "$ref": "common.schema.json#/$defs/nullableId", "description": "The boss monster whose boss.everyKill and boss.firstKill lines close this band (the Grinning Captain for floors 1–3); null for a band with no boss floor." }
+  },
+  "required": ["id", "dungeonId", "name", "floorBand", "monsterLevels", "goldRange", "itemChance", "gradeShape", "partChance", "stoneChance", "consumableDrop", "treasureRoom", "darknessItemBonus", "bossFirstKill"],
+  "additionalProperties": false
+}

@@ -1,0 +1,36 @@
+{
+  "id": "blind",
+  "name": "Blind",
+  "description": "Accuracy -30% for 2 turns.",
+  "kind": "debuff",
+  "element": null,
+  "tickAt": "turnEnd",
+  "magnitudeOf": null,
+  "percent": null,
+  "tickDamageType": null,
+  "ignoresDefense": false,
+  "stacking": "refresh",
+  "maxStacks": 1,
+  "durationDefault": 2,
+  "endsWhen": null,
+  "effects": [
+    {
+      "kind": "debuffStat",
+      "stat": "accuracy",
+      "amount": -30
+    }
+  ],
+  "upgradesTo": null,
+  "cleansedBy": [
+    "eyewash",
+    "cleanse"
+  ],
+  "appliesEnergyDelta": 0,
+  "skipsActionChance": 0,
+  "immunityRoles": [],
+  "bossBecomes": null,
+  "visual": {
+    "icon": "status-blind",
+    "tint": "#6b6b7a"
+  }
+}

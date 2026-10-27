@@ -1,0 +1,14 @@
+{
+  "id": "rat-pack",
+  "tableId": "cellars-a",
+  "dungeonId": "gravehollow-keep",
+  "floorBand": { "min": 1, "max": 2 },
+  "name": "Rat Pack",
+  "composition": [
+    { "monsterId": "giant-rat", "count": 3, "row": "front" },
+    { "monsterId": "plague-rat", "count": 1, "row": "front" }
+  ],
+  "weight": 20,
+  "ambushModifier": 15,
+  "eliteAllowed": true
+}

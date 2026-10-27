@@ -1,0 +1,35 @@
+{
+  "id": "mark",
+  "name": "Mark",
+  "description": "Takes +20% damage for 3 turns. The Ranger’s and Beast Tamer’s signature.",
+  "kind": "mark",
+  "element": null,
+  "tickAt": "turnEnd",
+  "magnitudeOf": null,
+  "percent": null,
+  "tickDamageType": null,
+  "ignoresDefense": false,
+  "stacking": "refresh",
+  "maxStacks": 1,
+  "durationDefault": 3,
+  "endsWhen": null,
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "damage-taken-percent",
+      "percent": 20
+    }
+  ],
+  "upgradesTo": null,
+  "cleansedBy": [
+    "cleanse"
+  ],
+  "appliesEnergyDelta": 0,
+  "skipsActionChance": 0,
+  "immunityRoles": [],
+  "bossBecomes": null,
+  "visual": {
+    "icon": "status-mark",
+    "tint": "#ff5e5e"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "id": "grinning-companys-cut",
+  "name": "Grinning Company's Cut",
+  "family": "leather",
+  "theme": "the Cellars bandits, Gravehollow F1–3",
+  "classIds": ["shade", "ranger"],
+  "pieces": ["grinning-companys-hood", "grinning-companys-jerkin", "grinning-companys-breeches", "grinning-companys-boots", "grinning-companys-gloves"],
+  "bonuses": {
+    "2": [
+      { "kind": "loot", "percent": 5, "note": "+5% gold found" },
+      { "kind": "buffStat", "stat": "detection", "amount": 1 }
+    ],
+    "4": [
+      { "kind": "custom", "customId": "first-attack-each-fight-crits" },
+      { "kind": "buffStat", "stat": "dodge", "amount": 3 }
+    ]
+  },
+  "bonusText": {
+    "2": "+5% gold found; +1 Detection",
+    "4": "Your first attack each fight is a guaranteed crit; +3% Dodge"
+  },
+  "gradeMin": "E",
+  "gradeMax": "C",
+  "dropChance": 15
+}

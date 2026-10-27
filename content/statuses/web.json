@@ -1,0 +1,44 @@
+{
+  "id": "web",
+  "name": "Web",
+  "description": "Rooted and Speed -30% for 2 turns. Fire burns it off.",
+  "kind": "control",
+  "element": null,
+  "tickAt": "turnEnd",
+  "magnitudeOf": null,
+  "percent": null,
+  "tickDamageType": null,
+  "ignoresDefense": false,
+  "stacking": "refresh",
+  "maxStacks": 1,
+  "durationDefault": 2,
+  "endsWhen": null,
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "no-row-swap-no-flee"
+    },
+    {
+      "kind": "debuffStat",
+      "stat": "speed",
+      "percent": -30
+    }
+  ],
+  "upgradesTo": null,
+  "cleansedBy": [
+    "fire",
+    "cut",
+    "cleanse"
+  ],
+  "appliesEnergyDelta": 0,
+  "skipsActionChance": 0,
+  "immunityRoles": [
+    "boss",
+    "hunter"
+  ],
+  "bossBecomes": null,
+  "visual": {
+    "icon": "status-web",
+    "tint": "#d8d8d8"
+  }
+}

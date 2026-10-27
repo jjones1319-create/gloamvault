@@ -1,0 +1,34 @@
+{
+  "id": "warden",
+  "name": "Warden",
+  "role": "front-line tank: holds the front row, soaks hits, controls the timeline",
+  "description": "Plate, a shield and a short temper. The Warden stands in front, takes the hits the party cannot, and makes the enemy wait.",
+  "attributeMods": {
+    "strength": 1,
+    "endurance": 2,
+    "vitality": 1
+  },
+  "pool": "stamina",
+  "armorFamily": "plate",
+  "weaponTypes": ["sword", "mace", "axe", "spear", "shieldBuckler", "shieldKite", "shieldTower"],
+  "schools": [
+    { "id": "bulwark", "name": "Bulwark", "philosophy": "Shield, block, damage soak. The hit that lands on you is a hit that did not land on them." },
+    { "id": "vanguard", "name": "Vanguard", "philosophy": "Spear and reach. Hit first and hit the back row from the front." },
+    { "id": "warcry", "name": "Warcry", "philosophy": "Shouts that buff the party and shake the enemy; the Warden as the loudest thing in the room." }
+  ],
+  "ultimateSkillId": "warden-the-gate-holds",
+  "starterKit": ["copper-shortsword", "pine-buckler", "copper-helm", "copper-breastplate", "copper-greaves", "copper-sabatons", "copper-gauntlets", "ring-of-vigor"],
+  "starterSkillIds": ["warden-shield-slam", "warden-provoke", "warden-brace"],
+  "fieldSkillAffinities": [
+    { "fieldSkill": "firstAid", "rankBonus": 2 }
+  ],
+  "monsterTechniqueIds": ["warden-bone-knights-stand", "warden-sentinels-sweep"],
+  "aiRuleDefault": "IF ally HP < 40% THEN provoke; ELSE shield slam front enemy",
+  "visual": {
+    "gearSetId": "warden-copper-plate",
+    "palette": ["#6b7280", "#b45309", "#1f2937"],
+    "notes": "Wide shoulders and a shield silhouette; the shield must read at 200px."
+  },
+  "pros": ["Toughest front line in the game", "Daze and push-back skills delete enemy turns", "Plate and shields from the first floor"],
+  "cons": ["Slowest class in the game: Plate is −20 Speed", "Low damage without the Vanguard school", "Plate is weak to Pierce at the joints"]
+}

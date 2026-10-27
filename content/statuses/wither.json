@@ -1,0 +1,35 @@
+{
+  "id": "wither",
+  "name": "Wither",
+  "description": "Healing received -50% for 3 turns (Regen included). The Shadow element’s mark.",
+  "kind": "mark",
+  "element": "shadow",
+  "tickAt": "turnEnd",
+  "magnitudeOf": null,
+  "percent": null,
+  "tickDamageType": null,
+  "ignoresDefense": false,
+  "stacking": "refresh",
+  "maxStacks": 1,
+  "durationDefault": 3,
+  "endsWhen": null,
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "healing-received-percent",
+      "percent": -50
+    }
+  ],
+  "upgradesTo": null,
+  "cleansedBy": [
+    "cleanse"
+  ],
+  "appliesEnergyDelta": 0,
+  "skipsActionChance": 0,
+  "immunityRoles": [],
+  "bossBecomes": null,
+  "visual": {
+    "icon": "status-wither",
+    "tint": "#4b3d6b"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "source": "a trimmed example of content/tuning.json; the real file holds every number of docs/03-GAME-DESIGN.md §2–§12",
+  "attributes": { "source": "03 §2.1", "base": 10 },
+  "derived": { "source": "03 §2.2", "hp": { "base": 30, "perVitality": 7, "perLevel": 3 } },
+  "combat": { "source": "03 §3.1", "actAtEnergy": 1000, "weights": { "light": 800, "normal": 1000, "heavy": 1400 }, "jitterPercent": { "value": 10, "note": "Caves of Qud's rule; open question 1 of §3.6" } },
+  "exploration": { "source": "03 §4.2", "light": { "perNewRoom": -5, "torch": 25 } },
+  "xp": { "source": "03 §5.1", "difficultyCurve": [{ "delta": -10, "multiplier": 0.1 }, { "delta": 0, "multiplier": 1.0 }, { "delta": 10, "multiplier": 3.0 }] },
+  "equipment": { "source": "03 §6.2", "grades": [{ "id": "F", "name": "Crude", "baseMultiplier": 1.0 }] },
+  "skills": { "source": "03 §7.3", "loadout": { "actives": 4, "passives": 2 } },
+  "economy": { "source": "03 §8.1", "R": { "base": 300, "perBandMultiplier": 1.6 } },
+  "pets": { "source": "03 §9", "activeUnlockLevels": [5, 15] },
+  "coop": { "source": "03 §10.2", "decisionTimerSeconds": 20 },
+  "dungeon": { "source": "03 §11.2", "partyScaling": { "count": [0.6, 0.8, 1.0, 1.2] } },
+  "death": { "source": "03 §12", "reviveWindowTurns": 3, "hardcore": false }
+}

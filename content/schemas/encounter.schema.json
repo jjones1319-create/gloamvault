@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gloamvault.dev/schemas/encounter.schema.json",
+  "title": "Encounter",
+  "description": "One entry of an encounter table (03-GAME-DESIGN §11.1 step 4, §11.2): a monster composition written for three players; the sim scales count and HP by party size. One file per encounter under content/encounters/<id>.json; a floor picks from all entries sharing its encounterTableId whose floorBand covers the floor.",
+  "type": "object",
+  "properties": {
+    "id": { "$ref": "common.schema.json#/$defs/id" },
+    "tableId": { "$ref": "common.schema.json#/$defs/id", "description": "The table this entry belongs to; floors reference it by encounterTableId." },
+    "dungeonId": { "$ref": "common.schema.json#/$defs/id" },
+    "floorBand": { "$ref": "common.schema.json#/$defs/intRange", "description": "Floors (not monster levels) this entry can appear on." },
+    "name": { "type": "string", "minLength": 1 },
+    "composition": {
+      "type": "array",
+      "description": "Monsters at three players; 2–6 in total before scaling.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "monsterId": { "$ref": "common.schema.json#/$defs/id" },
+          "count": { "type": "integer", "minimum": 1, "maximum": 6 },
+          "row": { "type": "string", "enum": ["front", "back"] }
+        },
+        "required": ["monsterId", "count", "row"],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "weight": { "type": "integer", "description": "Relative pick weight within the table.", "minimum": 1 },
+    "ambushModifier": { "type": "integer", "description": "Added to the surprise roll in percentage points (§4.4: ambusher families +15).", "minimum": -50, "maximum": 50 },
+    "eliteAllowed": { "type": "boolean", "description": "Whether this composition may fill an Elite room with affixes applied to its elite-role monster." }
+  },
+  "required": ["id", "tableId", "dungeonId", "floorBand", "name", "composition", "weight", "ambushModifier", "eliteAllowed"],
+  "additionalProperties": false
+}

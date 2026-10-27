@@ -1,0 +1,30 @@
+{
+  "id": "stun",
+  "name": "Stun",
+  "description": "Skips the next action (-1,000 energy). Bosses are Dazed instead.",
+  "kind": "control",
+  "element": null,
+  "tickAt": "turnEnd",
+  "magnitudeOf": null,
+  "percent": null,
+  "tickDamageType": null,
+  "ignoresDefense": false,
+  "stacking": "refresh",
+  "maxStacks": 1,
+  "durationDefault": 1,
+  "endsWhen": null,
+  "effects": [],
+  "upgradesTo": null,
+  "cleansedBy": [
+    "rouse",
+    "cleanse"
+  ],
+  "appliesEnergyDelta": -1000,
+  "skipsActionChance": 100,
+  "immunityRoles": [],
+  "bossBecomes": "daze",
+  "visual": {
+    "icon": "status-stun",
+    "tint": "#f2d16b"
+  }
+}
