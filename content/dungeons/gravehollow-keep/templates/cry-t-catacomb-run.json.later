@@ -1,0 +1,193 @@
+{
+  "id": "cry-t-catacomb-run",
+  "zoneId": "the-crypts",
+  "footprint": {
+    "w": 2,
+    "h": 1
+  },
+  "doors": [
+    {
+      "side": "west",
+      "offset": 0
+    },
+    {
+      "side": "east",
+      "offset": 0
+    }
+  ],
+  "kinds": [
+    "fight",
+    "trapGauntlet",
+    "lockedDoor"
+  ],
+  "camera": {
+    "position": [
+      0,
+      8,
+      -15
+    ],
+    "lookAt": [
+      0,
+      1,
+      0
+    ],
+    "fov": 38
+  },
+  "props": [
+    {
+      "meshId": "cry_wall_niche_2m",
+      "position": [
+        -6.75,
+        0,
+        3.9
+      ],
+      "rotationY": 180
+    },
+    {
+      "meshId": "cry_wall_niche_2m",
+      "position": [
+        -5,
+        0,
+        3.9
+      ],
+      "rotationY": 180
+    },
+    {
+      "meshId": "cry_wall_niche_2m",
+      "position": [
+        -3,
+        0,
+        3.9
+      ],
+      "rotationY": 180
+    },
+    {
+      "meshId": "cry_wall_niche_2m",
+      "position": [
+        -1,
+        0,
+        3.9
+      ],
+      "rotationY": 180
+    },
+    {
+      "meshId": "cry_wall_niche_2m",
+      "position": [
+        1,
+        0,
+        3.9
+      ],
+      "rotationY": 180
+    },
+    {
+      "meshId": "cry_wall_niche_2m",
+      "position": [
+        3,
+        0,
+        3.9
+      ],
+      "rotationY": 180
+    },
+    {
+      "meshId": "cry_wall_niche_2m",
+      "position": [
+        5,
+        0,
+        3.9
+      ],
+      "rotationY": 180
+    },
+    {
+      "meshId": "cry_wall_niche_2m",
+      "position": [
+        6.75,
+        0,
+        3.9
+      ],
+      "rotationY": 180
+    },
+    {
+      "meshId": "cry_coffin_wood",
+      "position": [
+        -5.4,
+        0,
+        2.95
+      ],
+      "rotationY": 180
+    },
+    {
+      "meshId": "cry_coffin_wood",
+      "position": [
+        -5.35,
+        0.47,
+        2.95
+      ],
+      "rotationY": 174
+    },
+    {
+      "meshId": "cry_coffin_wood",
+      "position": [
+        5,
+        0,
+        3
+      ],
+      "rotationY": 183
+    },
+    {
+      "meshId": "cry_coffin_wood",
+      "position": [
+        1.6,
+        0,
+        3.05
+      ],
+      "rotationY": 177
+    },
+    {
+      "meshId": "shr_trap_plate",
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cry_candle_bracket",
+      "position": [
+        -7.9,
+        2.1,
+        2.6
+      ],
+      "rotationY": 90
+    },
+    {
+      "meshId": "cry_candle_bracket",
+      "position": [
+        7.9,
+        2.1,
+        -2.6
+      ],
+      "rotationY": -90
+    },
+    {
+      "meshId": "cry_floor_mist",
+      "position": [
+        -4,
+        0,
+        0
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cry_floor_mist",
+      "position": [
+        4,
+        0,
+        0
+      ],
+      "rotationY": 0
+    }
+  ],
+  "triBudget": 30000,
+  "drawCallBudget": 40
+}

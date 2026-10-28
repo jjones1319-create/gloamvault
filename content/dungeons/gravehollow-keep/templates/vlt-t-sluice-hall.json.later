@@ -1,0 +1,112 @@
+{
+  "id": "vlt-t-sluice-hall",
+  "zoneId": "the-drowned-vault",
+  "footprint": {
+    "w": 2,
+    "h": 1
+  },
+  "doors": [
+    {
+      "side": "west",
+      "offset": 0
+    },
+    {
+      "side": "east",
+      "offset": 0
+    }
+  ],
+  "kinds": [
+    "fight",
+    "trapGauntlet",
+    "lockedDoor"
+  ],
+  "camera": {
+    "position": [
+      0,
+      7.98,
+      -15.01
+    ],
+    "lookAt": [
+      0,
+      1,
+      0
+    ],
+    "fov": 38
+  },
+  "props": [
+    {
+      "meshId": "vlt_floor_channel",
+      "position": [
+        1,
+        0,
+        -3
+      ],
+      "rotationY": 90
+    },
+    {
+      "meshId": "vlt_floor_channel",
+      "position": [
+        1,
+        0,
+        -1
+      ],
+      "rotationY": 90
+    },
+    {
+      "meshId": "vlt_floor_channel",
+      "position": [
+        1,
+        0,
+        1
+      ],
+      "rotationY": 90
+    },
+    {
+      "meshId": "vlt_floor_channel",
+      "position": [
+        1,
+        0,
+        3
+      ],
+      "rotationY": 90
+    },
+    {
+      "meshId": "vlt_wheel_sluice",
+      "position": [
+        2.9,
+        0,
+        3
+      ],
+      "rotationY": 180
+    },
+    {
+      "meshId": "vlt_pillar_chained",
+      "position": [
+        -5.4,
+        0,
+        2.8
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_pillar_chained",
+      "position": [
+        -2,
+        0,
+        2.8
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_pillar_chained",
+      "position": [
+        5.8,
+        0,
+        2.8
+      ],
+      "rotationY": 0
+    }
+  ],
+  "triBudget": 30000,
+  "drawCallBudget": 40
+}

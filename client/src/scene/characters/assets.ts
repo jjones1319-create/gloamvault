@@ -21,7 +21,8 @@ export function hasModel(path: string): boolean {
 }
 
 export function modelUrl(path: string): string {
-  const base = import.meta.env.BASE_URL ?? '/'
+  // Read loosely, so node tests that reach this module (Phase 6's kit and monster tests) typecheck without Vite's types.
+  const base = (import.meta as { env?: { BASE_URL?: string } }).env?.BASE_URL ?? '/'
   return `${base}models/${path}?v=${INDEX[path] ?? '0'}`
 }
 

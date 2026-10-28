@@ -24,8 +24,8 @@ const RAMP_TEXELS = 64
 let ramp: THREE.DataTexture | null = null
 let rampUsers = 0
 
-/** The shared 4-step gradient (one tiny float texture for every character; freed with the last of them). */
-function acquireRamp(): THREE.DataTexture {
+/** The shared 4-step gradient (one tiny float texture for every character and room kit; freed with the last of them). */
+export function acquireRamp(): THREE.DataTexture {
   if (!ramp) {
     const data = new Float32Array(RAMP_TEXELS)
     for (let i = 0; i < RAMP_TEXELS; i++) {
@@ -44,7 +44,7 @@ function acquireRamp(): THREE.DataTexture {
   return ramp
 }
 
-function releaseRamp(): void {
+export function releaseRamp(): void {
   rampUsers = Math.max(0, rampUsers - 1)
   if (rampUsers === 0 && ramp) {
     ramp.dispose()

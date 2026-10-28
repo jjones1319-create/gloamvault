@@ -1,0 +1,1238 @@
+{
+  "zone": "vault",
+  "about": "The Drowned Vault kit (tools/blender/env/build_kit_vault.py, kit_lib conventions). kit_vault.glb holds one object per meshId at the origin; moving parts are children <meshId>.<part> (three.js strips the dot: find them by userData.part / userData.piece) with their origin on the hinge or axis; light_<n> / fx_<n> empties under their piece (userData.light: lamp | brazier, userData.color the flame colour; userData.fx: glow, drip, motes, splash, glint, fog, flow, bubbles, mist). \"extra\": true marks a piece beyond 07 §2.2's table. COLOR_0 as kit_lib (R slot / 15, G variation, B baked AO) with A the water's opacity — see \"water\".",
+  "palette": [
+    "#4d6372",
+    "#34444e",
+    "#7a6e58",
+    "#463d31",
+    "#505a60",
+    "#0a1418",
+    "#2f7189",
+    "#c8693f",
+    "#8c7a55",
+    "#a3b6bc",
+    "#c99b45",
+    "#58d3e0",
+    "#3f8c7e",
+    "#a9c5cc",
+    "#d2fbf2",
+    "#1d4f5a"
+  ],
+  "shell": {
+    "floor": "vlt_floor_basalt",
+    "wall": "vlt_wall_vault_2m",
+    "doorway": "vlt_door_arch_iron",
+    "corner": "vlt_wall_corner_in",
+    "wallCut": "vlt_wall_cut_2m",
+    "doorwayCut": "vlt_door_arch_cut",
+    "cornerCut": "vlt_wall_corner_cut",
+    "floorAlt": [
+      [
+        "vlt_floor_basalt_wet",
+        0.15
+      ]
+    ],
+    "wallAlt": [
+      [
+        "vlt_wall_pipes_2m",
+        0.2
+      ]
+    ],
+    "doorways": {
+      "open": "vlt_door_arch_iron",
+      "locked": "vlt_door_vault",
+      "secret": "vlt_door_secret",
+      "trap": "vlt_door_sluice"
+    },
+    "tile": 2,
+    "segment": 2,
+    "doorwayWidth": 4,
+    "opening": {
+      "width": 2,
+      "spring": 2.1,
+      "apex": 3.1
+    },
+    "wallHeight": 3.5,
+    "wallThickness": 0.4,
+    "cutHeight": 0.55,
+    "notes": "Pivots as kit_lib: a wall, doorway or cut piece has its origin at the centre of its base on the room-side face (the room is its local +z in game space; masonry behind it to z -0.4, and down to y -0.8 so sunk water never shows a gap); an 8 m cell edge is segment, doorway, segment (2 + 4 + 2 m) or four segments. Corner: origin on the room's inside corner, the room in its local +x/+z quadrant: NW rotationY 0, NE -90, SE 180, SW 90. Walls whose outer side faces the camera use the cut pieces. Floor tiles: 2 m, any quarter turn. floorAlt / wallAlt: [meshId, chance] per tile / full wall segment, never a wallAlt behind a wall-hung prop. doorways.trap is the Tide Gate trap skin (a lifting sluice gate)."
+  },
+  "water": {
+    "knee": 0.45,
+    "deep": -0.35,
+    "kneeOpacity": 0.62,
+    "note": "Pieces with \"water\": true carry slot-15 faces whose COLOR_0.A is their opacity (kit_lib keeps A = 1 elsewhere): knee-deep 0.62, deep 1, falling to 0 at soft edges (vlt_floor_water_edge, the pools of the breach, cage and chest, the wet tile's puddle). Draw them with a transparent water material (07: caustics scrolling on the knee-deep water, a fog volume on the deep). Knee-deep water is an overlay 0.45 m over the floor (the floor tile stays; characters standing at y 0 wade); deep water sits 0.35 m below the floor and its tile has a hole (the floor tile goes), lined by vlt_quay_edge_2m. The arena tides (07 §2.8) can move the knee-deep tiles up."
+  },
+  "pieces": {
+    "vlt_floor_basalt": {
+      "tris": 10,
+      "budget": 4,
+      "role": "shell",
+      "mount": "tile",
+      "bounds": {
+        "min": [
+          -1.0,
+          -0.035,
+          -1.0
+        ],
+        "max": [
+          1.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [],
+      "note": "2 m wet black-stone tile; joints darker through G; tiles seamlessly"
+    },
+    "vlt_floor_basalt_wet": {
+      "tris": 18,
+      "budget": 20,
+      "role": "shell",
+      "mount": "tile",
+      "bounds": {
+        "min": [
+          -1.0,
+          -0.035,
+          -1.0
+        ],
+        "max": [
+          1.0,
+          0.006,
+          1.0
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [],
+      "water": true,
+      "extra": true,
+      "note": "floor variant for the decoration pass: a slab with a standing puddle that fades at its edge"
+    },
+    "vlt_floor_water_knee": {
+      "tris": 2,
+      "budget": 2,
+      "role": "water",
+      "mount": "tile",
+      "bounds": {
+        "min": [
+          -1.0,
+          0.45,
+          -1.0
+        ],
+        "max": [
+          1.0,
+          0.45,
+          1.0
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [
+        {
+          "name": "fx_0",
+          "kind": "glint",
+          "at": [
+            0.35,
+            0.46,
+            0.2
+          ]
+        }
+      ],
+      "water": true,
+      "note": "knee-deep water: an overlay 0.45 m over the floor (the floor tile stays); characters wade; tiles seamlessly (opacity 0.62 in A)"
+    },
+    "vlt_floor_water_deep": {
+      "tris": 2,
+      "budget": 2,
+      "role": "water",
+      "mount": "tile",
+      "bounds": {
+        "min": [
+          -1.0,
+          -0.35,
+          -1.0
+        ],
+        "max": [
+          1.0,
+          -0.35,
+          1.0
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [
+        {
+          "name": "fx_1",
+          "kind": "fog",
+          "at": [
+            0.0,
+            -0.2,
+            -0.0
+          ]
+        }
+      ],
+      "hole": [
+        -1,
+        -1,
+        1,
+        1
+      ],
+      "water": true,
+      "note": "black deep water 0.35 m below the floor; replaces the floor tile; line it with vlt_quay_edge_2m"
+    },
+    "vlt_floor_water_edge": {
+      "tris": 4,
+      "budget": 4,
+      "role": "water",
+      "mount": "tile",
+      "bounds": {
+        "min": [
+          -1.0,
+          0.012,
+          0.0
+        ],
+        "max": [
+          1.0,
+          0.45,
+          1.0
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [],
+      "water": true,
+      "extra": true,
+      "note": "the soft shore: knee-deep water behind the origin (+Y, game -z) runs down to the dry floor in front and fades out over 1 m"
+    },
+    "vlt_floor_channel": {
+      "tris": 22,
+      "budget": 36,
+      "role": "decal",
+      "mount": "tile",
+      "bounds": {
+        "min": [
+          -1.0,
+          -0.75,
+          -1.0
+        ],
+        "max": [
+          1.0,
+          0.02,
+          1.0
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [
+        {
+          "name": "fx_2",
+          "kind": "flow",
+          "at": [
+            0.0,
+            -0.28,
+            -0.0
+          ]
+        }
+      ],
+      "hole": [
+        -1,
+        -1,
+        1,
+        1
+      ],
+      "water": true,
+      "note": "a 1 m sluice channel along local x (rotationY 90 runs it north-south), brass coping, water at -0.3: the Sluice Surge socket"
+    },
+    "vlt_floor_anemone": {
+      "tris": 146,
+      "budget": 180,
+      "role": "decal",
+      "mount": "tile",
+      "bounds": {
+        "min": [
+          -1.0,
+          -0.035,
+          -1.0
+        ],
+        "max": [
+          1.0,
+          0.37,
+          1.0
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [
+        {
+          "name": "fx_3",
+          "kind": "motes",
+          "at": [
+            0.0,
+            0.45,
+            -0.0
+          ]
+        }
+      ],
+      "hole": [
+        -1,
+        -1,
+        1,
+        1
+      ],
+      "note": "a slab with a cluster of glowing anemones (emissive): the Anemone Floor trap skin"
+    },
+    "vlt_wall_vault_2m": {
+      "tris": 24,
+      "budget": 30,
+      "role": "shell",
+      "mount": "shell",
+      "bounds": {
+        "min": [
+          -1.0,
+          -0.8,
+          -0.4
+        ],
+        "max": [
+          1.0,
+          3.5,
+          0.14
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [],
+      "note": "2 m dressed vault wall, 3.5 m: plinth, salt tide-line, verdigris drips, cornice; reaches 0.8 m below the floor"
+    },
+    "vlt_wall_pipes_2m": {
+      "tris": 156,
+      "budget": 180,
+      "role": "shell",
+      "mount": "shell",
+      "bounds": {
+        "min": [
+          -1.0,
+          -0.8,
+          -0.4
+        ],
+        "max": [
+          1.0,
+          3.5,
+          0.323
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [
+        {
+          "name": "fx_4",
+          "kind": "drip",
+          "at": [
+            -0.15,
+            1.75,
+            0.2
+          ]
+        }
+      ],
+      "extra": true,
+      "note": "wall variant: the vault wall with two brass pipes and a valve wheel; the client mixes it into wall runs (never behind a wall prop)"
+    },
+    "vlt_wall_cut_2m": {
+      "tris": 30,
+      "budget": 40,
+      "role": "shell",
+      "mount": "shell",
+      "bounds": {
+        "min": [
+          -1.0,
+          -0.8,
+          -0.4
+        ],
+        "max": [
+          1.0,
+          0.67,
+          0.06
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [],
+      "extra": true,
+      "note": "the camera-facing wall cut down to about 0.55 m with a broken top and a back face (the client cuts walls that face the camera)"
+    },
+    "vlt_wall_corner_in": {
+      "tris": 79,
+      "budget": 90,
+      "role": "shell",
+      "mount": "corner",
+      "bounds": {
+        "min": [
+          -0.47,
+          -0.8,
+          -0.47
+        ],
+        "max": [
+          0.293,
+          3.62,
+          0.293
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [],
+      "note": "inside corner post with a chained ring; at rotationY 0 the north-west corner (room toward +x/+z), NE -90, SE 180, SW 90; scale it down for cut corners"
+    },
+    "vlt_wall_corner_cut": {
+      "tris": 33,
+      "budget": 40,
+      "role": "shell",
+      "mount": "corner",
+      "bounds": {
+        "min": [
+          -0.47,
+          -0.8,
+          -0.47
+        ],
+        "max": [
+          0.27,
+          0.8,
+          0.27
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [],
+      "extra": true,
+      "note": "the corner post where a camera-facing wall meets it, cut to about 0.7 m with a broken top (kit_lib cornerCut)"
+    },
+    "vlt_door_arch_iron": {
+      "tris": 178,
+      "budget": 300,
+      "role": "shell",
+      "mount": "shell",
+      "bounds": {
+        "min": [
+          -2.0,
+          -0.8,
+          -0.4
+        ],
+        "max": [
+          2.0,
+          3.52,
+          0.2
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [],
+      "note": "the open doorway: 4 m wide (two wall segments) with a 2 m iron-bound round arch at its centre; origin at the doorway midpoint on the room face"
+    },
+    "vlt_door_arch_cut": {
+      "tris": 54,
+      "budget": 60,
+      "role": "shell",
+      "mount": "shell",
+      "bounds": {
+        "min": [
+          -2.0,
+          -0.8,
+          -0.4
+        ],
+        "max": [
+          2.0,
+          0.85,
+          0.08
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [],
+      "extra": true,
+      "note": "the open doorway on a camera-facing wall: the cut-down jambs and the iron band stubs"
+    },
+    "vlt_door_vault": {
+      "tris": 724,
+      "budget": 1100,
+      "role": "shell",
+      "mount": "shell",
+      "bounds": {
+        "min": [
+          -2.0,
+          -0.8,
+          -0.4
+        ],
+        "max": [
+          2.0,
+          3.5,
+          0.37
+        ]
+      },
+      "parts": [
+        {
+          "name": "vlt_door_vault.leaf",
+          "part": "leaf",
+          "tris": 438,
+          "pivot": [
+            -1.32,
+            1.59,
+            0.28
+          ],
+          "axis": "y",
+          "note": "the round door on its hinge (the game -x side of the collar): open = rotation.y down to -1.9 rad, swinging into the room"
+        }
+      ],
+      "lights": [],
+      "fx": [],
+      "note": "the Locked-door skin: a round vault door in a brass-bolted collar; .door swings on its hinge (left, game -x side)"
+    },
+    "vlt_door_sluice": {
+      "tris": 316,
+      "budget": 500,
+      "role": "shell",
+      "mount": "shell",
+      "bounds": {
+        "min": [
+          -2.0,
+          -0.8,
+          -0.4
+        ],
+        "max": [
+          2.0,
+          3.645,
+          0.64
+        ]
+      },
+      "parts": [
+        {
+          "name": "vlt_door_sluice.gate",
+          "part": "gate",
+          "tris": 108,
+          "pivot": [
+            0.0,
+            0.0,
+            0.05
+          ],
+          "axis": "y",
+          "note": "lifts straight up into the winch: open = position.y + 2.6"
+        }
+      ],
+      "lights": [],
+      "fx": [],
+      "note": "a sluice gate under a winch: the Tide Gate trap skin; .gate lifts straight up (game +y)"
+    },
+    "vlt_wall_shelf_2m": {
+      "tris": 144,
+      "budget": 280,
+      "role": "wall-hung",
+      "mount": "wall",
+      "bounds": {
+        "min": [
+          -1.02,
+          0.0,
+          -0.152
+        ],
+        "max": [
+          1.02,
+          2.65,
+          0.511
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [],
+      "note": "treasury shelf wall with empty strongboxes; hung 0.1 m in front of a wall (templates: room edge - 0.1)"
+    },
+    "vlt_door_secret": {
+      "tris": 172,
+      "budget": 300,
+      "role": "shell",
+      "mount": "shell",
+      "bounds": {
+        "min": [
+          -2.0,
+          -0.8,
+          -0.4
+        ],
+        "max": [
+          2.0,
+          3.5,
+          0.55
+        ]
+      },
+      "parts": [
+        {
+          "name": "vlt_door_secret.panel",
+          "part": "panel",
+          "tris": 130,
+          "pivot": [
+            0.0,
+            0.0,
+            -0.2
+          ],
+          "axis": "y",
+          "note": "the shelf wall turns about its centre: open = rotation.y ±1.57 rad"
+        }
+      ],
+      "lights": [],
+      "fx": [],
+      "note": "a shelf wall that pivots: identical to a wall with a treasury shelf until found; .panel turns about its centre"
+    },
+    "vlt_wall_breach": {
+      "tris": 349,
+      "budget": 400,
+      "role": "wall-hung",
+      "mount": "wall",
+      "bounds": {
+        "min": [
+          -1.55,
+          0.0,
+          -0.132
+        ],
+        "max": [
+          1.58,
+          3.084,
+          2.146
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [
+        {
+          "name": "fx_5",
+          "kind": "splash",
+          "at": [
+            0.0,
+            0.2,
+            0.8
+          ]
+        },
+        {
+          "name": "fx_6",
+          "kind": "drip",
+          "at": [
+            0.0,
+            2.5,
+            0.05
+          ]
+        },
+        {
+          "name": "fx_7",
+          "kind": "drip",
+          "at": [
+            0.86,
+            2.4,
+            0.4
+          ]
+        }
+      ],
+      "water": true,
+      "note": "a wall burst inward by water: the dark hole in a rim of broken blocks, a waterfall sheet, its soft-edged pool, rubble and a burst brass pipe"
+    },
+    "vlt_pillar_chained": {
+      "tris": 132,
+      "budget": 140,
+      "role": "prop",
+      "mount": "floor",
+      "bounds": {
+        "min": [
+          -0.431,
+          0.0,
+          -0.431
+        ],
+        "max": [
+          0.431,
+          3.5,
+          0.431
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [],
+      "note": "square 3.5 m pillar with chamfered corners, a salt line, wrapped in chain, barnacles at the foot, a brass cap"
+    },
+    "vlt_plinth_sentinel": {
+      "tris": 202,
+      "budget": 260,
+      "role": "prop",
+      "mount": "floor",
+      "bounds": {
+        "min": [
+          -0.75,
+          0.0,
+          -0.75
+        ],
+        "max": [
+          0.75,
+          2.173,
+          0.75
+        ]
+      },
+      "parts": [
+        {
+          "name": "vlt_plinth_sentinel.construct",
+          "part": "construct",
+          "tris": 182,
+          "pivot": [
+            0.0,
+            0.55,
+            -0.0
+          ],
+          "axis": "none",
+          "note": "the dormant construct: hide it when the Vault Sentinel (the bestiary mesh) stands up from the plinth"
+        }
+      ],
+      "lights": [],
+      "fx": [
+        {
+          "name": "fx_8",
+          "kind": "glow",
+          "at": [
+            0.0,
+            1.55,
+            0.3
+          ]
+        }
+      ],
+      "note": "a plinth with a dormant kneeling construct (.construct: hide it when the bestiary Vault Sentinel stands up); the core glows"
+    },
+    "vlt_lamp_cult": {
+      "tris": 98,
+      "budget": 110,
+      "role": "prop",
+      "mount": "floor",
+      "bounds": {
+        "min": [
+          -0.278,
+          -0.007,
+          -0.321
+        ],
+        "max": [
+          0.278,
+          1.88,
+          0.21
+        ]
+      },
+      "parts": [],
+      "lights": [
+        {
+          "name": "light_0",
+          "kind": "lamp",
+          "at": [
+            0.0,
+            1.72,
+            -0.0
+          ],
+          "color": "#58d3e0"
+        }
+      ],
+      "fx": [],
+      "note": "an oil lamp with a blue flame on an iron tripod (light_0 at the flame)"
+    },
+    "vlt_altar_tide": {
+      "tris": 380,
+      "budget": 700,
+      "role": "prop",
+      "mount": "floor",
+      "bounds": {
+        "min": [
+          -1.6,
+          0.0,
+          -1.15
+        ],
+        "max": [
+          1.6,
+          2.61,
+          1.25
+        ]
+      },
+      "parts": [],
+      "lights": [
+        {
+          "name": "light_1",
+          "kind": "lamp",
+          "at": [
+            -0.72,
+            2.02,
+            0.28
+          ],
+          "color": "#58d3e0"
+        },
+        {
+          "name": "light_2",
+          "kind": "lamp",
+          "at": [
+            0.72,
+            2.02,
+            0.28
+          ],
+          "color": "#58d3e0"
+        },
+        {
+          "name": "light_3",
+          "kind": "lamp",
+          "at": [
+            0.0,
+            2.45,
+            -0.78
+          ],
+          "color": "#58d3e0"
+        }
+      ],
+      "fx": [],
+      "water": true,
+      "note": "the Tide Altar: a black altar on a two-step dais (above knee water), a scallop-shell basin, the wave sigil and three cult lamps"
+    },
+    "vlt_wheel_sluice": {
+      "tris": 322,
+      "budget": 380,
+      "role": "prop",
+      "mount": "floor",
+      "bounds": {
+        "min": [
+          -1.17,
+          -0.05,
+          -0.78
+        ],
+        "max": [
+          1.17,
+          2.529,
+          0.76
+        ]
+      },
+      "parts": [
+        {
+          "name": "vlt_wheel_sluice.wheel",
+          "part": "wheel",
+          "tris": 222,
+          "pivot": [
+            0.0,
+            1.5,
+            0.62
+          ],
+          "axis": "z",
+          "note": "turns about its axle (the game z axis): a quarter turn or more when the wheel is used"
+        }
+      ],
+      "lights": [],
+      "fx": [],
+      "note": "the 2 m iron sluice wheel on its pedestal, its brass pipe going into the floor; .wheel turns about the front axis (game z)"
+    },
+    "vlt_cage_thrall": {
+      "tris": 380,
+      "budget": 460,
+      "role": "prop",
+      "mount": "floor",
+      "bounds": {
+        "min": [
+          -1.55,
+          -0.162,
+          -1.55
+        ],
+        "max": [
+          1.55,
+          2.354,
+          1.55
+        ]
+      },
+      "parts": [
+        {
+          "name": "vlt_cage_thrall.prisoner",
+          "part": "prisoner",
+          "tris": 84,
+          "pivot": [
+            0.0,
+            0.0,
+            -0.05
+          ],
+          "axis": "none",
+          "note": "the slumped thrall: hide it when it wakes free, attacks (the Drowned Thrall monster) or dissolves"
+        }
+      ],
+      "lights": [],
+      "fx": [
+        {
+          "name": "fx_9",
+          "kind": "bubbles",
+          "at": [
+            0.3,
+            0.36,
+            0.2
+          ]
+        }
+      ],
+      "water": true,
+      "note": "a half-sunk iron cage with a slumped drowned thrall, in its own soft-edged pool (the Thrall's Cage curio)"
+    },
+    "vlt_chest_drowned": {
+      "tris": 234,
+      "budget": 560,
+      "role": "prop",
+      "mount": "floor",
+      "bounds": {
+        "min": [
+          -1.7,
+          -0.137,
+          -1.7
+        ],
+        "max": [
+          1.7,
+          0.757,
+          1.7
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [],
+      "water": true,
+      "note": "a large iron-banded chest lying on its side in its own shallow pool, weed-wrapped and barnacled (the Drowned Chest curio)"
+    },
+    "vlt_jar_leech": {
+      "tris": 104,
+      "budget": 120,
+      "role": "wall-hung",
+      "mount": "wall",
+      "bounds": {
+        "min": [
+          -0.32,
+          1.0,
+          -0.1
+        ],
+        "max": [
+          0.32,
+          1.74,
+          0.234
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [],
+      "water": true,
+      "note": "a glass jar of black leeches on a small wall shelf, one of them very large (the Leech Jar curio); hung 0.1 m in front of a wall"
+    },
+    "vlt_raft_merchant": {
+      "tris": 410,
+      "budget": 800,
+      "role": "prop",
+      "mount": "floor",
+      "bounds": {
+        "min": [
+          -1.985,
+          -1.102,
+          -1.02
+        ],
+        "max": [
+          2.121,
+          2.452,
+          1.96
+        ]
+      },
+      "parts": [],
+      "lights": [
+        {
+          "name": "light_4",
+          "kind": "lamp",
+          "at": [
+            1.22,
+            1.48,
+            0.72
+          ],
+          "color": "#ffb060"
+        }
+      ],
+      "fx": [],
+      "note": "the pedlar's raft: six logs riding in deep water (deck at about -0.13), his goods under a coral awning, a pole and his lamp (light_0, +15 light)"
+    },
+    "vlt_brazier": {
+      "tris": 152,
+      "budget": 160,
+      "role": "prop",
+      "mount": "floor",
+      "bounds": {
+        "min": [
+          -0.425,
+          -0.006,
+          -0.425
+        ],
+        "max": [
+          0.425,
+          1.4,
+          0.445
+        ]
+      },
+      "parts": [],
+      "lights": [
+        {
+          "name": "light_5",
+          "kind": "brazier",
+          "at": [
+            0.0,
+            1.5,
+            -0.0
+          ],
+          "color": "#ffb060"
+        }
+      ],
+      "fx": [],
+      "extra": true,
+      "note": "a brass brazier on a tall iron tripod, above shin-deep water: the throne room has four (06 3.4); a Torch relights it (light_0, warm)"
+    },
+    "vlt_pew": {
+      "tris": 56,
+      "budget": 70,
+      "role": "prop",
+      "mount": "floor",
+      "bounds": {
+        "min": [
+          -1.5,
+          0.0,
+          -0.25
+        ],
+        "max": [
+          1.5,
+          1.003,
+          0.45
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [],
+      "extra": true,
+      "note": "a waterlogged chapel pew, 3 m; a sitter faces the piece front (+z game): rotationY 180 faces north"
+    },
+    "vlt_banner_tide": {
+      "tris": 50,
+      "budget": 60,
+      "role": "wall-hung",
+      "mount": "wall",
+      "bounds": {
+        "min": [
+          -0.68,
+          1.32,
+          -0.04
+        ],
+        "max": [
+          0.68,
+          3.24,
+          0.08
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [],
+      "extra": true,
+      "note": "a Tidebound banner: teal cloth on a brass rod with the cult's brass wave ring; hung 0.1 m in front of a wall"
+    },
+    "vlt_quay_edge_2m": {
+      "tris": 32,
+      "budget": 40,
+      "role": "prop",
+      "mount": "floor",
+      "bounds": {
+        "min": [
+          -1.0,
+          -0.95,
+          -0.22
+        ],
+        "max": [
+          1.0,
+          0.06,
+          0.115
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [],
+      "extra": true,
+      "note": "the edge of a deep-water basin: a coping stone and the quay face down past the water line, a mooring ring; its front (+z game) faces the water"
+    },
+    "vlt_rope_ladder": {
+      "tris": 44,
+      "budget": 50,
+      "role": "prop",
+      "mount": "floor",
+      "bounds": {
+        "min": [
+          -0.278,
+          -0.9,
+          -0.12
+        ],
+        "max": [
+          0.275,
+          0.11,
+          0.19
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [],
+      "extra": true,
+      "note": "a rope ladder hooked over a quay edge, hanging into the water (place it on a vlt_quay_edge_2m with the same transform)"
+    },
+    "vlt_stairs_flooded": {
+      "tris": 192,
+      "budget": 400,
+      "role": "prop",
+      "mount": "floor",
+      "bounds": {
+        "min": [
+          -2.2,
+          -2.6,
+          -2.7
+        ],
+        "max": [
+          2.2,
+          0.949,
+          1.62
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [
+        {
+          "name": "fx_10",
+          "kind": "splash",
+          "at": [
+            0.0,
+            -0.98,
+            -0.62
+          ]
+        },
+        {
+          "name": "fx_11",
+          "kind": "mist",
+          "at": [
+            0.0,
+            -0.8,
+            -1.5
+          ]
+        }
+      ],
+      "hole": [
+        -2.0,
+        -2.5,
+        2.0,
+        1.5
+      ],
+      "water": true,
+      "extra": true,
+      "note": "the Vault's stair-well: eight steps descending north into water, water pouring down the top steps, brass rails and kerb; the stairs pit of the client"
+    },
+    "vlt_throne_hollow": {
+      "tris": 1333,
+      "budget": 2400,
+      "role": "prop",
+      "mount": "floor",
+      "bounds": {
+        "min": [
+          -7.25,
+          0.0,
+          -3.75
+        ],
+        "max": [
+          7.25,
+          6.9,
+          3.788
+        ]
+      },
+      "parts": [
+        {
+          "name": "vlt_throne_hollow.seat",
+          "part": "seat",
+          "tris": 184,
+          "pivot": [
+            0.0,
+            2.0,
+            -0.75
+          ],
+          "axis": "none",
+          "note": "the empty iron throne: hide it while the Hollow King's own throne (his mesh) is drawn"
+        }
+      ],
+      "lights": [
+        {
+          "name": "light_6",
+          "kind": "lamp",
+          "at": [
+            -6.4,
+            4.224,
+            -1.86
+          ],
+          "color": "#58d3e0"
+        },
+        {
+          "name": "light_7",
+          "kind": "lamp",
+          "at": [
+            -4.4,
+            4.224,
+            -1.86
+          ],
+          "color": "#58d3e0"
+        },
+        {
+          "name": "light_8",
+          "kind": "lamp",
+          "at": [
+            -2.2,
+            4.224,
+            -1.86
+          ],
+          "color": "#58d3e0"
+        },
+        {
+          "name": "light_9",
+          "kind": "lamp",
+          "at": [
+            2.2,
+            4.224,
+            -1.86
+          ],
+          "color": "#58d3e0"
+        },
+        {
+          "name": "light_10",
+          "kind": "lamp",
+          "at": [
+            4.4,
+            4.224,
+            -1.86
+          ],
+          "color": "#58d3e0"
+        },
+        {
+          "name": "light_11",
+          "kind": "lamp",
+          "at": [
+            6.4,
+            4.224,
+            -1.86
+          ],
+          "color": "#58d3e0"
+        }
+      ],
+      "fx": [
+        {
+          "name": "fx_12",
+          "kind": "glow",
+          "at": [
+            0.0,
+            5.55,
+            -3.2
+          ]
+        },
+        {
+          "name": "fx_13",
+          "kind": "glow",
+          "at": [
+            0.0,
+            4.55,
+            -1.0
+          ]
+        }
+      ],
+      "note": "the Hollow King's throne: a dais of eight 0.25 m steps (platform at 2.0 m, the lowest two under the knee-deep water), the gallery behind it with six cult lamps (light_0..5: the Silence tell), chains and coral; .seat is the empty iron throne (hide it while the King's own throne is drawn); origin at the dais' centre line, 3.3 m behind its bottom step"
+    }
+  }
+}

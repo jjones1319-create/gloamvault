@@ -56,9 +56,15 @@ describe('a hero’s clip for each beat (Phase 5)', () => {
     expect(cues.map((c) => c.actorId)).toEqual(['hero-0', 'hero-1', 'hero-2', 'hero-3'])
   })
 
-  it('monsters and pets get no clips (they stay placeholders until Phase 6)', () => {
-    const rat = { ...party[0]!, id: 'giant-rat-1', kind: 'monster', hero: undefined } as unknown as Actor
-    const beat = beatsOf([ev('action', 'giant-rat-1', 'Giant Rat 1 uses Bite on Warden')], 0)[0]!
-    expect(beatAnims(beat, { actors: [...party, rat] } as unknown as FightState, content)).toEqual([])
+  it('Phase 6: a monster swings Attack1 or Attack2 by its move’s weight, asking for the move’s own clip first; a pet its Attack1', () => {
+    const def = content.monsters.get('giant-rat')!
+    const rat = { id: 'giant-rat-1', name: 'Giant Rat 1', kind: 'monster', side: 'enemy', monster: { monsterId: 'giant-rat', attacks: def.attacks } } as unknown as Actor
+    const pet = { id: 'pet-0', name: 'Pip', kind: 'pet', side: 'party', pet: { petId: 'cellar-hound', ownerId: 'hero-0' } } as unknown as Actor
+    const f = { actors: [...party, rat, pet] } as unknown as FightState
+    const bite = beatAnims(beatsOf([ev('action', 'giant-rat-1', 'Giant Rat 1 uses Bite on Warden')], 0)[0]!, f, content, 2)
+    expect(bite).toEqual([{ kind: 'anim', actorId: 'giant-rat-1', clip: 'Attack1', alt: ['Bite'], speed: 2 }])
+    const heavy = def.attacks.find((a) => a.weight > content.tuning.combat.weights.normal && a.multiplier > 0)
+    if (heavy) expect(beatAnims(beatsOf([ev('action', 'giant-rat-1', `Giant Rat 1 uses ${heavy.name} on Warden`)], 0)[0]!, f, content)[0]!.clip).toBe('Attack2')
+    expect(beatAnims(beatsOf([ev('action', 'pet-0', 'Pip uses Bite on Giant Rat 1')], 0)[0]!, f, content)[0]).toMatchObject({ actorId: 'pet-0', clip: 'Attack1' })
   })
 })

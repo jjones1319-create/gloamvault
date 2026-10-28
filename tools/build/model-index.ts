@@ -22,7 +22,14 @@ function walk(dir: string, out: string[]): void {
   if (!existsSync(dir)) return
   for (const name of readdirSync(dir).sort()) {
     const p = join(dir, name)
-    if (statSync(p).isDirectory()) walk(p, out)
+    // A file can vanish between the listing and the look (an exporter's lock file): skip it, never crash the dev server.
+    let isDir = false
+    try {
+      isDir = statSync(p).isDirectory()
+    } catch {
+      continue
+    }
+    if (isDir) walk(p, out)
     else if (KINDS.test(name)) out.push(p)
   }
 }
@@ -35,7 +42,11 @@ export function buildModelIndex(root = process.cwd()): Record<string, string> {
   const index: Record<string, string> = {}
   for (const f of files) {
     const rel = relative(dir, f).split(sep).join('/')
-    index[rel] = createHash('sha256').update(readFileSync(f)).digest('hex').slice(0, 10)
+    try {
+      index[rel] = createHash('sha256').update(readFileSync(f)).digest('hex').slice(0, 10)
+    } catch {
+      // Gone (or still being written and locked) since the walk: the next change rewrites the index.
+    }
   }
   return index
 }

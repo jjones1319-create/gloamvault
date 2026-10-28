@@ -1,6 +1,6 @@
 # 11 — Art Pipeline (Blender → glTF → three.js)
 
-*Last updated 2026-10-28 · rev. 3 (Phase 5: the hero pipeline as built — §11; the palette replaces the mask textures of §2, D-100–D-109) · rev. 2 (checkpoint 1: open questions answered by delegation — D-099) · rev. 1 2026-10-26 (Claude). Decision D-019. The sister project's `prototype/blender/shade/` (ProjectAscend) is the proven ancestor of this pipeline: scripted, headless, re-runnable, reviewed by looking at renders; its `LOG.md` lists honestly what a script can and cannot reach. This document keeps what worked and fixes what didn't.*
+*Last updated 2026-10-28 · rev. 4 (Phase 6: the rooms, monsters and effects as built — §12; kits with baked AO replace §5's lightmaps, effects generated in code replace §6's flipbooks — D-110–D-117) · rev. 3 (Phase 5: the hero pipeline as built — §11; the palette replaces the mask textures of §2, D-100–D-109) · rev. 2 (checkpoint 1: open questions answered by delegation — D-099) · rev. 1 2026-10-26 (Claude). Decision D-019. The sister project's `prototype/blender/shade/` (ProjectAscend) is the proven ancestor of this pipeline: scripted, headless, re-runnable, reviewed by looking at renders; its `LOG.md` lists honestly what a script can and cannot reach. This document keeps what worked and fixes what didn't.*
 
 ## 1. The look (style guide)
 
@@ -30,15 +30,15 @@ Event frames (hit, vanish, release) are listed in each clip's docstring and expo
 
 ## 4. Monsters
 
-`06-MONSTERS.md` §3.5 maps Dungeon 1's 35 monsters, 3 hunters and 4 bosses onto **14 base meshes** — `rat`, `spider`, `humanoid` (the hero rig with bandit, cult and crone costume sets), `hound`, `skeleton`, `zombie`, `bat`, `wraith`, `wisp`, `tentacle`, `sentinel`, `ooze`, `leech`, `hollow-king` (unique: humanoid rig + throne + chain rig) — with the Barrow Warden and the other bosses as scaled, re-dressed variants with unique parts. Each base is a `build_<base>.py` with a `VARIANTS` table (scale, parts on/off, palette, extra bones) so a variant is a re-run, not a new model. Budgets: fodder 2–4k tris, elite 4–6k, monster 6–8k, boss 8–12k; quadruped and non-humanoid rigs are small custom chains (the Shade's fox rig is the pattern).
+`06-MONSTERS.md` §3.5 maps Dungeon 1's 35 monsters, 3 hunters and 4 bosses onto **14 base meshes** — `rat`, `spider`, `humanoid` (the hero rig with bandit, cult and crone costume sets), `hound`, `skeleton`, `zombie`, `bat`, `wraith`, `wisp`, `tentacle`, `sentinel`, `ooze`, `leech`, `hollow-king` (unique: humanoid rig + throne + chain rig) — with the Barrow Warden and the other bosses as scaled, re-dressed variants with unique parts. Each base is a `build_<base>.py` with a `VARIANTS` table (scale, parts on/off, palette, extra bones) so a variant is a re-run, not a new model. Budgets: fodder 2–4k tris, elite 4–6k, monster 6–8k, boss 8–12k; quadruped and non-humanoid rigs are small custom chains (the Shade's fox rig is the pattern). *As built: §12 (D-111, D-115).*
 
 ## 5. Environments
 
-Per zone: a **kit** of pieces (`07-DUNGEONS.md` §2 lists them with tri budgets), a **palette**, **lighting** baked in Blender (Cycles bake of AO + a lightmap atlas per room template, 2048², headless), fog and torch sprites added in the client. Room **templates** (`07` §2) are `.glb` assemblies built from the kit by script from a JSON description (so the generator's template ids and the Blender builds share a source). Props that repeat (torches, chains, rubble, bones) are separate `.glb`s instanced in three.js.
+Per zone: a **kit** of pieces (`07-DUNGEONS.md` §2 lists them with tri budgets), a **palette**, **lighting** baked in Blender (Cycles bake of AO + a lightmap atlas per room template, 2048², headless), fog and torch sprites added in the client. Room **templates** (`07` §2) are `.glb` assemblies built from the kit by script from a JSON description (so the generator's template ids and the Blender builds share a source). Props that repeat (torches, chains, rubble, bones) are separate `.glb`s instanced in three.js. *As built: §12 — kit pieces with ambient occlusion baked into the vertex colours, no lightmaps (D-110, D-114).*
 
 ## 6. VFX
 
-Element marks, hits, heals and Ultimates: **sprite flipbooks baked in Blender** (Mantaflow fire/smoke/water, or shader-animated planes rendered to PNG sheets — Wildsong Ranch's bake pattern) plus client-side additive planes and a cheap bloom. ≤ 1 MB per flipbook, lazy-loaded.
+Element marks, hits, heals and Ultimates: **sprite flipbooks baked in Blender** (Mantaflow fire/smoke/water, or shader-animated planes rendered to PNG sheets — Wildsong Ranch's bake pattern) plus client-side additive planes and a cheap bloom. ≤ 1 MB per flipbook, lazy-loaded. *Superseded: the effects are generated in code (§12, D-112).*
 
 ## 7. Scripts, folders, commands
 
@@ -127,6 +127,41 @@ The heroes are built, reviewed and exported; `tools/blender/README.md` is the co
   (no cape bones yet); poses are keyframed tables without secondary motion; the shoulders pinch when an arm rises above
   the head; a few species variants the class sheets ask for (Draconid hood-down, Orc wider mask, Dwarf short hem, tail
   splits in coats) are not built — the client hides horns and ears under helmets instead.
+
+## 12. As built in Phase 6 (2026-10-28)
+
+The rooms, the monsters and the effects are built; `art/LOG.md` has every pass's rounds and the lead's review in the
+game, `tools/blender/README.md` → *Phase 6* the contract. What changed from §4–§6:
+
+- **Rooms are kit pieces with ambient occlusion in the vertex colours, not per-room lightmaps** (D-110, D-114).
+  `tools/blender/env/` builds four kits from `07` §2.2 — shared (12 pieces), Cellars (40), Crypts (41), Vault (35) —
+  each one rigid `.glb` (`kit_shared` 187 KB, `kit_cellars` 623 KB, `kit_crypts` 432 KB, `kit_vault` 493 KB) with a
+  manifest (`client/public/models/env/<zone>.json`: the palette, the shell pieces by state, mounts, lights, fx points,
+  moving parts with pivots, floor holes, door skins). COLOR_0 is R = the zone's palette slot, G = weathering, B = Cycles
+  AO baked per piece; slot 15 is water, translucent by its vertex alpha. There are no textures, so joints, flagstones and
+  bricks are geometry. The client builds a room's floor, walls and doorways from the template's footprint and doors (the
+  camera side from cut-away pieces), places the props by the template, merges the statics and instances the repeats.
+- **Lighting** is the baked AO + a hemisphere + two point lights at the flames nearest the party + the zone's fog,
+  scaled by the light meter; no shadows and no lightmaps (D-116).
+- **Monsters** (D-111, D-115): fourteen bases in `client/public/models/monsters/` (8.9 MB in all, fetched per fight and
+  runtime-cached) and one `manifest.json` of 50 entries — §4's `VARIANTS` tables became data there (scale, parts,
+  shapes, palette, bone scales, pose offsets, clip map). The creatures (rat, hound, spider, bat) have their own rigs
+  (23–41 bones) and clips; the dead, the bandits, the cult, the Sentinel and the Hollow King wear the hero rig and play
+  the hero clips through a clip map, with pose offsets for the hunched and the seated; the spirits, tentacles, oozes and
+  the leech are small chains or shape keys. Fodder 2.0–3.4k triangles, elites 3.5–4.7k, bosses 4.7–6.8k (the King's
+  throne 3.1k more) — inside §4's budgets.
+- **Effects are generated in code** (D-112, replacing §6's flipbooks): one atlas drawn on a canvas at start-up, twenty
+  effects (sparks for the three physical types, marks for the six elements, heal, buff and debuff rings, the death
+  puff, the six Ultimates), one draw call for all of them; Reduce motion turns them off.
+- **Measured** (desktop Chrome, an Intel Iris Xe, the phone's viewport — the phone's own numbers come from James's
+  checklist; `10` §4): a room with 4 heroes and 4 pets 40 draw calls and 101k triangles at 59 fps; the largest Cellars
+  fight (4 heroes, 4 pets, 6 monsters) 54 calls, 138k triangles, 59 fps (lowest 56); a 30-minute autoplay soak held
+  57–60 fps with nothing growing.
+- **What a script did not reach** (§10, the honest list): the hero-rig monsters' faces are the decimated hero face with
+  ink eyes; the creatures are smooth "clay" with a few fur clumps; chains, lanterns, nets, kelp and tentacle tips are
+  rigid on their bones; the Crypts' pointed arch reads round-headed at phone size; webs read as gauze fans; water is a
+  translucent tint, not a water shader; the hunched poses and the Bursting Corpse's swell need the client's offsets;
+  ten of the sixteen pets are still capsules (D-117).
 
 **Open questions**
 1. ~~Base meshes from the CC0 bundle (recommended) vs. the procedural loft body for everything (faster, worse faces)?~~ *Checkpoint 1 (D-019): the CC0 base meshes, as recommended; the procedural loft body stays for silhouette tests only.*

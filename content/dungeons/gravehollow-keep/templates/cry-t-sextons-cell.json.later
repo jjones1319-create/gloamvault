@@ -1,0 +1,110 @@
+{
+  "id": "cry-t-sextons-cell",
+  "zoneId": "the-crypts",
+  "footprint": {
+    "w": 1,
+    "h": 1
+  },
+  "doors": [
+    {
+      "side": "north",
+      "offset": 0
+    },
+    {
+      "side": "east",
+      "offset": 0
+    },
+    {
+      "side": "south",
+      "offset": 0
+    },
+    {
+      "side": "west",
+      "offset": 0
+    }
+  ],
+  "kinds": [
+    "rest"
+  ],
+  "camera": {
+    "position": [
+      0,
+      5,
+      -8.7
+    ],
+    "lookAt": [
+      0,
+      1,
+      0
+    ],
+    "fov": 36
+  },
+  "props": [
+    {
+      "meshId": "cry_hearth_niche",
+      "position": [
+        -2.3,
+        0,
+        3.9
+      ],
+      "rotationY": 180
+    },
+    {
+      "meshId": "shr_campfire",
+      "position": [
+        -2.3,
+        0,
+        3.3
+      ],
+      "rotationY": 0,
+      "lightSource": true
+    },
+    {
+      "meshId": "cry_window_shuttered",
+      "position": [
+        2.5,
+        1.3,
+        3.9
+      ],
+      "rotationY": 180
+    },
+    {
+      "meshId": "cry_cot",
+      "position": [
+        2.55,
+        0,
+        3.35
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cry_sexton_tools",
+      "position": [
+        -3.9,
+        0,
+        2
+      ],
+      "rotationY": 90
+    },
+    {
+      "meshId": "cry_candle_bracket",
+      "position": [
+        3.9,
+        2.1,
+        2.6
+      ],
+      "rotationY": -90
+    },
+    {
+      "meshId": "cry_floor_mist",
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotationY": 0
+    }
+  ],
+  "triBudget": 30000,
+  "drawCallBudget": 40
+}

@@ -280,6 +280,8 @@ export interface Mark {
   z: number
   /** three.js rotation.y so the actor's local +z faces its foes (or into the room). */
   yaw: number
+  /** Standing above the floor (a boss on a dais or a throne platform), metres; 0 when absent. */
+  y?: number
 }
 
 /** Lateral offsets for a line of `count` actors, squeezed to fit the room's half-width. */

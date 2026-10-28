@@ -1,0 +1,119 @@
+{
+  "id": "vlt-t-strong-vault",
+  "zoneId": "the-drowned-vault",
+  "footprint": {
+    "w": 1,
+    "h": 1
+  },
+  "doors": [
+    {
+      "side": "north",
+      "offset": 0
+    },
+    {
+      "side": "east",
+      "offset": 0
+    },
+    {
+      "side": "south",
+      "offset": 0
+    },
+    {
+      "side": "west",
+      "offset": 0
+    }
+  ],
+  "kinds": [
+    "treasure",
+    "secret"
+  ],
+  "camera": {
+    "position": [
+      0,
+      7.78,
+      7.78
+    ],
+    "lookAt": [
+      0,
+      1,
+      0
+    ],
+    "fov": 42
+  },
+  "props": [
+    {
+      "meshId": "vlt_wall_shelf_2m",
+      "position": [
+        -3,
+        0,
+        -3.9
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_wall_shelf_2m",
+      "position": [
+        3,
+        0,
+        -3.9
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_wall_shelf_2m",
+      "position": [
+        3.9,
+        0,
+        3
+      ],
+      "rotationY": -90
+    },
+    {
+      "meshId": "vlt_wall_shelf_2m",
+      "position": [
+        -3.9,
+        0,
+        3
+      ],
+      "rotationY": 90
+    },
+    {
+      "meshId": "shr_chest_small",
+      "position": [
+        -1.4,
+        0,
+        -2.3
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "shr_chest_large",
+      "position": [
+        1.6,
+        0,
+        -2.3
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "shr_gold_pile",
+      "position": [
+        -2.3,
+        0,
+        0.8
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "shr_gold_pile",
+      "position": [
+        2.4,
+        0,
+        0.4
+      ],
+      "rotationY": 70
+    }
+  ],
+  "triBudget": 30000,
+  "drawCallBudget": 40
+}

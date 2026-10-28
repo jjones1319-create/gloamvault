@@ -1,0 +1,83 @@
+{
+  "id": "cry-t-stair-shaft",
+  "zoneId": "the-crypts",
+  "footprint": {
+    "w": 1,
+    "h": 1
+  },
+  "doors": [
+    {
+      "side": "north",
+      "offset": 0
+    },
+    {
+      "side": "east",
+      "offset": 0
+    },
+    {
+      "side": "south",
+      "offset": 0
+    },
+    {
+      "side": "west",
+      "offset": 0
+    }
+  ],
+  "kinds": [
+    "stairs",
+    "entry"
+  ],
+  "camera": {
+    "position": [
+      0,
+      5.5,
+      9.5
+    ],
+    "lookAt": [
+      0,
+      1,
+      0
+    ],
+    "fov": 40
+  },
+  "props": [
+    {
+      "meshId": "cry_stair_spiral",
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cry_candle_bracket",
+      "position": [
+        -2.6,
+        2.1,
+        -3.9
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cry_candle_bracket",
+      "position": [
+        2.6,
+        2.1,
+        -3.9
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cry_floor_mist",
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotationY": 0
+    }
+  ],
+  "triBudget": 30000,
+  "drawCallBudget": 40
+}

@@ -9,12 +9,11 @@ import { deathRuleName } from './town/text.ts'
 import { Modal } from '../kit/kit.tsx'
 import { navigate, type Route } from '../router.ts'
 
-export const PHASE = 5
+export const PHASE = 6
 
 /** Which phase a deep-linked screen arrives in, for the "this link opens in Phase N" chip. */
 const ARRIVES: Partial<Record<Route['screen'], number>> = {
   replay: 7,
-  room: 6,
   gen: 7,
 }
 
@@ -161,6 +160,16 @@ export function TitleScreen({ route }: { route: Route }) {
             }}
           >
             Character viewer
+          </button>
+          <button
+            class="btn btn--big"
+            data-testid="open-gallery"
+            onClick={() => {
+              buzz()
+              navigate('viewer', { viewer: 'monsters', zone: 'cellars' })
+            }}
+          >
+            Monsters &amp; rooms
           </button>
           <button
             class="btn btn--big"

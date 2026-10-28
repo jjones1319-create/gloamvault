@@ -157,3 +157,59 @@ Settings in `lib/export.py` (no glTF materials, COLOR_0 kept, morph normals off,
   extend it carefully), `gear_<class>_<frame>.glb`, weapons in `hero/build_weapons.py`; renders
   `art/renders/hero/gear/<class>/`.
 - **Client pass:** `client/src/scene/characters/*`, the viewer screen; reads whatever exports exist.
+
+---
+
+# Phase 6 — environments and monsters
+
+## Environments (room kits)
+
+- **Grid and pivots** (`07` §2.2 owns them): cell 8 × 8 m, floor tile 2 × 2 m, wall segment 2 m long × 3.5 m high,
+  doorway 2 m wide at a cell's mid-edge; a piece's origin is at floor level in the centre of its footprint (a wall piece:
+  the centre of its base on the room-side face). A piece's **front faces −Y in Blender** (+z in the game, the same as the
+  heroes). Templates (`content/dungeons/<dungeon>/templates/*.json`) place pieces by `meshId` in game space (+x east,
+  +z south, y up; `rotationY` in degrees); the client builds the floor and walls of each room from its footprint and doors
+  with the zone's floor, wall, doorway and corner pieces, then places the props.
+- **Kits**: one file per zone, `client/public/models/env/kit_<zone>.glb` (`shared`, `cellars`, `crypts`, `vault`), one
+  object per piece named exactly by its `meshId`, rigid (no rig), with extras `kind: "kit"`, `zone`, `tris`. A piece that
+  moves (a chest lid, a portcullis) is a second object `<meshId>.<part>` with its origin at the hinge; a flame, glow or
+  light point is an empty `light_<n>` (a torch's fire, a brazier) or `fx_<n>` (drips, motes) under the piece — the client
+  draws flames and lights there. Budgets: `07` §2.2's per-piece triangle numbers; a room ≤ 40k triangles and ≤ 40 draw
+  calls (`11` §9) — repeated pieces are instanced by the client.
+- **Colour and light**: the same `gv` attribute as the heroes, read differently: **R = slot / 15** in the zone palette,
+  **G = variation** (0–1, grime and weathering the client turns into a slight light/dark shift), **B = baked ambient
+  occlusion** (1 open, 0 enclosed — bake with Cycles to a colour attribute, then copy into B). Environment slots:
+  0 stone · 1 dark stone / mortar · 2 wood · 3 dark wood · 4 iron · 5 ink (deep recesses) · 6 cloth1 (banners) · 7 cloth2 ·
+  8 leather / rope · 9 bright metal · 10 brass / trim · 11 glow (fire, runes, lit spirals; emissive) · 12 moss / plants /
+  slime · 13 bone · 14 crystal / gem (emissive) · 15 water / liquid. Each zone's 16 colours live in
+  `tools/blender/palettes/<zone>.json` (one file per zone, owned by that zone's build; the Cellars warm browns and rust,
+  the Crypts bone-white and sickly green, the Vault teal and brass — `11` §1); the kit export copies it with the piece
+  list to `client/public/models/env/<zone>.json` (`{ zone, palette: [16 hex], pieces: { meshId: { tris, parts, lights } } }`),
+  which the client reads. No textures, no lightmaps: toon shading, the
+  baked AO and two dynamic torches light a room (`10` §4).
+- **Reviews**: a kit sheet (every piece, labelled), and every template assembled in Blender from its JSON with its floor,
+  walls and props, rendered from the template's own `camera` (position, lookAt, fov) with two torch-coloured point lights —
+  the view the player gets. Renders under `art/renders/env/<zone>/`; logs merged into `art/LOG.md`.
+
+## Monsters
+
+- **Bases** (`06` §3.5): fourteen builds cover Gravehollow's 35 monsters, 3 hunters and 4 bosses. A **variant** is a scale,
+  a shape key, a part on or off, a palette or a prop on its base's rig and clips — never a new rig. Each base exports
+  `client/public/models/monsters/<base>.glb`: its rig `Rig` (for its own clips) or no rig of its own (see the humanoid
+  bases), the meshes `<base>_body` and `<base>_<part>` (skinned), shape keys `var_<name>`, the clips `Idle`, `Move`,
+  `Attack1`, `Attack2`, `Hit`, `Death` (+ `Flee` where `content/monsters/*.json → visual.animations` lists it), 30 fps,
+  events in `client/public/models/monsters/clips.json` (`hit`, `release`, `down`). Budgets: `06`/`visual.triBudget`
+  (fodder 2–4k, elite 4–6k, monster 6–8k, boss 8–12k).
+- **Humanoid bases** (`humanoid` costumes, `skeleton`, `zombie`, `sentinel`, `hollow-king`) are built on the hero rig and
+  body and **reuse the hero clips** (`hero_clips.glb`): their files hold only meshes skinned to the hero `Rig` (like gear)
+  and the extra `clips: "hero"`; the client maps Idle → Idle, Move → Walk, Attack1 → Attack_Light, Attack2 →
+  Attack_Heavy, Hit → Hit, Death → Defeat, Flee → Run. Costumes are gear built with `gear_lib`.
+- **Colour**: the hero palette slots, with `content/monsters/<id>.json → visual.palette` (three colours) filling slots
+  0, 1, 2 (main, secondary, accent); fixed slots for the rest (5 ink, 8 leather, 9 metal, 11 glow — eyes, runes —,
+  12 wood, 13 bone — teeth, claws —, 6/7 cloth for costumes).
+- **The variant table** → `client/public/models/monsters/manifest.json`: per monster id (the content id, or the `06` name
+  in kebab case for the Crypts and Vault monsters whose JSON arrives in Phase 7) → `{ base, scale, parts: [...],
+  shapes: {var_x: w}, palette: [...3], clipSpeed }`, plus the pets that use these bases (`06` §9: Rat Prince, Spiderling,
+  Cellar Hound, Bone Pup, Crypt Bat, Wisp …).
+- **Reviews**: a lineup per base (every variant side by side, at their scales, against a 1.8 m hero silhouette), each
+  clip as a strip at its key frames, the 200-px read at the fight camera's distance.

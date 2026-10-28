@@ -310,30 +310,32 @@ export function beatFloaters(beat: Beat, book: NameBook): FloaterSpec[] {
 /* ---------- scene cues ---------- */
 
 /** The cues a beat sends the 3D scene: whose turn it is, then each hit, miss, heal, status, fall. */
-export function beatCues(beat: Beat): SceneCue[] {
+export function beatCues(beat: Beat, after?: (actorId: string) => { hp: number; maxHp: number } | undefined): SceneCue[] {
   const out: SceneCue[] = []
+  // Where the beat leaves the actor's HP (Phase 6): the scene sets its bar there.
+  const at = (id: string): { hp?: number; maxHp?: number } => after?.(id) ?? {}
   if (beat.actorId && !isQuietBeat(beat)) out.push({ kind: 'turn', actorId: beat.actorId })
   for (const e of beat.events) {
     switch (e.kind) {
       case 'damage':
         if (!e.targetId) break
-        out.push({ kind: e.data?.crit ? 'crit' : 'hit', actorId: e.targetId, amount: e.amount ?? 0 })
+        out.push({ kind: e.data?.crit ? 'crit' : 'hit', actorId: e.targetId, amount: e.amount ?? 0, ...at(e.targetId) })
         if (e.data?.killed) out.push({ kind: 'gone', actorId: e.targetId })
         else if (e.data?.downed) out.push({ kind: 'down', actorId: e.targetId })
         break
       case 'dot':
-        if (e.actorId) out.push({ kind: 'hit', actorId: e.actorId, amount: e.amount ?? 0 })
+        if (e.actorId) out.push({ kind: 'hit', actorId: e.actorId, amount: e.amount ?? 0, ...at(e.actorId) })
         break
       case 'miss':
         if (e.targetId) out.push({ kind: 'miss', actorId: e.targetId })
         break
       case 'heal': {
         const id = e.targetId ?? e.actorId
-        if (id) out.push({ kind: 'heal', actorId: id, amount: e.amount ?? 0 })
+        if (id) out.push({ kind: 'heal', actorId: id, amount: e.amount ?? 0, ...at(id) })
         break
       }
       case 'hot':
-        if (e.actorId) out.push({ kind: 'heal', actorId: e.actorId, amount: e.amount ?? 0 })
+        if (e.actorId) out.push({ kind: 'heal', actorId: e.actorId, amount: e.amount ?? 0, ...at(e.actorId) })
         break
       case 'status': {
         const id = e.targetId ?? e.actorId
@@ -342,11 +344,14 @@ export function beatCues(beat: Beat): SceneCue[] {
         break
       }
       case 'revive':
-        if (e.targetId) out.push({ kind: 'revive', actorId: e.targetId, amount: e.amount ?? 0 })
+        if (e.targetId) out.push({ kind: 'revive', actorId: e.targetId, amount: e.amount ?? 0, ...at(e.targetId) })
         break
       case 'fallen':
-      case 'monsterFlee':
         if (e.actorId) out.push({ kind: 'gone', actorId: e.actorId })
+        break
+      case 'monsterFlee':
+        // Phase 6: a monster that runs plays its Flee and leaves the room, rather than falling.
+        if (e.actorId) out.push({ kind: 'flee', actorId: e.actorId })
         break
       default:
         break
@@ -385,7 +390,7 @@ export function reconcileCues(fight: FightState, known: Map<string, StageState>)
 /** Records what a list of cues told the scene, so `reconcileCues` does not repeat it. */
 export function noteCues(cues: readonly SceneCue[], known: Map<string, StageState>): void {
   for (const c of cues) {
-    if (c.kind === 'gone') known.set(c.actorId, 'gone')
+    if (c.kind === 'gone' || c.kind === 'flee') known.set(c.actorId, 'gone')
     else if (c.kind === 'down') known.set(c.actorId, 'down')
     else if (c.kind === 'revive') known.set(c.actorId, 'up')
   }

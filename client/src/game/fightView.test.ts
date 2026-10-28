@@ -104,6 +104,26 @@ describe('beats: the fight log as moments', () => {
     expect(beatLine(beats[0]!, book)).toMatch(/^Fight begins/)
   })
 
+  it('tells the scene where each hit and heal leaves the HP when asked (Phase 6: bars set, never counted twice)', () => {
+    const log = [
+      ev('action', { actorId: 'a', targetId: 'b', text: 'A attacks B' }),
+      ev('damage', { actorId: 'a', targetId: 'b', amount: 4 }),
+      ev('action', { actorId: 'c', targetId: 'b', text: 'C uses Mend' }),
+      ev('heal', { actorId: 'c', targetId: 'b', amount: 2 }),
+      ev('action', { actorId: 'a', targetId: 'b', text: 'A attacks B' }),
+      ev('damage', { actorId: 'a', targetId: 'b', amount: 3 }),
+    ]
+    // Now: 10 − 4 + 2 − 3 = 5.
+    const b = actor('b', { hp: 5, maxHp: 10 })
+    const beats = beatsOf(log, 0)
+    const after = (end: number) => (id: string) => (id === 'b' ? { hp: shownHp(b, hpBehind(log, end)), maxHp: b.maxHp } : undefined)
+    expect(beatCues(beats[0]!, after(beats[0]!.end))).toContainEqual({ kind: 'hit', actorId: 'b', amount: 4, hp: 6, maxHp: 10 })
+    expect(beatCues(beats[1]!, after(beats[1]!.end))).toContainEqual({ kind: 'heal', actorId: 'b', amount: 2, hp: 8, maxHp: 10 })
+    expect(beatCues(beats[2]!, after(beats[2]!.end))).toContainEqual({ kind: 'hit', actorId: 'b', amount: 3, hp: 5, maxHp: 10 })
+    // Without the reckoning the cues carry the amounts alone (as before).
+    expect(beatCues(beats[0]!)).toContainEqual({ kind: 'hit', actorId: 'b', amount: 4 })
+  })
+
   it('merges a Fortune note into its action and one actor’s ticks into one beat; a pet’s mend is its own moment', () => {
     const log = [
       ev('action', { actorId: 'a', targetId: 'b', text: 'A attacks B' }),

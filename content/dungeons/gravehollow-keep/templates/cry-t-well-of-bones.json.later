@@ -1,0 +1,112 @@
+{
+  "id": "cry-t-well-of-bones",
+  "zoneId": "the-crypts",
+  "footprint": {
+    "w": 1,
+    "h": 1
+  },
+  "doors": [
+    {
+      "side": "north",
+      "offset": 0
+    },
+    {
+      "side": "south",
+      "offset": 0
+    }
+  ],
+  "kinds": [
+    "fight",
+    "trapGauntlet",
+    "lockedDoor"
+  ],
+  "camera": {
+    "position": [
+      8,
+      8.9,
+      0
+    ],
+    "lookAt": [
+      0,
+      1,
+      0
+    ],
+    "fov": 42
+  },
+  "props": [
+    {
+      "meshId": "cry_floor_bonegrate",
+      "position": [
+        -1,
+        0,
+        -1
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cry_floor_bonegrate",
+      "position": [
+        1,
+        0,
+        -1
+      ],
+      "rotationY": 90
+    },
+    {
+      "meshId": "cry_floor_bonegrate",
+      "position": [
+        1,
+        0,
+        1
+      ],
+      "rotationY": 180
+    },
+    {
+      "meshId": "cry_floor_bonegrate",
+      "position": [
+        -1,
+        0,
+        1
+      ],
+      "rotationY": 270
+    },
+    {
+      "meshId": "cry_candle_bracket",
+      "position": [
+        -3.9,
+        2.1,
+        -2
+      ],
+      "rotationY": 90
+    },
+    {
+      "meshId": "cry_candle_bracket",
+      "position": [
+        -3.9,
+        2.1,
+        2
+      ],
+      "rotationY": 90
+    },
+    {
+      "meshId": "cry_bone_pile",
+      "position": [
+        -3,
+        0,
+        -2.6
+      ],
+      "rotationY": 30
+    },
+    {
+      "meshId": "cry_floor_mist",
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotationY": 0
+    }
+  ],
+  "triBudget": 30000,
+  "drawCallBudget": 40
+}

@@ -1,0 +1,202 @@
+{
+  "id": "vlt-t-flooded-cell",
+  "zoneId": "the-drowned-vault",
+  "footprint": {
+    "w": 1,
+    "h": 1
+  },
+  "doors": [
+    {
+      "side": "north",
+      "offset": 0
+    },
+    {
+      "side": "south",
+      "offset": 0
+    }
+  ],
+  "kinds": [
+    "fight",
+    "curio",
+    "keyRoom"
+  ],
+  "camera": {
+    "position": [
+      8.63,
+      8.34,
+      0
+    ],
+    "lookAt": [
+      0,
+      1,
+      0
+    ],
+    "fov": 42
+  },
+  "props": [
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        -3,
+        0,
+        -3
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        -1,
+        0,
+        -3
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        1,
+        0,
+        -3
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        3,
+        0,
+        -3
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        -3,
+        0,
+        -1
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        -1,
+        0,
+        -1
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        1,
+        0,
+        -1
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        3,
+        0,
+        -1
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        -3,
+        0,
+        1
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        -1,
+        0,
+        1
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        1,
+        0,
+        1
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        3,
+        0,
+        1
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        -3,
+        0,
+        3
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        -1,
+        0,
+        3
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        1,
+        0,
+        3
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        3,
+        0,
+        3
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_wall_breach",
+      "position": [
+        -3.9,
+        0,
+        -2
+      ],
+      "rotationY": 90
+    },
+    {
+      "meshId": "vlt_chest_drowned",
+      "position": [
+        -2,
+        0,
+        1.4
+      ],
+      "rotationY": 90
+    }
+  ],
+  "triBudget": 30000,
+  "drawCallBudget": 40
+}

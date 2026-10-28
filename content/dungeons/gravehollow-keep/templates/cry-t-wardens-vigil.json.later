@@ -1,0 +1,348 @@
+{
+  "id": "cry-t-wardens-vigil",
+  "zoneId": "the-crypts",
+  "footprint": {
+    "w": 2,
+    "h": 2
+  },
+  "doors": [
+    {
+      "side": "south",
+      "offset": 0
+    },
+    {
+      "side": "east",
+      "offset": 0
+    },
+    {
+      "side": "west",
+      "offset": 0
+    }
+  ],
+  "kinds": [
+    "boss"
+  ],
+  "camera": {
+    "position": [
+      0,
+      10.5,
+      18.2
+    ],
+    "lookAt": [
+      0,
+      1,
+      0
+    ],
+    "fov": 44
+  },
+  "props": [
+    {
+      "meshId": "cry_bier_stone",
+      "position": [
+        0,
+        0,
+        -1.5
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cry_candle_ring",
+      "position": [
+        0,
+        0,
+        -1.5
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cry_pillar_cluster",
+      "position": [
+        -5,
+        0,
+        -5
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cry_pillar_cluster",
+      "position": [
+        5,
+        0,
+        -5
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cry_pillar_cluster",
+      "position": [
+        -5,
+        0,
+        3
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cry_pillar_cluster",
+      "position": [
+        5,
+        0,
+        3
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cry_wall_niche_2m",
+      "position": [
+        -6.75,
+        0,
+        -7.9
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cry_wall_niche_2m",
+      "position": [
+        -5,
+        0,
+        -7.9
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cry_wall_niche_2m",
+      "position": [
+        -3,
+        0,
+        -7.9
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cry_wall_niche_2m",
+      "position": [
+        3,
+        0,
+        -7.9
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cry_wall_niche_2m",
+      "position": [
+        5,
+        0,
+        -7.9
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cry_wall_niche_2m",
+      "position": [
+        6.75,
+        0,
+        -7.9
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cry_wall_bone_2m",
+      "position": [
+        -1,
+        0,
+        -7.9
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cry_wall_bone_2m",
+      "position": [
+        1,
+        0,
+        -7.9
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cry_wall_niche_2m",
+      "position": [
+        7.9,
+        0,
+        -6.75
+      ],
+      "rotationY": -90
+    },
+    {
+      "meshId": "cry_wall_niche_2m",
+      "position": [
+        7.9,
+        0,
+        -1
+      ],
+      "rotationY": -90
+    },
+    {
+      "meshId": "cry_wall_niche_2m",
+      "position": [
+        7.9,
+        0,
+        1
+      ],
+      "rotationY": -90
+    },
+    {
+      "meshId": "cry_wall_niche_2m",
+      "position": [
+        7.9,
+        0,
+        3
+      ],
+      "rotationY": -90
+    },
+    {
+      "meshId": "cry_wall_niche_2m",
+      "position": [
+        7.9,
+        0,
+        5
+      ],
+      "rotationY": -90
+    },
+    {
+      "meshId": "cry_wall_niche_2m",
+      "position": [
+        7.9,
+        0,
+        6.75
+      ],
+      "rotationY": -90
+    },
+    {
+      "meshId": "cry_wall_niche_2m",
+      "position": [
+        -7.9,
+        0,
+        -6.75
+      ],
+      "rotationY": 90
+    },
+    {
+      "meshId": "cry_wall_niche_2m",
+      "position": [
+        -7.9,
+        0,
+        -1
+      ],
+      "rotationY": 90
+    },
+    {
+      "meshId": "cry_wall_niche_2m",
+      "position": [
+        -7.9,
+        0,
+        1
+      ],
+      "rotationY": 90
+    },
+    {
+      "meshId": "cry_wall_niche_2m",
+      "position": [
+        -7.9,
+        0,
+        3
+      ],
+      "rotationY": 90
+    },
+    {
+      "meshId": "cry_wall_niche_2m",
+      "position": [
+        -7.9,
+        0,
+        5
+      ],
+      "rotationY": 90
+    },
+    {
+      "meshId": "cry_wall_niche_2m",
+      "position": [
+        -7.9,
+        0,
+        6.75
+      ],
+      "rotationY": 90
+    },
+    {
+      "meshId": "cry_bone_pile",
+      "position": [
+        -3.2,
+        0,
+        -6.6
+      ],
+      "rotationY": 10
+    },
+    {
+      "meshId": "cry_bone_pile",
+      "position": [
+        3.2,
+        0,
+        -6.6
+      ],
+      "rotationY": -10
+    },
+    {
+      "meshId": "cry_bone_pile",
+      "position": [
+        -6.6,
+        0,
+        1.8
+      ],
+      "rotationY": 80
+    },
+    {
+      "meshId": "cry_bone_pile",
+      "position": [
+        6.6,
+        0,
+        1.8
+      ],
+      "rotationY": -80
+    },
+    {
+      "meshId": "cry_floor_mist",
+      "position": [
+        -4,
+        0,
+        -4
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cry_floor_mist",
+      "position": [
+        -4,
+        0,
+        4
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cry_floor_mist",
+      "position": [
+        4,
+        0,
+        -4
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cry_floor_mist",
+      "position": [
+        4,
+        0,
+        4
+      ],
+      "rotationY": 0
+    }
+  ],
+  "triBudget": 30000,
+  "drawCallBudget": 40
+}

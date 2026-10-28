@@ -1,0 +1,70 @@
+{
+  "id": "vlt-t-stair-well",
+  "zoneId": "the-drowned-vault",
+  "footprint": {
+    "w": 1,
+    "h": 1
+  },
+  "doors": [
+    {
+      "side": "east",
+      "offset": 0
+    },
+    {
+      "side": "south",
+      "offset": 0
+    },
+    {
+      "side": "west",
+      "offset": 0
+    }
+  ],
+  "kinds": [
+    "stairs",
+    "entry"
+  ],
+  "camera": {
+    "position": [
+      0,
+      5.5,
+      9.53
+    ],
+    "lookAt": [
+      0,
+      1,
+      0
+    ],
+    "fov": 40
+  },
+  "props": [
+    {
+      "meshId": "vlt_stairs_flooded",
+      "position": [
+        0,
+        0,
+        -1.5
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_lamp_cult",
+      "position": [
+        2.9,
+        0,
+        -2.9
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_lamp_cult",
+      "position": [
+        -2.9,
+        0,
+        -2.9
+      ],
+      "rotationY": 0
+    }
+  ],
+  "triBudget": 30000,
+  "drawCallBudget": 40
+}

@@ -32,6 +32,16 @@ void bootSettings()
       learn: (p.learn ?? '').split(',').filter(Boolean),
       toEnd: p.end === '1',
     })
+  } else if (r.screen === 'autoplay') {
+    // Phase 6: the soak (10 §4) — a party that plays delve after delve by itself, logging the frame rate each minute.
+    void import('./ui/screens/delve/autoplay.ts').then((m) =>
+      m.startAutoplay({
+        minutes: Math.max(1, Number(p.minutes ?? 30) || 30),
+        classes: (p.party ?? 'warden,blade,mender,arcanist').split(',').filter(Boolean),
+        species: (p.species ?? 'dwarf,orc,elf,draconid').split(','),
+        level: Math.max(1, Number(p.level ?? 4) || 4),
+      }),
+    )
   } else if (p.demo === '1') void startDemoTown()
   else void bootSession()
 }

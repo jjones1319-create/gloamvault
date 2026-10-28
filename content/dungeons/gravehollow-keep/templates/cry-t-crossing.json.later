@@ -1,0 +1,121 @@
+{
+  "id": "cry-t-crossing",
+  "zoneId": "the-crypts",
+  "footprint": {
+    "w": 1,
+    "h": 1
+  },
+  "doors": [
+    {
+      "side": "north",
+      "offset": 0
+    },
+    {
+      "side": "east",
+      "offset": 0
+    },
+    {
+      "side": "south",
+      "offset": 0
+    },
+    {
+      "side": "west",
+      "offset": 0
+    }
+  ],
+  "kinds": [
+    "entry",
+    "fight",
+    "merchant",
+    "keyRoom"
+  ],
+  "camera": {
+    "position": [
+      7.6,
+      9,
+      7.6
+    ],
+    "lookAt": [
+      0,
+      1,
+      0
+    ],
+    "fov": 42
+  },
+  "props": [
+    {
+      "meshId": "cry_sarcophagus",
+      "position": [
+        -2.7,
+        0,
+        -2.7
+      ],
+      "rotationY": -45
+    },
+    {
+      "meshId": "cry_sarcophagus",
+      "position": [
+        2.7,
+        0,
+        -2.7
+      ],
+      "rotationY": 45
+    },
+    {
+      "meshId": "cry_sarcophagus",
+      "position": [
+        2.7,
+        0,
+        2.7
+      ],
+      "rotationY": -45
+    },
+    {
+      "meshId": "cry_sarcophagus",
+      "position": [
+        -2.7,
+        0,
+        2.7
+      ],
+      "rotationY": 45
+    },
+    {
+      "meshId": "cry_vault_rib_half",
+      "position": [
+        0,
+        3.5,
+        -4
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cry_vault_rib_half",
+      "position": [
+        -4,
+        3.5,
+        0
+      ],
+      "rotationY": 90
+    },
+    {
+      "meshId": "cry_candle_crown",
+      "position": [
+        0,
+        4.75,
+        0
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cry_floor_mist",
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotationY": 0
+    }
+  ],
+  "triBudget": 30000,
+  "drawCallBudget": 40
+}

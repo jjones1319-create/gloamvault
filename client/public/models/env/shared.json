@@ -1,0 +1,363 @@
+{
+  "zone": "shared",
+  "about": "A neutral palette for reviewing the shared pieces (shr_). In game a shared piece takes the palette of the zone it stands in. Conventions: tools/blender/env/kit_lib.py.",
+  "palette": [
+    "#8a8378",
+    "#5e5a55",
+    "#7a5634",
+    "#4b3424",
+    "#45454d",
+    "#1d1b1c",
+    "#7a2e2a",
+    "#a89a78",
+    "#9a8656",
+    "#b0b3ba",
+    "#d2a13c",
+    "#ffb347",
+    "#4f6b40",
+    "#ddd3bc",
+    "#7fd4ff",
+    "#2f4a50"
+  ],
+  "shell": null,
+  "pieces": {
+    "shr_chest_small": {
+      "tris": 224,
+      "budget": 300,
+      "role": "prop",
+      "bounds": {
+        "min": [
+          -0.511,
+          0.0,
+          -0.334
+        ],
+        "max": [
+          0.511,
+          0.692,
+          0.342
+        ]
+      },
+      "parts": [
+        {
+          "name": "shr_chest_small.lid",
+          "part": "lid",
+          "tris": 58,
+          "pivot": [
+            0.0,
+            0.48,
+            -0.31
+          ],
+          "axis": "x",
+          "note": "hinge on the back top edge: open = rotation.x from 0 to about -1.9 rad"
+        }
+      ],
+      "lights": [],
+      "fx": []
+    },
+    "shr_chest_large": {
+      "tris": 266,
+      "budget": 520,
+      "role": "prop",
+      "bounds": {
+        "min": [
+          -0.786,
+          0.0,
+          -0.424
+        ],
+        "max": [
+          0.786,
+          0.852,
+          0.432
+        ]
+      },
+      "parts": [
+        {
+          "name": "shr_chest_large.lid",
+          "part": "lid",
+          "tris": 80,
+          "pivot": [
+            0.0,
+            0.58,
+            -0.4
+          ],
+          "axis": "x",
+          "note": "hinge on the back top edge: open = rotation.x from 0 to about -1.9 rad"
+        }
+      ],
+      "lights": [],
+      "fx": []
+    },
+    "shr_stairs_down": {
+      "tris": 406,
+      "budget": 400,
+      "role": "prop",
+      "bounds": {
+        "min": [
+          -2.3,
+          -2.6,
+          -2.8
+        ],
+        "max": [
+          2.3,
+          0.14,
+          1.5
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [],
+      "hole": [
+        -2.0,
+        -2.5,
+        2.0,
+        1.5
+      ]
+    },
+    "shr_waystone": {
+      "tris": 286,
+      "budget": 800,
+      "role": "prop",
+      "bounds": {
+        "min": [
+          -1.031,
+          0.0,
+          -0.855
+        ],
+        "max": [
+          0.985,
+          2.68,
+          0.831
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [
+        {
+          "name": "fx_0",
+          "kind": "glow",
+          "at": [
+            0.0,
+            1.61,
+            0.3
+          ]
+        }
+      ]
+    },
+    "shr_campfire": {
+      "tris": 224,
+      "budget": 180,
+      "role": "prop",
+      "bounds": {
+        "min": [
+          -0.742,
+          -0.012,
+          -0.769
+        ],
+        "max": [
+          0.734,
+          1.292,
+          0.833
+        ]
+      },
+      "parts": [],
+      "lights": [
+        {
+          "name": "light_0",
+          "kind": "fire",
+          "at": [
+            0.0,
+            0.42,
+            0.0
+          ]
+        }
+      ],
+      "fx": [
+        {
+          "name": "fx_1",
+          "kind": "embers",
+          "at": [
+            0.0,
+            0.06,
+            0.0
+          ]
+        }
+      ]
+    },
+    "shr_torch_sconce": {
+      "tris": 85,
+      "budget": 90,
+      "role": "wall-hung",
+      "bounds": {
+        "min": [
+          -0.08,
+          -0.17,
+          -0.1
+        ],
+        "max": [
+          0.08,
+          0.43,
+          0.328
+        ]
+      },
+      "parts": [],
+      "lights": [
+        {
+          "name": "light_1",
+          "kind": "torch",
+          "at": [
+            0.0,
+            0.52,
+            0.29
+          ]
+        }
+      ],
+      "fx": []
+    },
+    "shr_trap_plate": {
+      "tris": 26,
+      "budget": 24,
+      "role": "decal",
+      "bounds": {
+        "min": [
+          -0.5,
+          0.0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.058,
+          0.5
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": []
+    },
+    "shr_lore_tablet": {
+      "tris": 60,
+      "budget": 160,
+      "role": "prop",
+      "bounds": {
+        "min": [
+          -0.42,
+          0.0,
+          -0.27
+        ],
+        "max": [
+          0.42,
+          1.31,
+          0.27
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": []
+    },
+    "shr_gold_pile": {
+      "tris": 157,
+      "budget": 60,
+      "role": "prop",
+      "bounds": {
+        "min": [
+          -0.6,
+          0.0,
+          -0.469
+        ],
+        "max": [
+          0.56,
+          0.11,
+          0.475
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": []
+    },
+    "shr_door_frame_fx": {
+      "tris": 24,
+      "budget": 40,
+      "role": "decal",
+      "bounds": {
+        "min": [
+          -1.013,
+          0.02,
+          0.0
+        ],
+        "max": [
+          1.013,
+          3.097,
+          0.4
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": []
+    },
+    "shr_brazier": {
+      "tris": 340,
+      "budget": 180,
+      "role": "prop",
+      "bounds": {
+        "min": [
+          -0.45,
+          -0.007,
+          -0.45
+        ],
+        "max": [
+          0.5,
+          1.16,
+          0.45
+        ]
+      },
+      "parts": [],
+      "lights": [
+        {
+          "name": "light_2",
+          "kind": "brazier",
+          "at": [
+            0.0,
+            1.45,
+            0.0
+          ]
+        }
+      ],
+      "fx": [
+        {
+          "name": "fx_2",
+          "kind": "embers",
+          "at": [
+            0.0,
+            1.2,
+            0.0
+          ]
+        }
+      ]
+    },
+    "shr_stairs_up": {
+      "tris": 490,
+      "budget": 400,
+      "role": "prop",
+      "bounds": {
+        "min": [
+          -1.89,
+          0.0,
+          -2.54
+        ],
+        "max": [
+          1.89,
+          3.429,
+          1.54
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [],
+      "footprint": [
+        -1.85,
+        -2.5,
+        1.85,
+        1.5
+      ]
+    }
+  }
+}

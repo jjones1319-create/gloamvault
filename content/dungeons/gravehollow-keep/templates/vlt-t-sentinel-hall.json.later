@@ -1,0 +1,157 @@
+{
+  "id": "vlt-t-sentinel-hall",
+  "zoneId": "the-drowned-vault",
+  "footprint": {
+    "w": 2,
+    "h": 2
+  },
+  "doors": [
+    {
+      "side": "south",
+      "offset": 0
+    },
+    {
+      "side": "north",
+      "offset": 1
+    },
+    {
+      "side": "east",
+      "offset": 0
+    },
+    {
+      "side": "west",
+      "offset": 1
+    }
+  ],
+  "kinds": [
+    "elite",
+    "fight",
+    "keyRoom",
+    "lockedDoor"
+  ],
+  "camera": {
+    "position": [
+      0,
+      11.18,
+      16.58
+    ],
+    "lookAt": [
+      0,
+      1,
+      0
+    ],
+    "fov": 44
+  },
+  "props": [
+    {
+      "meshId": "vlt_plinth_sentinel",
+      "position": [
+        -4.5,
+        0,
+        -4.5
+      ],
+      "rotationY": 45
+    },
+    {
+      "meshId": "vlt_plinth_sentinel",
+      "position": [
+        4.5,
+        0,
+        -4.5
+      ],
+      "rotationY": -45
+    },
+    {
+      "meshId": "vlt_plinth_sentinel",
+      "position": [
+        -4.5,
+        0,
+        4.5
+      ],
+      "rotationY": 135
+    },
+    {
+      "meshId": "vlt_plinth_sentinel",
+      "position": [
+        4.5,
+        0,
+        4.5
+      ],
+      "rotationY": -135
+    },
+    {
+      "meshId": "vlt_wall_shelf_2m",
+      "position": [
+        -6,
+        0,
+        -7.9
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_wall_shelf_2m",
+      "position": [
+        -2,
+        0,
+        -7.9
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_wall_shelf_2m",
+      "position": [
+        -7.9,
+        0,
+        -6
+      ],
+      "rotationY": 90
+    },
+    {
+      "meshId": "vlt_wall_shelf_2m",
+      "position": [
+        -7.9,
+        0,
+        -2
+      ],
+      "rotationY": 90
+    },
+    {
+      "meshId": "vlt_wall_shelf_2m",
+      "position": [
+        7.9,
+        0,
+        2
+      ],
+      "rotationY": -90
+    },
+    {
+      "meshId": "vlt_wall_shelf_2m",
+      "position": [
+        7.9,
+        0,
+        6
+      ],
+      "rotationY": -90
+    },
+    {
+      "meshId": "vlt_lamp_cult",
+      "position": [
+        -4,
+        0,
+        -6.9
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_lamp_cult",
+      "position": [
+        6.9,
+        0,
+        4
+      ],
+      "rotationY": 0
+    }
+  ],
+  "triBudget": 30000,
+  "drawCallBudget": 40
+}

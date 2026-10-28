@@ -72,6 +72,33 @@
       "rotationY": 0
     },
     {
+      "meshId": "cel_wall_low",
+      "position": [
+        -4,
+        0,
+        -3
+      ],
+      "rotationY": 90
+    },
+    {
+      "meshId": "cel_wall_low",
+      "position": [
+        0,
+        0,
+        -3
+      ],
+      "rotationY": 90
+    },
+    {
+      "meshId": "cel_wall_low",
+      "position": [
+        4,
+        0,
+        -3
+      ],
+      "rotationY": 90
+    },
+    {
       "meshId": "cel_rat_nest",
       "position": [
         -5,

@@ -23,6 +23,9 @@ interface Shot {
 }
 
 const MATRIX_VIEWPORT = { width: 1784, height: 824 }
+const PERF = { perfOverlay: true, installCardDismissed: true }
+/** The ten Cellars templates (07 §2.2), each shot from its own camera with its kit. */
+const CELLARS = ['storeroom', 'wine-vault', 'cistern', 'guardpost', 'kennels', 'cold-hearth', 'stairwell', 'strongroom', 'gallery', 'tap-room']
 
 const SHOTS: Shot[] = [
   { name: 'title', hash: '#title' },
@@ -89,6 +92,50 @@ const SHOTS: Shot[] = [
   { name: 'matrix-heavy-F', hash: '#viewer=matrix&clip=Attack_Heavy&tier=F&at=hit', viewport: MATRIX_VIEWPORT },
   { name: 'matrix-heavy-S', hash: '#viewer=matrix&clip=Attack_Heavy&tier=S&at=hit', viewport: MATRIX_VIEWPORT },
   { name: 'matrix-idle-S-slight', hash: '#viewer=matrix&clip=Idle&tier=S&frame=slight&t=0', viewport: MATRIX_VIEWPORT },
+  // Phase 6: the dungeon in 3D. Every Cellars template from its own camera, built from the kit (07 §8.3 link 4) …
+  ...CELLARS.map((t): Shot => ({ name: `room-cel-t-${t}`, hash: `#room=cel-t-${t}` })),
+  // … monsters on the enemy marks and the party on theirs, the room as the light meter dims it …
+  { name: 'room-cel-t-kennels-fight', hash: '#room=cel-t-kennels&monsters=giant-rat,giant-rat,plague-rat,warren-alpha&heroes=4' },
+  { name: 'room-cel-t-guardpost-crew', hash: '#room=cel-t-guardpost&monsters=grinning-bruiser,grinning-cutpurse,grinning-crossbowman,grinning-hexer&heroes=2&light=40' },
+  // … the Crypts and the Vault (their templates are written ahead of Phase 7 and open only here), and each kit sheet.
+  { name: 'room-cry-t-chapel', hash: '#room=cry-t-chapel&monsters=skeleton-footman,bone-knight,skeleton-archer&heroes=2' },
+  { name: 'room-cry-t-ossuary', hash: '#room=cry-t-ossuary' },
+  { name: 'room-cry-t-reliquary', hash: '#room=cry-t-reliquary' },
+  { name: 'room-vlt-t-sluice-hall', hash: '#room=vlt-t-sluice-hall&monsters=brine-ooze,deep-tentacle,vault-leech&heroes=2' },
+  { name: 'room-vlt-t-throne-king', hash: '#room=vlt-t-throne&monsters=hollow-king&heroes=2' },
+  // A gallery stop (title → Monsters & rooms → Rooms): the room's name, its place in the list, Prev / Next.
+  { name: 'gallery-room', hash: '#room=vlt-t-drowned-chapel&heroes=2&monsters=sister-naesa,tidebound-acolyte,tidebound-blade&from=gallery' },
+  { name: 'kit-cellars', hash: '#viewer=kit&zone=cellars' },
+  { name: 'kit-crypts', hash: '#viewer=kit&zone=crypts' },
+  { name: 'kit-vault', hash: '#viewer=kit&zone=vault' },
+  // The monster lineups per zone (every manifest entry, playing Idle) and the pets.
+  { name: 'monsters-cellars', hash: '#viewer=monsters&zone=cellars' },
+  { name: 'monsters-crypts', hash: '#viewer=monsters&zone=crypts' },
+  { name: 'monsters-vault', hash: '#viewer=monsters&zone=vault' },
+  { name: 'monsters-pets', hash: '#viewer=monsters&zone=pets' },
+  // A monster's clips (a tap plays the next: Move, then Attack1).
+  {
+    name: 'monsters-cellars-clips',
+    hash: '#viewer=monsters&zone=cellars',
+    act: async (page) => {
+      const label = page.locator('[data-testid^="lineup-giant-rat"]').first()
+      const box = await label.boundingBox()
+      if (box) {
+        await page.mouse.click(box.x + box.width / 2, box.y - 40)
+        await page.mouse.click(box.x + box.width / 2, box.y - 40)
+      }
+      await page.waitForTimeout(700)
+    },
+  },
+  // The effects (sparks, element marks, heals, status rings, the death puff, the six Ultimates), each held at its peak.
+  { name: 'fx-sheet', hash: '#viewer=fx&still=1' },
+  // Fights with real monsters and the perf overlay: the most a Cellars fight holds for four heroes (six — four Giant Rats
+  // and two Plague Rats in the cistern; two Bruisers, a Hexer and three rats on floor 3), and a four-hero fight with four
+  // monsters (three Cellar Spiders and a Weaver).
+  { name: 'delve-fight-swarm', hash: '#delve=gravehollow&zone=1&seed=19&party=warden,blade,mender,arcanist&level=5&auto=1&species=dwarf,orc,elf,draconid' },
+  { name: 'delve-fight-swarm-perf', hash: '#delve=gravehollow&zone=1&seed=19&party=warden,blade,mender,arcanist&level=5&auto=1&species=dwarf,orc,elf,draconid', settings: PERF },
+  { name: 'delve-fight-crew-perf', hash: '#delve=gravehollow&zone=3&seed=18&party=warden,blade,mender,arcanist&level=5&auto=1&species=dwarf,orc,elf,draconid', settings: PERF },
+  { name: 'delve-fight-four-monsters-perf', hash: '#delve=gravehollow&zone=1&seed=3&party=warden,blade,mender,arcanist&level=5&auto=1&species=human,dwarf,elf,halfling', settings: PERF },
 ]
 
 const args = process.argv.slice(2)

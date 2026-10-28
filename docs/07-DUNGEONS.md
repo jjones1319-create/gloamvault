@@ -1,6 +1,6 @@
 # 07 — Dungeons
 
-*Last updated 2026-10-28 · rev. 3 (Phase 7 prep: Gravehollow at 8 floors — §2.3 rebuilt with the band levels, the Vault folded to F7–8, a merchant on the floor before every boss floor, no hunter on the Vault's two boss floors, Naesa's chapel on F7 and the throne on F8, the arena tells' two-word hints — D-098, D-099, D-104) · rev. 2 (checkpoint 1: open questions answered by delegation; the Nightmare difficulty preset renamed Dread — D-095, D-099) · rev. 1 2026-10-26 · numbers are tuning starting points*
+*Last updated 2026-10-28 · rev. 4 (Phase 6: §2.2's kits as built — the extra pieces, the 4 m doorway, detail as geometry, the gallery — D-110, D-114) · rev. 3 (Phase 7 prep: Gravehollow at 8 floors — §2.3 rebuilt with the band levels, the Vault folded to F7–8, a merchant on the floor before every boss floor, no hunter on the Vault's two boss floors, Naesa's chapel on F7 and the throne on F8, the arena tells' two-word hints — D-098, D-099, D-104) · rev. 2 (checkpoint 1: open questions answered by delegation; the Nightmare difficulty preset renamed Dread — D-095, D-099) · rev. 1 2026-10-26 · numbers are tuning starting points*
 
 *Companion to `03-GAME-DESIGN.md` §1, §4, §8, §11, §12 (the rules) and `06-MONSTERS.md` (the creatures). This file owns the places: the overworld, each dungeon's zones, floors, kits, room templates, curios, traps, secrets, arenas and the floor-generation grammar. Monster names used in encounter tables are the shared names from the bestiary brief; creature names were reconciled against the bestiary on 2026-10-26. Gold amounts are written in **R** (the median gold of one delve at the player's band, `03` §8.1; R ≈ 300 at floors 1–3).*
 
@@ -216,6 +216,25 @@ Three Blender kits, one per zone, plus a **shared kit**. Conventions (for `11-AR
 | `vlt_t_stair_well` | 1×1 | one, any side | Stairs, Entry | a stair descending into water, water pouring down it | faces the stair · 30° · 11 m | the Entry variant holds the Waystone on F7 |
 | `vlt_t_drowned_chapel` | 2×2 | S (party) | Boss F7 | a sunken nave: pews half under water, the Tide Altar on a dais, the sluice wheel on the W wall, 3 tentacle marks at the N edge | S · 30° · 21 m · 44° | heroes on a dry step; Naesa on EB2; the water level (0–4) is an arena state |
 | `vlt_t_throne` | 3×2 | S (party), gallery N (no door) | Boss F8 | the throne on 8 half-submerged steps, a gallery with 6 cult lamps, 6 chained pillars, the breach wall | S · 28° · 26 m · 46° | the King on the throne (EB2, raised 2 m) until phase 2, then EF2; adds enter at the E/W water edges; the gallery lamps are the Silence tell |
+
+**As built (Phase 6, 2026-10-28 — D-110, D-114).** The four kits are built by script (`tools/blender/env/`), one rigid
+`.glb` each with its manifest (`client/public/models/env/<zone>.json`). The 2 k atlases above became the zone palette with
+ambient occlusion baked into the vertex colours (D-110), so the floor tile and the plain wall carry their joints as
+geometry and exceed the triangle figures above (the Cellars floor 52, the Crypts floor 38 and wall 66, the Vault floor
+10); every other piece is at or under its figure. A **doorway piece is 4 m wide** (the 2 m opening + 1 m of wall each
+side) so that it sits on the 2 m wall grid; each zone also has **cut-away** shell pieces (a low wall, doorway and
+corner) for the camera side, where wall-hung props are hidden. Template ids are kebab-case in content
+(`cel-t-storeroom` is the `cel_t_storeroom` above). **Pieces the templates needed that the tables above do not list**
+(Proposed): shared `shr_brazier`, `shr_stairs_up`; Cellars `cel_stool`, `cel_sack_pile`, `cel_bone_pile`,
+`cel_chain_hanging`, `cel_lantern`, `cel_lantern_hook`, `cel_tripwire_rail`, `cel_dais`, `cel_chair_captain` and the curio
+looks `cel_dice_table`, `cel_larder`, `cel_toll_shrine`, `cel_gallows_beam`; Crypts `cry_vault_rib_half`,
+`cry_candle_bracket`, `cry_candle_crown`, `cry_altar_step`, `cry_hearth_niche`, `cry_cot`, `cry_sexton_tools`,
+`cry_window_shuttered`, `cry_shelf_stone`, `cry_reliquary_niche`, `cry_stair_spiral`, `cry_cocoon`, `cry_bone_pile`,
+`cry_merchant_barrow`, `cry_embalmer_table`, `cry_ledger_lectern`; Vault `vlt_floor_basalt_wet`, `vlt_floor_water_edge`,
+`vlt_wall_pipes_2m`, `vlt_brazier`, `vlt_pew`, `vlt_banner_tide`, `vlt_quay_edge_2m`, `vlt_rope_ladder`,
+`vlt_stairs_flooded`. The Vault's palette lifts the wet basalt to `#34444E` (floors) and `#4D6372` (walls) so its rooms
+read on the phone. The Crypts and Vault templates are written (`cry-t-*.json.later`, `vlt-t-*.json.later`; the phone's
+gallery shows them: title → **Monsters & rooms** → **Rooms**) and switch on with their zones in Phase 7 (D-113).
 
 ### 2.3 Floor by floor
 

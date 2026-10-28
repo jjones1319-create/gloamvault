@@ -1,0 +1,128 @@
+{
+  "id": "cry-t-reliquary",
+  "zoneId": "the-crypts",
+  "footprint": {
+    "w": 1,
+    "h": 1
+  },
+  "doors": [
+    {
+      "side": "north",
+      "offset": 0
+    },
+    {
+      "side": "east",
+      "offset": 0
+    },
+    {
+      "side": "south",
+      "offset": 0
+    },
+    {
+      "side": "west",
+      "offset": 0
+    }
+  ],
+  "kinds": [
+    "treasure",
+    "secret"
+  ],
+  "camera": {
+    "position": [
+      0,
+      7.8,
+      7.8
+    ],
+    "lookAt": [
+      0,
+      1,
+      0
+    ],
+    "fov": 42
+  },
+  "props": [
+    {
+      "meshId": "cry_shelf_stone",
+      "position": [
+        -2.6,
+        0,
+        -3.5
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "shr_chest_small",
+      "position": [
+        -2.6,
+        0.5,
+        -3.5
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cry_reliquary_niche",
+      "position": [
+        2.7,
+        0,
+        -3.9
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cry_shelf_stone",
+      "position": [
+        -3.5,
+        0,
+        2.4
+      ],
+      "rotationY": 90
+    },
+    {
+      "meshId": "shr_chest_large",
+      "position": [
+        -3.5,
+        0.5,
+        2.4
+      ],
+      "rotationY": 90
+    },
+    {
+      "meshId": "shr_gold_pile",
+      "position": [
+        1.6,
+        0,
+        -1.4
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "shr_gold_pile",
+      "position": [
+        -0.8,
+        0,
+        1.2
+      ],
+      "rotationY": 40
+    },
+    {
+      "meshId": "cry_candle_bracket",
+      "position": [
+        3.9,
+        2.1,
+        2.6
+      ],
+      "rotationY": -90
+    },
+    {
+      "meshId": "cry_floor_mist",
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotationY": 0
+    }
+  ],
+  "triBudget": 30000,
+  "drawCallBudget": 40
+}

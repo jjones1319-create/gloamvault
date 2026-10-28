@@ -1,0 +1,539 @@
+{
+  "fps": 30,
+  "rat": {
+    "fps": 30,
+    "clips": [
+      {
+        "name": "Idle",
+        "seconds": 2.0,
+        "loop": true,
+        "events": {}
+      },
+      {
+        "name": "Move",
+        "seconds": 0.3,
+        "loop": true,
+        "events": {},
+        "speed": 1.4
+      },
+      {
+        "name": "Flee",
+        "seconds": 0.2667,
+        "loop": true,
+        "events": {},
+        "speed": 2.325
+      },
+      {
+        "name": "Attack1",
+        "seconds": 0.7,
+        "loop": false,
+        "events": {
+          "hit": 0.3
+        }
+      },
+      {
+        "name": "Attack2",
+        "seconds": 1.1,
+        "loop": false,
+        "events": {
+          "hit": 0.58
+        }
+      },
+      {
+        "name": "Hit",
+        "seconds": 0.5,
+        "loop": false,
+        "events": {}
+      },
+      {
+        "name": "Death",
+        "seconds": 1.5,
+        "loop": false,
+        "events": {
+          "down": 0.62
+        }
+      },
+      {
+        "name": "Howl",
+        "seconds": 1.2667,
+        "loop": false,
+        "events": {
+          "release": 0.4
+        }
+      },
+      {
+        "name": "Retch",
+        "seconds": 1.1333,
+        "loop": false,
+        "events": {
+          "release": 0.62
+        }
+      }
+    ]
+  },
+  "leech": {
+    "animation": "skeletal",
+    "fps": 30,
+    "clips": [
+      {
+        "name": "Idle",
+        "seconds": 2.8,
+        "loop": true,
+        "events": {}
+      },
+      {
+        "name": "Move",
+        "seconds": 1.6,
+        "loop": true,
+        "events": {}
+      },
+      {
+        "name": "Attack1",
+        "seconds": 1.2,
+        "loop": false,
+        "events": {
+          "hit": 0.55
+        }
+      },
+      {
+        "name": "Attack2",
+        "seconds": 1.4,
+        "loop": false,
+        "events": {
+          "hit": 0.7
+        }
+      },
+      {
+        "name": "Hit",
+        "seconds": 0.5,
+        "loop": false,
+        "events": {}
+      },
+      {
+        "name": "Death",
+        "seconds": 2.0,
+        "loop": false,
+        "events": {
+          "down": 1.4
+        }
+      }
+    ],
+    "rig": "Rig",
+    "bones": 21
+  },
+  "wraith": {
+    "animation": "skeletal",
+    "fps": 30,
+    "clips": [
+      {
+        "name": "Idle",
+        "seconds": 3.0,
+        "loop": true,
+        "events": {}
+      },
+      {
+        "name": "Move",
+        "seconds": 1.2,
+        "loop": true,
+        "events": {}
+      },
+      {
+        "name": "Attack1",
+        "seconds": 1.3,
+        "loop": false,
+        "events": {
+          "hit": 0.6
+        }
+      },
+      {
+        "name": "Attack2",
+        "seconds": 1.0,
+        "loop": false,
+        "events": {
+          "hit": 0.5
+        }
+      },
+      {
+        "name": "Hit",
+        "seconds": 0.5,
+        "loop": false,
+        "events": {}
+      },
+      {
+        "name": "Death",
+        "seconds": 1.8,
+        "loop": false,
+        "events": {
+          "down": 1.3
+        }
+      }
+    ],
+    "rig": "Rig",
+    "bones": 23
+  },
+  "ooze": {
+    "animation": "morph",
+    "fps": 30,
+    "clips": [
+      {
+        "name": "Idle",
+        "seconds": 2.4,
+        "loop": true,
+        "events": {}
+      },
+      {
+        "name": "Move",
+        "seconds": 1.0,
+        "loop": true,
+        "events": {}
+      },
+      {
+        "name": "Flee",
+        "seconds": 0.7,
+        "loop": true,
+        "events": {}
+      },
+      {
+        "name": "Attack1",
+        "seconds": 1.0,
+        "loop": false,
+        "events": {
+          "hit": 0.45
+        }
+      },
+      {
+        "name": "Attack2",
+        "seconds": 1.2,
+        "loop": false,
+        "events": {
+          "release": 0.55
+        }
+      },
+      {
+        "name": "Hit",
+        "seconds": 0.5,
+        "loop": false,
+        "events": {}
+      },
+      {
+        "name": "Death",
+        "seconds": 1.6,
+        "loop": false,
+        "events": {
+          "down": 1.1
+        }
+      },
+      {
+        "name": "Split",
+        "seconds": 0.7,
+        "loop": false,
+        "events": {
+          "split": 0.45
+        }
+      }
+    ],
+    "root": "Ooze",
+    "meshes": [
+      "ooze_body",
+      "ooze_junk",
+      "ooze_pearls"
+    ],
+    "morphs": [
+      "clip_squash",
+      "clip_stretch",
+      "clip_lean_f",
+      "clip_lean_b",
+      "clip_lean_l",
+      "clip_lean_r",
+      "clip_ripple_a",
+      "clip_ripple_b",
+      "clip_lunge",
+      "clip_splash_up",
+      "clip_splash_down",
+      "clip_melt"
+    ],
+    "note": "every mesh carries the same clip_* morph targets in the same order; keep them live"
+  },
+  "wisp": {
+    "animation": "node",
+    "fps": 30,
+    "clips": [
+      {
+        "name": "Idle",
+        "seconds": 2.0,
+        "loop": true,
+        "events": {}
+      },
+      {
+        "name": "Move",
+        "seconds": 1.0,
+        "loop": true,
+        "events": {}
+      },
+      {
+        "name": "Attack1",
+        "seconds": 0.9,
+        "loop": false,
+        "events": {
+          "hit": 0.45
+        }
+      },
+      {
+        "name": "Attack2",
+        "seconds": 0.8,
+        "loop": false,
+        "events": {
+          "hit": 0.35
+        }
+      },
+      {
+        "name": "Hit",
+        "seconds": 0.4,
+        "loop": false,
+        "events": {}
+      },
+      {
+        "name": "Death",
+        "seconds": 1.4,
+        "loop": false,
+        "events": {
+          "down": 1.15
+        }
+      }
+    ],
+    "root": "Wisp",
+    "nodes": [
+      "wisp_float",
+      "wisp_body",
+      "wisp_glow",
+      "wisp_motes",
+      "wisp_cage"
+    ]
+  },
+  "hound": {
+    "fps": 30,
+    "clips": [
+      {
+        "name": "Idle",
+        "seconds": 2.0,
+        "loop": true,
+        "events": {}
+      },
+      {
+        "name": "Move",
+        "seconds": 0.5,
+        "loop": true,
+        "events": {},
+        "speed": 1.48
+      },
+      {
+        "name": "Attack1",
+        "seconds": 0.8667,
+        "loop": false,
+        "events": {
+          "hit": 0.36
+        }
+      },
+      {
+        "name": "Attack2",
+        "seconds": 0.9,
+        "loop": false,
+        "events": {
+          "hit": 0.36
+        }
+      },
+      {
+        "name": "Hit",
+        "seconds": 0.5333,
+        "loop": false,
+        "events": {}
+      },
+      {
+        "name": "Death",
+        "seconds": 1.6,
+        "loop": false,
+        "events": {
+          "down": 0.7
+        }
+      },
+      {
+        "name": "Howl",
+        "seconds": 1.3333,
+        "loop": false,
+        "events": {
+          "release": 0.35
+        }
+      }
+    ]
+  },
+  "tentacle": {
+    "animation": "skeletal",
+    "fps": 30,
+    "clips": [
+      {
+        "name": "Idle",
+        "seconds": 2.4,
+        "loop": true,
+        "events": {}
+      },
+      {
+        "name": "Move",
+        "seconds": 1.2,
+        "loop": true,
+        "events": {}
+      },
+      {
+        "name": "Attack1",
+        "seconds": 1.1,
+        "loop": false,
+        "events": {
+          "hit": 0.5
+        }
+      },
+      {
+        "name": "Attack2",
+        "seconds": 1.5,
+        "loop": false,
+        "events": {
+          "hit": 0.55
+        }
+      },
+      {
+        "name": "Hit",
+        "seconds": 0.45,
+        "loop": false,
+        "events": {}
+      },
+      {
+        "name": "Death",
+        "seconds": 1.8,
+        "loop": false,
+        "events": {
+          "down": 1.5
+        }
+      },
+      {
+        "name": "Rise",
+        "seconds": 1.0,
+        "loop": false,
+        "events": {
+          "up": 0.7
+        }
+      }
+    ],
+    "rig": "Rig",
+    "bones": 17
+  },
+  "spider": {
+    "fps": 30,
+    "clips": [
+      {
+        "name": "Idle",
+        "seconds": 2.0,
+        "loop": true,
+        "events": {}
+      },
+      {
+        "name": "Move",
+        "seconds": 0.3333,
+        "loop": true,
+        "events": {},
+        "speed": 1.2
+      },
+      {
+        "name": "Attack1",
+        "seconds": 0.8667,
+        "loop": false,
+        "events": {
+          "hit": 0.42
+        }
+      },
+      {
+        "name": "Attack2",
+        "seconds": 1.2,
+        "loop": false,
+        "events": {
+          "hit": 0.55
+        }
+      },
+      {
+        "name": "Hit",
+        "seconds": 0.5,
+        "loop": false,
+        "events": {}
+      },
+      {
+        "name": "Death",
+        "seconds": 1.5,
+        "loop": false,
+        "events": {
+          "down": 0.58
+        }
+      },
+      {
+        "name": "Web",
+        "seconds": 1.0,
+        "loop": false,
+        "events": {
+          "release": 0.42
+        }
+      },
+      {
+        "name": "Brood",
+        "seconds": 1.3,
+        "loop": false,
+        "events": {
+          "release": 0.92
+        }
+      }
+    ]
+  },
+  "bat": {
+    "fps": 30,
+    "clips": [
+      {
+        "name": "Idle",
+        "seconds": 0.5333,
+        "loop": true,
+        "events": {}
+      },
+      {
+        "name": "Move",
+        "seconds": 0.4,
+        "loop": true,
+        "events": {},
+        "speed": 3.0
+      },
+      {
+        "name": "Attack1",
+        "seconds": 0.9,
+        "loop": false,
+        "events": {
+          "hit": 0.4
+        }
+      },
+      {
+        "name": "Attack2",
+        "seconds": 1.0,
+        "loop": false,
+        "events": {
+          "release": 0.38
+        }
+      },
+      {
+        "name": "Hit",
+        "seconds": 0.5333,
+        "loop": false,
+        "events": {}
+      },
+      {
+        "name": "Death",
+        "seconds": 1.4,
+        "loop": false,
+        "events": {
+          "down": 0.56
+        }
+      }
+    ]
+  }
+}

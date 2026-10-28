@@ -143,7 +143,8 @@ export interface ClipInfo {
   speed?: number
 }
 
-function clipEntry(v: unknown, fallbackName?: string): ClipInfo | null {
+/** One clip's sidecar entry, tolerant of field names (the monster passes write the same shape, `monsters/clips.json`). */
+export function clipEntry(v: unknown, fallbackName?: string): ClipInfo | null {
   const o = obj(v)
   if (!o) return null
   const name = typeof o.name === 'string' ? o.name : fallbackName

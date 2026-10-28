@@ -6,25 +6,39 @@ import type { Actor, FightState } from '../../../sim/src/fight-types.ts'
 import type { SceneCue } from './sceneBus.ts'
 import type { Stage } from './stage.ts'
 import { isMortal } from '../../../sim/src/delve.ts'
+import { hpBehind, resumeIndex, shownHp } from '../game/fightView.ts'
+import { hasModel } from './characters/assets.ts'
 import { buildCharacter } from './characters/factory.ts'
-import { characterSpec, specKey } from './characters/outfit.ts'
+import { characterSpec, specKey, starterSpec, type CharacterSpec } from './characters/outfit.ts'
+import { kitZoneOf, LIGHT_TINT, ZONE_LOOK, type KitZone } from './env/envData.ts'
+import { envLibrary, type EnvSet } from './env/envKit.ts'
+import { createEnvMaterial, type EnvMaterial } from './env/envMaterial.ts'
+import { resolveMonsterVariant, resolvePetVariant, variantKey, type VisualLike } from './monsters/manifest.ts'
+import { monsterLibrary } from './monsters/model.ts'
 import { ActorLayer, type ActorInput, type ActorLook, type ActorShape, type ActorState } from './room/actors.ts'
-import { buildDynamic, buildStaticRoom, type DoorState, type DynamicDressing, type StaticRoom } from './room/dress.ts'
+import { buildDynamic, buildStaticRoom, type ChestLid, type DoorState, type DynamicDressing, type DynamicInput, type LightPoint, type RoomEnv, type StaticRoom, type TemplateLike } from './room/dress.ts'
 import { fitView, lerpFit, NO_INSETS, type Fit, type Insets } from './room/fit.ts'
 import { createKit, PALETTE, type Kit } from './room/kit.ts'
-import { approachFor, cameraRight, doorway, fightSideFormation, nudgeFormation, previousRoomId, roomFormation, roomFrame, type Approach, type FormationActor, type Mark } from './room/layout.ts'
+import { approachFor, cameraRight, doorway, fightSideFormation, nudgeFormation, previousRoomId, roomFormation, roomFrame, type Approach, type DoorLike, type FormationActor, type Mark, type RoomLike, type Side } from './room/layout.ts'
 import { lightLook, type LightLook } from './room/look.ts'
+import { VfxLayer } from './vfx/layer.ts'
 
 /**
- * The delve's 3D room (Phase 4, placeholder art; Phase 5 heroes): the current room's template as a grey box in the
- * Cellars palette with the party standing inside the door it came through — the heroes as their assembled 3D
- * characters (characters/), their capsules standing in while they load — the fight laid out across the room, the
- * light meter as the room's light and fog, and the fight HUD's cues shown on the actors. One persistent scene for the
- * whole delve screen: the room is rebuilt only when the party changes rooms; materials, textures and lights are kept.
+ * The delve's 3D room: the current room's template built from its zone's kit (Phase 6; the Phase 4 grey box for
+ * whatever the kit lacks), with the party standing inside the door it came through — heroes, pets and monsters as their
+ * 3D models, capsules standing in while they load — the fight laid out across the room, the light meter as the room's
+ * light and fog, and the fight HUD's cues shown on the actors with their effects. One persistent scene for the whole
+ * delve screen: the room is rebuilt only when the party changes rooms (or its kit arrives).
+ *
+ * Light (10 §4): the hemisphere and TWO point lights — at the two fires nearest the party (a room with fewer lends the
+ * party's torch the other); every other flame is a sprite. Fog and the hemisphere's colours follow the zone.
  */
 
 /** Where each actor stands on screen (CSS px): for UI that wants to point at one. */
 export const roomAnchors = signal<Record<string, { x: number; y: number; top: number }>>({})
+
+/** What the scene says about the room it shows (the room viewer's caption and the overlay). */
+export const roomInfo = signal<{ zone: KitZone; kit: 'kit' | 'mixed' | 'grey'; template: string; triangles: number; drawCalls: number } | null>(null)
 
 const SIZE_M: Readonly<Record<string, number>> = { small: 0.6, medium: 1.0, large: 1.6, huge: 2.4 }
 /** How far a formation may slide to stay clear of the furniture (metres along / across its approach). */
@@ -39,6 +53,17 @@ const ROOM_HERO_SHARE = 0.24
 /** How much floor around the party the room view keeps in frame (metres). */
 const ROOM_CONTEXT_M = 2.6
 const SPECIES_RADIUS: Readonly<Record<string, number>> = { dwarf: 0.34, orc: 0.33, draconid: 0.31, human: 0.28, elf: 0.25, halfling: 0.24 }
+/** A chest's lid stands open at this angle (radians about its hinge; its front edge up). */
+const LID_OPEN = -1.9
+/** The room viewer's party, in order (`&heroes=N`). */
+const VIEW_PARTY = ['warden', 'mender', 'ranger', 'arcanist']
+/**
+ * Boss marks the room viewer honours ahead of Phase 7's arenas (the kit passes' notes): the Hollow King on his throne
+ * platform, raised 2 m, facing the party; the kit's empty iron seat hidden while his own throne is drawn.
+ */
+const VIEW_MARKS: Readonly<Record<string, { monster: string; at: [number, number, number]; skipParts: Record<string, string[]> }>> = {
+  'vlt-t-throne': { monster: 'hollow-king', at: [0, 2.0, -5.0], skipParts: { vlt_throne_hollow: ['seat'] } },
+}
 
 /** Floor points round a centre: the room view keeps this much of the room in frame round the party. */
 function ringAround(c: THREE.Vector3, r: number): THREE.Vector3[] {
@@ -72,20 +97,54 @@ function shapeOf(baseMesh: string | undefined): ActorShape {
   return 'biped'
 }
 
+/** A template as the room viewer shows it (a content template or a `.later` one). */
+export interface ViewTemplate extends TemplateLike {
+  readonly id: string
+  readonly zoneId: string
+  readonly footprint: { readonly w: number; readonly h: number }
+  readonly doors: readonly { readonly side: string; readonly offset: number }[]
+  readonly kinds: readonly string[]
+}
+
+export interface ViewOptions {
+  monsters: readonly string[]
+  heroes: number
+  light: number
+  kind: string | null
+}
+
+interface RoomBuildInput {
+  room: RoomLike
+  kind: string
+  template: TemplateLike | null
+  templateId: string
+  zone: KitZone
+  openDoors: ReturnType<typeof doorway>[]
+  isEntry: boolean
+  variation: number
+  skipParts?: Readonly<Record<string, readonly string[]>>
+}
+
 export class RoomScene {
   private readonly kit: Kit
   private readonly layer: ActorLayer
+  private readonly vfx: VfxLayer
   private readonly hemi: THREE.HemisphereLight
-  private readonly fireLight: THREE.PointLight
-  private readonly torchLight: THREE.PointLight
+  /** The two point lights (10 §4): the fires nearest the party, or the party's torch. */
+  private readonly lamps: [THREE.PointLight, THREE.PointLight]
+  private lampBase: [number, number] = [0, 0]
+  private lampTorch: [boolean, boolean] = [false, false]
   private readonly fog: THREE.FogExp2
   private readonly root = new THREE.Group()
   private readonly removeUpdater: () => void
   private readonly resizeObserver: ResizeObserver | null
   private room: StaticRoom | null = null
   private roomKey = ''
+  /** Which room the party is in (the room key less its doors and kit): lids and actors follow the place, not its dressing. */
+  private placeKey = ''
   private dynamic: DynamicDressing | null = null
   private dynamicKey = ''
+  private lidAngles = new Map<string, number>()
   private approach: Approach | null = null
   private mode: 'room' | 'fight' = 'room'
   private insets: Insets = NO_INSETS
@@ -96,7 +155,15 @@ export class RoomScene {
   private look: LightLook = lightLook(100)
   private lookTarget: LightLook = this.look
   private camDist = 12
-  private fireBase = 0
+  private zone: KitZone = 'cellars'
+  /** The zone's materials: solid, see-through by opacity (mist, webs), water. */
+  private readonly materials = new Map<KitZone, { opaque: EnvMaterial; translucent: Map<number, EnvMaterial>; water: EnvMaterial }>()
+  /** Loads in flight (kits, the monster manifest): the screen's ready flag waits for them. */
+  private readonly waits = new Set<Promise<unknown>>()
+  private lastSync: (() => void) | null = null
+  private viewing = false
+  private refitTimer: ReturnType<typeof setTimeout> | null = null
+  private veilTimer: ReturnType<typeof setTimeout> | null = null
   private reduceMotion: boolean
   private size = { w: 1, h: 1 }
   private disposed = false
@@ -115,14 +182,23 @@ export class RoomScene {
     scene.background = new THREE.Color(PALETTE.fog)
     this.fog = new THREE.FogExp2(PALETTE.fog, 0.03)
     scene.fog = this.fog
-    // A fixed light rig (no shader recompiles between rooms): the cellar's ambient, the room's fire, the party's torch.
+    // A fixed light rig (no shader recompiles between rooms): the zone's ambient and two point lights.
     this.hemi = new THREE.HemisphereLight(PALETTE.sky, PALETTE.ground, 1)
-    this.fireLight = new THREE.PointLight(PALETTE.fireLight, 20, 0, 1.6)
-    this.torchLight = new THREE.PointLight(PALETTE.torchLight, 20, 14, 1.5)
-    scene.add(this.hemi, this.fireLight, this.torchLight, this.root)
-    this.layer = new ActorLayer(this.kit, camera, (spec) => buildCharacter(this.content, spec))
+    this.lamps = [new THREE.PointLight(PALETTE.fireLight, 20, 0, 1.6), new THREE.PointLight(PALETTE.torchLight, 20, 14, 1.5)]
+    this.vfx = new VfxLayer()
+    this.vfx.setReduceMotion(this.reduceMotion)
+    scene.add(this.hemi, ...this.lamps, this.root, this.vfx.mesh)
+    this.layer = new ActorLayer(this.kit, camera, this.vfx)
     this.layer.setReduceMotion(this.reduceMotion)
     this.layer.onChange = () => this.publishAnchors()
+    // A tall monster's model (a Charnel Hulk) arriving after the framing: re-frame once the arrivals settle.
+    this.layer.onModel = () => {
+      if (this.refitTimer !== null) clearTimeout(this.refitTimer)
+      this.refitTimer = setTimeout(() => {
+        this.refitTimer = null
+        if (!this.disposed && this.room) this.refit(false)
+      }, 160)
+    }
     scene.add(this.layer.group)
     this.removeUpdater = stage.addUpdater((t, dt) => this.frame(t, dt))
     const host = stage.renderer.domElement.parentElement ?? stage.renderer.domElement
@@ -136,6 +212,17 @@ export class RoomScene {
         : null
     this.resizeObserver?.observe(host)
     stage.own(() => this.dispose())
+    // The monsters' variant table: asked for at once, the actors re-dressed when it lands.
+    if (monsterLibrary.any() && !monsterLibrary.peekManifest()) this.track(monsterLibrary.manifest().then(() => this.resync()))
+  }
+
+  private track(p: Promise<unknown>): void {
+    const q = p.catch(() => undefined).finally(() => this.waits.delete(q))
+    this.waits.add(q)
+  }
+
+  private resync(): void {
+    if (!this.disposed) this.lastSync?.()
   }
 
   private measure(): void {
@@ -146,12 +233,14 @@ export class RoomScene {
   setReduceMotion(on: boolean): void {
     this.reduceMotion = on
     this.layer.setReduceMotion(on)
+    this.vfx.setReduceMotion(on)
     if (on) {
       this.look = this.lookTarget
       this.applyLook()
       this.fitT = 1
       this.fit = this.fitTo
       this.applyFit(this.fit)
+      this.settleLids()
     }
   }
 
@@ -161,37 +250,121 @@ export class RoomScene {
     if (!same && this.room) this.refit(false)
   }
 
+  /* ---------- kits ---------- */
+
+  /** The zone's kit and material if it has loaded; else null (the grey box), and the load is started. */
+  private envFor(zone: KitZone): RoomEnv | null {
+    const set = envLibrary.peek(zone)
+    if (set === undefined) {
+      if (envLibrary.available(zone)) this.track(envLibrary.load(zone).then(() => this.resync()))
+      return null
+    }
+    if (!set) return null
+    const m = this.materialsFor(zone, set)
+    const translucent = (opacity: number): THREE.Material => {
+      const k = Math.round(opacity * 100) / 100
+      let t = m.translucent.get(k)
+      if (!t) {
+        t = createEnvMaterial(set.info.palette, { translucent: true })
+        t.material.opacity = k
+        m.translucent.set(k, t)
+      }
+      return t.material
+    }
+    return { set, materials: { solid: m.opaque.material, translucent, water: m.water.material } }
+  }
+
+  private materialsFor(zone: KitZone, set: EnvSet): { opaque: EnvMaterial; translucent: Map<number, EnvMaterial>; water: EnvMaterial } {
+    let m = this.materials.get(zone)
+    if (!m) {
+      m = { opaque: createEnvMaterial(set.info.palette), translucent: new Map(), water: createEnvMaterial(set.info.palette, { water: true }) }
+      this.materials.set(zone, m)
+    }
+    // Another zone's materials are let go (the Phase 6 rule: a room's materials leave with it).
+    for (const [z, other] of this.materials) {
+      if (z === zone) continue
+      this.disposeMaterials(other)
+      this.materials.delete(z)
+    }
+    return m
+  }
+
+  private disposeMaterials(m: { opaque: EnvMaterial; translucent: Map<number, EnvMaterial>; water: EnvMaterial }): void {
+    m.opaque.dispose()
+    m.water.dispose()
+    for (const t of m.translucent.values()) t.dispose()
+  }
+
+  /** Builds a room (and frees the GPU copies of the last one's kit pieces the new one does not use). */
+  private buildRoom(input: RoomBuildInput): StaticRoom {
+    const env = this.envFor(input.zone)
+    // A zone whose kit is still on its way: the room stays dark for a moment (at most 1.5 s) rather than flashing the
+    // grey box before the kit replaces it.
+    if (this.veilTimer !== null) clearTimeout(this.veilTimer)
+    this.veilTimer = null
+    const waiting = !env && envLibrary.available(input.zone) && envLibrary.peek(input.zone) === undefined
+    this.root.visible = !waiting
+    if (waiting)
+      this.veilTimer = setTimeout(() => {
+        this.veilTimer = null
+        this.root.visible = true
+      }, 1500)
+    const next = buildStaticRoom(this.kit, { room: input.room, kind: input.kind, template: input.template, templateId: input.templateId, openDoors: input.openDoors, isEntry: input.isEntry, variation: input.variation, env, ...(input.skipParts ? { skipParts: input.skipParts } : {}) })
+    const old = this.room
+    this.dynamic?.dispose()
+    if (this.dynamic) this.root.remove(this.dynamic.group)
+    this.dynamic = null
+    this.dynamicKey = ''
+    if (old) {
+      this.root.remove(old.group)
+      const keep = next.kit?.geometries ?? new Set()
+      for (const g of old.kit?.geometries ?? []) if (!keep.has(g)) g.dispose()
+      old.dispose()
+    }
+    this.room = next
+    this.root.add(next.group)
+    this.zone = input.zone
+    this.vfx.clear()
+    this.vfx.setFlames(next.flames)
+    this.vfx.setMotes(next.motes)
+    roomInfo.value = { zone: input.zone, kit: next.kitShare, template: input.templateId, triangles: next.kit?.triangles ?? 0, drawCalls: next.kit?.drawCalls ?? 0 }
+    this.placeCamera()
+    return next
+  }
+
+  /* ---------- the delve ---------- */
+
   /** Follows the delve: called after every command (and when the fight's finale ends). */
   sync(state: DelveState, legal: readonly LegalDelveAction[], fightOverride: FightState | null = null): void {
     if (this.disposed) return
+    this.viewing = false
+    this.lastSync = () => this.sync(state, legal, fightOverride)
     const floor = state.floor
     const g = floor.graph.rooms.find((r) => r.id === floor.currentRoomId)
     const rs = floor.rooms[floor.currentRoomId]
     if (!g || !rs) return
     const dungeon = this.content.dungeons.get(state.options.dungeonId)
     const template = dungeon?.templates.find((t) => t.id === g.templateId) ?? null
+    const zone = kitZoneOf(template?.zoneId, g.templateId)
 
-    // The static room: rebuilt when the party is somewhere new (or a secret door opened).
+    // The static room: rebuilt when the party is somewhere new (or a secret door opened, or the zone's kit arrived).
     const frameProbe = { doorways: g.doors.map((d) => doorway(roomFrame(g), d)) }
     const known = (d: { secret: boolean; to: string }) => !d.secret || rs.secretRevealed || floor.rooms[d.to]?.visited === true
     const openDoors = frameProbe.doorways.filter(known)
-    const key = `${floor.graph.hash}:${floor.number}:${g.id}:${openDoors.map((d) => d.to).join(',')}`
+    const kitState = envLibrary.peek(zone) ? 'kit' : 'grey'
+    const place = `${floor.graph.hash}:${floor.number}:${g.id}`
+    const key = `${place}:${openDoors.map((d) => d.to).join(',')}:${kitState}`
     let rebuilt = false
     if (key !== this.roomKey || !this.room) {
-      this.dynamic?.dispose()
-      this.dynamic = null
-      this.dynamicKey = ''
-      if (this.room) {
-        this.root.remove(this.room.group)
-        this.room.dispose()
-      }
-      this.room = buildStaticRoom(this.kit, { room: g, kind: g.kind, template, openDoors, isEntry: g.kind === 'entry', variation: g.variation })
-      this.root.add(this.room.group)
+      this.buildRoom({ room: g, kind: g.kind, template, templateId: g.templateId, zone, openDoors, isEntry: g.kind === 'entry', variation: g.variation })
       this.roomKey = key
       rebuilt = true
-      this.placeCamera()
     }
-    const room = this.room
+    // Somewhere new, not the same room re-dressed (its kit arrived, a secret door opened): only then do the actors jump
+    // to their marks and take the sim's word at once — mid-fight, the beats still to play carry the bars there.
+    const moved = place !== this.placeKey
+    this.placeKey = place
+    const room = this.room!
 
     // Who stands where.
     const from = previousRoomId(state.log, floor.number, g.id)
@@ -201,8 +374,8 @@ export class RoomScene {
     this.mode = fight ? 'fight' : 'room'
     const inputs = fight ? this.fightInputs(state, fight, room) : this.roomInputs(state, room)
     this.layer.set(inputs, {
-      instant: rebuilt,
-      stateNow: rebuilt || wasMode !== this.mode || !fight,
+      instant: moved,
+      stateNow: moved || wasMode !== this.mode || !fight,
       showBars: fight !== null,
       turnId: fight?.pendingActorId ?? null,
     })
@@ -213,7 +386,7 @@ export class RoomScene {
     const doors: DoorState[] = frameProbe.doorways.map((d) => ({ doorway: d, shown: known(d), move: state.phase.kind === 'room' ? (moveTo.get(d.to) ?? null) : null }))
     const curio = g.kind === 'curio' && rs.curioId ? { id: rs.curioId, used: rs.curioUsed } : null
     const partySpots = inputs.filter((i) => i.look.side === 'party').map((i) => ({ x: Math.round(i.mark.x * 2) / 2, z: Math.round(i.mark.z * 2) / 2 }))
-    const dyn = {
+    this.dress({
       kind: g.kind,
       doors,
       hasKey: floor.hasKey,
@@ -225,22 +398,12 @@ export class RoomScene {
       keyHere: g.hasKey && !floor.hasKey,
       partySpots: this.mode === 'room' ? partySpots : [],
       variation: g.variation,
-    }
-    const dynKey = JSON.stringify({ ...dyn, doors: doors.map((d) => [d.doorway.to, d.shown, d.move]) })
-    if (dynKey !== this.dynamicKey) {
-      if (this.dynamic) {
-        this.root.remove(this.dynamic.group)
-        this.dynamic.dispose()
-      }
-      this.dynamic = buildDynamic(this.kit, room, dyn)
-      this.root.add(this.dynamic.group)
-      this.dynamicKey = dynKey
-    }
+    })
 
     // Light and fog follow the party's light (03 §4.2).
     this.lookTarget = lightLook(state.light)
     if (rebuilt || this.reduceMotion) this.look = this.lookTarget
-    this.placeLights(room)
+    this.placeLights()
     this.applyLook()
 
     // Re-frame on a new room or when a fight starts or ends; not every turn (a camera that zooms as foes fall is noise).
@@ -249,39 +412,162 @@ export class RoomScene {
     if (rebuilt) this.onRoomBuilt?.()
   }
 
+  private dress(dyn: DynamicInput): void {
+    const room = this.room
+    if (!room) return
+    const dynKey = JSON.stringify({ ...dyn, doors: dyn.doors.map((d) => [d.doorway.to, d.shown, d.move]) })
+    if (dynKey === this.dynamicKey) return
+    if (this.dynamic) {
+      this.root.remove(this.dynamic.group)
+      this.dynamic.dispose()
+    }
+    this.dynamic = buildDynamic(this.kit, room, dyn)
+    this.root.add(this.dynamic.group)
+    this.dynamicKey = dynKey
+    // Lids start where they were (a chest opened just now swings open; one already open stands open).
+    for (const lid of this.dynamic.lids) {
+      const k = `${this.placeKey}:${lid.index}`
+      const was = this.lidAngles.get(k)
+      const angle = was ?? (lid.open ? LID_OPEN : 0)
+      this.lidAngles.set(k, angle)
+      this.poseLid(lid, this.reduceMotion ? (lid.open ? LID_OPEN : 0) : angle)
+    }
+    this.vfx.setFlames([...room.flames, ...this.dynamic.flames])
+  }
+
+  private poseLid(lid: ChestLid, angle: number): void {
+    lid.object.quaternion.copy(lid.restQuaternion).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), angle))
+  }
+
+  private settleLids(): void {
+    for (const lid of this.dynamic?.lids ?? []) {
+      const angle = lid.open ? LID_OPEN : 0
+      this.lidAngles.set(`${this.placeKey}:${lid.index}`, angle)
+      this.poseLid(lid, angle)
+    }
+  }
+
+  /* ---------- the room viewer (#room=<template>) ---------- */
+
+  /**
+   * One template from its own camera with its kit (Phase 6, `#room=`): every door open, the chests and gold on their
+   * sockets, `monsters` on the enemy marks and `heroes` of the starter party on the party's, as the fight lays them out.
+   */
+  showTemplate(t: ViewTemplate, opts: ViewOptions): void {
+    if (this.disposed) return
+    this.viewing = true
+    this.lastSync = () => this.showTemplate(t, opts)
+    const cells: { x: number; y: number }[] = []
+    for (let x = 0; x < t.footprint.w; x++) for (let y = 0; y < t.footprint.h; y++) cells.push({ x, y })
+    const doors: DoorLike[] = t.doors.map((d, i) => ({ to: `door-${i}`, side: d.side as Side, offset: d.offset, locked: false, secret: false }))
+    const room: RoomLike = { id: t.id, cells, doors, rotation: 0 }
+    const frame = roomFrame(room)
+    const openDoors = doors.map((d) => doorway(frame, d))
+    const zone = kitZoneOf(t.zoneId, t.id)
+    // A fight's dressing unless asked otherwise (or the template hosts no fight: a rest room, a stairwell).
+    const kind = opts.kind ?? (t.kinds.includes('fight') ? 'fight' : t.kinds[0]) ?? 'fight'
+    const kitState = envLibrary.peek(zone) ? 'kit' : 'grey'
+    const boss = VIEW_MARKS[t.id]
+    const seated = boss && opts.monsters.includes(boss.monster) ? boss : null
+    const key = `view:${t.id}:${kind}:${kitState}:${seated ? 'boss' : ''}`
+    if (key !== this.roomKey || !this.room) {
+      this.buildRoom({ room, kind, template: t, templateId: t.id, zone, openDoors, isEntry: kind === 'entry', variation: 1, ...(seated ? { skipParts: seated.skipParts } : {}) })
+      this.roomKey = key
+    }
+    this.placeKey = `view:${t.id}`
+    const built = this.room!
+    // The actors: the fight's side-on layout.
+    const looks: { look: ActorLook; line: FormationActor['line'] }[] = []
+    for (let i = 0; i < Math.min(4, Math.max(0, opts.heroes)); i++) {
+      const classId = VIEW_PARTY[i]!
+      const spec = starterSpec(this.content, { speciesId: ['human', 'dwarf', 'elf', 'orc'][i]!, classId, look: { frame: i % 2 ? 'slight' : 'broad', skin: 1, face: i % 3, hair: 1 }, tier: 'F' })
+      looks.push({ look: this.specLook(spec, `hero-${i}`, 'party'), line: classId === 'warden' || classId === 'blade' ? 'front' : 'back' })
+    }
+    opts.monsters.slice(0, 8).forEach((id, i) => {
+      const def = this.content.monsters.get(id)
+      const look = this.monsterLookFor(`${id}-${i + 1}`, id, 'enemy', def?.size ?? 'medium', def?.visual, def?.familyId ?? '', 'monster')
+      looks.push({ look, line: def?.rows?.[0] === 'back' ? 'back' : 'front' })
+    })
+    const formation = looks.map((l) => this.formationOf(l.look, l.line))
+    const marks = nudgeFormation(fightSideFormation(built.frame, built.camDir, formation), new Map(formation.map((f) => [f.id, f.girth])), built.obstacles, built.frame, cameraRight(built.camDir), FIGHT_STEPS)
+    if (seated) {
+      const look = looks.find((l) => l.look.id.startsWith(`${seated.monster}-`))
+      if (look) marks.set(look.look.id, { x: seated.at[0], y: seated.at[1], z: seated.at[2], yaw: 0 })
+    }
+    const inputs: ActorInput[] = looks.map(({ look }) => ({ look, state: { hp: 1, maxHp: 1, down: false, gone: false }, mark: marks.get(look.id) ?? { x: 0, z: 0, yaw: 0 } }))
+    this.mode = 'fight'
+    this.layer.set(inputs, { instant: true, stateNow: true, showBars: false, turnId: null })
+    const sockets = built.sockets
+    this.dress({
+      kind,
+      doors: openDoors.map((d) => ({ doorway: d, shown: true, move: null })),
+      hasKey: false,
+      chests: [...sockets.chestSmall.map(() => ({ size: 'small', locked: false, opened: false })), ...sockets.chestLarge.map(() => ({ size: 'large', locked: true, opened: false }))],
+      goldPiles: sockets.gold.map(() => 60),
+      traps: [],
+      curio: null,
+      merchant: kind === 'merchant',
+      keyHere: false,
+      partySpots: [],
+      variation: 1,
+    })
+    this.lookTarget = lightLook(opts.light)
+    this.look = this.lookTarget
+    this.placeLights()
+    this.applyLook()
+    this.refit(true)
+  }
+
   cue(c: SceneCue): void {
     if (this.disposed) return
     this.layer.cue(c)
   }
 
-  /** Resolves when the heroes' 3D characters asked for so far have arrived (or failed): the screen's ready flag. */
-  actorsReady(): Promise<void> {
-    return this.layer.modelsSettled()
+  /** Resolves when the room's kit, the monster table and the 3D models asked for so far have arrived (or failed). */
+  async actorsReady(): Promise<void> {
+    while (this.waits.size > 0) await Promise.all([...this.waits])
+    await this.layer.modelsSettled()
   }
 
   /* ---------- actors ---------- */
 
-  private heroLook(state: DelveState, index: number, id: string, side: 'party' | 'enemy'): ActorLook {
-    const h = state.heroes[index]
-    const rec = h?.record
-    const species = rec ? this.content.species.get(rec.speciesId) : undefined
-    const cls = rec ? this.content.classes.get(rec.classId) : undefined
+  private specLook(spec: CharacterSpec, id: string, side: 'party' | 'enemy'): ActorLook {
+    const species = this.content.species.get(spec.speciesId)
+    const cls = this.content.classes.get(spec.classId)
     const pal = cls?.visual.palette ?? []
-    const height = species?.body.heightM ?? 1.8
-    const spec = rec ? characterSpec(this.content, rec) : null
     return {
       id,
       side,
       kind: 'hero',
-      height,
-      radius: SPECIES_RADIUS[rec?.speciesId ?? ''] ?? 0.28,
+      height: species?.body.heightM ?? 1.8,
+      radius: SPECIES_RADIUS[spec.speciesId] ?? 0.28,
       shape: 'biped',
       body: readable(hex(pal[0], 0x8a8a92)),
       trim: hex(pal[1], 0xb45309),
-      face: hex(species?.body.skinTones[spec?.look.skin ?? 0] ?? species?.body.skinTones[0], 0xe8c4a8),
+      face: hex(species?.body.skinTones[spec.look.skin] ?? species?.body.skinTones[0], 0xe8c4a8),
       eyes: 0x1a1414,
-      ...(spec ? { model: { key: specKey(spec), spec } } : {}),
+      model: { key: specKey(spec), build: () => buildCharacter(this.content, spec) },
     }
+  }
+
+  private heroLook(state: DelveState, index: number, id: string, side: 'party' | 'enemy'): ActorLook {
+    const h = state.heroes[index]
+    const rec = h?.record
+    const spec = rec ? characterSpec(this.content, rec) : null
+    if (spec) return this.specLook(spec, id, side)
+    return { id, side, kind: 'hero', height: 1.8, radius: 0.28, shape: 'biped', body: 0x8a8a92, trim: 0xb45309, face: 0xe8c4a8, eyes: 0x1a1414 }
+  }
+
+  /** A monster's or a pet's model, when its base has landed (the manifest's variant, else the content's look). */
+  private creatureModel(kind: 'monster' | 'pet', id: string, visual: VisualLike | undefined, phase = 1): ActorLook['model'] {
+    if (!monsterLibrary.any()) return undefined
+    const manifest = monsterLibrary.peekManifest()
+    // The variant table is on its way: the capsule stands until it lands (the scene re-dresses then).
+    if (!manifest && hasModel('monsters/manifest.json')) return undefined
+    const available = (base: string) => monsterLibrary.available(base)
+    const v = kind === 'pet' ? resolvePetVariant(id, manifest, visual, available) : resolveMonsterVariant(id, manifest, visual, available, phase)
+    if (!v) return undefined
+    return { key: `${kind}:${variantKey(v)}:${v.scale}:${v.palette.join('')}`, build: () => monsterLibrary.build(v) }
   }
 
   private petLook(state: DelveState, index: number, id: string, side: 'party' | 'enemy'): ActorLook {
@@ -289,36 +575,38 @@ export class RoomScene {
     const def = pet ? this.content.pets.get(pet.petId) : undefined
     const pal = def?.visual.palette ?? []
     const shape = shapeOf(def?.visual.baseMesh)
+    const model = def ? this.creatureModel('pet', def.id, def.visual) : undefined
     return {
       id,
       side,
       kind: 'pet',
       height: 0.6,
-      radius: shape === 'biped' ? 0.2 : 0.2,
+      radius: 0.2,
       shape: shape === 'biped' ? 'hound' : shape,
       body: readable(hex(pal[0], 0x8a6a4a)),
       trim: hex(pal[1], 0xd9c3a0),
       face: hex(pal[1], 0xd9c3a0),
       eyes: hex(pal[2], 0xffe07a),
+      ...(model ? { model } : {}),
     }
   }
 
-  private monsterLook(a: Actor): ActorLook {
-    const def = a.monster ? this.content.monsters.get(a.monster.monsterId) : undefined
-    const pal = def?.visual.palette ?? []
-    const shape = shapeOf(def?.visual.baseMesh)
-    const size = SIZE_M[a.monster?.size ?? def?.size ?? 'medium'] ?? 1
+  private monsterLookFor(actorId: string, monsterId: string, side: 'party' | 'enemy', size: string, visual: (VisualLike & { readonly palette?: readonly string[] }) | undefined, family: string, kind: 'monster' | 'summon', phase = 1): ActorLook {
+    const pal = visual?.palette ?? []
+    const shape = shapeOf(visual?.baseMesh)
+    const sizeM = SIZE_M[size] ?? 1
     // The prompt's sizes are a beast's height; a humanoid of any size is at least a person (06 §3 scales).
-    const height = shape === 'biped' ? Math.max(size, 1.75 * (def?.visual.scale ?? 1)) : size
+    const height = shape === 'biped' ? Math.max(sizeM, 1.75 * (visual?.scale ?? 1)) : sizeM
     const radius = shape === 'biped' ? Math.max(0.26, Math.min(0.55, height * 0.17)) : height * 0.36
-    const family = a.monster?.familyId ?? def?.familyId ?? ''
     let fam = 0
     for (let i = 0; i < family.length; i++) fam = (fam * 31 + family.charCodeAt(i)) >>> 0
     const familyColour = new THREE.Color().setHSL((fam % 360) / 360, 0.35, 0.38).getHex()
+    // A boss past its first phase wears that phase's look (the Hollow King risen, Naesa ascended, the Warden's blue lantern).
+    const model = this.creatureModel('monster', monsterId, visual, phase)
     return {
-      id: a.id,
-      side: a.side,
-      kind: a.kind === 'summon' ? 'summon' : 'monster',
+      id: actorId,
+      side,
+      kind,
       height,
       radius,
       shape,
@@ -326,7 +614,13 @@ export class RoomScene {
       trim: hex(pal[2] ?? pal[1], 0x3a2a1e),
       face: hex(pal[1], 0xf1ece4),
       eyes: hex(pal[2] ?? pal[1], 0xffd040),
+      ...(model ? { model } : {}),
     }
+  }
+
+  private monsterLook(a: Actor): ActorLook {
+    const def = a.monster ? this.content.monsters.get(a.monster.monsterId) : undefined
+    return this.monsterLookFor(a.id, a.monster?.monsterId ?? '', a.side, a.monster?.size ?? def?.size ?? 'medium', def?.visual, a.monster?.familyId ?? def?.familyId ?? '', a.kind === 'summon' ? 'summon' : 'monster', (a.monster?.phaseIndex ?? 0) + 1)
   }
 
   private formationOf(look: ActorLook, line: FormationActor['line'], owner?: string): FormationActor {
@@ -348,7 +642,9 @@ export class RoomScene {
   }
 
   private fightInputs(state: DelveState, fight: FightState, room: StaticRoom): ActorInput[] {
-    const entries: { look: ActorLook; line: FormationActor['line']; state: ActorState }[] = []
+    const entries: { look: ActorLook; line: FormationActor['line']; state: ActorState; shownHp?: number }[] = []
+    // The HUD plays the log from its last hero action on: until it has, its meters (and so the bars) show HP from there.
+    const behind = hpBehind(fight.log, resumeIndex(fight))
     for (const a of fight.actors) {
       let look: ActorLook
       let line: FormationActor['line'] = a.row
@@ -364,7 +660,7 @@ export class RoomScene {
         look = this.monsterLook(a)
         if (a.side === 'party') line = 'pet'
       }
-      entries.push({ look, line, state: { hp: a.hp, maxHp: a.maxHp, down: a.downed || a.fallen, gone: a.gone || a.fled } })
+      entries.push({ look, line, state: { hp: a.hp, maxHp: a.maxHp, down: a.downed || a.fallen, gone: a.gone || a.fled }, shownHp: shownHp(a, behind) })
     }
     // Heroes who fell before this fight are not in it: the party keeps their bodies behind its lines (D-088).
     const mortal = isMortal(state)
@@ -375,10 +671,11 @@ export class RoomScene {
     const formation = entries.map((e) => this.formationOf(e.look, e.line))
     // Phase 5: seen from the side — the party on the camera's left, the enemies on its right (layout.ts).
     const marks = this.clearOfFurniture(fightSideFormation(room.frame, room.camDir, formation), formation, room, FIGHT_STEPS, cameraRight(room.camDir))
-    return entries.map(({ look, state: s }) => ({
+    return entries.map(({ look, state: s, shownHp: hp }) => ({
       look,
       state: s,
       mark: marks.get(look.id) ?? ({ x: 0, z: 0, yaw: 0 } satisfies Mark),
+      ...(hp !== undefined ? { shownHp: hp } : {}),
     }))
   }
 
@@ -405,28 +702,50 @@ export class RoomScene {
     this.camDist = Math.hypot(px - lx, py - ly, pz - lz)
   }
 
-  private placeLights(room: StaticRoom): void {
-    let fire = room.fire?.clone() ?? null
-    if (!fire && room.sconces.length) {
-      fire = new THREE.Vector3()
-      for (const s of room.sconces) fire.add(s)
-      fire.divideScalar(room.sconces.length)
-      fire.multiplyScalar(0.55)
-      fire.y = 2.6
-    }
-    this.fireBase = room.fire ? 1 : room.sconces.length ? 0.85 : 0.35
-    this.fireLight.position.copy(fire ?? new THREE.Vector3(0, 3.2, 0))
+  /** The two fires nearest the party carry the point lights; a room with fewer lends the party its torch. */
+  private placeLights(): void {
+    const room = this.room
+    if (!room) return
     const party = this.layer.partyCentre() ?? new THREE.Vector3()
-    this.torchLight.position.set(party.x * 0.8, 2.6, party.z * 0.8)
+    const fires: LightPoint[] = [...room.lights, ...(this.dynamic?.lights ?? [])]
+    fires.sort((a, b) => Math.hypot(a.x - party.x, a.z - party.z) - Math.hypot(b.x - party.x, b.z - party.z))
+    this.lamps.forEach((lamp, i) => {
+      const f = fires[i]
+      if (f) {
+        // A little out from the wall or pillar it burns on, so the light does not burn a white spot into its own stone.
+        const out = Math.hypot(f.x, f.z) > 0.01 ? 0.7 / Math.hypot(f.x, f.z) : 0
+        lamp.position.set(f.x - f.x * out, f.y + 0.35, f.z - f.z * out)
+        lamp.color.setHex(0xfff2e6).lerp(new THREE.Color(f.color), LIGHT_TINT)
+        lamp.distance = 0
+        lamp.decay = 1.6
+        this.lampBase[i] = f.strength
+        this.lampTorch[i] = false
+      } else {
+        lamp.position.set(party.x * 0.8, 2.6, party.z * 0.8)
+        lamp.color.setHex(PALETTE.torchLight)
+        lamp.decay = 1.5
+        this.lampBase[i] = 1
+        this.lampTorch[i] = true
+      }
+    })
+    // The zone's air: fog and ambient colours.
+    const z = ZONE_LOOK[this.zone]
+    this.fog.color.setHex(z.fog)
+    ;(this.stage.scene.background as THREE.Color | null)?.setHex(z.fog)
+    this.hemi.color.setHex(z.sky)
+    this.hemi.groundColor.setHex(z.ground)
   }
 
   private applyLook(flicker = 0): void {
     const l = this.look
     this.hemi.intensity = l.hemi
-    this.torchLight.intensity = l.torch
-    this.torchLight.distance = l.torchRange
-    this.fireLight.intensity = l.fire * this.fireBase * (1 + flicker * 0.08)
-    this.fog.density = l.fogK / Math.max(4, this.camDist)
+    this.lamps.forEach((lamp, i) => {
+      if (this.lampTorch[i]) {
+        lamp.intensity = l.torch
+        lamp.distance = l.torchRange
+      } else lamp.intensity = l.fire * this.lampBase[i]! * (1 + flicker * (i === 0 ? 0.08 : -0.06))
+    })
+    this.fog.density = (l.fogK * ZONE_LOOK[this.zone].fogScale) / Math.max(4, this.camDist)
   }
 
   /** Re-frames the view for the current mode (the room, or the fight's actors). */
@@ -440,6 +759,14 @@ export class RoomScene {
     cam.clearViewOffset()
     cam.updateProjectionMatrix()
     cam.updateMatrixWorld(true)
+    // The room viewer shows the template's own camera, as its designer set it.
+    if (this.viewing) {
+      this.fit = this.fitFrom = this.fitTo = { zoom: 1, offsetX: 0, offsetY: 0 }
+      this.fitT = 1
+      this.applyFit(this.fit)
+      this.publishAnchors()
+      return
+    }
     // Phase 5: frame the actors (the fight; the party with some floor round it in the room), never closer than a hero
     // at about a quarter of the screen's height. With no actors yet, the room.
     const actors = this.layer.points()
@@ -503,6 +830,9 @@ export class RoomScene {
 
   private frame(t: number, dt: number): void {
     this.layer.update(dt, t)
+    this.vfx.update(dt)
+    // The water's slow shimmer.
+    for (const m of this.materials.values()) m.water.setTime(t / 1000)
     // Light eases toward the party's light; the fire flickers.
     const k = 1 - Math.exp(-dt / 400)
     const a = this.look
@@ -513,9 +843,21 @@ export class RoomScene {
     this.kit.mat.flame.color.setScalar(0.88 + flicker * 0.12)
     const party = this.layer.partyCentre()
     if (party) {
-      const tp = this.torchLight.position
-      tp.x += (party.x * 0.8 - tp.x) * k
-      tp.z += (party.z * 0.8 - tp.z) * k
+      for (const [i, lamp] of this.lamps.entries()) {
+        if (!this.lampTorch[i]) continue
+        lamp.position.x += (party.x * 0.8 - lamp.position.x) * k
+        lamp.position.z += (party.z * 0.8 - lamp.position.z) * k
+      }
+    }
+    // Chests open on their hinges.
+    for (const lid of this.dynamic?.lids ?? []) {
+      const key = `${this.placeKey}:${lid.index}`
+      const now = this.lidAngles.get(key) ?? 0
+      const target = lid.open ? LID_OPEN : 0
+      if (Math.abs(target - now) < 0.002) continue
+      const next = now + (target - now) * (1 - Math.exp(-dt / 160))
+      this.lidAngles.set(key, next)
+      this.poseLid(lid, next)
     }
     if (this.fitT < 1) {
       this.fitT = Math.min(1, this.fitT + dt / 450)
@@ -528,14 +870,22 @@ export class RoomScene {
   dispose(): void {
     if (this.disposed) return
     this.disposed = true
+    this.lastSync = null
+    if (this.refitTimer !== null) clearTimeout(this.refitTimer)
+    if (this.veilTimer !== null) clearTimeout(this.veilTimer)
     this.removeUpdater()
     this.resizeObserver?.disconnect()
     this.dynamic?.dispose()
+    for (const g of this.room?.kit?.geometries ?? []) g.dispose()
     this.room?.dispose()
     this.layer.dispose()
+    this.vfx.dispose()
     this.kit.dispose()
+    for (const m of this.materials.values()) this.disposeMaterials(m)
+    this.materials.clear()
     this.root.clear()
     this.stage.scene.fog = null
     roomAnchors.value = {}
+    roomInfo.value = null
   }
 }

@@ -209,3 +209,60 @@
   font-weight: 700;
   color: var(--ink);
 }
+
+/* Phase 6: the monster lineup (#viewer=monsters) and the kit sheet (#viewer=kit), labelled under each model. */
+.lineup__top {
+  height: 52px;
+}
+.lineup__title {
+  font-size: 12px;
+}
+.lineup__zones {
+  position: absolute;
+  right: 6px;
+  top: 4px;
+  display: flex;
+  gap: 4px;
+  pointer-events: auto;
+}
+.lineup__zone {
+  min-height: 44px;
+  font-size: 12px;
+  padding: 2px 10px;
+}
+.lineup__go {
+  border-color: var(--light);
+}
+.lineup__label {
+  position: absolute;
+  z-index: 2;
+  transform: translate(-50%, 2px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  pointer-events: none;
+  font-size: 11px;
+  line-height: 1.15;
+  color: var(--ink);
+  text-shadow: 0 1px 2px #000, 0 0 6px #000;
+  white-space: nowrap;
+}
+.lineup__label b {
+  font-weight: 700;
+}
+.lineup__label i {
+  font-style: normal;
+  color: var(--ink-dim);
+  font-size: 10px;
+}
+.lineup__label--kit {
+  font-size: 9px;
+  color: var(--ink-dim);
+}
+.lineup__label--lower {
+  transform: translate(-50%, 26px);
+}
+.lineup__label--drop {
+  transform: translate(-50%, 13px);
+}

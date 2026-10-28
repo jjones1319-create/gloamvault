@@ -14,6 +14,7 @@ import { stageReady } from '../components/StageView.tsx'
 import { settings } from '../store/settings.ts'
 import { buzz } from '../lib/haptics.ts'
 import { navigate, type Route } from '../router.ts'
+import { FxLineup, KitLineup, MonsterLineup } from './viewer/Lineups.tsx'
 import { matrixOptions, parseViewerParams, type ViewerState } from './viewer/params.ts'
 import './viewer.css'
 
@@ -54,6 +55,10 @@ export function ViewerScreen({ route }: { route: Route }) {
       </main>
     )
   }
+  // Phase 6: the monster lineup and the kit sheet.
+  if (route.params.viewer === 'monsters') return <MonsterLineup c={c} route={route} />
+  if (route.params.viewer === 'kit') return <KitLineup route={route} />
+  if (route.params.viewer === 'fx') return <FxLineup route={route} />
   return route.params.viewer === 'matrix' ? <Matrix c={c} route={route} /> : <Viewer c={c} route={route} />
 }
 

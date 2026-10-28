@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import type { Content } from '../../../../sim/src/content.ts'
-import { CharacterAnimator, type ClipLibrary } from './animator.ts'
+import { CharacterAnimator, type ClipSource } from './animator.ts'
 import type { FrameTemplate } from './template.ts'
 import { bakeMorphs, compactPart, keepTriangles, localBoneScales, mergeParts, morphWeights, parseRegions, remapJoints, rigidPart, rootScale, vertexCount, type PartData } from './geometry.ts'
 import type { HeroManifest } from './manifest.ts'
@@ -25,7 +25,7 @@ export interface AssemblyInputs {
   gear: ReadonlyMap<string, ReadonlyMap<string, THREE.Mesh>>
   weapons: ReadonlyMap<string, THREE.Mesh> | null
   manifest: HeroManifest | null
-  clips: ClipLibrary | null
+  clips: (ClipSource & { srcHips?: THREE.Vector3 }) | null
 }
 
 /** Weapon meshes to try, in order, when a type has no mesh of its own yet. */
@@ -148,7 +148,7 @@ function readPositions(attr: THREE.BufferAttribute | THREE.InterleavedBufferAttr
 }
 
 /** A template mesh as a part: positions with the wanted morphs baked, normals, decoded palette codes, skinning, index. */
-function readPart(mesh: THREE.Mesh, morphs: Readonly<Record<string, number>>): PartData {
+export function readPart(mesh: THREE.Mesh, morphs: Readonly<Record<string, number>>): PartData {
   const g = mesh.geometry
   const pos = g.getAttribute('position')
   const n = pos.count
@@ -241,7 +241,7 @@ function nearlyEqual(a: THREE.Matrix4, b: THREE.Matrix4): boolean {
  * re-pointed by bone name and, if that file's bind pose differs from the body's (a moved node), vertices moved into
  * the body's bind space. A mesh that is not skinned rides its nearest bone rigidly.
  */
-function intoSkeleton(part: PartData, mesh: THREE.Mesh, tpl: FrameTemplate, boneIndex: ReadonlyMap<string, number>): PartData {
+export function intoSkeleton(part: PartData, mesh: THREE.Mesh, tpl: FrameTemplate, boneIndex: ReadonlyMap<string, number>): PartData {
   const hips = boneIndex.get('Hips') ?? 0
   const skinned = (mesh as THREE.SkinnedMesh).isSkinnedMesh ? (mesh as THREE.SkinnedMesh) : null
   if (!skinned || part.boneNames.length === 0) {
@@ -391,13 +391,16 @@ function hiddenByHelmet(name: string, mesh: THREE.Mesh): boolean {
 
 /* ---------- the assembly ---------- */
 
-export function assembleCharacter(content: Content, spec: CharacterSpec, inputs: AssemblyInputs): CharacterModel {
-  const tpl = inputs.template
-  const species = content.species.get(spec.speciesId)
-  const cls = content.classes.get(spec.classId)
-  const manifestSpecies = inputs.manifest?.species.get(spec.speciesId) ?? null
-
-  // The skeleton: the template's bones cloned (sockets come along as children), in the body's joint order.
+/** The template's skeleton cloned (sockets come along as children), in the body's joint order. */
+function cloneSkeleton(tpl: FrameTemplate): {
+  rig: THREE.Group
+  hips: THREE.Bone
+  bones: Map<string, THREE.Bone>
+  parentOf: { name: string; parent: string | null }[]
+  skeletonBones: THREE.Bone[]
+  skeleton: THREE.Skeleton
+  boneIndex: Map<string, number>
+} {
   const hips = tpl.hips.clone(true)
   const rig = new THREE.Group()
   rig.name = 'Rig'
@@ -416,6 +419,66 @@ export function assembleCharacter(content: Content, spec: CharacterSpec, inputs:
   const skeletonBones = tpl.boneNames.map((n) => bones.get(n) ?? new THREE.Bone())
   const skeleton = new THREE.Skeleton(skeletonBones, tpl.boneInverses.map((m) => m.clone()))
   const boneIndex = new Map(tpl.boneNames.map((n, i) => [n, i]))
+  return { rig, hips, bones, parentOf, skeletonBones, skeleton, boneIndex }
+}
+
+/** The merged parts as one skinned mesh and its outline on the skeleton (the hero's two draw calls). */
+function skinnedPair(data: ReturnType<typeof mergeParts>, skeleton: THREE.Skeleton, materials: CharacterMaterials, name: string): { mesh: THREE.SkinnedMesh; outline: THREE.SkinnedMesh; geometry: THREE.BufferGeometry } {
+  const geometry = new THREE.BufferGeometry()
+  geometry.setAttribute('position', new THREE.BufferAttribute(data.positions, 3))
+  geometry.setAttribute('normal', new THREE.BufferAttribute(data.normals, 3))
+  geometry.setAttribute(SLOT_ATTRIBUTE, new THREE.BufferAttribute(data.slots, 1))
+  geometry.setAttribute('skinIndex', new THREE.BufferAttribute(data.joints, 4))
+  geometry.setAttribute('skinWeight', new THREE.BufferAttribute(data.weights, 4))
+  geometry.setIndex(new THREE.BufferAttribute(data.index, 1))
+  geometry.computeBoundingBox()
+  geometry.computeBoundingSphere()
+  const mesh = new THREE.SkinnedMesh(geometry, materials.body)
+  mesh.name = name
+  mesh.bind(skeleton, IDENTITY)
+  mesh.frustumCulled = false
+  const outline = new THREE.SkinnedMesh(geometry, materials.outline)
+  outline.name = `${name}-outline`
+  outline.bind(skeleton, IDENTITY)
+  outline.frustumCulled = false
+  const size = new THREE.Vector2()
+  outline.onBeforeRender = (renderer) => {
+    renderer.getDrawingBufferSize(size)
+    materials.setViewportHeight(size.y)
+  }
+  return { mesh, outline, geometry }
+}
+
+/**
+ * Meshes skinned to a copy of the hero rig — a humanoid monster's body and costume (Phase 6; the contract's humanoid
+ * bases) — as one character on the broad frame's skeleton, exactly as gear joins a hero: joints re-pointed by bone
+ * name, shape keys baked, one merged mesh and its outline in the monster's three colours, the hero clips with the Hips
+ * track scaled to it.
+ */
+export function assembleRigged(meshes: readonly THREE.Mesh[], tpl: FrameTemplate, clips: (ClipSource & { srcHips?: THREE.Vector3 }) | null, opts: { palette: readonly string[]; morphs: Readonly<Record<string, number>>; scale: number; key: string; boneScales?: Readonly<Record<string, number>> | null }): CharacterModel {
+  const { rig, hips, bones, parentOf, skeletonBones, skeleton, boneIndex } = cloneSkeleton(tpl)
+  // A monster's own proportions on the hero rig (a Ghoul's long arms), as a species' are (absolute group scales).
+  if (opts.boneScales) for (const [name, s] of localBoneScales(parentOf, opts.boneScales)) bones.get(name)?.scale.setScalar(s)
+  const merged = meshes.map((mesh) => intoSkeleton(readPart(mesh, opts.morphs), mesh, tpl, boneIndex))
+  const data = mergeParts(merged, skeletonBones.length)
+  const materials = createCharacterMaterials(opts.palette, { invScale: 1 / opts.scale })
+  const { mesh, outline, geometry } = skinnedPair(data, skeleton, materials, 'monster')
+  const hipsRest = hips.position.clone()
+  const srcHips = clips?.srcHips
+  const k = srcHips && srcHips.y > 0.1 ? hipsRest.y / srcHips.y : 1
+  const animator = new CharacterAnimator(rig, bones, clips, { rest: hipsRest, k })
+  const height = Math.max(0.3, (geometry.boundingBox?.max.y ?? 1.8) * opts.scale)
+  return new CharacterModel({ rig, mesh, outline, skeleton, bones, animator, materials, triangles: data.triangleCount, height, stride: k * opts.scale, hasShield: false, scale: opts.scale, key: opts.key })
+}
+
+export function assembleCharacter(content: Content, spec: CharacterSpec, inputs: AssemblyInputs): CharacterModel {
+  const tpl = inputs.template
+  const species = content.species.get(spec.speciesId)
+  const cls = content.classes.get(spec.classId)
+  const manifestSpecies = inputs.manifest?.species.get(spec.speciesId) ?? null
+
+  // The skeleton: the template's bones cloned (sockets come along as children), in the body's joint order.
+  const { rig, hips, bones, parentOf, skeletonBones, skeleton, boneIndex } = cloneSkeleton(tpl)
 
   // What morphs to bake: every species key at 1.0, the preset's face weights.
   const preset = manifestSpecies?.presets[spec.look.face] ?? manifestSpecies?.presets[0] ?? null
@@ -521,30 +584,8 @@ export function assembleCharacter(content: Content, spec: CharacterSpec, inputs:
   const hipsRest = hips.position.clone()
 
   const data = mergeParts(merged, skeletonBones.length)
-  const geometry = new THREE.BufferGeometry()
-  geometry.setAttribute('position', new THREE.BufferAttribute(data.positions, 3))
-  geometry.setAttribute('normal', new THREE.BufferAttribute(data.normals, 3))
-  geometry.setAttribute(SLOT_ATTRIBUTE, new THREE.BufferAttribute(data.slots, 1))
-  geometry.setAttribute('skinIndex', new THREE.BufferAttribute(data.joints, 4))
-  geometry.setAttribute('skinWeight', new THREE.BufferAttribute(data.weights, 4))
-  geometry.setIndex(new THREE.BufferAttribute(data.index, 1))
-  geometry.computeBoundingBox()
-  geometry.computeBoundingSphere()
-
   const materials = createCharacterMaterials(paletteFor(spec, species, cls, inputs.manifest), { invScale: 1 / characterScale })
-  const mesh = new THREE.SkinnedMesh(geometry, materials.body)
-  mesh.name = 'hero'
-  mesh.bind(skeleton, IDENTITY)
-  mesh.frustumCulled = false
-  const outline = new THREE.SkinnedMesh(geometry, materials.outline)
-  outline.name = 'hero-outline'
-  outline.bind(skeleton, IDENTITY)
-  outline.frustumCulled = false
-  const size = new THREE.Vector2()
-  outline.onBeforeRender = (renderer) => {
-    renderer.getDrawingBufferSize(size)
-    materials.setViewportHeight(size.y)
-  }
+  const { mesh, outline, geometry } = skinnedPair(data, skeleton, materials, 'hero')
 
   const srcHips = inputs.clips?.srcHips
   const k = srcHips && srcHips.y > 0.1 ? hipsRest.y / srcHips.y : 1

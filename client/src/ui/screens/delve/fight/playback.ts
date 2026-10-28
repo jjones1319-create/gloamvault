@@ -8,18 +8,21 @@ import {
   beatLine,
   beatMs,
   beatsOf,
+  hpBehind,
   isQuietBeat,
   nameBook,
   noteCues,
   pushFeed,
   reconcileCues,
   resumeIndex,
+  shownHp,
   type Beat,
   type FloaterTone,
   type NameBook,
   type StageState,
 } from '../../../../game/fightView.ts'
 import { beatAnims } from '../../../../game/fightAnims.ts'
+import { beatFx } from '../../../../game/fightFx.ts'
 import { cue as sceneCue, type SceneCue } from '../../../../scene/sceneBus.ts'
 
 /**
@@ -162,9 +165,17 @@ export class FightPlayback {
     if (!book) return
     if (cues) {
       if (this.content && this.fight) for (const c of beatAnims(beat, this.fight, this.content, this.speed)) this.host.cue(c)
-      const list = beatCues(beat)
+      // Each hit or heal carries the HP the beat leaves (the HUD's meters' own reckoning), so the scene's bar lands there.
+      const fight = this.fight
+      const behind = fight ? hpBehind(fight.log, beat.end) : null
+      const list = beatCues(beat, (id) => {
+        const a = fight && behind ? fight.actors.find((x) => x.id === id) : undefined
+        return a && behind ? { hp: shownHp(a, behind), maxHp: a.maxHp } : undefined
+      })
       noteCues(list, this.known)
       for (const c of list) this.host.cue(c)
+      // Phase 6: the beat's effects (sparks, element marks, heals, status rings, an Ultimate's flourish); none with Reduce motion.
+      if (this.content && this.fight && !this.reduceMotion && floaters) for (const c of beatFx(beat, this.fight, this.content)) this.host.cue(c)
     }
     this.feed = pushFeed(this.feed, beatLine(beat, book))
     this.current = beat

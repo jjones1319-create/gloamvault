@@ -55,6 +55,12 @@ export class ClipLibrary {
   }
 }
 
+/** Where an animator's clips come from: the shared hero clips (ClipLibrary), or a monster's own (monsters/model.ts). */
+export interface ClipSource {
+  readonly info: Map<string, ClipInfo>
+  clipsFor(rest: THREE.Vector3, k: number): Map<string, THREE.AnimationClip>
+}
+
 export interface PlayOptions {
   /** Start this many seconds in (an attack starts just before its hit frame so the blow lands with the beat). */
   offset?: number
@@ -82,12 +88,16 @@ export class CharacterAnimator {
   /** The left hand's fist (tools/blender/README.md: fingers 72 · 95 · 55°, thumb 25 · 40 · 35° about +X). */
   private readonly fist: { bone: THREE.Bone; q: THREE.Quaternion }[] = []
   private pinFist = false
+  /** A posture over every clip (Phase 6: a hunched Ghoul, a corpse's dead arm): turned on after the clip, or held. */
+  private posture: { bone: THREE.Bone; q: THREE.Quaternion; hold: THREE.Quaternion | null }[] = []
+  /** Added to the Hips position after every clip (in the Hips' parent space): a seated pose's drop. */
+  private hipsOffset: THREE.Vector3 | null = null
 
-  constructor(root: THREE.Object3D, bones: ReadonlyMap<string, THREE.Bone>, library: ClipLibrary | null, hips: { rest: THREE.Vector3; k: number }) {
+  constructor(root: THREE.Object3D, bones: ReadonlyMap<string, THREE.Bone>, library: ClipSource | null, hips: { rest: THREE.Vector3; k: number }) {
     this.hips = bones.get('Hips') ?? null
     this.hipsRest = hips.rest.clone()
-    this.info = library?.info ?? new Map()
-    this.clips = library ? library.clipsFor(hips.rest, hips.k) : new Map()
+    this.info = new Map(library?.info ?? [])
+    this.clips = new Map(library ? library.clipsFor(hips.rest, hips.k) : [])
     this.mixer = this.clips.size > 0 ? new THREE.AnimationMixer(root) : null
     this.onFinished = (e) => this.finished(e.action)
     this.mixer?.addEventListener('finished', this.onFinished as never)
@@ -112,6 +122,53 @@ export class CharacterAnimator {
       }
     }
     this.setBase('Idle', true)
+  }
+
+  /**
+   * More names for clips it has (Phase 6: a monster on the hero rig answers to Move, Attack1, Death …; one with its own
+   * rig to Walk, Attack_Light, Downed …): `alias → clip`. An alias whose clip is missing is skipped.
+   */
+  addAliases(aliases: Readonly<Record<string, string>>): void {
+    for (const [alias, name] of Object.entries(aliases)) {
+      const clip = this.clips.get(name)
+      if (!clip || this.clips.has(alias)) continue
+      this.clips.set(alias, clip)
+      const info = this.info.get(name)
+      if (info) this.info.set(alias, { ...info, name: alias })
+    }
+  }
+
+  /**
+   * A posture over every clip, by bone name: `add` turns a bone by q after the clip each frame, `hold` keeps it at its
+   * rest turned by q whatever the clip does (call with the bones at rest).
+   */
+  setPosture(bones: ReadonlyMap<string, THREE.Bone>, add: Readonly<Record<string, readonly number[]>> | null, hold: Readonly<Record<string, readonly number[]>> | null, hipsOffset: THREE.Vector3 | null = null): void {
+    this.posture = []
+    this.hipsOffset = hipsOffset ? hipsOffset.clone() : null
+    const q = (v: readonly number[]) => new THREE.Quaternion(v[0] ?? 0, v[1] ?? 0, v[2] ?? 0, v[3] ?? 1).normalize()
+    for (const [name, v] of Object.entries(add ?? {})) {
+      const bone = bones.get(name)
+      if (bone) this.posture.push({ bone, q: q(v), hold: null })
+    }
+    for (const [name, v] of Object.entries(hold ?? {})) {
+      const bone = bones.get(name)
+      if (bone) this.posture.push({ bone, q: q(v), hold: bone.quaternion.clone().multiply(q(v)) })
+    }
+    this.applyPosture()
+  }
+
+  private applyPosture(): void {
+    for (const p of this.posture) {
+      if (p.hold) p.bone.quaternion.copy(p.hold)
+      else p.bone.quaternion.multiply(p.q)
+    }
+    // The clips write the Hips position every frame, so the offset is added afresh each time.
+    if (this.hipsOffset && this.hips) this.hips.position.add(this.hipsOffset)
+  }
+
+  /** Plays everything faster or slower (a monster's `clipSpeed`). */
+  setSpeed(k: number): void {
+    if (this.mixer) this.mixer.timeScale = Math.max(0.1, Math.min(4, k))
   }
 
   /** The clip's length in seconds (0 when there is no such clip). */
@@ -140,6 +197,7 @@ export class CharacterAnimator {
     this.baseName = name
     this.mixer.update(0)
     if (this.pinFist) this.applyFist()
+    this.applyPosture()
     return true
   }
 
@@ -181,6 +239,11 @@ export class CharacterAnimator {
     return this.baseName
   }
 
+  /** The base loop back to its first frame (copies that must keep a set stagger start from the same place). */
+  restartBase(): void {
+    if (this.base) this.base.time = 0
+  }
+
   /** Plays the base loop faster or slower (a walk matched to how fast the hero actually moves). */
   setBaseTimeScale(k: number): void {
     if (this.base) this.base.timeScale = Math.max(0.1, Math.min(4, k))
@@ -206,6 +269,11 @@ export class CharacterAnimator {
     if (this.base && this.baseName === pick) return
     const next = this.action(pick)
     if (!next) return
+    // Two names for one clip (a monster's Walk and Run are both its Move): nothing to change.
+    if (next === this.base) {
+      this.baseName = pick
+      return
+    }
     const prev = this.base
     next.reset()
     next.setLoop(THREE.LoopRepeat, Infinity)
@@ -299,6 +367,7 @@ export class CharacterAnimator {
     if (this.mixer) {
       this.mixer.update(dt)
       if (this.pinFist) this.applyFist()
+      this.applyPosture()
       return
     }
     // Breathing: a slow rise and fall through the spine, a few millimetres at the hips.
@@ -310,6 +379,7 @@ export class CharacterAnimator {
     }
     if (this.hips) this.hips.position.set(this.hipsRest.x, this.hipsRest.y + s * 0.004, this.hipsRest.z)
     if (this.pinFist) this.applyFist()
+    this.applyPosture()
   }
 
   dispose(): void {

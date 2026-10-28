@@ -1,6 +1,6 @@
 # 10 — Tech Plan
 
-*Last updated 2026-10-28 · rev. 6 (Phase 5: the character modules, the viewer, looks in the save — profile version 3, the model index) · rev. 5 (checkpoint 1: open questions answered by delegation — D-099; save version 2 and the Hall of Nightmares key — D-095) · rev. 4 (Phase 4: the town, the save, the screens and the client map as built; James's death and party rules, D-087–D-094) · rev. 3 (Claude; rev. 2 after Phase 1 built the skeleton: the §3 layout notes on the Vite root, the three TypeScript projects and Node-direct tools, and the §7 screenshot viewport — D-048, D-052; rev. 3 after Phase 2 built the sim: the §3 module map). The engine decision is D-002 in `13-DECISIONS.md`; the research behind it is `docs/research/2026-10-26-tech-engine-android-coop.md` (which recommended Godot + APK under an "APK on GitHub" framing — §1 below says why the web path wins for James specifically).*
+*Last updated 2026-10-28 · rev. 7 (Phase 6: §4 measured; the room, monster and effects modules and the gallery in the client map — D-110–D-117) · rev. 6 (Phase 5: the character modules, the viewer, looks in the save — profile version 3, the model index) · rev. 5 (checkpoint 1: open questions answered by delegation — D-099; save version 2 and the Hall of Nightmares key — D-095) · rev. 4 (Phase 4: the town, the save, the screens and the client map as built; James's death and party rules, D-087–D-094) · rev. 3 (Claude; rev. 2 after Phase 1 built the skeleton: the §3 layout notes on the Vite root, the three TypeScript projects and Node-direct tools, and the §7 screenshot viewport — D-048, D-052; rev. 3 after Phase 2 built the sim: the §3 module map). The engine decision is D-002 in `13-DECISIONS.md`; the research behind it is `docs/research/2026-10-26-tech-engine-android-coop.md` (which recommended Godot + APK under an "APK on GitHub" framing — §1 below says why the web path wins for James specifically).*
 
 ## 1. The decision: a web app installed from GitHub Pages
 
@@ -97,6 +97,9 @@ Tools: `tools/sim/run.ts` (`npm run sim`), `tools/balance/run.ts` (`npm run bala
 | `client/src/scene/room.ts`, `scene/room/`, `ui/components/RoomStage.tsx`, `scene/sceneBus.ts` | the grey-box 3D room from its template, the heroes as assembled characters (capsules while they load, and for pets and monsters until Phase 6), the light rig driven by the light meter, the fight's cues (incl. `anim` cues → hero clips) |
 | `client/src/scene/characters/` (Phase 5) | the hero pipeline's client half: pure helpers with tests (`palette`, `geometry` — morph baking, region filtering, bone-name remap, merge, absolute bone scales, the Hips track — `manifest`, `outfit`), the palette toon material and outline (`material`), model loading with content-hashed URLs (`assets`, `modelIndex.json` written by a Vite plugin from `tools/build/model-index.ts`), `assembler` (look + equipment → one skinned mesh), `animator` (one AnimationMixer per character), `factory`, `viewerScene` |
 | `client/src/ui/screens/Viewer.tsx`, `ui/components/CharacterCanvas.tsx`, `ui/screens/newhero/LookStep.tsx`, `game/fightAnims.ts` | the character viewer (`#viewer=dwarf,warden,S`), the canvas any screen can embed, the New hero Look step with its live preview, the fight log → clip cues |
+| `client/src/scene/env/`, `scene/room/` (Phase 6) | the room kits: the zone manifests read tolerantly (`envData`), the kit loader and palette material with baked AO (`envKit`, `envMaterial`), the shell from footprint and doors (`shell`, `kitRoom`), the kit sheet (`kitLineup`); the room builder dresses templates from the kit, merges statics and instances repeats |
+| `client/src/scene/monsters/`, `scene/vfx/`, `game/fightFx.ts` (Phase 6) | monsters from `models/monsters/manifest.json` (`manifest`, `model`: base + parts + shapes + palette + bone scales + pose offsets, the clip map; the lineups), the effects atlas drawn in code and its one-draw-call layer (`atlas`, `layer`, `recipes`, `fxSheet`), the fight log → effect cues |
+| `client/src/ui/screens/RoomView.tsx`, `ui/screens/viewer/{Lineups.tsx,gallery.ts}`, `ui/screens/delve/autoplay.ts`, `tools/shots/soak.ts` (Phase 6) | `#room=<template>` (every template from its camera, with monsters and heroes on their marks), the monster and kit lineups and the effects sheet, the phone's gallery (title → Monsters & rooms), the `#autoplay` driver and the 30-minute soak |
 
 `tools/shots/dev-shot.ts` shoots one deep link from a running dev server (the passes used it); `tools/content/gen-wayfarers.ts` writes the cast; `tools/balance/debug-seed.ts` replays one runner seed step by step.
 
@@ -119,6 +122,15 @@ The S25 Ultra's Adreno 830 throttles to ~50% of peak GPU within 3–4 minutes (r
 | Memory | keep the tab under 1.2 GB; unload the previous room's kit on transition |
 
 An in-game **performance overlay** (fps, frame ms, draw calls, triangles, GPU memory estimate) is a Settings toggle so James can read numbers off the phone; a **soak test** (`#autoplay=1&minutes=30`) lets Claude Code measure sustained frame time via the overlay's log export.
+
+**Measured in Phase 6 (2026-10-28; desktop Chrome on an Intel Iris Xe at the phone's 892 × 412 viewport — the phone's
+own numbers come from James's checklist):** a room with 4 heroes and 4 pets — 40 draw calls, 101k triangles, 59 fps,
+3.0 ms CPU per frame; the largest Cellars fight (4 heroes, 4 pets and 6 monsters, the most any of 600 seeded first
+fights rolled) — 54 calls, 138k triangles, 59 fps (lowest 56), 4.3 ms; a 30-minute soak (`#autoplay`: 15 delves, 361
+rooms, 82 fights) — 57–60 fps throughout, the JS heap 77 → 68 MB (peak 82), geometries 49 → 50, the overlay's GPU
+estimate steady. Draw calls stay near a quarter of the budget: a hero is 2 calls (D-101), a room's statics merge and
+its props instance (D-110). Models are runtime-cached, not precached: heroes ~6 MB, room kits 1.7 MB, monsters 8.9 MB,
+each fetched the first time it is needed.
 
 ## 5. Multiplayer
 

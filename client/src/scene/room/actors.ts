@@ -1,7 +1,7 @@
 import * as THREE from 'three'
-import type { CharacterModel } from '../characters/assembler.ts'
-import type { CharacterSpec } from '../characters/outfit.ts'
+import type { CharacterAnimator } from '../characters/animator.ts'
 import type { SceneCue } from '../sceneBus.ts'
+import { isFxKind, type FxKind, type SpriteName } from '../vfx/recipes.ts'
 import { MeshBuilder, trs } from './builder.ts'
 import type { Kit } from './kit.ts'
 import type { Mark } from './layout.ts'
@@ -13,11 +13,34 @@ import type { Mark } from './layout.ts'
  * and one arrow for the target. The fight HUD's cues (sceneBus) flash, shake and topple them, and play a hero's clips
  * (attack, cast, shoot, hit, dodge, downed, revive, victory); the sim's state, read a moment later, settles what the
  * cues did not say. Every effect has a still version for Reduce motion.
+ *
+ * Phase 6: monsters and pets are their 3D models too (monsters/model.ts) — a monster walks in to its mark (Move),
+ * swings Attack1 or Attack2, flinches (Hit), falls (Death), stays down a moment, then fades in a puff of smoke; one that
+ * flees plays its Flee and leaves the room. The fight's effects (vfx/) are spawned on the actors here, at their feet or
+ * their chest.
  */
 export type ActorShape = 'biped' | 'rat' | 'spider' | 'hound'
 
-/** Builds a hero's 3D character (characters/factory.ts), or null to keep the capsule. */
-export type CharacterFactory = (spec: CharacterSpec) => Promise<CharacterModel | null>
+/** A 3D character on stage: a hero (characters/assembler.ts) or a monster or pet (monsters/model.ts). */
+export interface ActorModel {
+  readonly root: THREE.Object3D
+  readonly animator: CharacterAnimator
+  /** Standing height in metres. */
+  readonly height: number
+  /** Leg length against the rig its walk was authored on: walk cycles are paced by it. */
+  readonly stride: number
+  readonly hasShield: boolean
+  update(dtMs: number): void
+  setTint(c: THREE.Color): void
+  setFlash(c: THREE.Color | null, intensity?: number): void
+  setOpacity(o: number): void
+  dispose(): void
+}
+
+/** Where the actor layer sends the fight's effects (the room's VfxLayer). */
+export interface FxSink {
+  spawn(kind: FxKind, feet: THREE.Vector3, opts: { height: number; color?: number; shape?: SpriteName; crit?: boolean }): void
+}
 
 export interface ActorLook {
   id: string
@@ -32,8 +55,8 @@ export interface ActorLook {
   trim: number
   face: number
   eyes: number
-  /** A hero's 3D character (Phase 5); its key changes when anything the model shows changes. */
-  model?: { key: string; spec: CharacterSpec }
+  /** The actor's 3D model (heroes Phase 5, monsters and pets Phase 6); its key changes when anything it shows changes. */
+  model?: { key: string; build: () => Promise<ActorModel | null> }
 }
 
 export interface ActorState {
@@ -51,6 +74,11 @@ export interface ActorInput {
   look: ActorLook
   state: ActorState
   mark: Mark
+  /**
+   * The HP the fight HUD shows now, when its playback is behind the sim (a fight that opens with the monsters' blows
+   * already in the sim's HP): a new bar starts there, and the sim's word follows once the beats have played.
+   */
+  shownHp?: number
 }
 
 export interface SetOptions {
@@ -87,14 +115,18 @@ interface View {
   hopT: number
   leaving: boolean
   state: ActorState
-  /** The hero's 3D character once built (the capsule hides then). */
-  model: CharacterModel | null
+  /** The 3D model once built (the capsule hides then). */
+  model: ActorModel | null
   modelToken: number
   /** Walking or running to a new mark, and which. */
   moving: boolean
   gait: 'Walk' | 'Run'
   /** The model is in its Downed hold. */
   modelDown: boolean
+  /** A monster's death: ms it stays down before it fades (its Death clip plays meanwhile). */
+  dyingMs: number
+  /** Fleeing out of the room. */
+  fleeing: boolean
 }
 
 const STATUS_TINT: Record<string, number> = {
@@ -186,6 +218,10 @@ const RUN_MPS = 3.2
 const RUN_OVER_M = 2.5
 /** An attack clip starts this long before its hit frame (clips.json) so the blow lands with the beat. */
 const STRIKE_LEAD_S = 0.12
+/** A monster walks in to its mark from this far behind it when a fight begins (Move on approach). */
+const APPROACH_M = 2.2
+/** A fallen monster stays down this long after its Death clip ends, then fades. */
+const DEATH_REST_MS = 650
 
 export class ActorLayer {
   readonly group = new THREE.Group()
@@ -206,20 +242,22 @@ export class ActorLayer {
   private reduceMotion = false
   private readonly centre = new THREE.Vector3()
   private centreKnown = false
-  private readonly factory: CharacterFactory | null
+  private readonly fx: FxSink | null
   private readonly pendingBuilds = new Set<Promise<void>>()
   private builds = 0
   private disposed = false
   /** Called after the layer changed something outside an animation frame (Reduce motion keeps updaters off). */
   onChange: (() => void) | null = null
+  /** Called when a model arrives whose height differs from the stand-in's (the scene re-frames once they settle). */
+  onModel: (() => void) | null = null
 
   private readonly kit: Kit
   private readonly camera: THREE.Camera
 
-  constructor(kit: Kit, camera: THREE.Camera, factory: CharacterFactory | null = null) {
+  constructor(kit: Kit, camera: THREE.Camera, fx: FxSink | null = null) {
     this.kit = kit
     this.camera = camera
-    this.factory = factory
+    this.fx = fx
     const plane = new THREE.PlaneGeometry(1, 1)
     const bgMat = new THREE.MeshBasicMaterial({ color: 0x0b090d, transparent: true, opacity: 0.85, depthTest: false, depthWrite: false, toneMapped: false })
     const fillMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, depthTest: false, depthWrite: false, toneMapped: false })
@@ -277,11 +315,12 @@ export class ActorLayer {
     pose.add(mesh)
     const root = new THREE.Group()
     root.add(pose)
-    const pos = new THREE.Vector3(input.mark.x, 0, input.mark.z)
+    const pos = new THREE.Vector3(input.mark.x, input.mark.y ?? 0, input.mark.z)
     root.position.copy(pos)
     root.rotation.y = input.mark.yaw
     this.group.add(root)
     const s = input.state
+    const hp0 = input.shownHp ?? s.hp
     const view: View = {
       look: input.look,
       root,
@@ -292,8 +331,8 @@ export class ActorLayer {
       pos,
       target: pos.clone(),
       yaw: input.mark.yaw,
-      hp: s.maxHp > 0 ? s.hp / s.maxHp : 0,
-      hpTarget: s.maxHp > 0 ? s.hp / s.maxHp : 0,
+      hp: s.maxHp > 0 ? Math.max(0, Math.min(1, hp0 / s.maxHp)) : 0,
+      hpTarget: s.maxHp > 0 ? Math.max(0, Math.min(1, hp0 / s.maxHp)) : 0,
       lie: s.down ? 1 : 0,
       lieTarget: s.down ? 1 : 0,
       fade: s.gone ? 0 : 1,
@@ -311,21 +350,23 @@ export class ActorLayer {
       moving: false,
       gait: 'Walk',
       modelDown: false,
+      dyingMs: 0,
+      fleeing: false,
     }
     if (s.gone) mat.transparent = true
     this.views.set(input.look.id, view)
     this.pose(view)
-    if (input.look.model && this.factory) this.requestModel(view)
+    if (input.look.model) this.requestModel(view)
     return view
   }
 
-  /** Builds the hero's character in the background; the capsule stands in until it arrives. */
+  /** Builds the actor's model in the background; the capsule stands in until it arrives (and stays if it cannot). */
   private requestModel(view: View): void {
-    const spec = view.look.model?.spec
-    if (!spec || !this.factory) return
+    const build = view.look.model?.build
+    if (!build) return
     const token = ++this.builds
     view.modelToken = token
-    const p: Promise<void> = this.factory(spec)
+    const p: Promise<void> = build()
       .then((model) => {
         if (!model) return
         if (this.disposed || this.views.get(view.look.id) !== view || view.modelToken !== token) {
@@ -336,11 +377,14 @@ export class ActorLayer {
         view.pose.add(model.root)
         view.mesh.visible = false
         if (view.lieTarget >= 0.5) this.setModelDown(view, true, true)
+        // A model that arrives mid-walk walks the rest of the way.
+        if (view.target.distanceTo(view.pos) > 0.005) view.moving = false
         model.update(0)
         this.pose(view)
         this.onChange?.()
+        if (Math.abs(this.heightOf(view) - view.look.height) > 0.25) this.onModel?.()
       })
-      .catch((e: unknown) => console.warn('hero model failed', e))
+      .catch((e: unknown) => console.warn('actor model failed', e))
       .finally(() => {
         this.pendingBuilds.delete(p)
       })
@@ -350,6 +394,22 @@ export class ActorLayer {
   /** Resolves when every hero model asked for so far has arrived (or failed). */
   async modelsSettled(): Promise<void> {
     while (this.pendingBuilds.size > 0) await Promise.all([...this.pendingBuilds])
+  }
+
+  /** What a view shows (where it stands, its bar, lying, fading, dying or fleeing) handed to its replacement. */
+  private carry(from: View, to: View): void {
+    to.pos.copy(from.pos)
+    to.root.rotation.y = from.root.rotation.y
+    to.hp = from.hp
+    to.hpTarget = from.hpTarget
+    to.lie = from.lie
+    to.lieTarget = from.lieTarget
+    to.fade = from.fade
+    to.fadeTarget = from.fadeTarget
+    to.state = { ...from.state }
+    to.dyingMs = from.dyingMs
+    to.fleeing = from.fleeing
+    if (to.fade < 1 || to.fadeTarget < 1) to.mat.transparent = true
   }
 
   private drop(view: View): void {
@@ -374,12 +434,13 @@ export class ActorLayer {
     }
   }
 
-  /** One of a hero's clips for a fight beat, started so its hit (or release) frame lands just after the cue. */
-  private playClip(view: View, wanted: string, speed = 1): void {
+  /** One of a model's clips for a fight beat, started so its hit (or release) frame lands just after the cue. */
+  private playClip(view: View, wanted: string, speed = 1, alt: readonly string[] = []): void {
     const a = view.model?.animator
-    // A shield bearer guards behind the shield (the clips pass's Guard_Shield, when the file has it).
-    const clip = wanted === 'Guard' && view.model?.hasShield && a?.has('Guard_Shield') ? 'Guard_Shield' : wanted
-    if (!a || view.modelDown || view.lieTarget >= 0.5 || !a.has(clip)) return
+    // A monster's own clip for the move (a Web, a Howl) first; a shield bearer guards behind the shield.
+    const own = a ? alt.find((n) => a.has(n)) : undefined
+    const clip = own ?? (wanted === 'Guard' && view.model?.hasShield && a?.has('Guard_Shield') ? 'Guard_Shield' : wanted)
+    if (!a || view.modelDown || view.lieTarget >= 0.5 || view.dyingMs > 0 || view.fleeing || !a.has(clip)) return
     const k = Math.max(1, Math.min(3, speed))
     const strike = a.eventTime(clip, 'hit') ?? a.eventTime(clip, 'release')
     a.play(clip, { offset: strike !== null ? Math.max(0, strike - STRIKE_LEAD_S * k) : 0, timeScale: k })
@@ -401,18 +462,45 @@ export class ActorLayer {
     this.showBars = opts.showBars
     const seen = new Set<string>()
     const states = new Map<string, ActorState>()
+    const shown = new Map<string, number>()
     for (const input of inputs) {
       seen.add(input.look.id)
+      if (input.shownHp !== undefined && input.shownHp !== input.state.hp) shown.set(input.look.id, input.shownHp)
       let view = this.views.get(input.look.id)
+      let was: View | undefined
       if (view && !sameLook(view.look, input.look)) {
+        was = view
         this.drop(view)
         view = undefined
       }
       if (!view) {
         view = this.create(input)
+        const l = input.look
+        if (was) {
+          // The same actor in a new look (its model's table arrived, a boss moved to its next phase): it stays where it
+          // stands and its bar shows what it showed, the sim's word following once the cues go quiet — else the beats
+          // still to play would take their hits off a bar that already counts them.
+          this.carry(was, view)
+          view.target.set(input.mark.x, input.mark.y ?? 0, input.mark.z)
+          view.yaw = input.mark.yaw
+          if (opts.instant || this.reduceMotion) view.pos.copy(view.target)
+          view.root.position.copy(view.pos)
+          this.pose(view)
+          states.set(l.id, input.state)
+        } else if (shown.has(l.id)) {
+          // Born behind the sim: the sim's HP waits for the beats.
+          states.set(l.id, input.state)
+        }
+        if (!was && opts.showBars && !this.reduceMotion && !input.state.gone && (l.kind === 'monster' || l.kind === 'summon') && l.side === 'enemy') {
+          // Phase 6: a monster joining a fight walks in to its mark (its Move), from a little behind it.
+          const back = APPROACH_M * Math.max(1, l.height / 1.8)
+          view.pos.set(input.mark.x - Math.sin(input.mark.yaw) * back, input.mark.y ?? 0, input.mark.z - Math.cos(input.mark.yaw) * back)
+          view.root.position.copy(view.pos)
+          this.pose(view)
+        }
       } else {
         view.leaving = false
-        view.target.set(input.mark.x, 0, input.mark.z)
+        view.target.set(input.mark.x, input.mark.y ?? 0, input.mark.z)
         view.yaw = input.mark.yaw
         if (opts.instant || this.reduceMotion) {
           view.pos.copy(view.target)
@@ -424,19 +512,34 @@ export class ActorLayer {
     }
     for (const view of [...this.views.values()]) {
       if (seen.has(view.look.id)) continue
-      if (opts.instant || this.reduceMotion || view.state.gone) this.drop(view)
+      if (opts.instant || this.reduceMotion || (view.state.gone && view.dyingMs <= 0)) this.drop(view)
       else {
         view.leaving = true
-        view.fadeTarget = 0
-        view.mat.transparent = true
-        view.mat.needsUpdate = true
+        if (view.dyingMs <= 0) {
+          view.fadeTarget = 0
+          view.mat.transparent = true
+          view.mat.needsUpdate = true
+        }
       }
     }
     this.updateCentre()
     this.pending = states
     this.pendingTurn = opts.turnId
-    if (opts.stateNow) this.flush()
-    else this.scheduleFlush(performance.now() - this.lastCueAt < 900 ? 750 : 280)
+    if (opts.stateNow) {
+      // Now — except a bar the HUD has beats still to play down: it shows the HUD's HP until they have played.
+      const later = new Map<string, ActorState>()
+      for (const [id, s] of states) {
+        const hp = shown.get(id)
+        if (hp === undefined) continue
+        later.set(id, s)
+        states.set(id, { ...s, hp })
+      }
+      this.flush()
+      if (later.size > 0) {
+        this.pending = later
+        this.scheduleFlush(750)
+      }
+    } else this.scheduleFlush(performance.now() - this.lastCueAt < 900 ? 750 : 280)
     this.apply()
   }
 
@@ -475,6 +578,11 @@ export class ActorLayer {
     view.hpTarget = s.maxHp > 0 ? Math.max(0, Math.min(1, s.hp / s.maxHp)) : 0
     view.lieTarget = s.down ? 1 : 0
     this.setModelDown(view, s.down)
+    // A monster still showing its fall (or its flight) fades when that is done, not now.
+    if (s.gone && (view.dyingMs > 0 || view.fleeing)) {
+      if (this.reduceMotion) this.settle(view)
+      return
+    }
     if (s.gone && view.fadeTarget > 0) {
       view.fadeTarget = 0
       view.mat.transparent = true
@@ -520,20 +628,29 @@ export class ActorLayer {
         break
       case 'hit':
       case 'crit':
-        if (c.amount) view.hpTarget = Math.max(0, view.hpTarget - c.amount / max)
+        // Where the beat leaves the bar (Phase 6), else moved by the blow.
+        if (c.hp !== undefined) view.hpTarget = Math.max(0, Math.min(1, c.hp / (c.maxHp && c.maxHp > 0 ? c.maxHp : max)))
+        else if (c.amount) view.hpTarget = Math.max(0, view.hpTarget - c.amount / max)
         this.flashOn(view, c.kind === 'crit' ? 0xff6a2a : 0xffffff, c.kind === 'crit' ? 420 : 240)
         view.shakeT = c.kind === 'crit' ? 1 : 0.6
         this.playClip(view, 'Hit')
+        break
+      case 'fx':
+        this.spawnFx(view, c)
+        break
+      case 'flee':
+        this.flee(view)
         break
       case 'miss':
         view.dodgeT = 1
         this.playClip(view, 'Dodge')
         break
       case 'anim':
-        if (c.clip) this.playClip(view, c.clip, c.speed ?? 1)
+        if (c.clip) this.playClip(view, c.clip, c.speed ?? 1, c.alt ?? [])
         break
       case 'heal':
-        if (c.amount) view.hpTarget = Math.min(1, view.hpTarget + c.amount / max)
+        if (c.hp !== undefined) view.hpTarget = Math.max(0, Math.min(1, c.hp / (c.maxHp && c.maxHp > 0 ? c.maxHp : max)))
+        else if (c.amount) view.hpTarget = Math.min(1, view.hpTarget + c.amount / max)
         this.flashOn(view, 0x5fe07a, 360)
         view.hopT = 1
         break
@@ -545,20 +662,76 @@ export class ActorLayer {
         this.setModelDown(view, true)
         break
       case 'revive':
+        if (c.hp !== undefined) view.hpTarget = Math.max(0, Math.min(1, c.hp / (c.maxHp && c.maxHp > 0 ? c.maxHp : max)))
         view.lieTarget = 0
         this.setModelDown(view, false)
         this.flashOn(view, 0x5fe07a, 420)
         break
       case 'gone':
-        view.fadeTarget = 0
-        view.mat.transparent = true
-        view.mat.needsUpdate = true
+        this.fall(view)
         break
     }
     if (this.reduceMotion) this.settle(view)
     // The sim's state follows once the cues go quiet.
     if (this.pending || this.pendingTurn !== undefined) this.scheduleFlush(750)
     this.apply()
+  }
+
+  /** A model's height (a monster's or a pet's own; a hero's look keeps its species height). */
+  private heightOf(view: View): number {
+    return view.model && view.look.kind !== 'hero' ? view.model.height : view.look.height
+  }
+
+  /** An effect on an actor (vfx/recipes.ts), at its feet; nothing with Reduce motion. */
+  private spawnFx(view: View, c: SceneCue): void {
+    if (!this.fx || this.reduceMotion || view.fade <= 0.01 || !isFxKind(c.fx)) return
+    const opts: { height: number; color?: number; shape?: SpriteName; crit?: boolean } = { height: this.heightOf(view) }
+    if (c.color !== undefined) opts.color = c.color
+    if (c.shape) opts.shape = c.shape as SpriteName
+    if (c.crit) opts.crit = true
+    this.fx.spawn(c.fx, view.root.position, opts)
+  }
+
+  /**
+   * A killed actor goes. A monster with a Death clip falls and stays down for a moment before it fades in a puff of
+   * smoke (a hero's Downed, a capsule's fade otherwise).
+   */
+  private fall(view: View): void {
+    const a = view.model?.animator
+    if (!this.reduceMotion && view.look.kind !== 'hero' && a?.has('Death') && view.dyingMs <= 0 && view.fade > 0.01) {
+      a.play('Death', { hold: true })
+      view.dyingMs = a.durationOf('Death') * 1000 + DEATH_REST_MS
+      view.hopT = 0
+      return
+    }
+    if (view.fadeTarget > 0 && view.look.kind !== 'hero') this.puff(view)
+    view.fadeTarget = 0
+    view.mat.transparent = true
+    view.mat.needsUpdate = true
+  }
+
+  private puff(view: View): void {
+    if (!this.fx || this.reduceMotion) return
+    this.fx.spawn('death', view.root.position, { height: this.heightOf(view) })
+  }
+
+  /** A monster that runs: its Flee (or Move) away from the party, out of the room, fading as it goes. */
+  private flee(view: View): void {
+    if (this.reduceMotion || view.fleeing) {
+      view.fadeTarget = 0
+      view.mat.transparent = true
+      view.mat.needsUpdate = true
+      return
+    }
+    view.fleeing = true
+    const away = new THREE.Vector3(view.pos.x - this.centre.x, 0, view.pos.z - this.centre.z)
+    if (away.lengthSq() < 1e-4) away.set(Math.sin(view.yaw + Math.PI), 0, Math.cos(view.yaw + Math.PI))
+    away.normalize()
+    view.target.copy(view.pos).addScaledVector(away, 3.2)
+    view.yaw = Math.atan2(away.x, away.z)
+    const a = view.model?.animator
+    if (a?.has('Flee')) a.loopClip('Flee')
+    view.dyingMs = 900
   }
 
   private flashOn(view: View, hex: number, ms: number): void {
@@ -575,19 +748,31 @@ export class ActorLayer {
     for (const view of [...this.views.values()]) {
       const d = view.target.distanceTo(view.pos)
       if (d > 0.005) {
-        // A hero with a model walks (or, a long way, runs) at its clip's pace; capsules glide.
-        if (view.model && !view.moving && !view.modelDown) {
+        // A model walks (or, a long way, runs) at its clip's pace; capsules glide; a fleeing monster runs.
+        if (view.model && !view.moving && !view.modelDown && !view.fleeing && view.dyingMs <= 0) {
           view.moving = true
           view.gait = d > RUN_OVER_M ? 'Run' : 'Walk'
           this.gaitOn(view)
         }
-        const speed = view.model && view.moving ? (view.gait === 'Run' ? RUN_MPS : WALK_MPS) : 4.2
+        const speed = view.fleeing ? RUN_MPS : view.model && view.moving ? (view.gait === 'Run' ? RUN_MPS : WALK_MPS) : 4.2
         const step = Math.min(d, (dt / 1000) * speed)
         view.pos.lerp(view.target, step / d)
         busy = true
       } else if (view.moving) {
         view.moving = false
         view.model?.animator.setBase('Idle')
+      }
+      // A fallen monster lies still, then fades; a fleeing one fades once out of the light.
+      if (view.dyingMs > 0) {
+        view.dyingMs -= dt
+        busy = true
+        if (view.dyingMs <= 0) {
+          view.dyingMs = 0
+          if (!view.fleeing) this.puff(view)
+          view.fadeTarget = 0
+          view.mat.transparent = true
+          view.mat.needsUpdate = true
+        }
       }
       view.model?.update(dt)
       let dy = view.yaw - view.root.rotation.y
@@ -637,7 +822,7 @@ export class ActorLayer {
     const shake = view.shakeT > 0 ? Math.sin(view.shakeT * 40) * 0.09 * view.shakeT : 0
     const dodge = view.dodgeT > 0 ? Math.sin(view.dodgeT * Math.PI) * 0.45 : 0
     const hop = view.hopT > 0 ? Math.sin(view.hopT * Math.PI) * 0.18 : 0
-    root.position.set(view.pos.x, hop, view.pos.z)
+    root.position.set(view.pos.x, view.pos.y + hop, view.pos.z)
     // Shake and dodge sideways in the actor's own frame.
     const c = Math.cos(root.rotation.y)
     const s = Math.sin(root.rotation.y)
@@ -662,13 +847,13 @@ export class ActorLayer {
     root.visible = view.fade > 0.01
   }
 
-  /** A hero's character: moved like the capsule; it lies down by its Downed clip, or tips over without clips. */
-  private poseModel(view: View, model: CharacterModel): void {
+  /** A model: moved like the capsule; it lies down by its Downed (or Death) clip, or tips over without clips. */
+  private poseModel(view: View, model: ActorModel): void {
     const { root, pose } = view
     const shake = view.shakeT > 0 ? Math.sin(view.shakeT * 40) * 0.05 * view.shakeT : 0
     const dodge = view.dodgeT > 0 && !model.animator.has('Dodge') ? Math.sin(view.dodgeT * Math.PI) * 0.45 : 0
     const hop = view.hopT > 0 ? Math.sin(view.hopT * Math.PI) * 0.12 : 0
-    root.position.set(view.pos.x, hop, view.pos.z)
+    root.position.set(view.pos.x, view.pos.y + hop, view.pos.z)
     const c = Math.cos(root.rotation.y)
     const s = Math.sin(root.rotation.y)
     root.position.x += (shake + dodge) * c
@@ -705,7 +890,7 @@ export class ActorLayer {
       const sx = look.shape === 'biped' ? look.radius * 3.2 + lying * 0.4 : look.radius * 3.2
       const sz = look.shape === 'biped' ? look.radius * 3.2 + lying * look.height * 0.9 : Math.max(look.radius * 3.2, look.height * 2)
       if (visible) {
-        m.compose(p.set(view.root.position.x, 0.02, view.root.position.z), sQ.setFromAxisAngle(UP, view.root.rotation.y), scale.set(sx * view.fade, 1, sz * view.fade))
+        m.compose(p.set(view.root.position.x, view.pos.y + 0.02, view.root.position.z), sQ.setFromAxisAngle(UP, view.root.rotation.y), scale.set(sx * view.fade, 1, sz * view.fade))
         if (look.shape === 'biped' && lying > 0) {
           // The body lies behind the feet.
           const back = sBack.set(0, 0, -look.height * 0.45 * lying).applyAxisAngle(UP, view.root.rotation.y)
@@ -714,12 +899,13 @@ export class ActorLayer {
       } else m.copy(ZERO)
       this.shadows.setMatrixAt(i, m)
       // HP bar.
-      const barVisible = visible && this.showBars && !view.leaving && !view.state.body
+      const barVisible = visible && this.showBars && !view.leaving && !view.state.body && view.dyingMs <= 0 && !view.fleeing
       if (barVisible) {
-        const standTop = look.shape === 'biped' ? look.height : look.height + 0.1
+        const h = this.heightOf(view)
+        const standTop = look.shape === 'biped' ? h : h + 0.1
         const top = standTop * (1 - lying) + (look.radius * 2 + 0.1) * lying
         const w = Math.max(0.7, Math.min(1.3, look.radius * 3.4)) * BAR_W
-        p.set(view.root.position.x, top + 0.42, view.root.position.z)
+        p.set(view.root.position.x, view.pos.y + top + 0.42, view.root.position.z)
         m.compose(p, q, scale.set(w, BAR_H, 1))
         this.barBg.setMatrixAt(i, m)
         const frac = Math.max(0, Math.min(1, view.hp))
@@ -747,14 +933,14 @@ export class ActorLayer {
     if (ringView) {
       const r = Math.max(0.6, ringView.look.shape === 'biped' ? ringView.look.radius * 2.6 : ringView.look.height * 1.2)
       const pulse = this.reduceMotion ? 1 : 1 + Math.sin(time * 0.006) * 0.06
-      this.ring.position.set(ringView.root.position.x, 0.04, ringView.root.position.z)
+      this.ring.position.set(ringView.root.position.x, ringView.pos.y + 0.04, ringView.root.position.z)
       this.ring.scale.setScalar(r * pulse)
       this.ring.visible = true
     } else this.ring.visible = false
     if (arrowView) {
-      const top = arrowView.look.height * (1 - arrowView.lie) + 0.5 * arrowView.lie
+      const top = this.heightOf(arrowView) * (1 - arrowView.lie) + 0.5 * arrowView.lie
       const bob = this.reduceMotion ? 0 : Math.sin(time * 0.008) * 0.08
-      this.arrow.position.set(arrowView.root.position.x, top + (this.showBars ? 0.95 : 0.6) + bob, arrowView.root.position.z)
+      this.arrow.position.set(arrowView.root.position.x, arrowView.pos.y + top + (this.showBars ? 0.95 : 0.6) + bob, arrowView.root.position.z)
       this.arrow.visible = true
     } else this.arrow.visible = false
   }
@@ -765,9 +951,9 @@ export class ActorLayer {
     for (const view of this.views.values()) {
       if (view.leaving || view.state.gone) continue
       const r = Math.max(view.look.radius, 0.3)
-      out.push(new THREE.Vector3(view.target.x - r, 0, view.target.z - r))
-      out.push(new THREE.Vector3(view.target.x + r, 0, view.target.z + r))
-      out.push(new THREE.Vector3(view.target.x, view.look.height + (this.showBars ? 0.6 : 0.15), view.target.z))
+      out.push(new THREE.Vector3(view.target.x - r, view.target.y, view.target.z - r))
+      out.push(new THREE.Vector3(view.target.x + r, view.target.y, view.target.z + r))
+      out.push(new THREE.Vector3(view.target.x, view.target.y + this.heightOf(view) + (this.showBars ? 0.6 : 0.15), view.target.z))
     }
     return out
   }
@@ -781,7 +967,7 @@ export class ActorLayer {
       v.set(view.target.x, 0, view.target.z).project(this.camera)
       const x = ((v.x + 1) / 2) * width
       const y = ((1 - v.y) / 2) * height
-      v.set(view.target.x, view.look.height + 0.5, view.target.z).project(this.camera)
+      v.set(view.target.x, this.heightOf(view) + 0.5, view.target.z).project(this.camera)
       out[view.look.id] = { x: Math.round(x), y: Math.round(y), top: Math.round(((1 - v.y) / 2) * height) }
     }
     return out

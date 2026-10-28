@@ -3,7 +3,7 @@
  * scene ("this actor was hit for 12", "it is this hero's turn"); the room scene listens and flashes, shakes or
  * highlights. Nothing here touches the sim; a cue with an unknown actor id is ignored by the scene.
  */
-export type SceneCueKind = 'turn' | 'target' | 'hit' | 'crit' | 'miss' | 'heal' | 'status' | 'down' | 'gone' | 'revive' | 'clear' | 'anim'
+export type SceneCueKind = 'turn' | 'target' | 'hit' | 'crit' | 'miss' | 'heal' | 'status' | 'down' | 'gone' | 'flee' | 'revive' | 'clear' | 'anim' | 'fx'
 
 export interface SceneCue {
   kind: SceneCueKind
@@ -16,6 +16,20 @@ export interface SceneCue {
   clip?: string
   /** The playback speed (1×, 2×, 3×): clips play that much faster so they keep up with the beats. */
   speed?: number
+  /** Phase 6, `anim` cues: a monster's own clips to try before `clip` (a Web, a Howl). */
+  alt?: string[]
+  /** Phase 6, `fx` cues: the effect (vfx/recipes.ts FxKind), its colour and shape (an Ultimate's), a crit's bigger burst. */
+  fx?: string
+  color?: number
+  shape?: string
+  crit?: boolean
+  /**
+   * Phase 6, `hit`/`crit`/`heal`/`revive` cues: the actor's HP (and max) once the beat has played — the bar is set to
+   * it rather than moved by `amount`, so a bar that already shows the blow (a fight that opened with the monsters'
+   * turns, a model that arrived mid-beat) is never knocked down twice.
+   */
+  hp?: number
+  maxHp?: number
 }
 
 type Listener = (cue: SceneCue) => void

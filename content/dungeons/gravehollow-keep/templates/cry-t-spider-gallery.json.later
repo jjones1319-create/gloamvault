@@ -1,0 +1,192 @@
+{
+  "id": "cry-t-spider-gallery",
+  "zoneId": "the-crypts",
+  "footprint": {
+    "w": 3,
+    "h": 1
+  },
+  "doors": [
+    {
+      "side": "west",
+      "offset": 0
+    },
+    {
+      "side": "east",
+      "offset": 0
+    }
+  ],
+  "kinds": [
+    "fight",
+    "elite"
+  ],
+  "camera": {
+    "position": [
+      0,
+      9.6,
+      -19.8
+    ],
+    "lookAt": [
+      0,
+      1,
+      0
+    ],
+    "fov": 36
+  },
+  "props": [
+    {
+      "meshId": "cry_vault_rib",
+      "position": [
+        -8,
+        3.5,
+        3.86
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cry_vault_rib",
+      "position": [
+        0,
+        3.5,
+        3.86
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cry_vault_rib",
+      "position": [
+        8,
+        3.5,
+        3.86
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cry_web_sheet",
+      "position": [
+        -11.05,
+        0,
+        3.05
+      ],
+      "rotationY": 135
+    },
+    {
+      "meshId": "cry_web_sheet",
+      "position": [
+        11.05,
+        0,
+        3.05
+      ],
+      "rotationY": -135
+    },
+    {
+      "meshId": "cry_web_sheet",
+      "position": [
+        -4,
+        0,
+        3.75
+      ],
+      "rotationY": 180
+    },
+    {
+      "meshId": "cry_web_sheet",
+      "position": [
+        4.2,
+        0,
+        3.75
+      ],
+      "rotationY": 180
+    },
+    {
+      "meshId": "cry_web_sheet",
+      "position": [
+        -1.6,
+        0.2,
+        3.3
+      ],
+      "rotationY": 165
+    },
+    {
+      "meshId": "cry_web_sheet",
+      "position": [
+        7.4,
+        0.3,
+        3.4
+      ],
+      "rotationY": 195
+    },
+    {
+      "meshId": "cry_cocoon",
+      "position": [
+        -6.2,
+        0,
+        3.9
+      ],
+      "rotationY": 180
+    },
+    {
+      "meshId": "cry_cocoon",
+      "position": [
+        1.4,
+        0,
+        3.9
+      ],
+      "rotationY": 180
+    },
+    {
+      "meshId": "cry_cocoon",
+      "position": [
+        9.4,
+        0,
+        3.9
+      ],
+      "rotationY": 180
+    },
+    {
+      "meshId": "cry_candle_bracket",
+      "position": [
+        -9.5,
+        2.2,
+        3.9
+      ],
+      "rotationY": 180
+    },
+    {
+      "meshId": "cry_candle_bracket",
+      "position": [
+        5.6,
+        2.2,
+        3.9
+      ],
+      "rotationY": 180
+    },
+    {
+      "meshId": "cry_floor_mist",
+      "position": [
+        -8,
+        0,
+        0
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cry_floor_mist",
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cry_floor_mist",
+      "position": [
+        8,
+        0,
+        0
+      ],
+      "rotationY": 0
+    }
+  ],
+  "triBudget": 30000,
+  "drawCallBudget": 40
+}

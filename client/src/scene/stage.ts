@@ -97,8 +97,9 @@ export class Stage {
     if (this.lastRender >= 0 && t - this.lastRender < target - 1.5) return
     const dt = this.lastRender < 0 ? target : Math.min(t - this.lastRender, 250)
     this.lastRender = t
-    if (!this.reduceMotion) for (const fn of this.updaters) fn(t, dt)
+    // The CPU frame time counts the updaters (mixers, effects, the room) as well as the render call.
     const start = performance.now()
+    if (!this.reduceMotion) for (const fn of this.updaters) fn(t, dt)
     this.renderer.render(this.scene, this.camera)
     const end = performance.now()
     this.cpuMs += end - start

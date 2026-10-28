@@ -1,0 +1,929 @@
+{
+  "id": "vlt-t-throne",
+  "zoneId": "the-drowned-vault",
+  "footprint": {
+    "w": 3,
+    "h": 2
+  },
+  "doors": [
+    {
+      "side": "south",
+      "offset": 1
+    }
+  ],
+  "kinds": [
+    "boss"
+  ],
+  "camera": {
+    "position": [
+      0,
+      12.21,
+      22.96
+    ],
+    "lookAt": [
+      0,
+      1,
+      0
+    ],
+    "fov": 46
+  },
+  "props": [
+    {
+      "meshId": "vlt_throne_hollow",
+      "position": [
+        0,
+        0,
+        -4.25
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        -11,
+        0,
+        -7
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        -9,
+        0,
+        -7
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        -7,
+        0,
+        -7
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        -5,
+        0,
+        -7
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        -3,
+        0,
+        -7
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        -1,
+        0,
+        -7
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        1,
+        0,
+        -7
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        3,
+        0,
+        -7
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        5,
+        0,
+        -7
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        7,
+        0,
+        -7
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        9,
+        0,
+        -7
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        11,
+        0,
+        -7
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        -11,
+        0,
+        -5
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        -9,
+        0,
+        -5
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        -7,
+        0,
+        -5
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        -5,
+        0,
+        -5
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        -3,
+        0,
+        -5
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        -1,
+        0,
+        -5
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        1,
+        0,
+        -5
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        3,
+        0,
+        -5
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        5,
+        0,
+        -5
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        7,
+        0,
+        -5
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        9,
+        0,
+        -5
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        11,
+        0,
+        -5
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        -11,
+        0,
+        -3
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        -9,
+        0,
+        -3
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        -7,
+        0,
+        -3
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        -5,
+        0,
+        -3
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        -3,
+        0,
+        -3
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        -1,
+        0,
+        -3
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        1,
+        0,
+        -3
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        3,
+        0,
+        -3
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        5,
+        0,
+        -3
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        7,
+        0,
+        -3
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        9,
+        0,
+        -3
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        11,
+        0,
+        -3
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        -11,
+        0,
+        -1
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        -9,
+        0,
+        -1
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        -7,
+        0,
+        -1
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        -5,
+        0,
+        -1
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        -3,
+        0,
+        -1
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        -1,
+        0,
+        -1
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        1,
+        0,
+        -1
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        3,
+        0,
+        -1
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        5,
+        0,
+        -1
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        7,
+        0,
+        -1
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        9,
+        0,
+        -1
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        11,
+        0,
+        -1
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        -11,
+        0,
+        1
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        -9,
+        0,
+        1
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        -7,
+        0,
+        1
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        -5,
+        0,
+        1
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        -3,
+        0,
+        1
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        -1,
+        0,
+        1
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        1,
+        0,
+        1
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        3,
+        0,
+        1
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        5,
+        0,
+        1
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        7,
+        0,
+        1
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        9,
+        0,
+        1
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        11,
+        0,
+        1
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        -11,
+        0,
+        3
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        -9,
+        0,
+        3
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        -7,
+        0,
+        3
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        -5,
+        0,
+        3
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        -3,
+        0,
+        3
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        -1,
+        0,
+        3
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        1,
+        0,
+        3
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        3,
+        0,
+        3
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        5,
+        0,
+        3
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        7,
+        0,
+        3
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        9,
+        0,
+        3
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_knee",
+      "position": [
+        11,
+        0,
+        3
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_edge",
+      "position": [
+        -11,
+        0,
+        4
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_edge",
+      "position": [
+        -9,
+        0,
+        4
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_edge",
+      "position": [
+        -7,
+        0,
+        4
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_edge",
+      "position": [
+        -5,
+        0,
+        4
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_edge",
+      "position": [
+        -3,
+        0,
+        4
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_edge",
+      "position": [
+        -1,
+        0,
+        4
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_edge",
+      "position": [
+        1,
+        0,
+        4
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_edge",
+      "position": [
+        3,
+        0,
+        4
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_edge",
+      "position": [
+        5,
+        0,
+        4
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_edge",
+      "position": [
+        7,
+        0,
+        4
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_edge",
+      "position": [
+        9,
+        0,
+        4
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_edge",
+      "position": [
+        11,
+        0,
+        4
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_pillar_chained",
+      "position": [
+        -8.6,
+        0,
+        -5.5
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_pillar_chained",
+      "position": [
+        8.6,
+        0,
+        -5.5
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_pillar_chained",
+      "position": [
+        -8.6,
+        0,
+        -1.5
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_pillar_chained",
+      "position": [
+        8.6,
+        0,
+        -1.5
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_pillar_chained",
+      "position": [
+        -8.6,
+        0,
+        2.5
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_pillar_chained",
+      "position": [
+        8.6,
+        0,
+        2.5
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_brazier",
+      "position": [
+        -5.6,
+        0,
+        -1.4
+      ],
+      "rotationY": 0,
+      "lightSource": true
+    },
+    {
+      "meshId": "vlt_brazier",
+      "position": [
+        5.6,
+        0,
+        -1.4
+      ],
+      "rotationY": 0,
+      "lightSource": true
+    },
+    {
+      "meshId": "vlt_brazier",
+      "position": [
+        -5.6,
+        0,
+        2.6
+      ],
+      "rotationY": 0,
+      "lightSource": true
+    },
+    {
+      "meshId": "vlt_brazier",
+      "position": [
+        5.6,
+        0,
+        2.6
+      ],
+      "rotationY": 0,
+      "lightSource": true
+    },
+    {
+      "meshId": "vlt_wall_breach",
+      "position": [
+        11.9,
+        0,
+        -4
+      ],
+      "rotationY": -90
+    },
+    {
+      "meshId": "vlt_banner_tide",
+      "position": [
+        -11.9,
+        0,
+        -4
+      ],
+      "rotationY": 90
+    },
+    {
+      "meshId": "vlt_banner_tide",
+      "position": [
+        -11.9,
+        0,
+        1
+      ],
+      "rotationY": 90
+    },
+    {
+      "meshId": "vlt_banner_tide",
+      "position": [
+        11.9,
+        0,
+        1
+      ],
+      "rotationY": -90
+    }
+  ],
+  "triBudget": 30000,
+  "drawCallBudget": 40
+}

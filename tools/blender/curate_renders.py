@@ -19,7 +19,8 @@ SRC = os.path.join(ART, 'renders')
 DST = os.path.join(ART, 'review')
 KEEP = ('*_200.png', '*200*.png', 'read*.png', '*sheet*.png', 'lineup*.png', 'poses*.png', 'heads_*.png',
         'gallery_*.png', 'skeleton_*.png', 'species*.png', 'Guard_Shield.png', 'card_*.png', 'set_S_broad.png',
-        'reimport_check.png', 'closeups.png', 'mixed_tiers.png')
+        'reimport_check.png', 'closeups.png', 'mixed_tiers.png', 'fight_*.png', 'lineup.png', 'kit_sheet*.png', 'template_*.png',
+        '*_phone.png', 'cards.png', 'heads*.png', 'throne*.png', 'naesa_attach.png')
 MAX_W = 1600
 
 

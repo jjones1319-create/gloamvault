@@ -1,0 +1,1559 @@
+{
+  "zone": "crypts",
+  "about": "The Crypts kit (07 §2.2): the 22 cry_ pieces, the cut-away shell, and the props the Crypts templates and the Barrow Warden's arena name.",
+  "palette": [
+    "#77867f",
+    "#46555a",
+    "#7a6650",
+    "#4a3e33",
+    "#545d62",
+    "#0d1315",
+    "#6a5878",
+    "#d6cfba",
+    "#7a6448",
+    "#b4bcbe",
+    "#a08a50",
+    "#8fe3a1",
+    "#3f8573",
+    "#dccfb2",
+    "#cfe6f2",
+    "#9cc6b3"
+  ],
+  "shell": {
+    "floor": "cry_floor_slab",
+    "wall": "cry_wall_plain_2m",
+    "doorway": "cry_door_arch",
+    "corner": "cry_wall_corner_in",
+    "wallCut": "cry_wall_cut_2m",
+    "doorwayCut": "cry_door_arch_cut",
+    "cornerCut": "cry_wall_corner_cut",
+    "floorAlt": [],
+    "wallAlt": [],
+    "doorways": {
+      "open": "cry_door_arch",
+      "locked": "cry_door_portcullis",
+      "secret": "cry_door_secret",
+      "gate": "cry_door_iron"
+    },
+    "tile": 2,
+    "segment": 2,
+    "doorwayWidth": 4.0,
+    "opening": {
+      "width": 2.0,
+      "spring": 2.1,
+      "apex": 3.1
+    },
+    "wallHeight": 3.5,
+    "wallThickness": 0.4,
+    "cutHeight": 0.55,
+    "notes": "Pivots as kit_lib: a wall, doorway or cut piece has its origin at the centre of its base on the room-side face (masonry behind it, 0.4 m); an 8 m cell edge is segment, doorway, segment (2 + 4 + 2 m) or four segments. Corner: origin on the inside corner of the room, NW rotationY 0, NE -90, SE 180, SW 90. Walls whose outer side faces the camera use the cut pieces. Floor tiles: 2 m, any quarter turn. Wall-hung pieces 0.1 m in front of the wall face."
+  },
+  "pieces": {
+    "cry_floor_slab": {
+      "tris": 38,
+      "budget": 40,
+      "role": "shell",
+      "bounds": {
+        "min": [
+          -1.0,
+          0.0,
+          -1.0
+        ],
+        "max": [
+          1.0,
+          0.048,
+          1.0
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [],
+      "tile": true,
+      "budgetNote": "07 counts 4 for a textured tile; the slabs and joints are geometry here (D-110: no textures)"
+    },
+    "cry_floor_slab_open": {
+      "tris": 62,
+      "budget": 80,
+      "role": "shell",
+      "bounds": {
+        "min": [
+          -1.0,
+          -0.765,
+          -1.3
+        ],
+        "max": [
+          1.487,
+          0.12,
+          1.0
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [
+        {
+          "name": "fx_0",
+          "kind": "motes",
+          "at": [
+            0.0,
+            -0.3,
+            0.0
+          ]
+        }
+      ],
+      "tile": true,
+      "hole": [
+        -1,
+        -1,
+        1,
+        1
+      ]
+    },
+    "cry_floor_bonegrate": {
+      "tris": 66,
+      "budget": 70,
+      "role": "shell",
+      "bounds": {
+        "min": [
+          -1.0,
+          -1.018,
+          -1.0
+        ],
+        "max": [
+          1.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [
+        {
+          "name": "fx_1",
+          "kind": "smoke",
+          "at": [
+            0.0,
+            -0.4,
+            0.0
+          ]
+        }
+      ],
+      "tile": true,
+      "hole": [
+        -1,
+        -1,
+        1,
+        1
+      ],
+      "trap": "the Grave Breath vent rises from under it (fx smoke, corpse green)"
+    },
+    "cry_floor_mist": {
+      "tris": 2,
+      "budget": 2,
+      "role": "decal",
+      "bounds": {
+        "min": [
+          -4.0,
+          0.14,
+          -4.0
+        ],
+        "max": [
+          4.0,
+          0.14,
+          4.0
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [],
+      "translucent": 0.22,
+      "scroll": [
+        0.12,
+        0.05
+      ],
+      "note": "one per 8 m cell at the cell centre; floor mist everywhere (07 §2.2)"
+    },
+    "cry_wall_niche_2m": {
+      "tris": 120,
+      "budget": 140,
+      "role": "wall-hung",
+      "bounds": {
+        "min": [
+          -1.0,
+          0.0,
+          -0.2
+        ],
+        "max": [
+          1.0,
+          3.5,
+          0.42
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [],
+      "note": "a facing: place it 0.1 m in front of a wall face (rotationY as a wall-hung prop); it reaches 0.45 m into the room"
+    },
+    "cry_wall_plain_2m": {
+      "tris": 66,
+      "budget": 80,
+      "role": "shell",
+      "bounds": {
+        "min": [
+          -1.0,
+          0.0,
+          -0.4
+        ],
+        "max": [
+          1.0,
+          3.5,
+          0.07
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [],
+      "budgetNote": "07 counts 24 for a textured wall; the ashlar courses are geometry here (D-110: no textures)"
+    },
+    "cry_wall_bone_2m": {
+      "tris": 226,
+      "budget": 260,
+      "role": "wall-hung",
+      "bounds": {
+        "min": [
+          -1.0,
+          0.0,
+          -0.2
+        ],
+        "max": [
+          1.0,
+          3.5,
+          0.32
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [],
+      "note": "a facing: place it 0.1 m in front of a wall face; it reaches 0.3 m into the room"
+    },
+    "cry_wall_corner_in": {
+      "tris": 124,
+      "budget": 160,
+      "role": "shell",
+      "bounds": {
+        "min": [
+          -0.4,
+          0.0,
+          -0.4
+        ],
+        "max": [
+          0.527,
+          3.5,
+          0.654
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [],
+      "corner": "rotationY 0 = the NW corner; NE −90, SE 180, SW 90"
+    },
+    "cry_door_arch": {
+      "tris": 192,
+      "budget": 240,
+      "role": "shell",
+      "bounds": {
+        "min": [
+          -2.0,
+          0.0,
+          -0.4
+        ],
+        "max": [
+          2.0,
+          3.5,
+          0.19
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [],
+      "opening": [
+        -1.0,
+        1.0
+      ],
+      "width": 4.0,
+      "spring": 2.1,
+      "apex": 3.1
+    },
+    "cry_door_iron": {
+      "tris": 386,
+      "budget": 520,
+      "role": "shell",
+      "bounds": {
+        "min": [
+          -2.0,
+          0.0,
+          -0.4
+        ],
+        "max": [
+          2.0,
+          3.5,
+          0.19
+        ]
+      },
+      "parts": [
+        {
+          "name": "cry_door_iron.leaf_l",
+          "part": "leaf_l",
+          "tris": 64,
+          "pivot": [
+            -1.0,
+            0.0,
+            -0.16
+          ],
+          "axis": "z",
+          "note": "swings about its hinge (game y): up to ±100°, into the far room"
+        },
+        {
+          "name": "cry_door_iron.leaf_r",
+          "part": "leaf_r",
+          "tris": 74,
+          "pivot": [
+            1.0,
+            0.0,
+            -0.16
+          ],
+          "axis": "z",
+          "note": "swings about its hinge (game y): up to ±100°, into the far room"
+        }
+      ],
+      "lights": [],
+      "fx": [],
+      "opening": [
+        -1.0,
+        1.0
+      ],
+      "width": 4.0
+    },
+    "cry_door_portcullis": {
+      "tris": 308,
+      "budget": 650,
+      "role": "shell",
+      "bounds": {
+        "min": [
+          -2.0,
+          0.0,
+          -0.4
+        ],
+        "max": [
+          2.0,
+          3.5,
+          0.19
+        ]
+      },
+      "parts": [
+        {
+          "name": "cry_door_portcullis.gate",
+          "part": "gate",
+          "tris": 112,
+          "pivot": [
+            0.0,
+            0.0,
+            -0.2
+          ],
+          "axis": "z",
+          "note": "lifts along game y: +2.2 m to open (hide it when raised); drops for the trap"
+        }
+      ],
+      "lights": [],
+      "fx": [],
+      "opening": [
+        -1.0,
+        1.0
+      ],
+      "width": 4.0
+    },
+    "cry_door_secret": {
+      "tris": 180,
+      "budget": 180,
+      "role": "shell",
+      "bounds": {
+        "min": [
+          -2.0,
+          0.0,
+          -0.4
+        ],
+        "max": [
+          2.0,
+          3.5,
+          0.07
+        ]
+      },
+      "parts": [
+        {
+          "name": "cry_door_secret.panel",
+          "part": "panel",
+          "tris": 116,
+          "pivot": [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          "axis": "z",
+          "note": "swings about the left jamb (game y) into the far room: −95° to open"
+        }
+      ],
+      "lights": [],
+      "fx": [],
+      "opening": [
+        -1.0,
+        1.0
+      ],
+      "width": 4.0
+    },
+    "cry_pillar_cluster": {
+      "tris": 190,
+      "budget": 220,
+      "role": "prop",
+      "bounds": {
+        "min": [
+          -0.5,
+          0.0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          3.5,
+          0.56
+        ]
+      },
+      "parts": [],
+      "lights": [
+        {
+          "name": "light_0",
+          "kind": "candle",
+          "at": [
+            -0.12,
+            2.11,
+            0.42
+          ]
+        },
+        {
+          "name": "light_1",
+          "kind": "candle",
+          "at": [
+            0.11,
+            2.03,
+            0.38
+          ]
+        }
+      ],
+      "fx": []
+    },
+    "cry_vault_rib": {
+      "tris": 48,
+      "budget": 48,
+      "role": "hanging",
+      "bounds": {
+        "min": [
+          -4.308,
+          0.0,
+          -0.13
+        ],
+        "max": [
+          4.308,
+          2.293,
+          0.13
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [],
+      "place": "y = 3.5 (the wall top) on the line it spans; rotationY 90 spans N–S. Over a cut-away wall use cry_vault_rib_half, or set it against a far wall as a wall arch (the spider gallery)"
+    },
+    "cry_sarcophagus": {
+      "tris": 392,
+      "budget": 480,
+      "role": "prop",
+      "bounds": {
+        "min": [
+          -1.22,
+          0.0,
+          -0.62
+        ],
+        "max": [
+          1.22,
+          1.36,
+          0.66
+        ]
+      },
+      "parts": [
+        {
+          "name": "cry_sarcophagus.lid",
+          "part": "lid",
+          "tris": 74,
+          "pivot": [
+            0.0,
+            0.9,
+            -0.56
+          ],
+          "axis": "x",
+          "note": "hinges on its back top edge: −80° about game x opens it backward"
+        },
+        {
+          "name": "cry_sarcophagus.chains",
+          "part": "chains",
+          "tris": 236,
+          "pivot": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "axis": "z",
+          "note": "the Sealed Sarcophagus's chains: hide them when it is opened"
+        }
+      ],
+      "lights": [],
+      "fx": [],
+      "curio": "sealed-sarcophagus"
+    },
+    "cry_coffin_wood": {
+      "tris": 92,
+      "budget": 120,
+      "role": "prop",
+      "bounds": {
+        "min": [
+          -1.03,
+          0.0,
+          -0.394
+        ],
+        "max": [
+          1.03,
+          0.47,
+          0.394
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [],
+      "stack": "coffins stack at y = 0.47"
+    },
+    "cry_urn_row": {
+      "tris": 226,
+      "budget": 300,
+      "role": "prop",
+      "bounds": {
+        "min": [
+          -1.25,
+          0.0,
+          -0.3
+        ],
+        "max": [
+          1.25,
+          1.19,
+          0.3
+        ]
+      },
+      "parts": [
+        {
+          "name": "cry_urn_row.urn_0",
+          "part": "urn_0",
+          "tris": 40,
+          "pivot": [
+            -1.0,
+            0.72,
+            0.0
+          ],
+          "axis": "z",
+          "note": "breaks on its own when smashed: hide it and spawn shards"
+        },
+        {
+          "name": "cry_urn_row.urn_1",
+          "part": "urn_1",
+          "tris": 40,
+          "pivot": [
+            -0.5,
+            0.72,
+            0.0
+          ],
+          "axis": "z",
+          "note": "breaks on its own when smashed: hide it and spawn shards"
+        },
+        {
+          "name": "cry_urn_row.urn_2",
+          "part": "urn_2",
+          "tris": 40,
+          "pivot": [
+            0.0,
+            0.72,
+            0.0
+          ],
+          "axis": "z",
+          "note": "breaks on its own when smashed: hide it and spawn shards"
+        },
+        {
+          "name": "cry_urn_row.urn_3",
+          "part": "urn_3",
+          "tris": 40,
+          "pivot": [
+            0.5,
+            0.72,
+            0.0
+          ],
+          "axis": "z",
+          "note": "breaks on its own when smashed: hide it and spawn shards"
+        },
+        {
+          "name": "cry_urn_row.urn_4",
+          "part": "urn_4",
+          "tris": 40,
+          "pivot": [
+            1.0,
+            0.72,
+            0.0
+          ],
+          "axis": "z",
+          "note": "breaks on its own when smashed: hide it and spawn shards"
+        }
+      ],
+      "lights": [],
+      "fx": [],
+      "curio": "funeral-urns"
+    },
+    "cry_candle_ring": {
+      "tris": 240,
+      "budget": 360,
+      "role": "prop",
+      "bounds": {
+        "min": [
+          -1.91,
+          -0.015,
+          -2.016
+        ],
+        "max": [
+          1.91,
+          0.68,
+          2.016
+        ]
+      },
+      "parts": [],
+      "lights": [
+        {
+          "name": "light_2",
+          "kind": "candle",
+          "at": [
+            1.85,
+            0.65,
+            0.0
+          ]
+        },
+        {
+          "name": "light_3",
+          "kind": "candle",
+          "at": [
+            1.6021,
+            0.57,
+            -0.925
+          ]
+        },
+        {
+          "name": "light_4",
+          "kind": "candle",
+          "at": [
+            0.925,
+            0.71,
+            -1.6021
+          ]
+        },
+        {
+          "name": "light_5",
+          "kind": "candle",
+          "at": [
+            0.0,
+            0.61,
+            -1.85
+          ]
+        },
+        {
+          "name": "light_6",
+          "kind": "candle",
+          "at": [
+            -0.925,
+            0.55,
+            -1.6021
+          ]
+        },
+        {
+          "name": "light_7",
+          "kind": "candle",
+          "at": [
+            -1.6021,
+            0.68,
+            -0.925
+          ]
+        },
+        {
+          "name": "light_8",
+          "kind": "candle",
+          "at": [
+            -1.85,
+            0.63,
+            0.0
+          ]
+        },
+        {
+          "name": "light_9",
+          "kind": "candle",
+          "at": [
+            -1.6021,
+            0.59,
+            0.925
+          ]
+        },
+        {
+          "name": "light_10",
+          "kind": "candle",
+          "at": [
+            -0.925,
+            0.73,
+            1.6021
+          ]
+        },
+        {
+          "name": "light_11",
+          "kind": "candle",
+          "at": [
+            0.0,
+            0.56,
+            1.85
+          ]
+        },
+        {
+          "name": "light_12",
+          "kind": "candle",
+          "at": [
+            0.925,
+            0.66,
+            1.6021
+          ]
+        },
+        {
+          "name": "light_13",
+          "kind": "candle",
+          "at": [
+            1.6021,
+            0.62,
+            0.925
+          ]
+        }
+      ],
+      "fx": [],
+      "curio": "mourners-candles"
+    },
+    "cry_statue_weeping": {
+      "tris": 396,
+      "budget": 900,
+      "role": "prop",
+      "bounds": {
+        "min": [
+          -0.591,
+          0.0,
+          -0.591
+        ],
+        "max": [
+          0.591,
+          2.44,
+          1.412
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [
+        {
+          "name": "fx_2",
+          "kind": "drip",
+          "at": [
+            0.0,
+            1.25,
+            0.95
+          ]
+        }
+      ],
+      "curio": "weeping-statue"
+    },
+    "cry_bell_grave": {
+      "tris": 182,
+      "budget": 240,
+      "role": "prop",
+      "bounds": {
+        "min": [
+          -0.86,
+          0.0,
+          -0.5
+        ],
+        "max": [
+          0.86,
+          2.38,
+          0.5
+        ]
+      },
+      "parts": [
+        {
+          "name": "cry_bell_grave.bell",
+          "part": "bell",
+          "tris": 84,
+          "pivot": [
+            0.0,
+            2.2,
+            0.0
+          ],
+          "axis": "x",
+          "note": "swings about game x under the beam (±25°) when rung"
+        }
+      ],
+      "lights": [],
+      "fx": [],
+      "curio": "grave-bell"
+    },
+    "cry_web_sheet": {
+      "tris": 17,
+      "budget": 20,
+      "role": "decal",
+      "bounds": {
+        "min": [
+          -1.374,
+          1.314,
+          -0.01
+        ],
+        "max": [
+          1.375,
+          3.388,
+          0.0
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [],
+      "translucent": 0.5,
+      "doubleSided": true,
+      "note": "spans a corner diagonally (rotationY 135 / −135 …) or hangs flat in front of a wall"
+    },
+    "cry_bier_stone": {
+      "tris": 174,
+      "budget": 420,
+      "role": "prop",
+      "bounds": {
+        "min": [
+          -1.45,
+          0.0,
+          -0.85
+        ],
+        "max": [
+          1.45,
+          0.96,
+          0.85
+        ]
+      },
+      "parts": [],
+      "lights": [
+        {
+          "name": "light_14",
+          "kind": "candle",
+          "at": [
+            -1.05,
+            0.97,
+            0.45
+          ]
+        },
+        {
+          "name": "light_15",
+          "kind": "candle",
+          "at": [
+            1.05,
+            0.97,
+            0.45
+          ]
+        },
+        {
+          "name": "light_16",
+          "kind": "candle",
+          "at": [
+            -1.05,
+            0.97,
+            -0.45
+          ]
+        },
+        {
+          "name": "light_17",
+          "kind": "candle",
+          "at": [
+            1.05,
+            0.97,
+            -0.45
+          ]
+        }
+      ],
+      "fx": [
+        {
+          "name": "fx_3",
+          "kind": "motes",
+          "at": [
+            0.0,
+            1.3,
+            0.0
+          ]
+        }
+      ],
+      "arena": "the Barrow Warden (F6): the Crypt Waystone rises from it; the open slab is the stair to F7"
+    },
+    "cry_wall_cut_2m": {
+      "tris": 32,
+      "budget": 40,
+      "role": "shell",
+      "bounds": {
+        "min": [
+          -1.0,
+          0.0,
+          -0.4
+        ],
+        "max": [
+          1.0,
+          0.584,
+          0.06
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": []
+    },
+    "cry_door_arch_cut": {
+      "tris": 40,
+      "budget": 60,
+      "role": "shell",
+      "bounds": {
+        "min": [
+          -2.0,
+          0.0,
+          -0.4
+        ],
+        "max": [
+          2.0,
+          0.55,
+          0.06
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [],
+      "opening": [
+        -1.0,
+        1.0
+      ],
+      "width": 4.0
+    },
+    "cry_wall_corner_cut": {
+      "tris": 26,
+      "budget": 40,
+      "role": "shell",
+      "bounds": {
+        "min": [
+          -0.4,
+          0.0,
+          -0.4
+        ],
+        "max": [
+          0.42,
+          0.64,
+          0.42
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": []
+    },
+    "cry_vault_rib_half": {
+      "tris": 49,
+      "budget": 60,
+      "role": "hanging",
+      "bounds": {
+        "min": [
+          -0.19,
+          -0.34,
+          -0.24
+        ],
+        "max": [
+          0.19,
+          1.896,
+          4.221
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [],
+      "place": "on the room edge line of a standing wall (the far side), rotationY as a wall prop there; y = the springing height; two meet at a crossing"
+    },
+    "cry_candle_bracket": {
+      "tris": 60,
+      "budget": 100,
+      "role": "wall-hung",
+      "bounds": {
+        "min": [
+          -0.23,
+          -0.24,
+          -0.18
+        ],
+        "max": [
+          0.23,
+          0.34,
+          0.42
+        ]
+      },
+      "parts": [],
+      "lights": [
+        {
+          "name": "light_18",
+          "kind": "candle",
+          "at": [
+            -0.13,
+            0.3,
+            0.27
+          ]
+        },
+        {
+          "name": "light_19",
+          "kind": "candle",
+          "at": [
+            0.0,
+            0.39,
+            0.23
+          ]
+        },
+        {
+          "name": "light_20",
+          "kind": "candle",
+          "at": [
+            0.13,
+            0.25,
+            0.28
+          ]
+        }
+      ],
+      "fx": []
+    },
+    "cry_candle_crown": {
+      "tris": 164,
+      "budget": 200,
+      "role": "hanging",
+      "bounds": {
+        "min": [
+          -0.77,
+          -1.57,
+          -0.77
+        ],
+        "max": [
+          0.77,
+          0.0,
+          0.77
+        ]
+      },
+      "parts": [],
+      "lights": [
+        {
+          "name": "light_21",
+          "kind": "candle",
+          "at": [
+            0.6652,
+            -1.23,
+            -0.2755
+          ]
+        },
+        {
+          "name": "light_22",
+          "kind": "candle",
+          "at": [
+            0.2755,
+            -1.15,
+            -0.6652
+          ]
+        },
+        {
+          "name": "light_23",
+          "kind": "candle",
+          "at": [
+            -0.2755,
+            -1.25,
+            -0.6652
+          ]
+        },
+        {
+          "name": "light_24",
+          "kind": "candle",
+          "at": [
+            -0.6652,
+            -1.18,
+            -0.2755
+          ]
+        },
+        {
+          "name": "light_25",
+          "kind": "candle",
+          "at": [
+            -0.6652,
+            -1.21,
+            0.2755
+          ]
+        },
+        {
+          "name": "light_26",
+          "kind": "candle",
+          "at": [
+            -0.2755,
+            -1.13,
+            0.6652
+          ]
+        },
+        {
+          "name": "light_27",
+          "kind": "candle",
+          "at": [
+            0.2755,
+            -1.26,
+            0.6652
+          ]
+        },
+        {
+          "name": "light_28",
+          "kind": "candle",
+          "at": [
+            0.6652,
+            -1.19,
+            0.2755
+          ]
+        }
+      ],
+      "fx": [],
+      "place": "y = the suspension height (4.75 under the crossing's rib bosses); the hoop hangs 1.5 m below"
+    },
+    "cry_altar_step": {
+      "tris": 182,
+      "budget": 300,
+      "role": "prop",
+      "bounds": {
+        "min": [
+          -3.0,
+          0.0,
+          -2.6
+        ],
+        "max": [
+          3.0,
+          2.32,
+          3.2
+        ]
+      },
+      "parts": [],
+      "lights": [
+        {
+          "name": "light_29",
+          "kind": "candle",
+          "at": [
+            -0.72,
+            2.37,
+            -1.6
+          ]
+        },
+        {
+          "name": "light_30",
+          "kind": "candle",
+          "at": [
+            0.72,
+            2.37,
+            -1.6
+          ]
+        }
+      ],
+      "fx": [],
+      "raised": 0.6
+    },
+    "cry_hearth_niche": {
+      "tris": 66,
+      "budget": 220,
+      "role": "wall-hung",
+      "bounds": {
+        "min": [
+          -1.18,
+          0.0,
+          -0.2
+        ],
+        "max": [
+          1.18,
+          3.5,
+          0.88
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [],
+      "companion": "shr_campfire about 0.65 m in front of the wall face (lightSource)"
+    },
+    "cry_cot": {
+      "tris": 62,
+      "budget": 120,
+      "role": "prop",
+      "bounds": {
+        "min": [
+          -0.96,
+          0.0,
+          -0.47
+        ],
+        "max": [
+          0.96,
+          0.58,
+          0.47
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": []
+    },
+    "cry_sexton_tools": {
+      "tris": 208,
+      "budget": 260,
+      "role": "wall-hung",
+      "bounds": {
+        "min": [
+          -0.8,
+          0.0,
+          -0.08
+        ],
+        "max": [
+          0.8,
+          1.75,
+          0.51
+        ]
+      },
+      "parts": [],
+      "lights": [
+        {
+          "name": "light_31",
+          "kind": "lamp",
+          "at": [
+            0.52,
+            0.64,
+            0.1
+          ]
+        }
+      ],
+      "fx": []
+    },
+    "cry_window_shuttered": {
+      "tris": 74,
+      "budget": 110,
+      "role": "wall-hung",
+      "bounds": {
+        "min": [
+          -0.62,
+          -0.09,
+          -0.2
+        ],
+        "max": [
+          0.62,
+          1.16,
+          0.403
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [
+        {
+          "name": "fx_4",
+          "kind": "glow",
+          "at": [
+            0.0,
+            0.5,
+            0.3
+          ]
+        }
+      ]
+    },
+    "cry_shelf_stone": {
+      "tris": 26,
+      "budget": 60,
+      "role": "prop",
+      "bounds": {
+        "min": [
+          -0.95,
+          0.0,
+          -0.42
+        ],
+        "max": [
+          0.95,
+          0.5,
+          0.42
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [],
+      "top": 0.5
+    },
+    "cry_reliquary_niche": {
+      "tris": 152,
+      "budget": 300,
+      "role": "wall-hung",
+      "bounds": {
+        "min": [
+          -0.84,
+          0.0,
+          -0.2
+        ],
+        "max": [
+          0.84,
+          2.85,
+          0.32
+        ]
+      },
+      "parts": [],
+      "lights": [
+        {
+          "name": "light_32",
+          "kind": "candle",
+          "at": [
+            -0.44,
+            1.21,
+            0.14
+          ]
+        },
+        {
+          "name": "light_33",
+          "kind": "candle",
+          "at": [
+            0.44,
+            1.16,
+            0.14
+          ]
+        }
+      ],
+      "fx": [
+        {
+          "name": "fx_5",
+          "kind": "motes",
+          "at": [
+            0.0,
+            1.45,
+            0.2
+          ]
+        }
+      ],
+      "curio": "bone-reliquary"
+    },
+    "cry_stair_spiral": {
+      "tris": 342,
+      "budget": 700,
+      "role": "prop",
+      "bounds": {
+        "min": [
+          -2.0,
+          -2.66,
+          -2.0
+        ],
+        "max": [
+          2.0,
+          3.3,
+          2.0
+        ]
+      },
+      "parts": [],
+      "lights": [
+        {
+          "name": "light_34",
+          "kind": "candle",
+          "at": [
+            -0.07,
+            2.27,
+            0.42
+          ]
+        },
+        {
+          "name": "light_35",
+          "kind": "candle",
+          "at": [
+            0.08,
+            2.19,
+            0.38
+          ]
+        }
+      ],
+      "fx": [
+        {
+          "name": "fx_6",
+          "kind": "motes",
+          "at": [
+            0.0,
+            -1.2,
+            0.0
+          ]
+        }
+      ],
+      "hole": [
+        -2,
+        -2,
+        2,
+        2
+      ],
+      "note": "the stair opens toward its front (game +z); the Entry variant on F4 adds the Waystone"
+    },
+    "cry_cocoon": {
+      "tris": 122,
+      "budget": 140,
+      "role": "wall-hung",
+      "bounds": {
+        "min": [
+          -0.36,
+          -0.023,
+          -0.167
+        ],
+        "max": [
+          0.92,
+          2.95,
+          0.502
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": []
+    },
+    "cry_bone_pile": {
+      "tris": 167,
+      "budget": 180,
+      "role": "prop",
+      "bounds": {
+        "min": [
+          -0.799,
+          0.0,
+          -0.77
+        ],
+        "max": [
+          0.777,
+          0.683,
+          0.788
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [
+        {
+          "name": "fx_7",
+          "kind": "motes",
+          "at": [
+            0.0,
+            0.5,
+            0.0
+          ]
+        }
+      ]
+    },
+    "cry_merchant_barrow": {
+      "tris": 422,
+      "budget": 700,
+      "role": "prop",
+      "bounds": {
+        "min": [
+          -1.652,
+          -0.002,
+          -0.55
+        ],
+        "max": [
+          1.42,
+          2.15,
+          0.55
+        ]
+      },
+      "parts": [],
+      "lights": [
+        {
+          "name": "light_36",
+          "kind": "lamp",
+          "at": [
+            1.0,
+            1.9,
+            0.4
+          ]
+        }
+      ],
+      "fx": [],
+      "merchant": "Dunmore Quist's barrow: parks in a Crypts merchant room (the crossing: by one of the sarcophagi)"
+    },
+    "cry_embalmer_table": {
+      "tris": 246,
+      "budget": 320,
+      "role": "prop",
+      "bounds": {
+        "min": [
+          -1.0,
+          0.0,
+          -0.45
+        ],
+        "max": [
+          1.0,
+          1.705,
+          0.47
+        ]
+      },
+      "parts": [],
+      "lights": [],
+      "fx": [],
+      "curio": "embalmers-table"
+    },
+    "cry_ledger_lectern": {
+      "tris": 104,
+      "budget": 200,
+      "role": "prop",
+      "bounds": {
+        "min": [
+          -0.42,
+          0.0,
+          -0.37
+        ],
+        "max": [
+          0.42,
+          1.42,
+          0.37
+        ]
+      },
+      "parts": [],
+      "lights": [
+        {
+          "name": "light_37",
+          "kind": "candle",
+          "at": [
+            0.36,
+            1.47,
+            -0.2
+          ]
+        }
+      ],
+      "fx": [],
+      "curio": "the-wardens-ledger"
+    }
+  },
+  "notes": {
+    "doorSkins": "cry_door_arch is the open doorway; cry_door_iron the reliquary's door; cry_door_portcullis both doors of cry-t-well-of-bones (gate raised; it drops for the Falling Portcullis on N) and any Locked door; cry_door_secret a found secret door and the E/W sockets of cry-t-wardens-vigil (closed; the panel swings at phase 2)",
+    "facings": "cry_wall_niche_2m and cry_wall_bone_2m are wall-hung facings 1.6 m wide (0.45 / 0.3 m deep) in front of the shell wall",
+    "mist": "every Crypts template carries one cry_floor_mist per cell (07 §2.2: floor mist everywhere); draw it translucent",
+    "cutaway": "walls, doorways and corners on a side facing the camera use wallCut / doorwayCut / cornerCut; hide wall-hung props there",
+    "points": "light kind candle = a corpse-candle (tone corpse: cold green); lamp = a warm lantern; fx motes / smoke / drip / glow"
+  },
+  "floorMix": {},
+  "substitute": {},
+  "doorSkins": {
+    "cry-t-reliquary": {
+      "*": "cry_door_iron"
+    },
+    "cry-t-well-of-bones": {
+      "north": "cry_door_portcullis",
+      "south": "cry_door_portcullis"
+    },
+    "cry-t-wardens-vigil": {
+      "east": "cry_door_secret",
+      "west": "cry_door_secret"
+    }
+  }
+}

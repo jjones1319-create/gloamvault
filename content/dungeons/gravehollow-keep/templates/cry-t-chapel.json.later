@@ -1,0 +1,211 @@
+{
+  "id": "cry-t-chapel",
+  "zoneId": "the-crypts",
+  "footprint": {
+    "w": 2,
+    "h": 2
+  },
+  "doors": [
+    {
+      "side": "south",
+      "offset": 0
+    },
+    {
+      "side": "north",
+      "offset": 1
+    }
+  ],
+  "kinds": [
+    "elite",
+    "curio",
+    "treasure"
+  ],
+  "camera": {
+    "position": [
+      0,
+      11.2,
+      16.6
+    ],
+    "lookAt": [
+      0,
+      1,
+      0
+    ],
+    "fov": 44
+  },
+  "props": [
+    {
+      "meshId": "cry_altar_step",
+      "position": [
+        0,
+        0,
+        -4.8
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cry_candle_ring",
+      "position": [
+        0,
+        0.6,
+        -5.6
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cry_statue_weeping",
+      "position": [
+        -6.2,
+        0,
+        -6.2
+      ],
+      "rotationY": 35
+    },
+    {
+      "meshId": "cry_pillar_cluster",
+      "position": [
+        -5,
+        0,
+        -1
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cry_pillar_cluster",
+      "position": [
+        5,
+        0,
+        -1
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cry_wall_niche_2m",
+      "position": [
+        -7.9,
+        0,
+        -4
+      ],
+      "rotationY": 90
+    },
+    {
+      "meshId": "cry_wall_niche_2m",
+      "position": [
+        -7.9,
+        0,
+        -2
+      ],
+      "rotationY": 90
+    },
+    {
+      "meshId": "cry_wall_niche_2m",
+      "position": [
+        7.9,
+        0,
+        -4
+      ],
+      "rotationY": -90
+    },
+    {
+      "meshId": "cry_wall_niche_2m",
+      "position": [
+        7.9,
+        0,
+        -2
+      ],
+      "rotationY": -90
+    },
+    {
+      "meshId": "cry_floor_slab_open",
+      "position": [
+        -5,
+        0,
+        5
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cry_floor_slab_open",
+      "position": [
+        5,
+        0,
+        3
+      ],
+      "rotationY": 180
+    },
+    {
+      "meshId": "cry_candle_bracket",
+      "position": [
+        -5.4,
+        2.2,
+        -7.9
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cry_candle_bracket",
+      "position": [
+        6.6,
+        2.2,
+        -7.9
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cry_candle_bracket",
+      "position": [
+        -7.9,
+        2.2,
+        2.2
+      ],
+      "rotationY": 90
+    },
+    {
+      "meshId": "cry_candle_bracket",
+      "position": [
+        7.9,
+        2.2,
+        2.2
+      ],
+      "rotationY": -90
+    },
+    {
+      "meshId": "cry_floor_mist",
+      "position": [
+        -4,
+        0,
+        -4
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cry_floor_mist",
+      "position": [
+        -4,
+        0,
+        4
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cry_floor_mist",
+      "position": [
+        4,
+        0,
+        -4
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "cry_floor_mist",
+      "position": [
+        4,
+        0,
+        4
+      ],
+      "rotationY": 0
+    }
+  ],
+  "triBudget": 30000,
+  "drawCallBudget": 40
+}

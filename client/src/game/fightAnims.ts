@@ -1,6 +1,7 @@
 import type { Content } from '../../../sim/src/content.ts'
 import type { Actor, FightState } from '../../../sim/src/fight-types.ts'
 import type { SkillDef } from '../../../sim/src/types/content.ts'
+import { monsterAttackClip } from '../scene/monsters/manifest.ts'
 import type { SceneCue } from '../scene/sceneBus.ts'
 import type { Beat } from './fightView.ts'
 
@@ -12,7 +13,9 @@ import type { Beat } from './fightView.ts'
  * with two weapons; a bow skill or a bow's basic attack Shoots; a caster's skill (a Mana class) or a wand's basic
  * attack Casts; a shield or taunt skill Guards; an item is Interact. A won fight ends in Victory for everyone
  * standing, a lost one in Defeat. Hits taken, dodges, downs and revives are already scene cues; the scene plays
- * Hit, Dodge, Downed and Revive for them. Pure.
+ * Hit, Dodge, Downed and Revive for them. Phase 6: a monster's attack swings Attack1, or Attack2 when it is heavier than
+ * a normal action (or hits nothing: a howl, a web), trying its own clip of the attack's name first (Web, Howl); a pet's
+ * move is its Attack1. Pure.
  */
 
 const BOWS = new Set(['bow', 'shortbow', 'longbow', 'crossbow'])
@@ -62,11 +65,30 @@ export function skillInLine(content: Content, hero: Actor, text: string): SkillD
   return best
 }
 
-/** The `anim` cues of a beat: the acting hero's clip, or everyone's Victory / Defeat at the end. */
+/** A monster's or a pet's clip for its action line ("<actor> uses <attack>[ on <target>]"), or null. */
+export function creatureClip(content: Content, actor: Actor, text: string, speed: number): SceneCue | null {
+  const prefix = `${actor.name} uses `
+  if (!text.startsWith(prefix)) return null
+  const rest = text.slice(prefix.length)
+  if (actor.monster) {
+    const attack = actor.monster.attacks.find((a) => rest === a.name || rest.startsWith(`${a.name} on `))
+    const { clip, alt } = attack ? monsterAttackClip(attack, content.tuning.combat.weights.normal) : { clip: 'Attack1', alt: [] as string[] }
+    return { kind: 'anim', actorId: actor.id, clip, ...(alt.length ? { alt } : {}), speed }
+  }
+  if (actor.pet || actor.kind === 'summon') return { kind: 'anim', actorId: actor.id, clip: 'Attack1', speed }
+  return null
+}
+
+/** The `anim` cues of a beat: the acting hero's (or monster's, or pet's) clip, or everyone's Victory / Defeat at the end. */
 export function beatAnims(beat: Beat, fight: FightState, content: Content, speed = 1): SceneCue[] {
   const out: SceneCue[] = []
   const lead = beat.events.find((e) => e.kind !== 'fortune') ?? beat.events[0]
   if (!lead) return out
+  const creature = lead.kind === 'action' && lead.actorId ? fight.actors.find((a) => a.id === lead.actorId && a.kind !== 'hero') : undefined
+  if (creature) {
+    const c = creatureClip(content, creature, lead.text, speed)
+    if (c) out.push(c)
+  }
   const hero = heroOf(fight, lead.actorId)
   if (hero) {
     let clip: string | null = null

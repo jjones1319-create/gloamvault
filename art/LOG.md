@@ -1095,3 +1095,1354 @@ the Mender S robe ratio 0.28; the Mender's robe body 13.5 mm off the skin (its s
 **Final numbers** (broad, F / S tris): Arcanist helmet 824 / 212 · chest 1,708 / 2,698 · legs 462 / 414 · gloves 336 / 432 · boots 320 / 520 · **set 3,650 / 4,276**. Mender helmet 850 / 360 · chest 1,870 / 2,588 · legs 338 / 404 · gloves 322 / 612 · boots 446 / 480 · **set 3,826 / 4,444**. Exports: `gear_arcanist_broad.glb` 715 KB, `gear_arcanist_slight.glb` 731 KB, `gear_mender_broad.glb` 773 KB,
 `gear_mender_slight.glb` 786 KB — 10 pieces each, skinned to the 65-joint rig, the five species morph targets (default
 weights 0), COLOR_0 exact (`inspect-glb.ts`: worst distance 0.0000), `hides` as lists.
+
+## Phase 6 · Rounds — the parallel passes (2026-10-28)
+
+Phase 6 ran six Blender passes at once — the shared + Cellars kit, the Drowned Vault kit, the Crypts kit and three monster passes (A: the creatures on their own rigs; B: the bases on the hero rig; C: the spirits, tentacles, oozes and the leech) — beside a client pass that built the rooms, monsters and effects in the game. Each pass logged its own rounds; they are merged here unchanged, pass by pass (headings levelled). The renders are in `art/renders/env/<zone>/` and `art/renders/monsters/<base>/`; the curated set in `art/review/`. What the lead saw in the game is at the end of this section.
+
+### The shared + Cellars kit pass
+
+*Scripts: `tools/blender/env/kit_lib.py` (the shared kit toolkit — conventions in its docstring; the Crypts and Vault
+passes build on it) and `tools/blender/env/build_kit_cellars.py`. Renders: `art/renders/env/shared/`,
+`art/renders/env/cellars/` (`kit_sheet.png`, `room_<template>.png` from each template's own camera, `_phone.png` at
+phone size). Exports: `client/public/models/env/kit_shared.glb` + `shared.json`, `kit_cellars.glb` + `cellars.json`;
+palettes `tools/blender/palettes/cellars.json`, `shared.json`.*
+
+#### Phase 6 · Cellars kit round 1 — 2026-10-28 — every piece, the bake, the export, the ten rooms
+
+**Built.** `kit_lib.py`: a `Geo` (one palette slot, one variation value and one smoothing angle per face), primitives
+(box, bevel_box, chamfered box, convex hull, rock, lathe, tube, prism, slab, torus, surface, disc, ribbon, chain, a
+running-bond brick face that tiles across 2 m segments, flagstones), `realize` (hard edges split by angle, faces of
+different slot or G split apart with the smooth normals kept as custom normals, `gv` = slot / 15, variation, AO = 1),
+moving parts `<meshId>.<part>` with their origin at the hinge, light / fx empties, the Cycles AO bake into `gv`.B with
+stand-in occluders (floor plane, wall plane, the tiling neighbours), the review material (palette × toon ramp × AO ×
+variation, emissive glow and gem), labelled contact sheets, room assembly from a template exactly as `layout.ts`
+builds it (walls cut to 0.55 m on the camera's side, wall-hung props on those walls hidden), the template camera
+(vertical fov), the export (`.glb` + the `<zone>.json` piece list). `build_kit_cellars.py`: 12 shared pieces (07's ten +
+`shr_brazier`, `shr_stairs_up`) and 40 Cellars pieces — 07's 24, the cut-away shell (`cel_wall_brick_cut`,
+`cel_door_arch_cut`, `cel_wall_corner_cut`), the props 07's template table names (stool, sack pile, bone pile, hanging
+chain, lantern, lantern hook, tripwire rail, dais, captain's chair) and four curio looks (dice table, larder, toll
+shrine, gallows beam). Build + bake + export in 14 s; `kit_shared.glb` 175 KB, `kit_cellars.glb` 621 KB.
+
+Decisions taken inside the round (to log as Proposed): floors and walls carry their detail as geometry (raised
+flagstones, bricks with a lit top bevel) because the Phase 6 contract has no textures — 07's 2- and 24-triangle tile and
+wall figures assumed a 2k atlas; a doorway piece is **4 m wide** (the 2 m opening + 1 m of wall each side) because a 2 m
+opening centred on an 8 m edge cannot sit on the 2 m segment grid; slot 0 is the zone's wall masonry and slot 1 the floor
+stone and mortar (so the shared trap plate always matches the floor); the earth floor borrows dark wood's brown.
+
+**Renders read:** `shared/kit_sheet.png`, `cellars/kit_sheet.png`, all ten `room_cel-t-*.png` (915 × 412, the phone's
+CSS size).
+
+**Defects found (fixed in round 2):**
+1. Sconces sit inside door sockets in six templates — the storeroom's E/W sconces at z 0, the gallery's at z 0, the
+   strongroom's on the north door, the tap room's E/W pair at z −4, and at the very jamb of the cold hearth's W and the
+   stairwell's E/W doorways; the torches float in the open arches. A content defect: the sconces move clear of the sockets.
+2. The review background showed the ambient colour (warm grey) instead of the game's dark fog, and the torches made no
+   visible pool of light: every room looked evenly lit.
+3. `shr_brazier`: the glowing coal bed filled the bowl edge to edge — it read as a yellow table top, not a fire bowl.
+4. `shr_gold_pile`: the heaps were faceted lumps (gold ore), not piles of coins.
+5. `cel_wall_brick_dmg`: the little caps on its two end columns stuck out of the broken top like flaps (seen in the
+   stairwell); the 6% random swap put three broken segments in one small room.
+6. Random dirt / flagstone tiles in the cistern and kennels read as a checkerboard of 2 m squares.
+7. `cel_floor_puddle` read as dark slime: the water colour too dark, the sheen too faint.
+8. The kennels' four low walls in a row do not read as *pens* (no dividers) — a template matter, noted for the lead.
+
+**Held:** every room reads at phone size from its own camera: brick walls, arched doorways with their stone surround
+and dark void, the cut-away wall on the camera side, corner piers, crates and barrels standing on the floor, the cask
+row and wine racks, the grate, banners, beams and the hanging cage. Rooms are 3.4k–10.2k triangles (template budget
+30k) and 10–14 unique meshes (≈ draw calls with instancing).
+
+#### Phase 6 · Cellars kit round 2 — 2026-10-28 — the templates' sconces, the review light, five pieces
+
+**Changed.** Content (defect 1 — the only template edits, all minimal moves, `npm run lint` green): sconces out of the
+door sockets — storeroom (−3.9, 2, −2.4) and (3.9, 2, 2.4); gallery (±11.9, 2, 2.4), and its third sconce, which sat on
+the camera-side wall the client always hides, to the far wall (0, 2, 3.9) facing north; strongroom (2.4, 2, −3.9); tap
+room (±7.9, 2, −6.2); cold hearth (−3.9, 2, −2.4); stairwell (±3.9, 2, −2.4); guardpost (3.9, 2, 2.3) and its banner,
+which hung half over the west doorway, to (−3.9, 2.5, −2.6). Props standing in a doorway's mouth: the storeroom's
+barrels to (3.3, 0, 1.6), (−3.4, 0, 1.55), (3.2, 0, −1.45); the wine vault's third cask, which blocked its north door,
+to (6.3, 0, −3). Kit: the review rooms see the game's fog colour (#17110e) while lit by a warm ambient (a Light Path
+world); `shr_brazier` a bowl with a raised rim, its glowing bed under lumps of coal; `shr_gold_pile` low smooth heaps
+with coins on and around them; `cel_wall_brick_dmg` without the end caps and a shallower break, 4% in the reviews; earth
+floors as whole rooms (kennels, cistern), never mixed tile by tile; the puddle lighter with a sheen; bricks ± 0.18 and
+flagstones ± 0.21 of G; the copings darker.
+
+**Renders read:** both sheets, all ten rooms.
+
+**Defects found (fixed in round 3):**
+9. The rooms still read flat: at 380 W two torches lift every surface of an 8 m room into the toon ramp's top two steps
+   (0.90 / 1.06), so there is no pool of light — the ambient alone should sit on step 2 and the flames add steps 3–4
+   within ~3 m.
+10. `shr_brazier`: seven small coals on a bright bed read as a pie seen from above.
+11. `cel_wall_brick_dmg`: with the end caps gone, the neighbouring segment's coping end now juts above the broken
+    column (stairwell, right).
+12. `cel_floor_puddle` still reads as a flat teal stone: no reflection.
+13. The kennels' pens (round 1, 8): 07 asks for "4 pens of low walls"; the template has only the four pen fronts. Content:
+    three dividers (`cel_wall_low`, rotationY 90, at x −4, 0, 4, z −3) make four 4 m pens, each with its front wall and
+    a gate either side.
+
+**Held:** the moved sconces sit on solid wall in every room; the fog background reads like the game; the guardpost's
+brazier, the cask row and the storeroom read clearly; the cistern's earth floor reads as one floor.
+
+#### Phase 6 · Cellars kit round 3 — 2026-10-28 — the light, the pens, five fixes
+
+**Changed.** The review light model (ambient on the toon ramp's second step, torches 130 W / fires 220 W); the brazier's
+coal bed under eleven bigger coals; the damaged wall's break kept off its two end columns, which keep their coping;
+two glints on the puddle; content: the kennels' three pen dividers (round 2, 13).
+
+**Renders read:** all ten rooms (sheets unchanged).
+
+**Defects found:**
+14. **The rooms looked the same in rounds 1–3 whatever the ambient and the torch power** — measured, not guessed
+    (`t_light.py`, a scratch test: a floor patch under a 600 W lamp read 0.184 with the lamp inside the review's flame
+    stand-in and 0.320 without it): the emissive flame mesh drawn at each light enclosed the point light and cast
+    shadows, so no torch ever lit a room; every round-1–3 room was lit by the ambient alone. Fixed (the stand-in casts
+    no shadow) and re-rendered: the cold hearth's fire now throws its bands of light on the floor, the sconces warm the
+    walls round them. A review bug only — the game's flames are sprites.
+15. Where a full-height wall meets the cut-down corner on the camera's side, its end is open (segments had no end faces;
+    neighbours normally hide them): the hollow end and the coping read as a flap (stairwell right, every room's near
+    corners). Fixed in round 4: end caps (the dark cross-section) on `cel_wall_brick_2m` and `cel_wall_brick_dmg`; the
+    rule added to kit_lib's docstring for the other zones.
+16. The gallery's third sconce, moved to the far wall in round 2, hides behind the middle beam from the camera → content:
+    (2, 2, 3.9).
+
+**Held:** brazier coals read as a burning bed in an iron bowl; the puddles read as water; the kennels read as four
+pens with the cage between them; every room under working torches: the walls warm near the flames, floors stay readable.
+
+#### Phase 6 · Cellars kit round 4 — 2026-10-28 — end caps, the final renders
+
+**Changed.** End caps on the wall segments (defect 15); the gallery's far sconce to (2, 2, 3.9) (defect 16); the full
+build (AO at 160 samples, sheets at 400 px, rooms at 1830 × 824 plus a `_phone.png` at 915 × 412).
+
+**Renders read:** both sheets, all ten rooms (full size and phone size).
+
+**Held:** every template reads from its own camera at phone size: walls close at the camera-side corners, every sconce
+sits on solid wall and lights it, doorways stay clear, props stand on the floor and against the walls. Exports checked
+(a scratch reader of the .glb as the client sees it): slot codes exact (worst 0.00000), AO 0–1, every piece at the
+origin with its parts and points as children, the .json triangle counts equal to the .glb's. Totals: `kit_shared.glb`
+12 pieces, 2,588 triangles, 188 KB; `kit_cellars.glb` 40 pieces, 8,803 triangles, 623 KB. Rooms 3.6k (cistern) –
+10.3k (tap room) triangles against the templates' 30k, 9–14 unique meshes (draw calls with instancing).
+
+**Still open (for the lead / the next round):**
+- 07 puts Vexa "in her chair on the dais" in the tap room; the template has neither. `cel_dais` and `cel_chair_captain`
+  exist, but the client stands actors at y 0, so adding them needs the client to lift a mark onto the dais — not done.
+- 07's other named template props (stools, sack and bone piles, hanging chains, the entry lantern, lantern hooks,
+  tripwire rails) and the four curio looks are built but placed by no template yet.
+- Floors and walls carry their detail as geometry, so 07's texture-era numbers are exceeded (floor tile 52 vs 2, wall
+  154 vs 24, door arch 304 vs 220); several props too (cage 578 vs 420, crate stack 150 vs 36, pillar 198 vs 48, shelf
+  419 vs 320, gold pile 157 vs 60). The rooms stay at a third of their budget.
+- Hanging pieces end in the air: the gallery's beams cross over the cut-down camera-side wall, the cage's chain stops
+  above the cage (there is no ceiling).
+- The stairs' fade to black hides all but the top three treads (as asked: "into a black fade"; may read too dark).
+- The review light is a stand-in for the client's (a hemisphere-like ambient + two 2,700 K torches); the client's
+  `npm run shots` is the real judge.
+
+### The Drowned Vault kit pass
+
+*One entry per round (`art/LOG.md`'s format): what was built, what the renders showed, the defects as a numbered list with
+their fixes. Script: `tools/blender/env/build_kit_vault.py` (re-runnable: pieces, AO bake, export, renders). Renders in
+`art/renders/env/vault/` (git-ignored): `kit_sheet.png`, `piece_<meshId>.png`, `tpl_<template>.png` (the template's own
+camera), `plan_<template>.png` (straight down), `report.md` (triangles per piece and per assembled room).*
+
+#### Phase 6 · Vault round 1 — 2026-10-28 — every piece, the ten templates, the first renders
+
+**Built.** The 23 `vlt_` pieces of 07 §2.2 and eleven extras the Vault templates need (the shell's cut-away wall and
+doorway, a wet floor tile, a brass-pipe wall variant, the soft water edge, the quay edge, the rope ladder, the flooded
+stair-well, the chapel pew, the cult banner, the throne room's brazier), each a vertex/face list with one palette slot
+per face; Cycles AO baked into COLOR_0.B; `kit_vault.glb` (483 KB) and `vault.json` exported; the ten Vault templates
+written as `vlt-t-*.json.later` (schema + rule 17 checked with ajv; `npm run lint` green) and assembled from their JSON —
+floor tiles, walls, doorways, corners and props — under each template's own camera with two torches at the party and
+the lamps' `light_<n>` points. Rooms: 1.5k–5.9k triangles, 9–16 meshes (draw calls before instancing).
+
+**Renders read:** `kit_sheet.png`, all ten `tpl_*.png` and `plan_*.png`.
+
+**What works:** every piece reads on the sheet (the round vault door, the sluice gate under its winch, the kneeling brass
+sentinel, the Tide Altar's shell basin and lamps, the raft under its coral awning, the throne's gallery of six lamps);
+the rooms compose from their cameras (the throne at the end of its hall, the chapel's altar behind the pews, the raft in
+the dock's basin, the anemone grotto's cyan clusters by the breach); doorways are clear in every room; teal walls, brass
+trims and cyan lamps say *Vault* at a glance.
+
+**Defects found:**
+1. All water reads as a pale, opaque grey-blue sheet (knee-deep, deep, channel, pools, waterfalls, puddles): the review
+   water material added a grey grazing-angle rim and a strong glossy term. → darker teal through the toon ramp, no grey
+   rim, soft lamp glints, caustic lines (07's "caustic-scrolling" water) on the translucent water.
+2. The torch highlights on the water are big white glare discs (flooded cell, throne). → glossy roughness up, strength
+   down (part of 1).
+3. Floors bake almost black: the AO bake's ground plane lay exactly in the floor tiles' plane. → occluder planes 1 cm
+   below the floor; tiles bake with copies of their neighbours (so the joints match); AO distance 0.8 m (kit_lib's).
+4. The salt tide-line is a stark 14 cm white stripe on every wall and pillar. → a verdigris algae band with a thin pale
+   salt line above it.
+5. The brass-pipe wall variant reads as yellow brackets or ladders at room distance (a short run that turns back into
+   the wall at both ends). → vertical pipes rising from the floor into the cornice, a valve wheel, a branch between.
+6. The wet floor tile's puddle reads as a grey triangle. → a rounder puddle, and the water material fix.
+7. The 4-triangle floor slab is a flat field at phone size (no joints). → a chamfered 2 m slab with ink joints (10
+   triangles: over 07's 4, as the Cellars' floors are, D-110 — no textures carry the joints).
+8. Formats differ from the shared kit library (`kit_lib.py`, published during this round): palette file layout, `hole`
+   (not `replacesFloor`), part / point custom properties, globally numbered `light_<n>`, roles, the JSON layout, the cut
+   corner post. → converted in round 2.
+
+#### Phase 6 · Vault round 2 — 2026-10-28 — water that reads as water, lit floors, the shared conventions
+
+**Built.** The round-1 fixes: the review water material rebuilt (the palette water through kit_lib's toon ramp, caustic
+lines on the translucent water, soft lamp glints, no grey rim); AO occluder planes 1 cm under the floor and floor
+tiles baked among copies of their neighbours, AO distance 0.8 m (`kit_lib.AO_DIST`); the floor slab chamfered (10
+triangles) with darker joints; the salt tide-line now a 12 cm verdigris band under a 5 cm salt line (walls, doorways,
+pillars); the pipe-wall variant rebuilt as two vertical brass pipes from floor flanges into the cornice, a branch and a
+valve wheel; the wet tile's puddle an 8-sided pool fading to nothing. Converted to `kit_lib`: the palette file
+(`{zone, about, names, colours}`, written by the build; slot 1 now carries floors and paving, so the Vault's floor is
+07's wet basalt lifted to #34444e and the walls #4d6372), `role` per piece (shell, prop, wall-hung, decal + `water`),
+`hole` for the pieces that take the floor tile away, parts with `kind: part, part, piece, axis, note` (the vault door's
+`leaf`, the sluice `gate`, the secret `panel`, the wheel, the sentinel's `construct`, the cage's `prisoner`, the throne's
+`seat`), points numbered across the session (`light_<n>`, `fx_<n>`, `userData.light` / `fx` / `piece` / `color`), the
+`vault.json` layout of `kit_lib.export_kit` (+ `water`), the cut corner post (`vlt_wall_corner_cut`), and the review
+material is now `kit_lib.env_material` (the shading the client is asked for). Wall-hung props on the walls cut for the
+camera are left out, as the client does.
+
+**Renders read:** `kit_sheet.png`, all ten `tpl_*.png`, `plan_vlt-t-throne.png`.
+
+**What improved:** the flooded rooms read at once — the chapel's nave and the throne hall are dark teal water with the
+pews and the dais standing in it and the dry step at the door; the dock's basin and the ledge's pool are black water
+under their quays; floors show their 2 m slabs; the brass pipes read as pipes.
+
+**Defects found:**
+1. The caustic network is a regular, unbroken Voronoi web: in the close rooms (flooded cell, stair well) it reads as
+   glowing grout or cracked ice, and it also lands on the waterfall sheets (stained glass). → warp the cells with
+   noise, break the lines up, thinner and dimmer, and only on water that faces up.
+2. The torch glints on the knee-deep water are still large soft discs near the camera. → glossy strength halved.
+3. The slab joints in ink draw a hard black grid at close cameras (dock, stair well, grotto: a tiled-bathroom look). →
+   joints in the floor's own dark stone, darkened by G, their slope and the baked AO.
+4. Props have no outline while the Cellars' review outlines them (kit_lib.build_room: 0.012 m on every role but shell
+   and decal). → outlines on props and wall-hung props (water faces keep zero thickness so pools keep their soft edge).
+5. The lit braziers of the throne room show cold coals. → a warm flame stand-in at each brazier and fire light (the
+   client draws the real flame there).
+6. Client compatibility, found reading `client/src/scene/env/` and `room/dress.ts`: the client reads `mount` (tile,
+   shell, corner, floor, wall), not `role`; a `_wall_` piece on the room edge without `mount: 'wall'` replaces the wall
+   segment behind it (the shelf wall and the breach would have left holes in the wall); any stairs-kind prop whose
+   bounds go below -0.2 m cuts a floor hole. → `mount` written as userData and in `vault.json`; the cage's bars and
+   the tipped chest lifted so neither reaches -0.2 m.
+
+#### Phase 6 · Vault round 3 — 2026-10-28 — caustics, joints, outlines, flames
+
+**Built.** The round-2 fixes: caustic lines on warped Voronoi cells, broken up by noise, thinner and dimmer, only where
+the water faces up (falling sheets show their streaks); the glints halved; slab joints in the floor's own dark stone
+(G 0.05 at the joint bottom, plus their slope and the baked AO); outlines (0.012 m in rooms, 0.008 m on the sheet) on
+props and wall-hung props, with water vertices held at zero thickness; a warm flame stand-in at every lit brazier and
+fire; `mount` written for the client; the cage's bars and the tipped chest kept above -0.2 m.
+
+**Renders read:** `kit_sheet.png`, all ten `tpl_*.png`.
+
+**What it shows:** every Vault room reads from its own camera at phone size. The throne hall: the dais rising out of
+dark water toward the throne, the gallery's six blue lamps and the sigil above, four lit braziers, chained pillars,
+pipes, the dry strip at the door. The chapel: the flooded nave with its pews, the altar's three lamps at the far end,
+the wheel on the west wall, the dry step. The flooded cell's water reads as a pool (caustic light on its floor, the
+chest half under it, the breach pouring in); the dock's basin and the ledge's pool are black water under their quays;
+the grotto's anemones glow by the breach; the sentinel hall's four brass constructs kneel on their plinths among the
+treasury shelves. Floors show their 2 m slabs without a hard grid; the salt line is a thin pale line over verdigris.
+
+**Defects found (minor; carried to the final round or the honest list):**
+1. The torchlight pools (the toon ramp's steps under a point light) draw large pale ellipses on the floor in front of
+   the camera in every room. → kept: that is how the client's two torches light a room through the toon ramp; the
+   client's fog will soften it.
+2. The pillar's chain reads as a faint dotted band at room distance. → kept (it reads on the sheet; at 20 m it is
+   texture, not a silhouette).
+3. The renders so far are `--quick` (half resolution, few samples). → the final round renders at full quality with a
+   half-size phone read per room.
+
+#### Phase 6 · Vault round 4 — 2026-10-28 — final: full-quality renders (final)
+
+**Built.** No geometry changes after round 3 (the dead round-1 review code removed); the whole build re-run at full
+quality: AO at 96 samples, the sheet at 420 px cells, every room at 1560 × 720 with a half-size phone read
+(`tpl_<id>_phone.png`), 642 s. `kit_vault.glb` 493 KB (35 pieces, 42 meshes, 6,584 triangles, 7 parts, 12 lights,
+14 fx; every COLOR_0.R an exact slot code, 275 water vertices with A < 1), `vault.json` 27 KB. Ten templates validate
+(ajv strict + rule 17, `npm run lint` green with the `.later` files in place). Rooms: 1.5k–6.4k triangles, 10–17
+meshes before instancing.
+
+**Renders read:** `kit_sheet.png`, `tpl_vlt-t-throne.png`, the phone reads of the chapel, the sentinel hall and the dry
+ledge. Every room reads from its camera at phone size; no new defects.
+
+**What a script did not reach (the honest list, 11 §10):**
+1. Water is a review approximation: the client needs its own water material — translucent with COLOR_0.A as opacity
+   (the soft shore, the pools' fading rims), caustics on the knee-deep tiles, a fog volume over the deep. Its current
+   per-meshId rule makes the `vlt_floor_water_*` tiles translucent but draws the water faces inside mixed props opaque
+   (the breach's waterfall and pool, the cage's and chest's pools, the stair-well's pool, the channel, the altar's basin,
+   the leech jar): they read as dark-teal stains, not water, until it splits slot 15.
+2. The deep water and the channel need their floor tiles taken away (`hole` in vault.json; their bounds also reach
+   below -0.2 m); the client cuts holes for stairs only today, so it would lay basalt over them.
+3. The shared campfire's embers take the Vault palette's glow slot: cyan coals under the client's warm flame (the palette
+   rule; a Vault rest fire reads cold).
+4. The toon ramp under two point lights draws large pale ellipses on the floor in front of the camera in every room.
+5. The pillar's chain is a faint dotted band at room distance; the thrall in the cage, the leeches and the dormant
+   construct are blocky stand-ins (the bestiary meshes take over in fights); anemones are star fans.
+6. The floor slab is 10 triangles against 07's 4 (its joints are geometry: no textures, D-110 — the Cellars' floors are
+   52); every other 07 piece is at or under its number.
+
+### The Crypts kit pass
+
+*One entry per round (`art/LOG.md`'s format): what was built, what the renders showed, the defects as a numbered list
+with their fixes, what is left. Script: `tools/blender/env/build_kit_crypts.py` (+ `crypts_geo.py`, `crypts_pieces.py`,
+`crypts_rooms.py`); renders in `art/renders/env/crypts/` (`kit_sheet.png`, `room_<template>.png`, `rooms_sheet.png`).
+Run: `blender -b -P tools/blender/env/build_kit_crypts.py -- --quick [--write-templates]`.*
+
+#### Phase 6 · Crypts round 1 — 2026-10-28 — the 22 pieces of 07, the template props, first rooms
+
+**Built.** My own small geometry kit (`crypts_geo.py`: a vertex/face list with a palette slot, smoothing group and
+weathering hint per face; edges split where slots or smoothing change or flat faces fold, so every face keeps its own
+colour and AO; `gv` = R slot · G weathering from value noise and per-face hints, darker near the floor · B Cycles AO baked
+per piece with a floor plane and, for wall-hung props, a wall plane), because `kit_lib.py` had not landed yet. All 22
+`cry_` pieces of 07 §2.2 plus 15 the templates and the Warden's arena name (candle bracket, hanging candle crown, altar
+step, hearth, cot, the sexton's tools, shuttered window, stone shelf, the Bone Reliquary niche, spiral stair, cocoon,
+bone pile, Dunmore Quist's barrow, the Embalmer's Table, the Warden's Ledger): 37 pieces, 5,968 triangles, every one
+inside its budget (07's for the 22; my own for the extras). Moving parts: sarcophagus `lid` + `chains`, iron gate
+`leaf_l`/`leaf_r`, portcullis `gate`, secret door `door`, five `urn_<n>`, the bell. Light points at every wick (the
+candle ring's twelve each its own), fx points for motes, drips and the vent. The ten Crypts templates written as
+`content/dungeons/gravehollow-keep/templates/cry-t-*.json.later` (they validate against the template schema with the
+linter's ajv options; rule 17 holds). Export: `kit_crypts.glb` 405 KB + `crypts.json`.
+
+**Renders read:** `kit_sheet.png`, the ten `room_*.png` from their own cameras.
+
+**What read well:** the niche walls (catacomb loculi with shrouds and skulls) and the bone walls (rows of skulls between
+bands of long bones, a skull-and-crossed-bones crest) read at phone size; the sarcophagi (effigy, chains, skull boss),
+the bier, the urn row, the weeping statue (hooded, green tears, basin), the reliquary niche (skull in a fan of finger
+bones), the bone grate over its pit, the spiral stair round its newel, the barrow; the cut-away front walls frame every
+room like a diorama; the rooms are not too dark (pale walls, a slate floor, bone and candle accents).
+
+**Defects found:**
+1. `kit_lib.py` (the shared pass's toolkit) landed during the round with conventions mine differ from: the doorway
+   opening is shared by every zone (straight jambs to 2.1 m, a round arch to 3.1 m, so the lit-door marker fits) — mine
+   was a pointed opening springing at 1.9 m; each zone builds **cut** versions of its wall, doorway and corner; wall-hung
+   props sit 0.1 m in front of the wall face (`HANG_OFF`, templates at ±3.9); light points are `light` = candle / lamp …
+   and fx `glow / drip / motes / smoke / embers`; parts carry `part`, `piece`, `axis`; palettes are
+   `{zone, about, names, colours}` and the manifest is `export_kit`'s; holes in the floor are `info.hole`.
+   → round 2 builds on `kit_lib` (Kit, bake specs with tiling neighbours, `export_kit`, `room_placements`,
+   `build_room`, the shared `env_material`).
+2. My templates put niche walls, bone walls, portcullis frames and the Vigil's secret doors **on** the room edge lines,
+   relying on a "an edge prop replaces the shell segment" rule; `kit_lib.room_placements` (and so, probably, the client)
+   has no such rule, so they would overlap the shell walls. → niche and bone walls become wall-hung facings (0.1 m in
+   front of the wall, their depth coming into the room); door skins (iron gate, portcullis, secret door) leave the
+   templates and become a note for the client (which door gets which skin).
+3. The floor reads as one flat grey sheet: the slab's weathering pattern is too faint. → stronger G (joints dark,
+   worn centre light).
+4. Too little green: the rooms read grey and bone. → a greener stone and slate, brighter moss.
+5. The web sheet reads as a paper sign with a hole. → a strand web (radials and two rings) in 20 triangles.
+6. Vault ribs over a cut-away wall float (their near foot rests on a wall the camera cuts to 0.55 m) and, seen end-on
+   (the spider gallery), read as a pole. → a half rib (`cry_vault_rib_half`, the far half of a rib with a boss) for the
+   cut-away rooms.
+7. The spiral stair's floor collar leaves four triangular holes where the square's corners fall inside a segment.
+8. The candle ring's iron hoop is too thin to see at room distance.
+9. The hanging crown and the pits were hidden under the kit sheet's ground plane.
+10. Review harness: the hero stand-ins all rendered bone-pale (a shared mesh's material list cleared per object); the
+    window's moonlight drew a candle flame; marks stood in rooms without fights; single-door templates rendered all four
+    sockets as doorways; the sexton's cot and tools sat under the bottom edge of its close camera.
+11. The chapel's nave is a bare 16 × 16 m floor; the Vigil's twenty identical niche bays repeat.
+
+#### Phase 6 · Crypts round 2 — 2026-10-28 — on kit_lib's conventions
+
+**Changed.** The build now hands the authored pieces to `kit_lib` (Kit / Piece, bake specs with tiling neighbours,
+`export_kit`, `room_placements` / `build_room`, the shared `env_material` and label strips), so the Crypts kit agrees
+with the shared, Cellars and Vault kits: the doorway carries kit_lib's opening (jambs to 2.1 m, a round arch to 3.1 m)
+and the Crypts' pointed arch is now a proud pointed archivolt over a dark tympanum; three cut-away shell pieces
+(`cry_wall_cut_2m`, `cry_door_arch_cut`, `cry_wall_corner_cut`); wall-hung pieces sit 0.1 m off the wall (templates at
+±3.9); light points are `candle` (tone corpse) and `lamp`, fx `motes / smoke / drip / glow`; parts carry
+`part / piece / axis / note`; holes are `info.hole`; the palette file and `crypts.json` are kit_lib's formats (the shell
+block names the cut pieces). Niche and bone walls became 1.6 m facings in front of the shell wall; door skins left the
+templates; every template carries one `cry_floor_mist` per cell (07: floor mist everywhere); the crossing and the spider
+gallery use a new `cry_vault_rib_half` from their far walls. Palette greener (stone #8c9b93, slate #46555a, moss
+#3f8573). Fixed round 1's 7–10: the stair collar fills the square's corners, a chunkier candle-ring hoop, the sheet's
+ground plane is dropped for pits and hanging pieces, coloured hero stand-ins, no flame for moonlight, marks only in
+fight rooms, single-door templates draw their far socket open, the sexton's cot moved under the window and the tools to
+the west wall. 41 pieces; `kit_crypts.glb` 425 KB; COLOR_0 R exact on all 10,686 vertices.
+
+**Renders read:** `kit_sheet.png` (now with kit_lib label strips, part names), the ten rooms, `rooms_sheet.png` (half
+size: the phone read), and a Cellars room for comparison.
+
+**What read well:** every room reads as the Crypts at half size and clearly not the Cellars (teal-misted floors,
+grey-green stone, bone, green candle flames vs warm brick, grey flags and torches); the Vigil (niche bays all round,
+bone walls behind the bier, four pillars, bone piles) and the catacomb run read strongly; the crossing's half ribs
+converge on the crown; the well's portcullis skins, the reliquary's iron gate and the corner mourners show.
+
+**Defects found:**
+1. Walls and floors are flat planes — the weakest surfaces on screen, where the Cellars carry brick and flagstone joints
+   as geometry (that pass exceeded 07's 2- and 24-triangle tile and wall numbers on purpose: they assumed a textured
+   atlas, and D-110 has no textures). → round 3 makes the same call: a tile of two bevelled grave slabs with worn
+   inscription panels and moss in the joints (38 triangles), ashlar walls in five courses (66).
+2. The spider gallery's half ribs float as hooks above the far wall: from a 26° camera anything above ~4.3 m at the
+   room's middle projects over the wall's top line. → the ribs spring from corbels at 2.6 m and rise 1.6 m (the apex in
+   front of the far wall; the Tomb Spiders' ceiling marks at 2.5 m hang under them).
+3. The strand web reads as a scribble from an angle. → a translucent fan of silk behind four strands and a ring.
+4. `cry_door_secret` 182 / 180. → the panel's top face goes (hidden in the wall while shut).
+
+#### Phase 6 · Crypts round 3 — 2026-10-28 — grave slabs, ashlar, ribs, the manifest's shell block
+
+**Changed.** Round 2's 1–4: `cry_floor_slab` is two bevelled grave slabs with worn inscription panels and grave-moss in
+the joints (38 triangles), `cry_floor_slab_open` keeps one slab and opens the other's grave (62), `cry_wall_plain_2m`
+carries five courses of ashlar with lit top bevels over its mossy plinth (66) — 07's 4 / 40 / 24 were written for a
+textured atlas; like the Cellars pass, the detail is geometry here (D-110: no textures) and the room budgets hold.
+The half rib springs from a corbel; the web is a translucent fan of silk behind its strands; the secret door is 180.
+`crypts.json` gains the Cellars' shell block (doorways by state: open `cry_door_arch`, locked `cry_door_portcullis`,
+secret `cry_door_secret`, gate `cry_door_iron`; opening, tile, segment, heights, notes) and a machine-readable
+`doorSkins` map per template, plus empty `floorMix` / `substitute`.
+
+**Checked:** the templates validate against the template schema with the linter's ajv options; and on a scratch copy of
+`content/` with the ten-floor dungeon file and the ten templates renamed to `.json`, the real linter reports nothing
+about the templates (only that the Crypts zone's monsters do not exist yet — Phase 7 content). `npm run lint` green.
+
+**Renders read:** `kit_sheet.png`, the ten rooms, `rooms_sheet.png`.
+
+**What read well:** the ashlar and the slab grid (green joints under the mist) make every room read as built stone at
+half size; nothing else regressed.
+
+**Defects found:**
+1. The ribs bulged above their own apex: my "pointed" halves were arcs of a circle centred between the foot and the
+   axis, so each half humped higher than the apex — the full rib read as an "M" from round 1 on, the half rib as a hook.
+   → an elliptical half-arc that leaves the foot vertically and still climbs at the apex (two halves meet in a gentle
+   point), never above it.
+2. The spider gallery's ribs, seen end-on from a north camera, read as a post and two hooks however low they spring.
+   → the gallery's vault ribs become three wall arches (`cry_vault_rib` against the far wall, on its top line).
+3. The walls now read too pale (lit ashlar faces), so the bone accents lose contrast. → stone #8c9b93 → #77867f.
+4. The mist (0.3 opacity) washes the floor a light teal that the bone-pale foes stand on. → 0.22.
+5. The web's teal fill reads as a kite or a pane. → whitish silk (cloth2), 0.5 opacity.
+
+#### Phase 6 · Crypts round 4 — 2026-10-28 — ribs that arch, wall arches, darker stone
+
+**Changed.** Round 3's 1–5: the ribs follow an elliptical half-arc (vertical at the foot, still climbing at the apex,
+never above it), so the full rib is a gently pointed arch and the half rib rises cleanly to its boss; the spider gallery's
+vault ribs are three `cry_vault_rib` wall arches on its far wall's top line; stone #77867f; mist 0.22; whitish web silk
+at 0.5.
+
+**Renders read:** the kit sheet, the ten rooms at full size and the half-size sheet.
+
+**What read well:** the gallery's far wall is crowned by three pointed arches over its webs and cocoons — a clean gothic
+silhouette with nothing floating; the crossing's half ribs climb from the far walls to the crown's boss; the darker
+stone gives the bone walls, mourners, effigies and shrouds their contrast back; the slab grid with green joints and the
+ashlar read in every room at half size; the chests sit on the reliquary's shelves; the well's grates show the bones
+below.
+
+**Defects found:**
+1. The sexton's window showed no moonlight: its pane was authored "recessed" behind the wall face, which a wall-hung
+   piece cannot be (the shell wall has no hole). → the pane and bars in front of the face.
+2. The lanterns (the sexton's, Dunmore Quist's) had glass in the glow slot, which is the Crypts' corpse green, while
+   their light is a warm `lamp`. → neutral glass; the client lights it.
+
+#### Phase 6 · Crypts round 5 — 2026-10-28 — the window, the lanterns, the full-quality build (final)
+
+**Changed.** Round 4's 1–2 (the window's pane and bars in front of the wall face; neutral lantern glass) and the final
+build without `--quick` (AO at 96 samples, rooms at 2080 × 960).
+
+**Renders read:** all ten rooms at full size, the kit sheet, the half-size sheet. The sexton's window now shows its
+moonlit pane behind the bars; nothing regressed.
+
+**Result.** 41 pieces (07's 22, three cut-away shell pieces, 16 props the templates and the arena name), 6,271
+triangles, every piece inside its budget — 07's numbers except the floor tile (38 vs 4), the open slab (62 vs 40) and the
+plain wall (66 vs 24), whose detail is geometry because D-110 has no textures (the Cellars pass's reading). 12 moving
+parts, 38 light points (`candle` tone corpse, `lamp`), 8 fx. `kit_crypts.glb` 433 KB (53 meshes, 99 nodes, extras on
+every node, COLOR_0 R exact), `crypts.json` 30 KB (kit_lib's format + the shell block, `doorSkins`, notes). The ten
+templates validate; the real linter on a scratch copy with the Crypts zone enabled finds nothing in them; `npm run lint`
+green. Assembled rooms: 2.2k–9.1k triangles, 9–17 unique meshes (≤ 30k, ≤ 40).
+
+**Readings to log as Proposed (for 13):** facings and wall-hung props at ±(edge − 0.1); nothing in a template replaces
+a shell piece — door skins per template live in `crypts.json → doorSkins`; one `cry_floor_mist` per cell in every
+template; single-door templates list all four sockets; `cry_vault_rib_half` and the gallery's wall arches for vaults
+over a cut-away side; the shell tile and wall exceed 07's triangle numbers; triBudget 30000 / drawCallBudget 40; the 16
+extra pieces and their budgets; curio ids in `info.curio` are kebab-case guesses for Phase 7.
+
+**What a script did not reach (honest list):**
+1. The doorway reads round-headed at phone size: kit_lib's shared opening is round, and the Crypts' pointed arch is only
+   a proud archivolt over a dark tympanum.
+2. Webs are a gauze fan with four strands (20 triangles) — they read as cobweb gauze, a little like sails up close.
+3. Cocoons read as pale spindles; the corner mourners are small at room distance.
+4. The review material is kit_lib's: light hue does not tint surfaces, so the Crypts' green comes from the palette, the
+   mist, the moss joints and the candle flames, not from candlelight on stone (the client may do better).
+5. The chapel's nave is left open for fights; the Vigil's bier is modest from its 21 m camera.
+6. Shared props render with the Crypts palette (as the client will draw them in a Crypts room).
+
+### The monsters pass A — rat, hound, spider, bat
+
+*Round by round, in `art/LOG.md`'s format: what was built, which renders were read, the defects as a numbered list with
+their fixes, what is left. Scripts: `tools/blender/monsters/creature_lib.py` (shared) and `build_rat.py`,
+`build_hound.py`, `build_spider.py`, `build_bat.py`. Renders: `art/renders/monsters/<base>/` (`lineup.png`,
+`cards.png`, `cards_200.png`, `clip_<Clip>.png`, `fight_view.png`, `fight_read.png`); numeric checks per clip in
+`art/build/monsters_<base>_checks.txt`.*
+
+#### How the bases are built (all four)
+
+- **Bodies are implicit surfaces.** Each base's body is a list of metaball elements (ellipsoids, balls, capsules), each
+  bound to a bone and carrying a palette slot. Blender polygonizes them; a numpy copy of Blender's field function
+  (checked: the field at every vertex of Blender's own output is 0.6000 ± 0.0002) projects the final vertices back onto
+  the surface and gives the normals (the field's gradient, set as custom normals) — so the toon bands follow the smooth
+  surface. Skin weights are each bone's share of the field at the vertex (power 2), so limbs blend into the body the way
+  the surface does; a face takes the palette slot of the element that dominates it, then rules paint the mouth and masks.
+- **Variants are fields too.** A `var_*` shape key is the same vertices projected onto a changed element list (a swollen
+  belly, a longer abdomen, a pup's big head), so topology and weights stay; attachments get the same transform or the
+  nearest body vertex's delta.
+- **Attachments** (tails, ears, eyes, teeth, claws, spider legs, wing membranes, the parts) are numpy geometry: lofts,
+  spheres, cones, closed rings, torus links; weights explicit, by chain, or copied from the nearest body vertices.
+- **Rigs** follow the hero rig's rules (`lib/rig.py`): local Y head → tail; Z = the front for bones that hang (legs), up
+  for bones that lie along the body (spine, neck, head, tail, feet, wings); +X swings a tip toward its Z, +Z toward its −X;
+  `_L` / `_R`, mirrored poses negate Y and Z. The creature faces −Y with its origin on the floor; `Root` carries the only
+  location keys (lunges, rolls, the bat's hover bob).
+- **Clips** are pose tables sampled on every frame (30 fps, linear keys, loops cyclic and closing exactly): keyed poses
+  blended with per-segment easing (anticipation, `in` into strikes, `out` after them), or periodic functions for Idle /
+  Move / Flee. Every leg is an analytic two-bone IK in its own plane (spider legs: a yawing coxa aims the plane) with the
+  end bones (paws, feet, tarsi) aimed separately, so planted feet stay on their marks; a gait generator moves stance feet
+  straight back at the clip's `speed` and swings them forward on an arc. Lying poses (Death) are grounded on the torso.
+- **Checks** every build: per clip the lowest point of the deformed body on every frame (and which bone it belongs to),
+  the worst IK residual, loop closure; written to `art/build/monsters_<base>_checks.txt`.
+
+#### Phase 6 · Monsters A · Rat round 1 — 2026-10-28 — the library and the first rat
+
+**Built.** `creature_lib.py` (implicit bodies, geometry kit, `CRig` with FK/IK and the keyer, `Clip`, the review harness:
+lineup with a 1.79 m hero silhouette from `hero_body.blend`, cards at Idle and at Attack1's hit, clip strips, the fight
+camera at the phone's canvas, checks, export, the shared JSON merge with a lock file) and `build_rat.py`: 27 bones, a
+metaball body with a separate lower jaw, a bare tail, ears, eyes, incisors, fur tufts; parts `rat_ridge`, `rat_boils`,
+`rat_scars`, `rat_crown`; keys `var_belly`, `var_bald`, `var_one_eye`; the seven clips; export, manifest, clips.json.
+
+**Renders read:** `lineup.png`, `cards.png`, `clip_Move.png`, `clip_Attack2.png`, `clip_Death.png`.
+
+**Defects found and fixed:**
+1. The lineup showed only the middle of the row: Blender's AUTO sensor fit spreads the 36 mm sensor over the *wider*
+   side of the image, and the fit assumed the vertical. → `place_camera` fits per point with the right half-angles.
+2. The rat read lanky — an opossum or hairless dog: legs long and thin, the body high and narrow. → hips 0.27 → 0.22 m,
+   shoulders 0.25 → 0.20, legs shorter and thicker (shin r 0.034 → 0.040), the body fuller (a fat hunch, the belly at
+   8.5 cm), a bigger head.
+3. Tufts read as hedgehog spines (too many, too thin).
+4. Old Gnaw's black scars read as tiger stripes. → pale (bone) seams, zig-zag, thinner.
+5. The ears were thin flags seen edge-on. → bigger, rounder, cupped, opening forward-out.
+6. The Plague Rat's belly did not read as glowing (only small boils). → `rat_boils` is now a glowing, blotchy skin over
+   the swollen belly (`var_belly` surface + 4 mm) with the pustules on it.
+7. The tail dipped 6.7 cm into the floor in Idle (its pitch wave went negative) and 56 cm in Attack2's rear (`Tail_01`
+   counter-rotated the wrong way: on a tail +X lifts). → the pitch wave is biased up; `Tail_01` +34° against `Hips` +30°.
+8. Attack1 and Attack2 drove the head into the floor (−3.4 / −15 cm). → the bite now springs forward and *up* (knee
+   height on a hero), the pounce bites forward, not down.
+9. Death floated 14 cm above its shadow: grounding used the lowest vertex, and once rolled the legs propped the body.
+   → `Monster.ground(mask=torso)` grounds a lying body on its torso vertices.
+10. IK residuals were logged while blending between solved and given leg angles, where they mean nothing. → only pure IK
+    states record a residual.
+
+#### Phase 6 · Monsters A · Rat round 2 — 2026-10-28 — proportions, the live rat in the shots, faceting
+
+**Renders read:** all sets. The rats now read as fat, hunched rats; the bite shows a dark open mouth with yellow incisors;
+the lineup places the Giant Rat at a hero's knee and Old Gnaw pony-sized; the fight-camera crops read by role (three
+small brown rats; green rats with a yellow belly; the dark spiked elite; the huge bald pink hunter).
+
+**Defects found and fixed:**
+1. The live (un-snapshotted) rat rendered at the origin in the lineup, cards and fight views (an extra rat by the hero; a
+   cyan sliver = the boils in the live material's default glow). → the live meshes are hidden once snapshotted.
+2. The bodies looked crumpled — dark cracks along long thin triangles. A side-by-side test (`implicit_mesh` decimated vs.
+   remeshed) showed the cause: a straight decimation of the metaball mesh leaves slivers, the 4-step toon bands kink
+   along them and the outline hull pokes through their creases. QuadriFlow refuses the metaball mesh (pinch vertices).
+   → a **voxel remesh sized to the budget** (`voxel = 0.92·√(2·area/tris)`), then a light decimation, then the projection:
+   the same triangle count shades like a clean sculpt.
+3. Death dipped 31 cm: the dead pose's tail "droop" swung it into the floor (once rolled onto the right side, +Z on the
+   tail points down). → the tail drops 30° at the root and runs flat; the checks now name the lowest bone.
+4. The flattened fur leaves lay on the back like plates. → five upright clumps along the hunch (`clump(lift=0.8)`), two
+   per cheek, two at the throat.
+
+#### Phase 6 · Monsters A · Rat round 3 — 2026-10-28 — the remesh, the last floor dips
+
+**Renders read:** all sets. Clean toon shading everywhere; every variant reads at the fight camera.
+
+**Defects found and fixed (for round 4):**
+1. The claws floated in front of the toes (the remesh softens the toe balls). → claws grow out of the toe surface.
+2. The Plague belly's edge ruffled like a skirt. → a calmer edge.
+3. Death's buckle drove the jaw 7 cm into the floor. → the head stays up while the legs fold.
+4. The back clumps nearly vanished at 1.0×. → a little longer and broader.
+
+#### Phase 6 · Monsters A · Hound round 1 — 2026-10-28 — the first hound
+
+**Built.** `build_hound.py`: 29 bones (scapulae, digitigrade hind legs: Upper / Lower / Meta / Paw), a lean ribby body
+(deep ribcage, a hard tuck-up, three ribs a side, hip bones), a heavy brow, a dark muzzle mask (slot 1), a jaw with
+canines and incisors, rose ears, a whip tail, four claws a paw; parts `hound_collar` (rust band + iron spikes),
+`hound_chain` (12 links + a hanging length), `hound_ribs` (five glowing ribs a side, carries `var_pup`), `hound_rope`;
+key `var_pup` (the head 1.22× about the skull, a short muzzle, big paws, the tuck-up filled).
+
+**Renders read:** `cards.png`, `lineup.png`, `fight_read.png`, `clip_Move.png`, `clip_Attack2.png`, `clip_Death.png`.
+The hound reads as a lean mastiff with an open, toothy mouth; the Warden's Hound as a ghost-blue dog with a black chain
+and an ember-lit ribcage; the pets small with big heads; every variant reads in the fight crops.
+
+**Defects found (fixed in round 2):**
+1. The chest "bib" (slot 1) came out as an X-shaped emblem where the slot boundary crossed the arm elements. → removed.
+2. The jaw looked oversized and hung open in Idle. → slimmer (r 0.045 → 0.038), Idle opens −6° ± 2.
+3. Attack2's dart stretched the hind legs (IK residual 6.8 cm). → a shorter dart; the hind feet step with it.
+4. Attack1's front paws lagged the lunge (3 cm). → they step as far as the body moves.
+5. Move's front paw dipped 1.8 cm at push-off. → push-off pitch 40° → 25°.
+6. The lineup's labels clipped at the image edge. → the labels are inside the framing.
+
+#### Phase 6 · Monsters A · Spider round 1 — 2026-10-28 — the first spider
+
+**Built.** `build_spider.py`: 41 bones (Body, Abdomen, Fang and Palp chains, per leg Coxa / Femur / Tibia / Tarsus); a low
+cephalothorax with a raised eye mound, an abdomen with a pale central stripe and chevrons (slot 1), chelicerae with
+curved fangs, two-segment palps, eight legs as lofts with a knuckle at every joint; eight eyes on the mound, oversized so
+the cluster reads (slot 2). Legs are a yawing coxa plus a two-bone IK with the knee up; the tarsus keeps its slant as the
+coxa turns (the library carries the end bones' rest directions with the yaw bone). Parts `spider_eggsac` (a lumpy lit
+sac under the rear, silk threads; follows `var_abdomen`) and `spider_plates` (bone shells over the carapace and three
+abdominal plates, a skull on the hindmost). Keys `var_abdomen` (the Weaver's long swollen abdomen), `var_baby` (big eyes,
+a rounder body). Clips: an alternating-tetrapod scuttle, rear-and-strike, leap-and-pin, a jolt, death on its back.
+
+**Renders read:** `cards.png`, `lineup.png`, `fight_read.png`, `clip_Move.png`, `clip_Death.png`. Eight legs with the
+knees high, eye clusters in each variant's accent, the Weaver's swollen white abdomen, the Broodmother's lit sac; the
+death reads as the classic dead spider on its back, legs curled.
+
+**Defects found (fixed in round 2):**
+1. The feet hovered 1.2 cm (the tarsus tip sat at 12 mm). → 4 mm.
+2. Attack1 dipped the abdomen 3 cm into the floor: as the body rears, the abdomen (pointing back; +X lifts it) was
+   counter-rotated the wrong way — in Hit and Death too. → the abdomen follows about 0.7 of the body's pitch.
+3. The Broodmother read as a giant wasp: the leg bands and the abdomen pattern share slot 1, her sac amber. → the leg
+   bands are ink (dark bands on the pale spiders, invisible on the black Broodmother); the pattern is a broad stripe and
+   three wide chevrons (it was blotchy at the remesh's face size).
+4. Six-sided legs looked like faceted pencils. → seven sides, fewer rings.
+5. The Tomb Spider's skull did not show. → big raised sockets, a nose and a row of teeth on the hindmost plate; plates
+   raised 9 mm.
+6. Legs swept 7.6–9.7 cm through the floor mid-flip in Death. → the body rises higher while it rolls.
+7. The lineup's labels collided (narrow spiders). → labels alternate between two rows when they would overlap.
+
+#### Phase 6 · Monsters A · Bat round 1 — 2026-10-28 — the first bat
+
+**Built.** `build_bat.py`: 23 bones (Root on the floor, Body hovering at 1.25 m, Head, Jaw, ears, Tail, per side
+Wing_Upper / Wing_Lower / Wing_F2..F5, Leg, Foot); a furry body and a big head whose face is a skull mask (slot 1) with
+red eyes in dark sockets, a jaw dropping on a red mouth (slot 2) and fangs; wings as thin closed slabs (4 mm) stretched
+between the finger bones — a fan from the wrist, scalloped between the tips, and the arm-wing back to the ankle —
+weighted by distance to the two nearest wing bones; pale finger bones (slot 1) over the slate membrane. Key
+`var_round_ears` (the Crypt Bat). A wingbeat generator: a fast full downstroke, a slower upstroke with the hand-wing
+folding, the body rising on the downstroke.
+
+**Renders read:** `cards.png`, `clip_Idle.png`, `fight_read.png`. A grave bat with a skull face and skeletal fingers;
+the flap cycle reads.
+
+**Defects found (fixed in round 2):**
+1. Two duplicate faces in the body mesh (`validate()` repaired them at build). → `make_object` drops duplicate and
+   degenerate faces and names the piece.
+2. The ears' inner sides were slot 1, the face's colour, so from the front the head read as a white rabbit. → slate ears
+   with dark insides, narrower.
+3. Death drove a wing 40–55 cm through the floor: rolling the body over sends one wing straight down. → a face-down splat:
+   it drops with the wings flailing half-folded and lands spread flat on the floor.
+4. Manifest: the glow colour moves from my `glow` field to the other passes' convention, `slots: {"11": "#hex"}`.
+
+#### Phase 6 · Monsters A · Round 2 of hound, spider, bat; round 4 of the rat — 2026-10-28 — specials, clip maps
+
+**Built (all four).** The special clips the content's `visual.animations` names, where a base pose could not stand in:
+rat `Howl` (rears on its haunches, head thrown back, a long squeal — `release`) and `Retch` (two heaves, then a spew —
+`release`); spider `Web` (abdomen raised, a flick — `release`) and `Brood` (the abdomen pumps, then heaves — `release`);
+hound `Howl` (sits back, muzzle to the ceiling — `release`). Every manifest entry now carries a `clipMap` from each name
+the client may ask for to a clip in the file (Pin, Lunge, Sweep, Drop → Attack2; BoltHole → Flee; Reel, Rear, Shroud →
+Web; Cocoon → Attack1; Pulse → Brood; Harry → Attack2 …), and `slots: {"11": glow}` instead of my round-1 `glow`.
+
+**Renders read:** every set of all four bases (the special clips' strips too). Rat: Howl reads as a rearing squeal,
+Retch as a heave and spew. Hound: the bib is gone, the slimmer jaw reads, Attack1 crouches, lunges and snaps, Howl
+throws the muzzle up. Spider: the Broodmother reads as an oil-black spider with amber chevrons and a lit sac (no longer
+a wasp), the dark joint bands read on the pale spiders, Web lifts and flicks the abdomen. Bat: the skull face reads
+without the white ears; the shriek flings the wings wide with the red mouth open; Death jolts, tumbles and lands
+face-down with the wings spread.
+
+**Defects found (fixed in the final round):**
+1. Rat: the claws still floated as specks in front of the paws (the voxel remesh cannot hold a 1.4 cm toe bulge). →
+   removed; they never read at 200 px.
+2. Rat: Death's buckle folded a front leg 3.3 cm into the floor. → a softer fold.
+3. Hound: Move dipped a front paw 1.8 cm at lift-off — the stance now ended at 25° but the swing still began at 40°. →
+   the swing starts where the stance ends.
+4. Hound: Attack2's dart still stretched the hind legs (5.6 cm). → the hind feet travel with the dart.
+5. Spider: on its back the curled legs folded toward the floor (−7 cm): the curl lifted the femurs, which once flipped
+   points them down. → the femurs curl toward the belly (−X), so they rise when it lies on its back.
+6. Spider: the Tomb Spider's skull still read as one dark spot. → bigger sockets set wider, a nose and four teeth,
+   centred on the top of the abdomen and raised clear of the plates.
+7. Bat: the claws dipped 6 cm into the floor in the splat. → the legs trail up and back.
+
+#### Phase 6 · Monsters A · Final round — 2026-10-28 — abduction, the last floor dips (rat 5, hound 4, spider 4, bat 4)
+
+**Changed.**
+- **Legs abduct** (`Leg(abduct=30)`, rat and hound): before the two-bone solve, the upper bone turns about its own Z (its
+  forward axis when it hangs) so the leg's plane holds the target. Planar legs could not reach a foot the body had
+  shifted, rolled or yawed away from — the hound's dart left 5.6 cm residuals, the trots 2–3 cm. After: Move and
+  Attack2 solve to 0.0 cm.
+- Death fixes: the hound folds its front legs (FK) and drops its chest before it rolls, so no IK solve is blended while
+  the body turns over; the rat's buckle is grounded on the whole mesh (a transitional crouch), not the torso; the
+  spider's dead curl, worked out in the leg plane (on its back every leg point must stay under the abdomen's top),
+  is femur −40° / tibia −60° / tarsus −40°; the bat's jaw stays nearly shut face-down.
+- Library tidied (three unused helpers removed).
+
+**Two runs died silently** while rendering (no traceback, no "Blender quit": the spider during its cards, a hound test
+during its geometry) — six or more Blender processes were sharing the laptop's GPU and memory. The final run retries a
+base whose log does not end cleanly; the `.glb` timestamps confirm every export.
+
+**Final checks** (`art/build/monsters_<base>_checks.txt`; lowest point of the deformed body on any frame / worst IK
+residual): rat — every clip ≥ −0.6 cm, IK ≤ 0.3 cm (Retch 2.5 cm); hound — Idle/Attack/Hit/Howl clean, Move −1.2 cm (a
+front paw at lift-off), Death −2.9 cm on one transition frame, IK 0.0 except Attack1 2.1 cm; spider — all clips +0.4 cm
+(feet on the floor), Death −2.3 cm on one frame of the flip; bat — Death lands at 0.0 cm, the rest fly. All loops close
+exactly (0.000°). `inspect-glb`: 14 meshes, all skinned, COLOR_0 worst distance 0.0000 everywhere; re-import finds every
+mesh, the rig and every clip.
+
+**Result** (triangles per variant = body + its parts; budgets from `visual.triBudget` / 06):
+- `rat.glb` 422 KB, 27 bones, 9 clips — Giant Rat 2,468 (2,500) · Plague Rat 3,391 (2,500 — over by the glowing belly
+  skin) · Warren Alpha 3,248 (5,000) · Old Gnaw 2,798 (7,000) · Rat Prince pet 2,604.
+- `hound.glb` 398 KB, 29 bones, 7 clips — Cellar Hound 2,932 (3,000) · Warden's Hound 4,174 (7,000) · pets 2,946 / 3,150.
+- `spider.glb` 537 KB, 41 bones, 8 clips — Cellar Spider 2,968 (3,000) · Cellar Weaver 2,968 (4,000) · Broodmother 3,692
+  (7,000) · Tomb Spider 3,478 (5,000) · Spiderling pet 2,968.
+- `bat.glb` 214 KB, 23 bones, 6 clips — Grave Bat 1,980 (2,000) · Crypt Bat pet 1,980.
+
+**What a script did not reach / left as is (honest list):**
+1. Fur is a handful of clumps on smooth "clay" bodies; no fur, scales or chitin texture (palette-only material).
+2. The Plague Rat is 891 triangles over its 2,500 budget: the glowing belly is a shell over the swollen belly plus nine
+   pustules (it reads; a cheaper shell is possible). `rat_boils` assumes `var_belly` = 1 (it carries no key).
+3. The Warden's Hound's translucency is not in the asset: the entry says `ghost: true`; the client draws it.
+4. The pups are the adult skeleton at 0.7× with a big-head / big-paw key — legs stay adult-long.
+5. Eyes take slot 2 (the accent names the eyes for most variants), so the Giant Rat's "yellow teeth" accent paints its
+   eyes yellow and the Cellar Hound's "white teeth" accent paints its eyes white; their teeth use the bone slot.
+6. The Tomb Spider's skull reads from above (pale plate, two sockets, teeth); from a low 3/4 view it is mostly two dark
+   sockets. The Spiderling (0.3×) and the Rat Prince's crown are a few pixels at the fight camera.
+7. Small residual floor dips on transition frames: hound Death −2.9 cm, spider Death −2.3 cm, hound Move −1.2 cm.
+8. No web, thread, spit or shriek effects — the `release` events are where the client's VFX go.
+9. All review renders are `--quick` (8 samples): the laptop was shared by six or more Blender passes.
+
+### The monsters pass B — the bases on the hero rig
+
+*Phase 6, monsters pass B (2026-10-28): `humanoid`, `skeleton`, `zombie`, `sentinel`, `hollow-king`
+(`docs/06-MONSTERS.md` §3.5). Scripts in `tools/blender/monsters/` (`humanoid_lib.py` — session, low-poly body,
+re-used hero gear, rigid kits, the cull, shape-key fields, reviews, export and manifest; `costume_lib.py` — hoods,
+masks, grins, jerkins, coats, sashes, boots and the props; one `build_<base>.py` per base). Renders in
+`art/renders/monsters/<base>/` (`--quick`: 8 samples, 560-px cards; six passes share the laptop). Exports
+`client/public/models/monsters/<base>.glb` + this pass's entries in `manifest.json`.*
+
+#### How the bases are built (all five)
+
+- **No rig and no clips of their own** (README → Monsters → Humanoid bases): every file holds the hero `Rig` (65
+  joints) and meshes skinned to it, extras `kind: "monster"`, `base`, `variant`, `piece`, `clips: "hero"`,
+  `monsters` (the ids that show the piece), `tris`; the client plays the hero clips through each entry's `clipMap`.
+- **The low-poly body** (`Session.body_copy`): the broad hero body with every key cleared (a monster is broad and
+  human-shaped; the face keys can be baked in first — Vexa, the Brine Hag, Naesa), decimated uniformly to 20–36 %
+  (2.1–3.8k triangles with the eyes), every vertex snapped back onto the full body, slots and regions read back from
+  it, normals interpolated from the full body's custom normals. A calibration render (scratch) compared protected and
+  uniform decimation: protecting the head and hands starved the limbs and left specks at the mouth, so it is uniform.
+- **Culling** (`cull_hidden`): a body face goes when no game camera can see it under the costume — camera
+  directions all round at 5°, 22° and 40° above level; a face must escape in at least two directions to stay, faces
+  seen from one direction only stay next to seen ones; regions a re-used hero piece hides by itself (its own `hides`)
+  go outright.
+- **Costumes** are gear built over the body with `gear_loft` (fields, grids, parts with clearance and weight rules) in
+  `costume_lib.py`, or **re-used hero gear** from `art/build/gear_<class>.blend` (`Session.reuse`: re-parented, keys
+  and outlines removed, slots re-mapped, faces dropped by rule, optionally decimated with welded seams). Re-used:
+  the Warden's plate F (Bone Knight, Barrow Warden, Drowner) and S (Sentinel, Hollow King), the Blade's mail F
+  (Bruiser), the Mender's robe and cowl F (Acolyte, Blade, Naesa), the Arcanist's robe and hood F (Crypt Sexton,
+  Brine Hag); hero weapons from `art/build/weapons.blend` (sword, greatsword, longbow, quiver, crossbow, dagger,
+  throwing knife). Everything else is new.
+- **Props** are rigid kits (`Kit`: lathes, tubes, boxes, slabs, cones, tori, chains) placed at a socket's rest
+  matrix or in world space and skinned 100 % to one bone — so the client needs no attachment code, a prop is one
+  more skinned mesh.
+- **Shape keys** `var_*` come from one field (`RadialField`: away from or toward each bone's axis, blended by the
+  weights), applied to the body *and* the costume pieces over it, so nothing pokes through when a key is on.
+- **Colour**: slots 0/1/2 the monster's palette (content `visual.palette` for the Cellars, the `06` Visual line
+  otherwise), 4 human skin where the skin is not one of the three, 3 eye-whites and pale details, 5 ink, 6/7/15 cloth,
+  8 leather, 9 metal, 10 trim, 11 glow, 12 wood, 13 bone, 14 gem. Every manifest entry carries all 16 (`colors`).
+
+#### Phase 6 · Monsters B · Skeleton round 1 — 2026-10-28 — every bone, five variants
+
+**Built.** `build_skeleton.py`: one kit per rig bone, each piece skinned 100 % to its bone in one mesh
+(`Session.multi`): the skull (an egg-shaped grid narrowing to a square jaw, eye sockets and the nasal hole recessed in
+ink, an ink mouth band under sawtooth teeth, glowing points in the sockets), neck, lumbar and thoracic vertebrae a
+little behind the bone line, four pairs of flat ribs on the torso envelope at 80 % and a sternum, clavicles and
+shoulder blades, an iliac-wing pelvis with sacrum and pubic arch, knobbed long bones (humerus, radius and ulna,
+femur, tibia and fibula), kneecaps, carpals, metacarpals, one piece per finger bone, foot and toe blocks. Variants:
+Footman (rotted tabard bound over the ribs, round wooden shield on Socket_HandL facing out of the back of the hand,
+the hero sword F), Archer (hero longbow F, hero quiver F + arrows on Socket_Back, a strap), Bone Knight (1.25; the
+Warden's F chest, legs and boots re-slotted to tarnished iron, a closed great helm with a glowing slit, bone forearms
+and hands, the hero greatsword F), Crypt Sexton (the Arcanist's F robe and pointed hood in grave black, skull, bone
+hands, shins and feet, a hand-bell, a lantern pole with a green lantern), Barrow Warden (1.75; the Warden's F plate
+in iron black, skull with a spiked iron circlet, a bell-hung mantle cleared over the pauldrons, a lantern on a chain in
+the left fist, a slab-sword, a great bell at the hip).
+
+**Renders read:** `lineup.png`, `read200_all.png`, `card_*.png`, `clips_*.png`.
+
+**Defects found:**
+1. The skull read as a plain ball: sockets small, glow dots lost in them. → (round 2) sockets 20° × 23°, deeper,
+   their corners rounded in; the skull a size up (×1.14 from the top of the neck).
+2. The Footman's tabard was a narrow strip with a rust square at the top (the trim row). → (round 2) ±40° wide,
+   cloth only.
+3. The Crypt Sexton's hand-bell — its must-read — was invisible (small, dull iron, behind the robe). → (round 2) ×1.7,
+   brass, hung from the fist.
+4. The Barrow Warden was one dark mass (iron-black plate under a near-black mantle) — `11` §8's "dark palettes vanish
+   at 200 px". → (round 2) an ash-grey mantle with a brass collar, bigger brass bells.
+5. The Bone Knight read as a Warden in grey; its tabard ended square. → (round 2) darker plate, the tabard torn to a
+   ragged hem (faces dropped below a wavy line on the re-used chest piece).
+6. Clip cells framed the figure at a third of their height. → `cell_camera` 20 % closer.
+
+#### Phase 6 · Monsters B · Skeleton round 2 — 2026-10-28
+
+**Renders read:** as round 1 plus a new `heads.png` (every variant's head at rest).
+
+**Defects found:**
+1. The Barrow Warden's skull and arms rendered black: the bone pieces use slot 0, the Warden's main colour is iron
+   black (bone is its second). → (round 3) the bone kits are re-slotted per variant (`pick(..., bone_slot)`): slot 1
+   for the Knight, the Sexton and the Warden.
+2. The Archer's quiver on Socket_Back showed through the ribcage as a grey block in the chest (a skeleton has no flesh
+   to hide what hangs behind it). → (round 3) the hero quiver hangs at the left hip, mouth up and leaning out, from the
+   strap.
+3. The Bone Knight's two "breaths" under the slit read as a second pair of eyes, and the face ridge as a stray block.
+   → (round 3) dropped; the slit taller.
+4. The glowing points filled the sockets, so the ink of the sockets never showed. → (round 3) smaller, set deeper.
+
+#### Phase 6 · Monsters B · Skeleton round 3 — 2026-10-28
+
+**Renders read:** all of `art/renders/monsters/skeleton/`. Every variant reads at 200 px and in the fight-size
+lineup: the Footman by the round shield and the green tabard, the Archer by the bow and the hip quiver, the Bone
+Knight by the closed helm's blue slit, the Crypt Sexton by the skull in the hood, the green lantern and the brass
+bell, the Barrow Warden by size, the ash mantle with brass bells, the skull with the spiked circlet and the lantern
+hanging at his knee. In the hero clips (Idle, Walk, Attack_Light, Attack_Heavy windup and hit, Hit, Defeat, plus
+Shoot / Cast / Guard_Shield / Guard / Roar where the clip map sends them) the rigid bones turn on their joints with
+nothing flying off; the Footman's shield faces the camera in Guard_Shield; the Archer's bow stands upright in Shoot.
+
+#### Phase 6 · Monsters B · Zombie round 1 — 2026-10-28 — five corpses on the hero body
+
+**Built.** `build_zombie.py`: per variant a low-poly body (22 %, 2.3k triangles), culled under its rags, skin in slot 0,
+milky eyes (slot 3), wounds and rot painted into its faces, rags lofted with gear_loft (a torn tunic with short
+ragged sleeves, ragged breeches, a loincloth, a harness), and keys from `RadialField` on the body and the rags alike.
+Shambling Corpse (`var_swollen`, black-blood wounds, the left arm held hanging — `poseHold`), Bursting Corpse
+(`var_belly` and `var_cheeks`, the belly kept dense in the decimation and lit with gas-green cracks), Ghoul (0.95,
+`var_gaunt`, long arms by bone scales, a hunch by `poseAdd`, black gums, bared teeth, red claws on the distal finger
+bones, a loincloth, Move → the hero Run), Drowned Thrall (`var_bloat`, barnacle clusters bound to the skin, a cheek
+crust, kelp hanging from the scalp, grey rags), Charnel Hulk (2.2, `var_bulk`, a second torso — head, neck, chest and
+upper arms of a body copy, shrunk, tilted out of the right shoulder and fused on, painted stitch seams, bruises, a
+loincloth and a cross harness).
+
+**Renders read:** `lineup.png`, `read200_all.png`, `card_*`, `heads.png`, `clips_*`.
+
+**Defects found:**
+1. Skin showed through the Shambling Corpse's tunic in green patches at the shoulders and chest. Two causes: the
+   collapse decimator puts merged points up to ~1.5 cm *outside* convex skin (the tunic sits 11 mm off the full
+   body), and the cull kept chest faces whose rays escaped up through the collar. → (round 2) a cull by game-camera
+   directions; (round 3) every decimated vertex snapped back onto the full body.
+2. The Ghoul's teeth sat inside the lips (the mouth guessed at y −0.142; the lips' front is at −0.164, the mouth line
+   at z 1.561 — measured on the body's midline). → (round 2) moved; claws 1.4× longer.
+3. The Drowned Thrall's barnacles were specks and its kelp stiff bars beside the head. → (round 2) bigger cones in
+   larger clusters; kelp starting on the crown and hanging past the ears to the shoulders.
+4. The Hulk's stitches, painted into the decimated body's big faces, read as jagged black spikes, and one seam plane
+   ran across its face. → (round 3) raised seam bands with cross-stitches, lofted on the limb fields (waist,
+   breastbone, left upper arm, right forearm, left thigh).
+5. The hunch of the Ghoul and the Hulk was too slight to read. → stronger `poseAdd`.
+
+#### Phase 6 · Monsters B · Zombie round 2 — 2026-10-28
+
+**Defects found:**
+1. Still skin through the tunic (cause 1 above, the decimator) → (round 3) the snap.
+2. The Drowned Thrall was 3,980 triangles against a 3,000 budget (rags, breeches and lathed barnacles). → (round 3)
+   no breeches (the rags hang to mid-thigh), five-sided barnacles: 2,988.
+3. The Charnel Hulk stood 3.95 m at 2.2 — taller than the Barrow Warden, the zone's boss. **Proposed:** scale 2.0
+   (3.6 m upright, ~3.3 m hunched — the `06` Visual line says 3.2 m; the §3.5 table's 2.2 is the outlier). Logged
+   here for the lead to carry into `13` / `06`.
+4. The cull kept ~85 % of a covered body (a fan of rays round every normal, and every kept face grew a ring). →
+   (round 3) visible only when two camera directions escape; one-direction faces only beside seen ones; the
+   regions a re-used hero piece hides by itself are dropped outright.
+
+#### Phase 6 · Monsters B · Zombie round 3 — 2026-10-28
+
+**Renders read:** all of `art/renders/monsters/zombie/`. At rest the Shambling Corpse's tunic is clean; the Bursting
+Corpse's lit belly, the Ghoul's long arms, hunch, gums and red claws, the Thrall's barnacle crusts and kelp, the
+Hulk's second torso and stitched seams read at 200 px. Triangles: 2,453 · 2,308 · 2,449 · 2,988 · 4,168.
+
+**Defects found:**
+1. In raised-arm frames (Attack_Heavy's windup, Hit) skin still pushed through the Shambling Corpse's tunic at the
+   shoulders: faces kept because a few grazing rays leave between a sleeve and the armhole. → (round 4) in regions
+   the rags cover by design (`strict_regions`) skin stays only where five camera directions see it.
+2. The Bursting Corpse's belly reads from the side but not from the front at 0.75. → (round 4) `var_belly` 1.0; the
+   Swell tell takes it to 1.35.
+
+#### Phase 6 · Monsters B · Humanoid round 1 — 2026-10-28 — the Grinning Company and the Tidebound
+
+**Built.** `build_humanoid.py` with `costume_lib.py`: twelve monsters and Sister Naesa's second phase. Bandit A
+(Cutpurse, Crossbowman, Netter, Hexer): a crude hood on the head's envelope with a pointed capelet, a jerkin over
+dirty shirt sleeves, bracers, trousers, rough boots, a belt and (Cutpurse) a red sash with a knot and tails; a white
+half-mask on the face's own envelope (nose included) and a painted grin over it — a black crescent curving up at the
+corners, sawtooth teeth, red lips on the Cutpurse. Props: dagger + purse; crossbow + red bolt quiver; gaff hook +
+coiled net; bone fetishes at belt and throat, a cracked bone full mask with one green eye (Hexer). Bandit B (Bruiser
+1.25, brute bone scales): the Blade's F mail rusted, a mail hood, a full grin-mask with eye holes, a studded club.
+Bandit C (Vexa): scarlet frock coat open at the front over a white shirt, brass buttons, trim and cuffs, skirt halves
+riding the thighs, dark breeches, tall boots, the hero `hair_long` dark auburn, a softer face (face keys baked:
+narrow jaw, high cheeks, larger eyes), the grin-mask turned up on her brow, a cutlass and the hero throwing knife S.
+Cult A (Acolyte, Blade): the Mender's F robe and cowl re-dyed (wet grey, sea-green stole), barefoot; a great conch at
+the Acolyte's belt; the Blade's sewn mouth (blue thread crosses) and two boat-hooks. Cult B (Flagellant): raw skin,
+a grey penitent's hood and breeches, barbed chain bands wound round torso and arms, a hooked chain trailing from the
+right fist. Cult C (Drowner 1.3): the Warden's F plate in lead grey, a riveted verdigris diving-bell helm with three
+glowing glass ports and a lead collar, lead weights, an anchor maul. Crone (Brine Hag): salt-white skin with
+`var_crone` (gaunt field), long limbs (bone scales), a hunch, face keys for a long chin and nose, the Arcanist's
+robe torn to a ragged hem, glowing pink eyes, a pearl crown, claws, a salt pouch. Cult D (Naesa): phase 1 the
+Mender's robe in pearl white with a drowned-blue stole sewn with pearls and a conch staff; phase 2 the robe torn
+(sleeves and hem dropped), two tentacle arms along the arm bones curling past the hands, 1.28.
+
+**Renders read:** `lineup_1.png` (bandits), `lineup_2.png` (cult), `read200_all.png`, `heads_*.png`, `card_*`,
+`clips_*`.
+
+**Defects found:**
+1. Over budget: bandits A 4.2–4.3k (3.5k), Acolyte and Blade 4.2–4.4k (3.5k); `humanoid.glb` 3.2 MB. The bodies were
+   barely culled (2,098 of 2,516 kept under a full robe). → (round 2) the new cull (game-camera directions, two
+   escapes, region drops from the hero pieces' own `hides`), bodies at 20 %, lighter hoods, masks, boots, legs,
+   bracers.
+2. Coloured stripes down the cult robes' fronts: the Mender's rope-belt cords hanging to the hem and its tabard
+   flaps in other slots. → (round 2) the cords dropped below the knot, the flaps dyed with the stole.
+3. The Netter's net read as a thin dark sash. → (round 2) a fat coil checkered net-grey and ink with cork floats.
+4. The boots' turned-down cuffs flared like bells. → no cuffs on the bandits.
+
+#### Phase 6 · Monsters B · Humanoid round 2 — 2026-10-28
+
+**Renders read:** as round 1. Every bandit's grin reads from across the room; the cult robes are clean; triangles:
+Cutpurse 2,940 · Crossbowman 2,902 · Netter 3,028 · Hexer 2,905 · Bruiser 3,447 · Vexa 4,689 · Acolyte 3,239 ·
+Blade 3,369 · Flagellant 2,914 · Drowner 4,310 · Brine Hag 3,649 · Naesa 4,966 (phase 2: 4,139).
+
+**Defects found:**
+1. Vexa's mask, turned 118° up, stood behind her head like a plume, its painted face hidden. → (round 3) 78°: it lies
+   on her brow face-up.
+2. The Hexer's green eye — its must-read — was a painted cell that hid at 3/4 views. → (round 3) a glowing gem
+   standing proud of the mask's left eye.
+3. The Brine Hag's grey hair vanished against salt-white skin, and her dress opened on bare thighs with holes where
+   the cull had removed skin. → (round 3) dark wet hair; thighs dropped (the robe's own linings fill the slit).
+4. Naesa's tentacle arms read as long green sleeves. → (round 3) thicker at the shoulder, an S-wave along the arm,
+   tapering to a tip that curls forward and in, suckers down the inner face.
+
+#### Phase 6 · Monsters B · Sentinel round 1 — 2026-10-28
+
+**Built.** `build_sentinel.py`: the Warden's S chest (tabard left off), legs, boots and gloves re-slotted to verdigris
+with bronze rims and blue glow lines; a tall bucket helm with a glowing T-visor and a bronze crest; a blue crystal core
+in a bronze mount on the cuirass; the hero body in ink, culled to the gaps (a dark core between the plates); water
+running from elbows and knees (pale-blue tapering streams); a halberd (Socket_HandR). 1.3 → 2.48 m; 4,646 triangles.
+
+**Renders read:** `lineup.png`, `card_vault-sentinel.png`, `heads.png`, `clips_vault-sentinel.png`. It reads as a
+statue-knight; the chest crystal and the T-visor glow carry at 200 px; the halberd swings clear in Attack_Heavy.
+
+**Defects found:** 1. The crest — a tube — read as a carrying handle on the helm. → (round 2) a flat bronze fin.
+
+#### Phase 6 · Monsters B · Hollow King round 1 — 2026-10-28
+
+**Built.** `build_hollow_king.py`: the Warden's S plate re-slotted barnacle black with dark iron rims and
+drowned-blue glow lines, its tabard royal purple and torn; a closed helm with a lit visor and water running from it; a
+crown of iron and coral; a tattered royal cape bound to the back; a chain across the chest and shackles with hanging
+chain at both wrists; barnacle crusts; the hero greatsword S re-forged dark with a coral guard and a blue fuller; the
+ink body in the gaps. The throne (rigid, unskinned, at the King's unscaled size): plinth and step, seat, a tall
+spiked back with a glowing rune, armrests on posts, chains run to floor rings, coral and barnacles; the column it rises
+on. Phase 1 holds a seated pose over the hero Idle (`poseHold` on legs and arms, a Hips offset). King 6,776
+triangles (budget 8–12k), throne 3,057 + column 130 (budget 4k); 2.0 → 3.68 m standing.
+
+**Renders read:** `lineup.png` (seated on the throne, standing), `card_seated.png`, `card_risen.png`, `heads.png`,
+`clips_hollow-king.png`, `throne.png`, `throne_risen.png`. Seated, he holds the Hollow Blade upright before him with
+both fists — a better throne pose than planned; the coral crown and the lit visor read at 200 px; standing, the
+clips move him cleanly.
+
+**Defects found:**
+1. Four even drips under the visor read as the bars of a portcullis. → (round 2) three, uneven, thinner.
+2. The risen-throne render cut the throne off. → framed for 6 m.
+
+#### Phase 6 · Monsters B · Zombie round 4 — 2026-10-28
+
+**Renders read:** all of `art/renders/monsters/zombie/`. The Shambling Corpse's tunic now holds through every clip
+frame (no skin at the shoulders in Attack_Heavy's windup or in Hit); the Bursting Corpse's belly shows from the front.
+Triangles: 2,385 · 2,301 · 2,449 · 2,931 · 4,168; `zombie.glb` 876 KB.
+
+#### Phase 6 · Monsters B · Humanoid round 3 — 2026-10-28
+
+**Renders read:** all of `art/renders/monsters/humanoid/`. Vexa's mask lies on her brow face-up with its grin and red
+lips showing; the Hexer's green eye stands proud of the mask; Naesa's arms read as suckered tentacles curling at the
+tips; every variant reads at 200 px (`read200_all.png`): the bandits by their grins and props (dagger and red sash,
+crossbow, the checkered net coil and gaff, the bone mask and fetishes), the Bruiser by size, mail and club, Vexa by the
+scarlet coat, the Acolyte by the green stole and the conch, the Blade by the hooks and sewn mouth, the Flagellant by
+raw skin and trailing chain, the Drowner by the bell helm, the Brine Hag by the pearl crown and glowing eyes on salt-
+white skin, Naesa by the pearl-sewn robe and conch staff (phase 2: the tentacles).
+
+**Defects found:**
+1. Colour gradients down the Brine Hag's front: decimating the Arcanist robe welded its slit linings onto the cloth
+   (welding was meant for slot seams), leaving vertices shared across slots. → (final) that robe is not decimated
+   (4.3k, inside its 4.5k budget); the other re-used robes are clean at their ratios.
+
+#### Phase 6 · Monsters B · Sentinel round 2, Hollow King round 2 — 2026-10-28
+
+**Renders read:** `heads.png`, `card_*`, `clips_*` of each. The Sentinel's crest is a fin; the King's drips are three
+and uneven. A numeric check joined the review (`poke_lines`: body vertices more than 2 mm outside their costume at
+every strip frame): the inner core bodies of both read 68–96 of ~300 vertices in every frame including Idle — the gap
+skin they are there to show (neck, waist, joints), no growth in motion.
+
+#### Phase 6 · Monsters B · Final round — 2026-10-28 — all five bases rebuilt and exported
+
+**Run:** every `build_<base>.py -- --quick` again with the final library (the snap, the camera-direction cull with
+strict regions, smoother bone normals, the poke check, the re-import check). Rounds per base: skeleton 4, zombie 5,
+humanoid 4, sentinel 3, hollow-king 3.
+
+| base | variant (triangles, height) | file |
+|---|---|---|
+| skeleton | Footman 2,963 (1.79 m) · Archer 3,109 · Bone Knight 3,850 (1.25 → 2.27 m) · Crypt Sexton 4,551 · Barrow Warden 6,109 (1.75 → 3.13 m) | `skeleton.glb` 1,307 KB, 29 meshes |
+| zombie | Shambling 2,385 · Bursting 2,301 · Ghoul 2,449 (0.95) · Drowned Thrall 2,931 · Charnel Hulk 4,168 (2.0 → 3.59 m upright) | `zombie.glb` 876 KB, 18 meshes |
+| humanoid | Cutpurse 2,940 · Crossbowman 2,902 · Netter 3,028 · Hexer 2,969 · Bruiser 3,447 (1.25) · Vexa 4,689 · Acolyte 3,239 · Blade 3,369 · Flagellant 2,914 · Drowner 4,310 (1.3) · Brine Hag 4,071 · Naesa 4,966 / phase 2 4,267 (1.28) | `humanoid.glb` 2,596 KB, 60 meshes |
+| sentinel | Vault Sentinel 4,642 (1.3 → 2.48 m) | `sentinel.glb` 291 KB, 8 meshes |
+| hollow-king | the King 6,760 (2.0 → 3.68 m) + throne 3,057 + column 130 | `hollow-king.glb` 677 KB, 12 meshes |
+
+Every variant is inside its `06` / `visual.triBudget` number. **Checks:** `inspect-glb.ts` — every mesh skinned to the
+65-joint `Rig`, COLOR_0 worst distance 0.0000 on all 127 meshes, the `var_*` morph targets where the manifest's
+`shapes` use them; the re-import (`lib/export.py`, `art/build/monsters_<base>_check.txt`, `reimport_check.png` in each
+render folder) finds every mesh with its colour attribute and one armature; a cross-check of `manifest.json` finds
+every part (and phase part) as a node of its base file and every shape as a morph target of one of its parts.
+**Pokes** (`art/build/monsters_<base>_pokes.txt`; body vertices more than 2 mm outside the nearest costume face within
+3 cm, per strip frame): steady from Idle through the clips for the zombies (the Shambling Corpse 29–58), the
+Bruiser (33–76) and the Drowner (0–14); the counter's baseline is skin that is meant to show beside cuffs, hems and
+cowl openings, and its peaks (Vexa and Naesa in Attack_Heavy's overhead windup, the Thrall at its hit) were looked at in
+close-ups: faces and hands beside raised cloth, forearms crossing in front of rags — no skin through cloth.
+
+**Renders read (final):** in each `art/renders/monsters/<base>/` — `lineup*.png` (every variant at its scale beside a
+1.8 m hero) and `lineup*_fight.png` (the same at the fight camera's size: a hero ≈ 110 px), `read200_all.png`,
+`card_*.png`, `heads*.png`, `clips_*.png` (Idle, Move, Attack1 hit, Attack2 windup and hit, Hit, Death end, plus the
+clips the variant's `clipMap` sends its specials to); the King also `card_seated.png`, `throne.png`,
+`throne_risen.png`.
+
+**Still open (honest list):**
+1. Faces are the decimated hero face (20–36 %) with dark ink eyes: fine at fight size, plain up close; Vexa reads as
+   a young man more than a rakish woman (the broad frame only; her face keys soften it a little).
+2. The Cutpurse, Crossbowman and Netter share one silhouette (bandit set A by design); props and palette tell them
+   apart (dagger and red sash, crossbow and red quiver, net coil and gaff with a black coat).
+3. Re-used hero gear: the Bone Knight, Barrow Warden and Drowner wear the Warden's F plate, the Sentinel and the King
+   its S plate, the Bruiser the Blade's mail, the cult the Mender's robe and cowl, the Sexton and the Hag the
+   Arcanist's robe (and hood). Helmets, colours, props and scale set them apart, but a player who knows the Warden
+   will see his plate; an artist pass could give each its own shell. These builds read `art/build/gear_<class>.blend`:
+   if a hero gear pass rebuilds a piece, re-run the base.
+4. Everything rigid stays rigid: chains, lanterns, the net coil, kelp, tentacle tips and the trailing chain swing only
+   with their bone (no secondary motion); the Flagellant's chain hangs from his fist rather than dragging.
+5. Needs the client: `poseAdd` / `poseHold` (hunches, the Shambling Corpse's broken arm, the King's seat) and
+   `boneScales` (the Ghoul's and the Hag's long arms, the Bruiser's bulk). Without them those monsters stand upright
+   with hero proportions — still readable, less themselves. The Ghoul has no quadruped move (hero Run instead).
+6. Sister Naesa's tentacles here are tubes skinned along the arm bones; the monsters C pass also exported a
+   `naesa-arm` on the tentacle base — the client should use one or the other for phase 2.
+7. A small dark speck inside the Sentinel's visor at 360 px (the helm's inner lip through the recessed slit);
+   invisible at 200 px.
+8. **Proposed** (for `13` / `06`): the Charnel Hulk at scale 2.0, not §3.5's 2.2 (see zombie round 2).
+
+### The monsters pass C — wraith, wisp, tentacle, ooze, leech
+
+*`art/LOG.md`'s format: one entry per round — what was built, the renders read, the defects as a numbered list with
+their fixes, what is left. Scripts: `tools/blender/monsters/build_{wraith,wisp,tentacle,ooze,leech}.py` and the shared
+`spirit_lib.py` (mesh builder with slot split and a map back for weights and keys, small rigs with analytic chain weights,
+one action per clip with one slot per animated ID, the review set). Renders: `art/renders/monsters/<base>/`. Build logs:
+`art/build/monsters_c_<base>_r<n>.log`. All rounds rendered with `--quick` (8 samples; six passes share the laptop).*
+
+**Conventions this pass settled (read by the client pass):**
+
+- Clips are one glTF animation each, whatever moves: skeletal (`Rig`), node (the wisp's empties and meshes) or morph
+  (`weights` on each ooze mesh). Blender 5.x slotted actions make it one action per clip with a slot per animated ID; the
+  exporter (ACTIONS mode, merge by action) writes them as one animation — checked by re-importing every file and
+  playing a clip on it.
+- `clips.json` → `<base>` (top level, like the rat pass) = `{ animation: skeletal | node | morph, fps, clips: [{ name,
+  seconds, loop, events }] }` (+ `rig` / `bones`, or `root` / `nodes` / `meshes` / `morphs`).
+- `manifest.json` → `<monster id>` = `{ base, scale, parts, shapes, palette, slots, clipSpeed, tris }`; `slots` overrides
+  fixed palette slots per monster (11 glow, 14 gem: the wraith's blue eyes, the lantern's sea-green, the pet wisp's
+  gold, the leech's swallowed light). Deep Maw adds `instances`; `naesa-arm` adds `attach`; the pet adds `pet: true`.
+- Bone scale is keyed only on leaf bones (the leech's `Sack`, the `Lip_*` bones): three.js inherits scale down a chain.
+
+#### Round 1 — 2026-10-28 — tentacle
+
+**Built.** `build_tentacle.py`: the chain `Root` + `T_01..T_10` (segments ×0.9 toward the tip, 2.5 m), a 12-sided
+tube with a flatter sucker side, two staggered rows of raised suckers (white rim, ink cup) spaced by ∫dz/r so they
+shrink with the tentacle, a black tip; the Deep Maw's plate (`tentacle_maw`: a throat funnel, pink gums, three rings
+of teeth, a rim lobed between the tentacles) skinned to `Maw` + five `Lip_*` bones on the same rig; `var_arm` (the root
+slimmed to 45 % for Naesa's shoulders). Clips Idle, Move, Attack1 (slam), Attack2 (grab-wrap, drag), Hit, Death (retract
+under the water), Rise. Body 1,428 tris, plate 830, Deep Maw (plate + 5 instances) 7,970.
+
+**Renders read:** `lineup.png`, `read200_sheet.png`, every `clip_*.png` (Deep Tentacle and Deep Maw rows),
+`fight_from_the_deep.png`, `fight_the_maw.png`, `reimport_check.png`.
+
+**Defects found:**
+1. The Deep Tentacle stood almost straight with a small hook: a suckered horn, not a tentacle (worst at the fight camera).
+2. Suckers looked like hex nuts up close (six-sided, a big ink hole).
+3. The Maw's suckers took the throat pink (slot 1) and read as red eyes all over its tentacles.
+4. Attack1's tip landed 12 cm under the floor; Attack2's wrap was a hook, not a coil.
+5. Lineup labels overlapped; strips were framed loosely.
+
+**Held:** the Maw reads at once as "a ring of tentacles round a toothed throat" from the fight camera; the slam and the
+retract read; the re-import plays Attack1 (tip moves 3.4 m).
+
+#### Round 2 — 2026-10-28 — tentacle
+
+**Changed:** an idle bias (a '?' — base back, top hooked), lighter Maw pink, the slam 4 cm higher, a tighter coil, labels
+spaced, strips framed per row. **Read:** the same set. **Defects:** 1 not fixed — the base leaning back and the top
+hooking forward made one arc: a curved horn (a tusk) from the side; the taper (radius 0.28 → linear) is still a cone.
+2 the same; labels' second lines fell under the floor.
+
+#### Round 1 — 2026-10-28 — wraith
+
+**Built.** `build_wraith.py`: a hood whose rows gather round an arched face opening (open rows between −30° and 38°
+elevation, closed rows round them), a rim rolled 4 cm inward, a black void dish behind it with two slanted almond eyes
+(slot 11) floating in it; a mantle over the shoulders with its own underside; a robe narrowing at the waist with folds,
+trailing back, ending in twelve tatters; the inside of the robe in void colour up to a ceiling; bell sleeves with
+tattered cuffs and void linings; long four-fingered spectral claws (slot 2). Rig of 23 bones (`Root`, `Spine_01..03`,
+`Head`, arm chains, six two-bone hem chains with local Z outward). 2,586 tris.
+
+**Renders read:** `lineup.png`, `views_sheet.png`, `closeup_hood.png`, `read200_wraith.png`, every `clip_*.png`,
+`fight_belfry.png`.
+
+**Defects found:**
+1. **The tall pointed light hood with a slit for a face reads as a hooded-robe costume with a sinister real-world
+   association** — the single biggest problem of the round. → round 2: a rounded, slouched cowl whose crown falls back
+   (no point), darker blue-grey cloth, a wide round void, a hunched posture.
+2. The robe was a straight sheet almost to the floor: "a person under a sheet", not a floating thing.
+3. Six black rectangles ("rips") read as patches.
+4. 2,586 tris, a little over 06's 2.5k.
+
+**Held:** the eyes read as two blue lights at 200 px and from the fight camera; the claws read; every clip plays
+(Wail flares the hem, Chill Touch lunges with the right claw, the death collapses and sinks).
+
+#### Round 1 — 2026-10-28 — wisp
+
+**Built.** `build_wisp.py`: `Wisp` (floor) → `wisp_float` (1.2 m) → `wisp_body` (core, 14), `wisp_glow` (five flame
+tongues, 11), `wisp_motes` (six diamonds, 11), `wisp_cage` (a rusted hexagonal lantern: bars, bands, a roof, a hanging
+ring, kelp). Node clips (bob, pulse, swirl, flare, dart, flicker, gutter-out with the cage dropping and tipping over).
+Lantern 1,168 tris, pet 552. Re-import: Attack1 scales `wisp_glow` 1.00 → 1.72 at the hit.
+
+**Renders read:** `lineup.png`, `read200_sheet.png`, every `clip_*.png`, `fight_drowned_choir.png`.
+
+**Defects found:**
+1. From the fight camera the solid roof hid the glow: a brown box with a cyan fleck.
+2. The five closed tongues round the core made a bulb: the gold pet wisp read as a garlic bulb.
+3. The 20–30 cm kelp strands under the cage read as legs.
+
+#### Round 3 — 2026-10-28 — tentacle
+
+**Changed.** An S-curve under every pose (`IDLE_BIAS`: the base leans in, the middle back, the top curls over; a side
+S too), a bigger sway; a whippier taper (r = 0.012 + 0.23 (1 − u)^1.5, base 0.24 m); suckers round (8 sides, 8 a
+row, a smaller ink cup); labels grow upward (`align_y = BOTTOM`).
+
+**Renders read:** all sets. Fixed 1–5. The single tentacle now reads as a tentacle from the fight camera (two of them
+side by side: sinuous, suckered, black tips); the Maw's fight read is the strongest of the pass — a ring of tentacles
+round a toothed throat whose hole shows from above. Grab-wrap coils and drags; Rise surfaces; Death retracts under
+the floor. Body 1,408 tris; Deep Maw 7,870 (plate 830 + 5 × 1,408). Re-import: Attack1 moves the tip 2.7 m.
+
+**Still open:** the tentacle's base is a wide stump on a dry floor (the Vault's water hides it in the game); seen from
+the side the Maw's gums are a pink shelf (fine from the fight camera).
+
+#### Round 2 — 2026-10-28 — wraith
+
+**Changed** (round 1's 1–4): a slouched cowl (rounder, its crown falls back, no point), a wider round void (±50°), eyes
+×1.2, cloth darkened to blue-grey `#707a87`; a hunch under every pose (shoulders forward, head up so the void still
+faces the party); the robe narrows and ends at 0.74 m with tatters 0.27–0.45 m long trailing back (tips 0.29–0.47 m off
+the floor: a clear gap); no rips; hem chains moved down with it. 2,250 tris.
+
+**Renders read:** all sets. Fixed 1–4: it reads as a floating hooded wraith — a dark void with two blue eyes, ragged
+sleeves, spectral claws, a shadow detached from the hem; from the fight camera two of them read at once. Wail flares
+the hem and flings the arms; Chill Touch lunges 0.55 m with the right claw; Move leans and streams.
+
+**Defects found:**
+1. A pale speck under the eyes: the robe's top cap (cloth grey) showed through a gap in the void at the chin.
+2. Death's heap: the hem chains flared 58° and the tatters stood up like spikes round the fallen robe.
+
+#### Round 2 — 2026-10-28 — wisp
+
+**Changed** (round 1's 1–3): an open crown (six ribs to a small cap) instead of the solid roof; a bigger core
+(r 8.8 cm); the glow is a corona of six narrow flame tongues licking up round the core plus a flame tail from its crown
+(the core shows between them from every side); kelp shortened to 7–12 cm rags. Lantern 1,256 tris, pet 640.
+
+**Renders read:** all sets. Fixed 1–3: from the fight camera the lantern reads as a rusted cage round a sea-green
+flame; the gold pet reads as a small flame spirit at the party's heels. Attack1 bursts the flame out of the cage;
+Death gutters out, the cage drops and tips onto its side; the pet fades to nothing.
+
+**Defect found:** 4. The short kelp rags under the bottom plate still look a little like feet.
+
+#### Round 1 — 2026-10-28 — leech
+
+**Built.** `build_leech.py`: a 4.4 m (arc) body lying on the floor with the front third reared, oval in section,
+annuli every 6.5 cm, a bloated sack, a pale belly; a round sucker-mouth (pink gums, three rings of round teeth, a black
+throat) as wide as a hero; rig `Root` → `L_01..L_12` → `Head` + six `Lip_*` + a leaf `Sack` (21 bones); clips Idle,
+Move (inchworm), Attack1 (latch), Attack2 (bloat slam), Hit, Death. 3,750 tris.
+
+**Found before rendering:** the `Root` bone points forward, so its local Y (not Z) is forward — the first latch and
+slam pushed the whole leech 35 cm *into the floor*. Fixed; the hit frames now put the mouth 2.4 m out at 0.7 m (latch)
+and 0.4 m (slam).
+
+**Renders read:** `lineup.png`, `lineup_side.png`, `read200_vault-leech.png`, every `clip_*.png`, `fight_leech_jar.png`.
+The ringed mouth reads at once from the fight camera; the size is right.
+
+**Defects found:**
+1. The swallowed light (slot 11 faces) read as big flat yellow tiles; the dorsal dashes as a black checkerboard.
+2. Two rings per annulus made the outline a saw-tooth.
+3. The latch plunged the mouth into the floor (the head pitched down with the neck); rearing (Attack1 wind-up,
+   Attack2) turned the mouth to the sky.
+4. The inchworm hump was too small to read.
+
+#### Round 1 — 2026-10-28 — ooze
+
+**Built.** `build_ooze.py`: a blob (28 × 17 rings, lumps, drips) with face-painted highlights and foam; `ooze_junk`
+(helmet, sword, chain, skull, bone) and `ooze_pearls` (11 pearls + one glowing); twelve deformation-field keys on all
+three meshes; clips Idle, Move, Flee, Attack1 (lunge), Attack2 (splash), Hit, Death (melt), Split. Re-import: 12 morph
+targets on each mesh, 8 animations × 3 `weights` channels, Attack1 pushes the body from 0.77 to 1.17 m forward.
+
+**Renders read:** all sets. The pearls read; the splash rears into a crest and splats; the melt flattens everything
+(junk included) into a puddle.
+
+**Defects found:**
+1. A smooth dome: from the fight camera the Brine Ooze read as a green pumpkin with a stalk (the upright sword).
+2. Highlights painted on faces read as square tiles.
+3. The helmet with a dark slit read as one big eye; the chain as two "0"s.
+4. The lunge reached only 0.4 m.
+
+#### Round 3 — 2026-10-28 — wraith
+
+**Changed:** the robe's top cap in void colour; Death's heap flares the hem 34° / 12° (was 58° / 30°).
+**Read:** `clip_Death.png` (rise, crumple, a heap with no spikes, sinks into the floor), `read200_wraith.png` (a hooded
+ghost with two blue eyes and claws at 200 px), `fight_belfry.png`, `closeup_hood.png`.
+**Defect found:** 1 again — the speck was not the cap: it is the hood's rolled rim at the chin, a small grey wedge
+standing up inside the void. → round 4: the rim below the eyes takes the void colour.
+
+#### Round 3 — 2026-10-28 — wisp (final)
+
+**Changed:** the kelp hangs down the outside of the bars from mid-height to the bottom band (caught on the cage, not
+dangling under it); the pet's palette comes from `content/pets/wisp.json` (`#f2e3a6 / #ffd166 / #fff8e1`, glow = the
+gold, core = the cream).
+**Read:** `lineup.png`, `read200_sheet.png`, every `clip_*.png`, `fight_drowned_choir.png`. Fixed 4. Every variant reads
+and every clip plays clean. Lantern 1,256 tris (06: 1.5k), pet 640.
+
+#### Round 2 — 2026-10-28 — ooze
+
+**Changed** (round 1's 1–4): bigger lumps and drips, a scalloped foot; highlights as geometry (`shine`: lifted ovals,
+slot 1 — foam white on the Brine, lilac sheen on the Pearl); the junk rebuilt — a pot helm with a rim band and a nasal
+(no slit), a sword hilt (crossguard, grip, pommel), four bigger chain links, a skull with sockets and a jaw, a bone,
+froth on the crown; 13 pearls; the lunge reaches 1.5 m (was 1.17). Brine 2,404 tris, Pearl 1,974.
+**Read:** all sets. Fixed 2–4: the skull reads, the chain reads as links, the lunge lurches. **Still:** 1 — a smooth
+dome; from the fight camera the hilt (pointing up) and the helm still gave a pumpkin-and-stalk read.
+
+#### Round 3 — 2026-10-28 — ooze
+
+**Changed:** the crown leans forward 10 cm (applied to every mesh, so the catch leans with it); the hilt juts sideways
+low on the flank; the helm moved to the front-left shoulder; the main shine moved to the front (the side the fight
+camera sees).
+**Read:** all sets. The stalk is gone; the oozes read as blobs with things caught in them. **Still:** 1 — the outline
+is a dome from every side (the lumps are under 6 cm against a 0.78 m radius); the big front shine reads like a sticker.
+→ round 4: four big lobes (8–13 cm), a puddle lip spreading 12 cm past the body with a scalloped edge, a smaller shine.
+
+#### Round 2 — 2026-10-28 — leech
+
+**Changed** (round 1's 1–4): the swallowed light is nine round domed lenses (slot 11) with pale halos (slot 2) on the
+sack; no dorsal pattern; three mesh rings per 13 cm annulus at ±4 % (soft segments); the latch keeps the mouth facing
+the hero (the neck dips, the head tilts back up: mouth 2.25 m out at 1.2 m); the inchworm hump ×1.6. 5,350 tris.
+**Read:** all sets. Fixed 1, 2 and the latch; the lights read as lantern-light under the skin, the segments as soft
+rings. **Still:** rearing (Attack1's wind-up, Attack2's lift) tips the mouth to the sky; the tail end is blunt; the
+lineup label falls outside the frame. → round 3: stronger head counter-bend, a tapered tail, the label in frame.
+
+#### Round 3 — 2026-10-28 — leech
+
+**Changed:** the head counter-bends harder while rearing (Attack1's wind-up, Attack2's lift and peak); the tail tapers
+to 7 cm with a cap that follows the profile; the lineup frames its label.
+**Read:** all sets. Fixed: the mouth faces the party through every attack frame; the tail reads as a tail; the fight
+read is the leech at its best — the pink ringed mouth turned to the party, the segmented purple body, the swallowed
+lights glowing in the sack.
+**Defect found:** the round-2 inchworm, scaled ×1.6, lifted the whole front off the floor: its bends only ever rose
+(cumulative +72°), so nothing brought the body back down. → round 4: bends that rise, fall and level out
+(`[0, 16, 16, −16, −32, −16, 16, 16, 0…]`, summing to zero over the flat body: a 0.33 m hump, the front stays down).
+
+#### Round 4 — 2026-10-28 — tentacle
+
+**Changed:** a new review render, `naesa_attach.png`: two `naesa-arm` variants hung from the hero rig's upper-arm joints
+(read from `hero_broad.glb`), each turned so the chain runs down the arm, playing Idle with an offset.
+**Read:** the arms hang from the shoulders to the floor, suckers forward, drowned-blue tips — the attach works with no
+special bones. **Defect found:** the tentacle's under-water root (0.3 m below `T_01`) stuck out behind each shoulder as a
+flap. → round 5: `var_arm` folds that part into the joint (z × 0.12, radius × 0.75), and the manifest's `attach` says
+how to mount it (bone, axis, scale, regions to drop).
+
+#### Round 4 — 2026-10-28 — wraith
+
+**Changed:** the rolled rim below the eyes in void colour. **Read:** `closeup_hood.png` — the void now runs down to the
+chin, but the speck stayed, so it was neither the cap nor the rim. **Traced:** the robe's neck ring (z 1.66, its front at
+y −0.105) lies on the void dish's lower slope at the chin (the dish passes y ≈ −0.106 at z 1.66): the cloth pokes
+through the dish. → round 5: the neck ring tucked lower and narrower (z 1.61, 0.115 × 0.075 m), behind the dish.
+
+#### Round 5 — 2026-10-28 — wraith (final)
+
+**Changed:** the robe's neck ring tucked to z 1.61, 0.115 × 0.075 m, its cap at 1.63 (behind the void dish).
+**Read:** `closeup_hood.png` — the speck is gone: a clean black hollow with two lit eyes; `lineup.png`, `views_sheet.png`,
+`read200_wraith.png`, every `clip_*.png`, `fight_belfry.png` unchanged otherwise. Every clip plays clean. 2,250 tris
+(06: 2.5k).
+
+#### Round 4 — 2026-10-28 — ooze (final)
+
+**Changed:** four big lobes (8–13 cm) in the rest shape, a puddle lip spreading 12 cm past the body with a scalloped edge,
+a smaller front shine (8.5 × 4.8 cm) with two dots.
+**Read:** `lineup.png` (it settles on the floor like slime now: the lip spreads, the outline is lumpy), every `clip_*.png`
+(the lunge drags the lip forward with it; the splash, jiggle, melt and split hold), `fight_salt_circle.png` (two Brine
+Oozes and a Pearl Ooze read as slime with their catch; no stalk, no pumpkin). Brine 2,404 tris, Pearl 1,974 (06: 2.5k).
+**Left as is:** see the honest list at the end (opaque body, mound more than drip from some sides).
+
+#### Round 4 — 2026-10-28 — leech (final)
+
+**Changed:** the inchworm's bends rise, fall and level out (a 0.33 m hump over the flat body).
+**Read:** `clip_Move.png` — the middle arches and flattens while the front stays down and reaches; the other strips,
+the lineups and `fight_leech_jar.png` as round 3. Every clip plays clean. 5,350 tris (06: 8k).
+
+#### Round 5 — 2026-10-28 — tentacle (final)
+
+**Changed:** `var_arm` folds the under-water root into the joint; the manifest's `attach` names the mount (the hero's
+`LeftUpperArm` / `RightUpperArm` head, the tentacle Rig +Y along the bone, 0.6 × the wearer, the arm regions dropped).
+**Read:** `naesa_attach.png` — the arms now start cleanly at the shoulders; the other sets as round 3. Every variant
+reads and every clip plays clean.
+
+#### Final state — 2026-10-28
+
+| base · file | animation | variants (tris; 06 budget) | clips (s; events) |
+|---|---|---|---|
+| wraith · `wraith.glb` 255 KB | skeletal, 23 bones | wraith 2,250 (2.5k) | Idle 3.0 loop · Move 1.2 loop · Attack1 Wail 1.3 (hit .6) · Attack2 Chill Touch 1.0 (hit .5) · Hit .5 · Death 1.8 (down 1.3) |
+| wisp · `wisp.glb` 85 KB | node (5 nodes × TRS) | vault-lantern 1,256 (1.5k) · wisp pet 0.65× 640 | Idle 2.0 loop · Move 1.0 loop · Attack1 .9 (hit .45) · Attack2 .8 (hit .35) · Hit .4 · Death 1.4 (down 1.15) |
+| tentacle · `tentacle.glb` 262 KB | skeletal, 17 bones | deep-tentacle 1,408 (3.5k) · deep-maw 7,870 (8k: plate 830 + 5 instances) · naesa-arm 0.6× + `var_arm` | Idle 2.4 loop · Move 1.2 loop · Attack1 slam 1.1 (hit .5) · Attack2 grab-wrap 1.5 (hit .55) · Hit .45 · Death 1.8 (down 1.5) · Rise 1.0 (up .7) |
+| ooze · `ooze.glb` 352 KB | morph, 12 targets × 3 meshes | brine-ooze 2,404 (2.5k) · pearl-ooze 0.8× 1,974 (2.5k) | Idle 2.4 loop · Move 1.0 loop · Flee .7 loop · Attack1 lunge 1.0 (hit .45) · Attack2 splash 1.2 (release .55) · Hit .5 · Death melt 1.6 (down 1.1) · Split .7 (split .45) |
+| leech · `leech.glb` 380 KB | skeletal, 21 bones | vault-leech 5,350 (8k) | Idle 2.8 loop · Move 1.6 loop · Attack1 latch 1.2 (hit .55) · Attack2 bloat slam 1.4 (hit .7) · Hit .5 · Death 2.0 (down 1.4) |
+
+Every file: COLOR_0 codes exact (`inspect-glb.ts`: worst distance 0.0000), re-imported and played (a clip moves what it
+should: the tentacle tip 2.7 m, the wraith's claw 1.2 m, the leech's mouth 1.3 m, the wisp's glow ×1.72, the ooze's
+front 0.78 → 1.5 m).
+
+**What the renders show (look here):** `fight_*.png` in each folder are the phone's view — the fight camera at the
+phone's internal size (1338 × 618; a 1.8 m hero is 167 px tall), heroes left, monsters right; `lineup.png` (variants at
+scale beside the 1.8 m hero), `read200_*.png` (the 200-px card read), `clip_*.png` (each clip at six frames, every
+variant a row), `tentacle/naesa_attach.png`, `wraith/closeup_hood.png`, `reimport_check.png`.
+
+**Still open (honest list):**
+1. Everything is drawn opaque. The ooze's catch can only sit half out of its surface; it is modelled whole inside, so a
+   semi-transparent ooze body (≈ 0.75) in the client would show it suspended, as 06 asks. The wraith would also take a
+   little transparency well.
+2. The Vault Lantern is 0.5 m (06) and its cage hides part of the flame from the fight camera; a client glow (a halo or
+   a point light at `wisp_float`) would carry it further. Emissive strength is the client's `uGlow`.
+3. The single tentacle's base is a wide stump on a dry floor (the Vault's water should hide it); from a low side view the
+   Maw's gums are a pink shelf (from the fight camera they read as a throat).
+4. The ooze is still more mound than drip from some sides; Split is only a shudder (the client spawns the second ooze);
+   toon shading flattens the jelly — the shines are painted geometry.
+5. 06's extra clips are not built: Wraith Drift, Lantern Flicker (Hit flickers), Tentacle Submerge / Grab-hold (Death
+   and Rise cover leaving and arriving), Deep Maw Undertow / Swallow / Spawn (Attack2 opens the maw; a tentacle can play
+   Rise), Ooze Split is a shudder, Leech Latch-hold / Bloat (Attack1 / Attack2).
+6. Cloth has only the hem chains for secondary motion (the wraith's sleeves bend at two joints, no sway of their own).
+
+**Notes for the client pass and the lead:**
+- Three kinds of clip, all ordinary glTF animations played on the cloned scene: **skeletal** (`Rig`: rotation on every
+  bone, translation on `Root` / `Maw` — the hover, lunges, the retract under the floor — and scale on the leaf bones
+  `Lip_*` and `Sack`), **node** (`Wisp` → `wisp_float` → `wisp_body` / `wisp_glow` / `wisp_motes` / `wisp_cage`, TRS on
+  the five), **morph** (`Ooze` → three meshes, a `weights` track each). The hero `keepTrack` (bone quaternions + Hips
+  position only) would drop all three of the extras — a monster animator must keep them.
+- Oozes: keep the morph targets live (do not bake / drop them as for heroes); the three meshes carry the same twelve
+  `clip_*` targets in the same order and every clip drives all three, so merging them means merging the morph arrays.
+- `manifest.json`: `parts` = the nodes shown besides `<base>_body`; `slots` overrides fixed palette slots (11 glow,
+  14 gem); `pet` = the content pet id; `instances` (Deep Maw: `tentacle_body` ×5, glTF axes at scale 1 — multiply by the
+  variant's scale — loops offset by `clipOffset`, one-shots in sync; the body is not drawn at the origin); `attach`
+  (`naesa-arm`).
+- `clips.json`: one key per base at the top level (the rat pass's layout; this pass's earlier `bases` block was moved
+  up and removed). Extra events: `release` (ooze spit), `up` (tentacle Rise), `split` (ooze).
+- Every clip is in place (no travel). Hold the last frame of Death: the tentacles and the Maw end 2.95 m / 0.95 m under
+  the floor, the wraith 1 m sunk, the wisp at scale 0.001 with its cage on its side, the ooze a puddle, the leech curled.
+- `curate_renders.py` keeps `read200_*`, `*sheet*`, `lineup*` and `reimport_check`; this pass's `fight_*.png` and
+  `clip_*.png` need patterns added if the lead wants them in `art/review/`.
+
+### The lead's review in the game (Phase 6 · 2026-10-28)
+
+**Seen.** The client's shots at the phone's landscape viewport (`client/shots/`): every Cellars template from its camera
+(plus the kennels fight and the guardpost crew), the Crypts chapel, ossuary and reliquary, the Vault sluice hall and the
+throne room with the King, the three kit sheets (52 / 53 / 47 pieces), the four monster lineups (Cellars 14, Crypts 13,
+Vault 16, pets 6), the effects sheet, and the fights with the performance overlay (the six-monster crew: 60 fps, 54
+draw calls, 138k triangles on desktop Chrome with an Intel Iris Xe). Every room reads from its camera at phone size;
+the monsters read as their roles beside the heroes; the effects read at fight distance.
+
+**Defects found:**
+1. The Holy mark, the heal motes and the Mender's Ultimate used a Latin cross — a real-world religious sign the game's
+   own faiths never use. → (this round) an equal-armed glint of four tapered rays round a bright core
+   (`client/src/scene/vfx/atlas.ts`, sprite `glint`); the effects sheet re-shot and read.
+2. The King on his throne is small and dark from the throne room's 21 m template camera. The fight framing brings him
+   closer; checked again when the throne fight is playable (Phase 7).
+3. The viewer's Vault lineup (16 monsters in one row) overlaps its labels at phone size — a viewer-only defect, left
+   for Phase 8's polish (two rows).
+4. The six-monster crew in the narrow wine vault crowds the middle of the room; the bars and the turn ring keep it
+   readable. Left as is.
+
+**Left for Phase 7 (with the content that needs them):** Sister Naesa's phase 2 wears the B pass's built-in tentacle
+arms — the C pass's skeletal `naesa-arm` attachment (06's design) is not wired; the Bursting Corpse's swell, the candle
+ring going out, the Vault's tides, the chapel's raised EB2 mark and the arena marks; the throne fight's framing.
+Ten of the sixteen pets (the eggs of the later dungeons, and the Vault's Brine Crab and Vault Imp) are still capsules:
+the two Vault pets are modelled with the Vault content in Phase 7, the rest with their dungeons.

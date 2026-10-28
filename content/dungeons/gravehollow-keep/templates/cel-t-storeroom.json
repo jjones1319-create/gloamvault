@@ -74,9 +74,9 @@
     {
       "meshId": "cel_barrel",
       "position": [
-        2.8,
+        3.2,
         0,
-        -1
+        -1.45
       ],
       "rotationY": 0
     },
@@ -85,7 +85,7 @@
       "position": [
         3.3,
         0,
-        0.2
+        1.6
       ],
       "rotationY": 30
     },
@@ -94,7 +94,7 @@
       "position": [
         -3.4,
         0,
-        0.5
+        1.55
       ],
       "rotationY": 0
     },
@@ -112,7 +112,7 @@
       "position": [
         -3.9,
         2,
-        0
+        -2.4
       ],
       "rotationY": 90
     },
@@ -121,7 +121,7 @@
       "position": [
         3.9,
         2,
-        0
+        2.4
       ],
       "rotationY": -90
     }

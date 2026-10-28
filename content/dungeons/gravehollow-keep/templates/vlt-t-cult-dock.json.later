@@ -1,0 +1,215 @@
+{
+  "id": "vlt-t-cult-dock",
+  "zoneId": "the-drowned-vault",
+  "footprint": {
+    "w": 2,
+    "h": 1
+  },
+  "doors": [
+    {
+      "side": "west",
+      "offset": 0
+    },
+    {
+      "side": "east",
+      "offset": 0
+    },
+    {
+      "side": "south",
+      "offset": 0
+    }
+  ],
+  "kinds": [
+    "merchant",
+    "curio",
+    "treasure"
+  ],
+  "camera": {
+    "position": [
+      0,
+      9.4,
+      12.94
+    ],
+    "lookAt": [
+      0,
+      1,
+      0
+    ],
+    "fov": 40
+  },
+  "props": [
+    {
+      "meshId": "vlt_floor_water_deep",
+      "position": [
+        -3,
+        0,
+        -3
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_deep",
+      "position": [
+        -1,
+        0,
+        -3
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_deep",
+      "position": [
+        1,
+        0,
+        -3
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_deep",
+      "position": [
+        3,
+        0,
+        -3
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_deep",
+      "position": [
+        -3,
+        0,
+        -1
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_deep",
+      "position": [
+        -1,
+        0,
+        -1
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_deep",
+      "position": [
+        1,
+        0,
+        -1
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_floor_water_deep",
+      "position": [
+        3,
+        0,
+        -1
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_quay_edge_2m",
+      "position": [
+        -3,
+        0,
+        0
+      ],
+      "rotationY": 180
+    },
+    {
+      "meshId": "vlt_quay_edge_2m",
+      "position": [
+        -1,
+        0,
+        0
+      ],
+      "rotationY": 180
+    },
+    {
+      "meshId": "vlt_quay_edge_2m",
+      "position": [
+        1,
+        0,
+        0
+      ],
+      "rotationY": 180
+    },
+    {
+      "meshId": "vlt_quay_edge_2m",
+      "position": [
+        3,
+        0,
+        0
+      ],
+      "rotationY": 180
+    },
+    {
+      "meshId": "vlt_quay_edge_2m",
+      "position": [
+        -4,
+        0,
+        -3
+      ],
+      "rotationY": 90
+    },
+    {
+      "meshId": "vlt_quay_edge_2m",
+      "position": [
+        -4,
+        0,
+        -1
+      ],
+      "rotationY": 90
+    },
+    {
+      "meshId": "vlt_quay_edge_2m",
+      "position": [
+        4,
+        0,
+        -3
+      ],
+      "rotationY": -90
+    },
+    {
+      "meshId": "vlt_quay_edge_2m",
+      "position": [
+        4,
+        0,
+        -1
+      ],
+      "rotationY": -90
+    },
+    {
+      "meshId": "vlt_raft_merchant",
+      "position": [
+        0,
+        0,
+        -2
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_altar_tide",
+      "position": [
+        -6,
+        0,
+        -2.6
+      ],
+      "rotationY": 0
+    },
+    {
+      "meshId": "vlt_lamp_cult",
+      "position": [
+        6.2,
+        0,
+        -3
+      ],
+      "rotationY": 0
+    }
+  ],
+  "triBudget": 30000,
+  "drawCallBudget": 40
+}

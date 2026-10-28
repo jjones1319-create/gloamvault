@@ -1,6 +1,6 @@
 # 06 — Monsters
 
-*Last updated 2026-10-28 · rev. 3 (Phase 7 prep: Gravehollow at 8 floors — the Drowned Vault F7–8 with Sister Naesa on F7 (L11) and the Hollow King on F8 (L13), the Vault's encounters and monsters re-floored, the Vault Leech without a clock — D-098, D-104) · rev. 2 (checkpoint 1: open questions answered by delegation; the Nightmare difficulty preset renamed Dread — D-095, D-099) · rev. 1 2026-10-26 · numbers are tuning starting points*
+*Last updated 2026-10-28 · rev. 4 (Phase 6: §3.5 as built — the Charnel Hulk at 2.0, the hero-rig bases, Naesa's arms — D-111, D-115) · rev. 3 (Phase 7 prep: Gravehollow at 8 floors — the Drowned Vault F7–8 with Sister Naesa on F7 (L11) and the Hollow King on F8 (L13), the Vault's encounters and monsters re-floored, the Vault Leech without a clock — D-098, D-104) · rev. 2 (checkpoint 1: open questions answered by delegation; the Nightmare difficulty preset renamed Dread — D-095, D-099) · rev. 1 2026-10-26 · numbers are tuning starting points*
 
 **How to read this file.** Every monster is a template over a **per-level baseline** the simulator owns and tunes: at level L, **HP 40 + 12L · Attack 8 + 2L · Defense 2 + 1.5L · Speed 100 · gold 5 + 3L** (in `tuning.json` → `dungeon.monsterBaseline` since D-078; the XP unit is 8 + 2L). An entry gives multipliers of that baseline (HP× / Att× / Def× / gold×), an absolute Speed, and an **XP class** (fodder 1 · special 2 · elite 3 · monster 6 · boss 25, times the level's XP unit). Monster level is the floor's (rulebook §11.2): Gravehollow F1 L1 · F2 L2 · F3 L4 · F4 L5 · F5 L7 · F6 L8 · F7 L11 · F8 L13 (eight floors, `07` §2.3; D-104). **Roles** are Vermintide's, and every family has all five: **Fodder** (many, weak), **Elite** (armored — needs the right damage type), **Special** (a disabler — Grab / Net / Web / Stun / Fear / pull — that removes one hero until the party reacts), **Monster** (big, rare, a fight on its own), **Boss**; plus the zone's **Hunter** (§4.5) and the **Elite affixes** of §2. Attack lines read `Name — type/element — weight — multiplier — effect — AI weight %` (weights sum to 100; the behavior line overrides them). Statuses are only the rulebook's set (§3.5). Each entry becomes `content/monsters/<id>.json` with the block's field names; the visual brief becomes `art/briefs/monsters/<id>.md` (`11-ART-PIPELINE.md`); encounter tables go to `content/encounters/<id>.json` (one record per encounter; `10-TECH-PLAN.md` §3 owns the layout). A `Technique:` line names the class-sheet skill(s) a monster teaches (`docs/classes/<class>.md` owns the skill; this file owns which monster teaches it). Nothing is borrowed from another franchise; generic words (skeleton, ghoul, troll) are the only shared vocabulary.
 
@@ -506,7 +506,7 @@ Fourteen Blender builds cover 35 regulars, 3 hunters and 4 bosses. A **variant**
 | **humanoid** | the hero rig itself, with costume sets A (bandit) / B (bandit mail) / C (coat) / cult A–D / crone | Cutpurse, Crossbowman, Bruiser (1.25), Netter, Hexer, Captain Vexa Marrow; Acolyte, Blade, Flagellant, Drowner (1.3), Brine Hag, Sister Naesa (+ tentacle arms) |
 | **hound** | quadruped canine | Cellar Hound (1.0), the Warden's Hound (1.5, ghost shader); pets Cellar Hound (0.7), Bone Pup (0.7, bone texture) |
 | **skeleton** | humanoid rig, bone meshes, no skin weights needed | Skeleton Footman, Skeleton Archer, Bone Knight (1.25, plate), Crypt Sexton (robe), the Barrow Warden (1.75, mantle + lantern + bell) |
-| **zombie** | humanoid rig, loose-joint idle, quadruped move set for the Ghoul | Shambling Corpse, Bursting Corpse (belly), Ghoul (0.95, long arms), Drowned Thrall (barnacles), Charnel Hulk (2.2, extra torso) |
+| **zombie** | humanoid rig, loose-joint idle, quadruped move set for the Ghoul | Shambling Corpse, Bursting Corpse (belly), Ghoul (0.95, long arms), Drowned Thrall (barnacles), Charnel Hulk (2.0, extra torso — D-115) |
 | **bat** | hover rig, wing bones | Grave Bat; pet Crypt Bat (0.6) |
 | **wraith** | floating cloth, no legs | Wraith |
 | **wisp** | a sphere with particles, no skeleton | Vault Lantern (cage prop); pet Wisp |
@@ -517,6 +517,16 @@ Fourteen Blender builds cover 35 regulars, 3 hunters and 4 bosses. A **variant**
 | **hollow-king** | unique: humanoid rig + throne + chain rig | the Hollow King |
 
 Rule of thumb for later dungeons: one base per 2.5 monsters; a Monster-role creature may own a base; a boss shares its family's base where the silhouette allows (the Barrow Warden does, the Hollow King does not).
+
+**As built (Phase 6, 2026-10-28 — D-111, D-115).** The fourteen bases are in `client/public/models/monsters/` with one
+`manifest.json`: every monster, hunter, boss and pet above (and Naesa's arm) as data — base, scale, parts, shapes,
+palette, bone scales, pose offsets, clip map; the scales in the table are starting points, the built ones are in the
+manifest. The humanoid, skeleton, zombie, sentinel and Hollow King bases are the hero rig and play the hero clips; the
+Bone Knight, the Barrow Warden, the Drowner, the Sentinel and the King wear re-dyed Warden plate, the Bruiser the
+Blade's mail, the cult the Mender's robe, the Sexton and the Brine Hag the Arcanist's robe — told apart by helm,
+colour, props and scale. **The Charnel Hulk is built at 2.0** (3.6 m upright, ~3.3 m hunched), not 2.2, so that it
+stays shorter than the Barrow Warden (its Visual line says 3.2 m). Sister Naesa's phase 2 shows built-in tentacle arms
+until her arena lands in Phase 7, when the tentacle-base arms (`naesa-arm`, built) are attached as the table says.
 
 ---
 
