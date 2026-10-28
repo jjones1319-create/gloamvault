@@ -7,10 +7,11 @@ import { gainItemXp, wearArmorPiece, wearShield, wearWeapon } from './items.ts'
 import { monsterXp } from './monsters.ts'
 import type { Rng } from './rng.ts'
 import { roundHalfUp } from './stats.ts'
+import { monsterThreatLevel, partyLevelOf, threatMonsterOf } from './threat.ts'
 import type { Tuning } from './tuning.ts'
 import type { Equipment, HeroRecord, ItemInstance, KnownSkill, SkillDef } from './types/content.ts'
 import { TRAINABLE_ATTRIBUTES, type Attribute, type TrainableAttribute } from './types/enums.ts'
-import { attributeGainAboveCap, attributePointCost, attributeSoftCap, difficultyMultiplier, isGated, skillRankFor, useBudgetPercent, useXp } from './xp.ts'
+import { attributeGainAboveCap, attributePointCost, attributeSoftCap, difficultyMultiplier, isGated, levelGapMultiplier, skillRankFor, useBudgetPercent, useXp } from './xp.ts'
 
 /**
  * What grows after a fight (03-GAME-DESIGN §5, §7.5): skill ranks, attributes (XP kept in hundredths so a 1 × D
@@ -52,6 +53,18 @@ export interface FightProgressReport {
   petXp: number
 }
 
+/**
+ * A won fight's battle-XP pool (D-096, James): each defeated monster's XP × the level gap between that monster (read
+ * as the threat chip reads it: +1 per champion affix, +3 for a boss or the hunter) and the party's level — the average
+ * of the heroes who fought, rounded down. The heroes standing split it (applyFightProgress).
+ */
+export function fightXpPool(t: Tuning, fight: FightState): number {
+  const partyLevel = partyLevelOf(fight.actors.filter((a) => a.kind === 'hero' && a.side === 'party').map((a) => a.level))
+  return fight.actors
+    .filter((a) => a.monster && a.gone && !a.fled)
+    .reduce((s, a) => s + roundHalfUp((monsterXp(t, a) * levelGapMultiplier(t, monsterThreatLevel(t, threatMonsterOf(a)) - partyLevel)) / 100), 0)
+}
+
 /** Applies a finished fight's XP and wear events to the delve's heroes. */
 export function applyFightProgress(content: Content, t: Tuning, rng: Rng, state: DelveState, fight: FightState, heroActorIds: string[]): FightProgressReport[] {
   const reports: FightProgressReport[] = []
@@ -59,7 +72,7 @@ export function applyFightProgress(content: Content, t: Tuning, rng: Rng, state:
   const mainFamily = fight.actors.find((a) => a.monster)?.monster?.familyId ?? null
   // Participation shares for pet XP (03 §5.3, §9).
   const partyWork = fight.actors.filter((a) => a.kind === 'hero').reduce((s, a) => s + a.tally.damageDealt + a.tally.healingDone, 0)
-  const totalMonsterXp = fight.actors.filter((a) => a.monster && a.gone && !a.fled).reduce((s, a) => s + monsterXp(t, a), 0)
+  const xpPool = fightXpPool(t, fight)
 
   heroActorIds.forEach((actorId, heroIndex) => {
     const dh = state.heroes[heroIndex]
@@ -149,24 +162,22 @@ export function applyFightProgress(content: Content, t: Tuning, rng: Rng, state:
       if (r.destroyed) state.log.push({ floor: state.floor.number, roomId: state.floor.currentRoomId, kind: 'destroyed', text: `${hero.name}'s ${def.name} falls apart` })
     }
 
-    // Battle XP and the level (D-082, Final Fantasy style): the heroes standing at the end of a won fight share its XP
-    // (xp class × the level's XP unit, per monster), normalised to the 3-hero table — each takes XP × 3 ÷ standing
-    // heroes — scaled by D and the hero's XP bonuses. A solo hero levels faster per fight; a full party a little slower.
-    if (fight.over?.outcome === 'victory' && !actor.fallen && totalMonsterXp > 0) {
+    // Battle XP and the level (D-082, D-096): the heroes standing at the end of a won fight split the pool, normalised to
+    // the 3-hero table — each takes pool × 3 ÷ standing heroes — then their own XP bonuses. A solo hero levels faster
+    // per fight; a weaker hero lowers the party's level, so everyone's pool grows, but takes only an equal share.
+    if (fight.over?.outcome === 'victory' && !actor.fallen && xpPool > 0) {
       const standing = Math.max(1, fight.actors.filter((a) => a.kind === 'hero' && !a.fallen).length)
-      const d = difficultyMultiplier(t, fight.options.floorLevel, hero.level)
-      const share = (totalMonsterXp * t.dungeon.partyScaling.tunedFor) / standing
-      const gain = roundHalfUp((((share * d) / 100) * (100 + extra)) / 100)
+      const share = (xpPool * t.dungeon.partyScaling.tunedFor) / standing
+      const gain = roundHalfUp((share * (100 + extra)) / 100)
       hero = applyBattleXpLevel(content, t, { ...hero, battleXp: hero.battleXp + Math.max(0, gain) })
       report.battleXp = Math.max(0, gain)
     }
     report.levelsGained = hero.level - levelBefore
 
-    // Pet XP (§9): half the owner's fight XP by participation.
-    if (hero.petInstance && partyWork > 0 && totalMonsterXp > 0) {
+    // Pet XP (§9): half the owner's share of the pool by participation.
+    if (hero.petInstance && partyWork > 0 && xpPool > 0) {
       const share = (actor.tally.damageDealt + actor.tally.healingDone) / partyWork
-      const d = difficultyMultiplier(t, fight.options.floorLevel, hero.level)
-      const ownerXp = roundHalfUp((totalMonsterXp * share * d) / 100)
+      const ownerXp = roundHalfUp(xpPool * share)
       let petXp = roundHalfUp((ownerXp * t.pets.xpSharePercent) / 100)
       if (dh.treatUsed) petXp = roundHalfUp(petXp * (1 + t.pets.treat.xpPercent / 100))
       const pet = { ...hero.petInstance, xp: hero.petInstance.xp + petXp }

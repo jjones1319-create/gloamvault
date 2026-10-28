@@ -1,6 +1,6 @@
 # Ranger — class sheet
 
-*Last updated 2026-10-26 · rev. 1 · numbers are tuning starting points*
+*Last updated 2026-10-27 · rev. 2 (checkpoint 1: open questions answered by delegation — D-099) · rev. 1 2026-10-26 · numbers are tuning starting points*
 
 *Every number below (costs, multipliers, durations, the Cellars monster stats in §8) is a starting point for the simulator and the balance runner, not a commitment. Rules referenced are `03-GAME-DESIGN.md` (§2 stats, §3 timeline, §4 exploring, §5 level-by-use, §6 gear, §7 skills). Status numbers quoted in skill lines (Bleed 25% of the applying hit per turn for 3 turns, ignores Defense · Poison 3% of max HP per turn, ignores Defense · Weaken −20% Attack · Fortify +20% Defense · Mark +20% damage taken · Slow ×0.67 Speed · Haste ×1.5 · Daze −500 energy · Petrify −1,000 energy) belong to `content/statuses/<id>.json` (`03` §3.5 is the table) and are repeated here only so the lines read on their own.*
 
@@ -201,8 +201,8 @@ Three actions, two arrows, 28 Stamina, zero damage taken. The Spider never acted
 
 ## 10. Open questions (for James)
 
-1. **Ammo as a real cost.** The sheet charges 1 arrow per shot and 3–9 per volley, with Forager's Instinct recovering half. Is managing a quiver fun on a phone, or should arrows be infinite and the cost live only in bow wear?
-2. **Steady Draw's first strike.** A weight-800, +20% first action every fight is a strong Tier I passive, and with either-row targeting it routinely kills a back-row caster before it acts (§8). Keep it at Tier I as the class identity, or move the +20% to Tier II (Quarry) and leave Tier I as the weight change only?
-3. **Monster-technique Insight rule.** Deep Tentacle's Drag (Tier III) and Grave Bat's Screech (Tier IV) come from Gravehollow monsters at L5–14, below the S-curve sweet spots of L18 / L24. Proposed: a flat 10% per witnessed use, pity at 10 — confirm?
-4. **Pathfinder actives in the corridor.** They are usable out of combat from the loadout without spending a turn or a floor-clock tick (except Double Time, which saves one). Should corridor uses cost Stamina (which only regenerates in fights and rests), or be free?
-5. **Never Lost** (Tier V) makes the party immune to ambush. That removes one of Perception's two headline effects for the whole party; acceptable at Tier V, or cap it at −30%?
+1. ~~**Ammo as a real cost.** The sheet charges 1 arrow per shot and 3–9 per volley, with Forager's Instinct recovering half. Is managing a quiver fun on a phone, or should arrows be infinite and the cost live only in bow wear?~~ *Checkpoint 1 (D-099): keep the quiver — it is the Ranger's mechanical con (`04` §1) and cheap (`08` §4) — but no chore: when the sim starts counting arrows in Phase 7, Repair all also refills the quiver and the floor Merchant stocks arrows.*
+2. ~~**Steady Draw's first strike.** A weight-800, +20% first action every fight is a strong Tier I passive, and with either-row targeting it routinely kills a back-row caster before it acts (§8). Keep it at Tier I as the class identity, or move the +20% to Tier II (Quarry) and leave Tier I as the weight change only?~~ *Checkpoint 1 (D-099): keep it at Tier I, as built — it is the class identity, and the runner already shows the Ranger behind on damage.*
+3. ~~**Monster-technique Insight rule.** Deep Tentacle's Drag (Tier III) and Grave Bat's Screech (Tier IV) come from Gravehollow monsters at L5–14, below the S-curve sweet spots of L18 / L24. Proposed: a flat 10% per witnessed use, pity at 10 — confirm?~~ *Checkpoint 1 (D-028): confirmed — a flat 10% per witnessed use, pity at 10.*
+4. ~~**Pathfinder actives in the corridor.** They are usable out of combat from the loadout without spending a turn or a floor-clock tick (except Double Time, which saves one). Should corridor uses cost Stamina (which only regenerates in fights and rests), or be free?~~ *Checkpoint 1 (D-099): they cost their Stamina (the pool carries from fight to fight, so it is a real choice) but still take no turn and no floor-clock tick.*
+5. ~~**Never Lost** (Tier V) makes the party immune to ambush. That removes one of Perception's two headline effects for the whole party; acceptable at Tier V, or cap it at −30%?~~ *Checkpoint 1 (D-099): cap it at −30% ambush so Perception keeps its job; the half-speed floor clock and Detection +5 stay.*

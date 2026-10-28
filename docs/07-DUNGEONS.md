@@ -1,6 +1,6 @@
 # 07 — Dungeons
 
-*Last updated 2026-10-26 · rev. 1 · numbers are tuning starting points*
+*Last updated 2026-10-27 · rev. 2 (checkpoint 1: open questions answered by delegation; the Nightmare difficulty preset renamed Dread — D-095, D-099) · rev. 1 2026-10-26 · numbers are tuning starting points*
 
 *Companion to `03-GAME-DESIGN.md` §1, §4, §8, §11, §12 (the rules) and `06-MONSTERS.md` (the creatures). This file owns the places: the overworld, each dungeon's zones, floors, kits, room templates, curios, traps, secrets, arenas and the floor-generation grammar. Monster names used in encounter tables are the shared names from the bestiary brief; creature names were reconciled against the bestiary on 2026-10-26. Gold amounts are written in **R** (the median gold of one delve at the player's band, `03` §8.1; R ≈ 300 at floors 1–3).*
 
@@ -21,9 +21,9 @@ The Waystone stands in Emberfall's square between the Lantern Inn (Brannock) and
 
 - **Unlock rule.** A dungeon opens on a player's map when they have killed the previous final boss, *or* when they join a party whose host has. Progress is per player, so a guest who clears the Sporemother in a friend's party has the Fungal Deep open afterwards (the kill is theirs by participation, `03` §5.3).
 - **Waystones per zone.** The first zone's Waystone is lit from the start; each later zone's *rises* in the zone boss's arena when the boss dies and stays lit for that player. A site shows its zones as a column of lamps; a lit lamp can be delved from.
-- **A delve** is one zone: three floors ending in a zone boss (Gravehollow F1–3, F4–6), or four when the zone carries the final floor (F7–10). 20–40 minutes; pausable in any room; resumable from the Inn (a delve save is seed + command log, `03` §10.1).
-- **Continue past the boss.** When a zone boss dies its Waystone rises and the party sees **Return to Emberfall** (free) or **Descend** (the stairs appear in the arena). Descending keeps everything at stake — gold unbanked, durability wearing — and the next zone generates on the same match seed. All ten floors in one sitting is allowed. There is no banking in the dungeon; the Bank is a town building, which is the point.
-- **Retreat.** On the pause menu in every room except a boss arena once the fight has begun. Free from any room with a Waystone (the zone's entry room, or an arena after the kill); from anywhere else it costs **10% of the delve's unbanked gold**. Keeps every item, part, Tome and XP. In co-op a vote (majority, leader breaks ties, 15 s).
+- **A delve** is one zone (D-098): three floors ending in a zone boss (Gravehollow F1–3, F4–6), or two when the zone carries the final floor (the Drowned Vault F7–8: Sister Naesa on F7, the Hollow King on F8). 20–40 minutes; pausable in any room; resumable from the Inn (a delve save is seed + command log, `03` §10.1).
+- **After the boss.** When a zone boss dies the party teleports out from its room (D-083) and the Waystone remembers the next zone, so the next delve can start there. A delve is one zone (D-098, by delegation at checkpoint 1); the whole tower in one sitting is not offered. There is no banking in the dungeon; the Bank is a town building, which is the point. *(Rev. 1's "Descend past the boss" is superseded.)*
+- **Retreat** (D-083, James — `03` §12.3 owns it): the party leaves only by **walking out of a floor's entrance room** or **teleporting out at the floor's end** (the stairs room, or the boss's room once the boss is down); free on Normal (Hard 15%, Dread 25% of the unbanked gold, the preset table below); never from a fight. Keeps every item, part, Tome and XP. In co-op a vote (majority, leader breaks ties, 15 s). *(Rev. 1's "from any room, 10% toll" is superseded.)*
 - **Wipe** (`03` §12.2): the party wakes at the Lantern Inn, the delve's gold is gone, equipped items −10% durability; Waystone progress stands.
 
 ### 1.2 Dungeon-select UI copy
@@ -34,15 +34,15 @@ Tapping a site opens its card. The copy is deliberately plain so the balance run
 GRAVEHOLLOW KEEP · the Cellars (floors 1–3)
 Recommended level 1–4 · Monsters L1–L4 · Vermin & the Grinning Company
 Party 1–4 · encounters scale to party size
-Difficulty: [Normal] [Hard] [Nightmare]      Pacts: 0 selected (+0% gold, +0% XP)
+Difficulty: [Normal] [Hard] [Dread]          Pacts: 0 selected (+0% gold, +0% XP)
 Expected: 20–30 min · ~1.0 R gold · boss: Captain Vexa Marrow
 Hunter on this zone: Old Gnaw (enters at 40 ticks)
 Your best: cleared 3× · fastest 22:40 · lowest light at the stairs 14
-[ Begin delve ]   [ Begin and Descend past the boss ]
+[ Begin delve ]
 ```
 
 - **Recommended level** is the zone's monster-level range (F1–3 reads 1–4, F4–6 reads 5–8, F7–9 reads 10–13). Below it the card turns amber ("Hard for your level"); more than 10 above, grey ("No XP here"), because the gate (`03` §5.1) zeroes gains against enemies 10+ levels below.
-- **Party size** shows the scaling line so four players is not mistaken for easy mode: count ×0.6 / 0.8 / 1.0 / 1.2, HP ×0.7 / 0.85 / 1.0 / 1.15.
+- **Party size** shows the scaling line so four players is not mistaken for easy mode: count ×0.6 / 0.8 / 1.0 / 1.6, HP ×0.5 / 1.0 / 1.0 / 1.6, damage ×0.8 / 1.0 / 1.0 / 1.0 (the Phase 3 runner's values, D-084; `tuning.json` → `dungeon.partyScaling`).
 - **Modifiers** list the preset and Pacts (§6) with their total reward. The host sets them; guests see them in the lobby before accepting.
 
 ---
@@ -349,7 +349,7 @@ The bestiary owns attacks, HP and resistances; this file owns the room, the **ar
 
 **F9 — Sister Naesa · `vlt_t_drowned_chapel`, light set to 40.** The party on a dry step at the S end; Naesa at the Tide Altar with **2 Tidebound Acolytes + 1 Tidebound Blade** (`06`); three tentacle marks under black water at the N edge. *Arena rule — the Tide:* a water level 0–4 rises one step every 3 rounds (the sub-bass boom is the tell). Step 2: the back row wades (Slow). Step 3: every Lightning attack chains to both rows. Step 4: the three Deep Tentacles rise and Grab a front-row hero each until freed. The **sluice wheel** on the W wall is an Item action (Strength ≥ 12): the tide drops one step. *Phase 1 (100–50%):* Naesa's chant is a 2-round charge; a heavy hit that beats her concentration interrupts it (`03` §3.1); her Tidal Call (the raised conch is the tell) brings a Deep Tentacle up early; fallen adds re-enter once, 4 rounds after they fall. *Phase 2 (≤ 50%):* she walks into the water (Large, the Silence aura) and the tide jumps to step 3; under 20% it rises every 2 rounds. **First kill (`06`):** Steel ×10 + Silk ×10 + Brine Pearl ×3, a Tier III Tome, one A-grade item, the **Tidebound Idol** (C Relic), 1 Grand chest key, title *Tide-turner*. The **Vault Waystone** rises from the drained altar; the dry sluice channel is the stair to F10.
 
-**F10 — the Hollow King · `vlt_t_throne`, light set to 70.** Eight steps rise out of black water to the throne; a gallery of six cult lamps behind it. *Arena rule — the Keep remembers:* on each phase change the room's light drops 25 (70 → 45 Shadowy → 20 Dark), so monster Accuracy and Damage climb with the band (`03` §4.2) and Torches are the counter — a party carrying six fights the last phase in Dim. *Phase 1 (100–60%):* the King on his throne, out of melee reach (reach, ranged and spells only; Taunt works this phase only); his Court Call brings the Cellars' adds — **2 Giant Rats + 1 Grinning Crossbowman** (`06`) — up the steps. *Phase 2 (60–25%):* he descends to the front row; the gallery lamps flare (the tell) and a Silence pulse hits every caster every 3 rounds; the Crypts answer: **2 Skeleton Footmen + 1 Wraith**, re-called once at 40%. *Phase 3 (≤ 25%):* the water reaches the fourth step and the Vault answers: **2 Deep Tentacles** rise, Naesa's shade appears at 10%, and the three **hunters return** at phase rounds +2, +4, +6 (Old Gnaw, the Warden's Hound, the Vault Leech) — **except any hunter the party killed this delve**. **First kill (`06`):** one **Divine Shard**, Steel ×12 + Silk ×12 + Iron ×12, one S-grade item, a **Tier IV Tome**, the **Hollow Coin** (C Relic), 2 Grand keys, **+1 permanent Luck** (`03` §2 open question 2, proposed), title *Hollow-crowned*, and the **Throne Waystone**, which lights the Fungal Deep's lamp on the map. Repeats: the stack at half, a Divine Shard 10%, his three God items at 1% (2% Hard, 4% Nightmare; `08` §7), no Luck.
+**F10 — the Hollow King · `vlt_t_throne`, light set to 70.** Eight steps rise out of black water to the throne; a gallery of six cult lamps behind it. *Arena rule — the Keep remembers:* on each phase change the room's light drops 25 (70 → 45 Shadowy → 20 Dark), so monster Accuracy and Damage climb with the band (`03` §4.2) and Torches are the counter — a party carrying six fights the last phase in Dim. *Phase 1 (100–60%):* the King on his throne, out of melee reach (reach, ranged and spells only; Taunt works this phase only); his Court Call brings the Cellars' adds — **2 Giant Rats + 1 Grinning Crossbowman** (`06`) — up the steps. *Phase 2 (60–25%):* he descends to the front row; the gallery lamps flare (the tell) and a Silence pulse hits every caster every 3 rounds; the Crypts answer: **2 Skeleton Footmen + 1 Wraith**, re-called once at 40%. *Phase 3 (≤ 25%):* the water reaches the fourth step and the Vault answers: **2 Deep Tentacles** rise, Naesa's shade appears at 10%, and the three **hunters return** at phase rounds +2, +4, +6 (Old Gnaw, the Warden's Hound, the Vault Leech) — **except any hunter the party killed this delve**. **First kill (`06`):** one **Divine Shard**, Steel ×12 + Silk ×12 + Iron ×12, one S-grade item, a **Tier IV Tome**, the **Hollow Coin** (C Relic), 2 Grand keys, **+1 permanent Luck** (`03` §2 open question 2, proposed), title *Hollow-crowned*, and the **Throne Waystone**, which lights the Fungal Deep's lamp on the map. Repeats: the stack at half, a Divine Shard 10%, his three God items at 1% (2% Hard, 4% Dread; `08` §7), no Luck.
 
 ### 2.9 Hunters on this dungeon
 
@@ -501,9 +501,9 @@ Checks: Entry→Stairs = 7 hops, the unique maximum (T 5, X 6, K 3) ✔ · one R
 
 ### 6.1 Presets
 
-Each is a set of scalars the sim multiplies in (`03` §11.2); the runner sweeps them. Hard and Nightmare unlock per dungeon when its final boss is dead on the preset below.
+Each is a set of scalars the sim multiplies in (`03` §11.2); the runner sweeps them. Hard and Dread unlock per dungeon when its final boss is dead on the preset below.
 
-| Knob | Normal | Hard | Nightmare |
+| Knob | Normal | Hard | Dread |
 |---|---|---|---|
 | Enemy HP | 100% | 125% | 150% |
 | Enemy damage | 100% | 120% | 145% |
@@ -516,7 +516,7 @@ Each is a set of scalars the sim multiplies in (`03` §11.2); the runner sweeps 
 | Torch value | +25 | +25 | +20 |
 | Revives per floor | 3 | 1 | 0 |
 | Trap difficulty | band | band +4 | band +8 |
-| Retreat toll | 10% | 15% | 25% |
+| Retreat toll | 0% (D-083) | 15% | 25% |
 | Gold multiplier | ×1.00 | ×1.25 | ×1.60 |
 | XP multiplier (before the D curve) | ×1.00 | ×1.15 | ×1.30 |
 | Chest grade shift (in-dungeon chests) | 0 | +10 pp toward +1 | centre +1 |
@@ -606,14 +606,14 @@ A seventh form, `#replay=<matchId>&to=room:6`, replays a logged match (seed + co
 
 ## Open questions (for James)
 
-1. **The Vault delve is four floors (F7–10).** Should F10 instead be its own one-floor Throne delve from the Vault Waystone — a short, repeatable unit for farming the Crown — or stay attached so the first kill ends a long run? *Proposed: attached for the first kill; afterwards the Throne Waystone offers F10 alone.*
-2. **Hunters returning in the Hollow King's third phase** rewards parties that fought them. Right incentive, or a punishment for fast parties who never see a hunter? *Proposed: keep; a fast party arrives with more light and torches.*
-3. **Light at entry** falls from 100 (F1) to 50 (F9). Alternative: every floor sets 100 and the per-room drain rises. The first makes torches a planning purchase; the second makes floors feel alike. *Proposed: falling entry light.*
-4. **Monster-level steps** in dungeons 2–4 end +2 on the final floor (24 → 26, 36 → 38, 48 → 50) to land on the briefed ranges; Gravehollow ends +1. Keep the ranges, or make every last step +1 and end a level short?
-5. **A merchant on F1** as a tutorial (potions and a torch), or does the first floor stay pure?
-6. **+1 Luck per final-boss first kill** (cap +4) — assumed here from `03` §2's proposal. Confirm, or strike the Luck line from the four rewards.
-7. **Pacts in Phase 7, or ship Candle Pact, Hungry Hunter and Brittle already in Segment 1**, since they are scalars the presets already use?
-8. **Arena tells** are visual (lanterns, candles, the boom, the gallery lamps). Should each also be a line of boss dialogue, owned by the monsters doc?
+1. ~~**The Vault delve is four floors (F7–10).** Should F10 instead be its own one-floor Throne delve from the Vault Waystone — a short, repeatable unit for farming the Crown — or stay attached so the first kill ends a long run? *Proposed: attached for the first kill; afterwards the Throne Waystone offers F10 alone.*~~ *Checkpoint 1 (D-098): Gravehollow has 8 floors — the Vault is F7–8 with Sister Naesa on F7 and the Hollow King on F8, and a delve is one zone; the Waystone remembers the floor (D-083), so after the first visit a party can start on the King's floor alone to farm the Crown.*
+2. ~~**Hunters returning in the Hollow King's third phase** rewards parties that fought them. Right incentive, or a punishment for fast parties who never see a hunter? *Proposed: keep; a fast party arrives with more light and torches.*~~ *Checkpoint 1 (D-099): keep — a fast party arrives with more light and torches, and a hunter killed this delve never returns.*
+3. ~~**Light at entry** falls from 100 (F1) to 50 (F9). Alternative: every floor sets 100 and the per-room drain rises. The first makes torches a planning purchase; the second makes floors feel alike. *Proposed: falling entry light.*~~ *Checkpoint 1 (D-099): falling entry light, as built for the Cellars (100 / 90 / 85); torches stay a planning purchase.*
+4. ~~**Monster-level steps** in dungeons 2–4 end +2 on the final floor (24 → 26, 36 → 38, 48 → 50) to land on the briefed ranges; Gravehollow ends +1. Keep the ranges, or make every last step +1 and end a level short?~~ *Checkpoint 1 (D-099): keep the briefed ranges and the +2 last steps, so the deepest floor stays the deadliest (D-092); Gravehollow's steps are re-set for 8 floors in Phase 7 (D-098).*
+5. ~~**A merchant on F1** as a tutorial (potions and a torch), or does the first floor stay pure?~~ *Checkpoint 1 (D-099): F1 stays pure, as built — the starter kit carries potions and torches, the town shop sells more, and the first merchant is on F2.*
+6. ~~**+1 Luck per final-boss first kill** (cap +4) — assumed here from `03` §2's proposal. Confirm, or strike the Luck line from the four rewards.~~ *Checkpoint 1 (D-098): confirmed — +1 permanent Luck for each final boss's first kill, up to +4 (D-037).*
+7. ~~**Pacts in Phase 7, or ship Candle Pact, Hungry Hunter and Brittle already in Segment 1**, since they are scalars the presets already use?~~ *Checkpoint 1 (D-099): Phase 7, with the preset menu (D-044) — the sim already runs all twelve from the dungeon data (D-076), so the balance runner can sweep them before the menu ships.*
+8. ~~**Arena tells** are visual (lanterns, candles, the boom, the gallery lamps). Should each also be a line of boss dialogue, owned by the monsters doc?~~ *Checkpoint 1 (D-099): no boss dialogue — each arena tell also shows a two-word hint the first time per delve (as `06` §8.10 does for attacks, e.g. "Lamps flaring"), written with the arena in §2.8 when Phase 7 builds it.*
 
 ---
 

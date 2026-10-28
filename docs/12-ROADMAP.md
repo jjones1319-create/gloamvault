@@ -1,6 +1,6 @@
 # 12 — Roadmap: twelve phases in three segments
 
-*Last updated 2026-10-27 · rev. 3 (Claude: James's direction during Phase 4 — death, raising, the chosen hero and wayfarers, legacies, threat — added to Phases 4 and 7, D-088–D-092) · rev. 2 (Claude: James's direction of 2026-10-27 added to Phases 4 and 7 — D-082–D-085) · rev. 1 (Claude). James asked for the build to run in **three segments**, each a third of the phases, with all feedback gathered at the end of each segment. `PROMPT.md` holds the prompts that start each segment; `STATUS.md` at the repo root is the checkpoint Claude Code keeps while it works.*
+*Last updated 2026-10-27 · rev. 4 (checkpoint 1: open questions answered by delegation; Phase 11's hired companions become wayfarers and the Nightmare preset is renamed Dread — D-091, D-095, D-099) · rev. 3 (Claude: James's direction during Phase 4 — death, raising, the chosen hero and wayfarers, legacies, threat — added to Phases 4 and 7, D-088–D-092) · rev. 2 (Claude: James's direction of 2026-10-27 added to Phases 4 and 7 — D-082–D-085) · rev. 1 (Claude). James asked for the build to run in **three segments**, each a third of the phases, with all feedback gathered at the end of each segment. `PROMPT.md` holds the prompts that start each segment; `STATUS.md` at the repo root is the checkpoint Claude Code keeps while it works.*
 
 ## 0. How a segment runs
 
@@ -57,12 +57,12 @@ If a Claude Code session ends mid-segment, James pastes the **Continue** prompt;
 - **Done when:** a delve through all three zones renders at a sustained 60 fps (or 30 in battery mode) on the S25 Ultra with every monster present; screenshots in `client/shots/`.
 
 ### Phase 7 — Gravehollow complete, systems complete
-- **Gravehollow's length** follows James's answer to D-085 (8 floors proposed: Cellars F1–3, Crypts F4–6, Drowned Vault F7–8 with the Hollow King on F8); the floor numbers below are rev. 1's ten and move with it. A **class-damage pass** (the Arcanist and Mender out-damage the Ranger 2–3× at level 1, `docs/balance/2026-10-27-content-pass-1.md` §7) goes with Tiers IV–V.
-- Floors 4–10: the Crypts and the Drowned Vault content, the Barrow Warden, Sister Naesa, the Hollow King (3 phases, light mechanic, returning hunters), Waystones, elite affixes scaling 1→3, the Pacts menu (Normal/Hard/Nightmare + 12 Pacts).
+- **Gravehollow has 8 floors** (D-085, accepted at checkpoint 1 — D-098): Cellars F1–3, Crypts F4–6, the Drowned Vault F7–8 with Sister Naesa on F7 and the Hollow King on F8. A **class-damage pass** (the Arcanist and Mender out-damage the Ranger 2–3× at level 1, `docs/balance/2026-10-27-content-pass-1.md` §7) goes with Tiers IV–V.
+- Floors 4–8: the Crypts and the Drowned Vault content, the Barrow Warden, Sister Naesa, the Hollow King (3 phases, light mechanic, returning hunters), Waystones, elite affixes scaling 1→3, the Pacts menu (Normal/Hard/Dread + 12 Pacts).
 - Skills Tiers IV–V designed into JSON (V unobtainable until Segment 3's endgame), Insights with pity, monster techniques, Tomes; weapon XP, affinities and Awakening; promotion through every material rung available in Gravehollow; items B–A, sets, named uniques; the pets' actives and traits growing by use; chests Grand tier, Divine Shards; daily/weekly contracts live.
 - From James's Phase 4 direction (D-088–D-092): the Mender's **Rebirth** (IV) and **Miracle** (V) raise the dead in a fight; the **Grand Wayfarer Chest** and S-grade wayfarers for deeper bands; the threat curve across the full tower (8 floors if D-085 is accepted) so "too far" stays deadly floor by floor; the runner's scripted players read the threat (a careful player turns back from Deadly floors) and the report judges deaths per delve once James sets targets.
-- Balance pass: the runner across all ten floors and party sizes 1–4, under both death rules; `docs/balance/<date>-gravehollow.md`.
-- **Done when:** a solo hero and a 4-hero (one phone, Local transport) party can clear floors 1–10 on Normal with the runner's judgement lines inside targets, and every content kind has a lint rule.
+- Balance pass: the runner across all eight floors and party sizes 1–4, under the three death rules (Sheltered, Mortal, Nightmare — D-095); `docs/balance/<date>-gravehollow.md`.
+- **Done when:** a solo hero and a 4-hero (one phone, Local transport) party can clear floors 1–8 on Normal with the runner's judgement lines inside targets, and every content kind has a lint rule.
 
 ### Phase 8 — Polish and juice
 - Audio: port Wildsong's engine; original music for Emberfall and the three zones (musical-words briefs in `07`), fight stingers, UI sounds; haptics on Android.
@@ -70,7 +70,7 @@ If a Claude Code session ends mid-segment, James pastes the **Continue** prompt;
 - Performance and memory polish, asset loading (room kits unloaded on transition), app icon and splash.
 - **Done when:** the e2e suite, the balance report and the phone checklist all pass; `SEGMENT-2-REVIEW.md` is written.
 
-**Feedback checkpoint 2.** James plays all of Gravehollow with real art. Questions: do the characters look good enough or should heads be commissioned; which classes feel best/worst; is durability/repair a chore; Insight rate; chest cadence; what to build first in Segment 3 (co-op vs Dungeon 2).
+**Feedback checkpoint 2.** James plays all of Gravehollow with real art. Questions: do the characters look good enough or should heads be commissioned; which classes feel best/worst; is durability/repair a chore; Insight rate; chest cadence; how the Nightmare rule and the party-average XP (D-095, D-096) feel. (Segment 3 builds co-op first — decided at checkpoint 1, D-099.)
 
 ## 3. Segment 3 — together, and beyond (Phases 9–12): *co-op, two more dungeons, the Beast Tamer, Wildsong pets, release*
 
@@ -85,8 +85,8 @@ If a Claude Code session ends mid-segment, James pastes the **Continue** prompt;
 - **Done when:** both dungeons clear on Normal solo and with four (Local) within targets; `docs/balance/<date>-deep-and-forge.md`.
 
 ### Phase 11 — Beast Tamer, pets depth, Wildsong Ranch import, endgame
-- The Beast Tamer class (gear set, 45 skills, summons as timeline actors), hired companions for solo, pet bond stars, the **Ranch Shrine** at the Stables: import a Wildsong Ranch share code → a pet of grade ≤ A tagged *Ranch-raised* (`14-IDEAS.md` has the mapping).
-- Endgame: Tier V skills, SS items and the eleven God items, Divine Shard forging, Hard/Nightmare rewards, titles and the codex completion rewards; Frostmarch Citadel **designed in full** in the docs (built after launch).
+- The Beast Tamer class (gear set, 45 skills, summons as timeline actors) and its wayfarers, pet bond stars, the **Ranch Shrine** at the Stables: import a Wildsong Ranch share code → a pet of grade ≤ A tagged *Ranch-raised* (`14-IDEAS.md` has the mapping). No hired companions: wayfarers from the Wayfarer Chest fill that role for solo (D-091).
+- Endgame: Tier V skills, SS items and the eleven God items, Divine Shard forging, Hard/Dread rewards, titles and the codex completion rewards; Frostmarch Citadel **designed in full** in the docs (built after launch).
 - **Done when:** a Beast Tamer with a Ranch-raised pet clears Gravehollow; a God item can be forged from ten shards; lint has rules for every new kind.
 
 ### Phase 12 — Release
@@ -118,5 +118,5 @@ If a Claude Code session ends mid-segment, James pastes the **Continue** prompt;
 - **Content volume** is mitigated by content-as-data and the linter; the docs already hold the numbers.
 
 **Open questions**
-1. Segment 3 order: co-op first (recommended — it is the game's promise) or Dungeon 2 first?
-2. Should Frostmarch Citadel be built inside Segment 3 (stretch) or after launch (recommended)?
+1. ~~Segment 3 order: co-op first (recommended — it is the game's promise) or Dungeon 2 first?~~ *Checkpoint 1 (D-099): co-op first (Phase 9), then the Fungal Deep and Emberforge (Phase 10), as recommended and planned.*
+2. ~~Should Frostmarch Citadel be built inside Segment 3 (stretch) or after launch (recommended)?~~ *Checkpoint 1 (D-099): after launch, as recommended — Segment 3 designs it in full (Phase 11).*

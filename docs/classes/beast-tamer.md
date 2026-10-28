@@ -1,6 +1,6 @@
 # Beast Tamer — class sheet
 
-*Last updated 2026-10-26 · rev. 1 · numbers are tuning starting points*
+*Last updated 2026-10-27 · rev. 2 (checkpoint 1: open questions answered by delegation — D-099) · rev. 1 2026-10-26 · numbers are tuning starting points*
 
 **Ships in Segment 3**, after pets exist (`12-ROADMAP.md`): the class is designed now so the pet system, the summon rules and the whip's reach are built with it in mind, but it is not in the Segment 1–2 roster of six.
 
@@ -212,8 +212,8 @@ What the runner should see: in two turns the Tamer did 20 damage itself, bought 
 
 ## 10. Open questions (for James)
 
-1. **Willpower's training path.** §2.1 trains Willpower from resisting statuses, holding casts and facing Fear — a Tamer does none of those often. Proposed: Bond skills resolved on the pet in gated fights tag Willpower. Without it the class's main attribute barely moves.
-2. **Summon stat scaling.** HP × 0.6 and Attack × 0.8 of the live monster, × Bond power. Should summons instead be built like pets (grade-based, the Tamer's level) so a floor-1 rat and a floor-10 sentinel feel like the same system?
-3. **Holding a Grab limits the Tamer to light actions.** It is a real cost that makes Iron Grip a real reward — but it is also a rule the UI has to explain. Alternative: Coil ends when the Tamer uses any non-Lash skill.
-4. **One pet per player, plus summons.** Four players × (hero + pet + up to 3 summons) is 20 actors on the party side at Tier V. The rulebook's open question (§9) already asks about 8; summons push it further. Cap summons party-wide at 3?
-5. **Segment 3 only?** The class is the natural home for Wildsong Ranch imports, which are also Segment 3+. Is there a case for shipping a cut-down Beast Tamer (Bond + Lash, no summons) in Segment 2 so the pet system has a class that stresses it early?
+1. ~~**Willpower's training path.** §2.1 trains Willpower from resisting statuses, holding casts and facing Fear — a Tamer does none of those often. Proposed: Bond skills resolved on the pet in gated fights tag Willpower. Without it the class's main attribute barely moves.~~ *Checkpoint 1 (D-099): as proposed — a Bond skill resolved on the pet in a gated fight tags Willpower.*
+2. ~~**Summon stat scaling.** HP × 0.6 and Attack × 0.8 of the live monster, × Bond power. Should summons instead be built like pets (grade-based, the Tamer's level) so a floor-1 rat and a floor-10 sentinel feel like the same system?~~ *Checkpoint 1 (D-099): keep the sheet's rule — the zone's monster at the floor's level (never above the Tamer's), HP × 0.6 and Attack × 0.8, × Bond power — so summons ride the one monster baseline (D-024).*
+3. ~~**Holding a Grab limits the Tamer to light actions.** It is a real cost that makes Iron Grip a real reward — but it is also a rule the UI has to explain. Alternative: Coil ends when the Tamer uses any non-Lash skill.~~ *Checkpoint 1 (D-099): keep light actions only — the HUD dims the other buttons with a hands-busy tag, and Iron Grip lifts the limit.*
+4. ~~**One pet per player, plus summons.** Four players × (hero + pet + up to 3 summons) is 20 actors on the party side at Tier V. The rulebook's open question (§9) already asks about 8; summons push it further. Cap summons party-wide at 3?~~ *Checkpoint 1 (D-099): yes — at most 3 summons in the whole party.*
+5. ~~**Segment 3 only?** The class is the natural home for Wildsong Ranch imports, which are also Segment 3+. Is there a case for shipping a cut-down Beast Tamer (Bond + Lash, no summons) in Segment 2 so the pet system has a class that stresses it early?~~ *Checkpoint 1 (D-099): Segment 3 only (Phase 11), with the Wildsong imports; Segment 3 builds co-op first.*

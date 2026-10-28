@@ -1,6 +1,6 @@
 import { batch, computed, signal } from '@preact/signals'
 import type { Content } from '../../../sim/src/content.ts'
-import { createDelve, legalDelveActions, replayDelve, stepDelve } from '../../../sim/src/delve.ts'
+import { createDelve, legalDelveActions, replayDelve, runDelveAuto, stepDelve } from '../../../sim/src/delve.ts'
 import type { DelveCommand, DelveState, LegalDelveAction } from '../../../sim/src/delve-types.ts'
 import type { FightCommand } from '../../../sim/src/fight-types.ts'
 import { heroAtLevel } from '../../../sim/src/hero.ts'
@@ -22,7 +22,8 @@ import {
 } from '../../../sim/src/town.ts'
 import type { CreateHeroInput } from '../../../sim/src/hero.ts'
 import { idbStore, safeGet, type KeyValueStore } from '../save/db.ts'
-import { eraseProfile, exportSave, freshProfile, importSave, readProfile, writeBackup, writeProfile } from '../save/profile.ts'
+import { addToHall, readHall, type HallEntry } from '../save/hall.ts'
+import { endRun, eraseProfile, exportSave, freshProfile, importSave, readProfile, writeBackup, writeProfile } from '../save/profile.ts'
 import { navigate } from '../ui/router.ts'
 
 /**
@@ -44,6 +45,8 @@ export const ephemeral = signal(false)
 export const sessionReady = signal(false)
 /** What the save loader repaired, shown once in town. */
 export const loadNotes = signal<string[]>([])
+/** The Hall of Nightmares (D-095): the Nightmare saves that ended, newest first. */
+export const hall = signal<HallEntry[]>([])
 
 export interface Toast {
   id: number
@@ -88,6 +91,7 @@ export async function bootSession(s: KeyValueStore = idbStore()): Promise<void> 
     sessionReady.value = true
     return
   }
+  hall.value = await readHall(s)
   const report = await readProfile(s, c)
   let p = report.profile
   const notes = [...report.notes]
@@ -146,7 +150,7 @@ export function hasSave(): boolean {
   return p !== null && (p.heroes.length > 0 || p.progress.delves > 0 || p.memorial.length > 0)
 }
 
-/** A new save with the player's death rule (D-088: Mortal, the dead stay dead; Sheltered, nobody is lost). */
+/** A new save with the player's death rule (D-088, D-095: Mortal, the dead stay dead; Sheltered, nobody is lost; Nightmare, the chosen hero's death ends the save). */
 export function startNewGame(deathRule: DeathRule = 'mortal'): void {
   batch(() => {
     ephemeral.value = false
@@ -264,6 +268,25 @@ export function finishDelve(): DelveSummaryRecord | null {
   const p = profile.value
   if (!c || !d || !p || d.phase.kind !== 'over') return null
   const r = settleDelve(c, p, d)
+  if (r.hall) {
+    // D-095: the Nightmare ends. The save and its backups are erased (after any write still in flight, so nothing
+    // brings it back) and the Hall keeps one line.
+    const record = r.hall
+    batch(() => {
+      profile.value = null
+      delve.value = null
+      delveVersion.value++
+    })
+    const s = store
+    if (s && !ephemeral.value)
+      void (async () => {
+        if (saving) await saving
+        hall.value = await addToHall(s, record, new Date())
+        await endRun(s)
+      })()
+    else hall.value = [{ ...record, endedAt: new Date().toISOString() }, ...hall.value]
+    return r.summary
+  }
   batch(() => {
     profile.value = r.profile
     delve.value = null
@@ -326,6 +349,8 @@ export interface DeepDelve {
   deathRule?: DeathRule
   /** `&learn=mender-breath-of-life,…`: skills each hero of the skill's class also knows (shots of a raise, D-089). */
   learn?: string[]
+  /** Play the whole delve with the scripted player (the end card shows). */
+  toEnd?: boolean
 }
 
 /**
@@ -353,8 +378,13 @@ export async function startDeepDelve(d: DeepDelve): Promise<void> {
       }),
     }
   }
-  const state = createDelve(c, { dungeonId, floor: d.floor, seed: d.seed, difficulty: 'normal', pactIds: [], auto: false, policy: 'textbook', deathRule: p.deathRule }, p.heroes)
-  if (d.auto) {
+  // D-095: under Nightmare the first hero is the chosen one and leads.
+  if (p.deathRule === 'nightmare' && p.heroes[0]) p = { ...p, chosenId: p.heroes[0].id }
+  const state = createDelve(c, { dungeonId, floor: d.floor, seed: d.seed, difficulty: 'normal', pactIds: [], auto: false, policy: 'textbook', deathRule: p.deathRule, ...(p.deathRule === 'nightmare' && p.chosenId ? { leaderId: p.chosenId } : {}) }, p.heroes)
+  if (d.toEnd) {
+    // `end=1`: the scripted player plays the whole delve, so the end card shows (for screenshots).
+    runDelveAuto(c, state)
+  } else if (d.auto) {
     // The scripted player walks until the first fight starts (or the delve ends).
     const rng = new Rng({ a: d.seed >>> 0, b: 7, c: 11, d: 13 })
     const { choosePolicyCommand } = await import('../../../sim/src/policies.ts')

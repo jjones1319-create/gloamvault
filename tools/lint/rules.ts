@@ -1338,7 +1338,7 @@ function rule18(ctx: Ctx): Failure[] {
   for (const d of ctx.dungeons.values()) {
     const presets = obj(d.json.presets)
     const normalKeys = Object.keys(obj(presets?.normal) ?? {})
-    for (const name of ['hard', 'nightmare'] as const) {
+    for (const name of ['hard', 'dread'] as const) {
       const keys = new Set(Object.keys(obj(presets?.[name]) ?? {}))
       const missing = normalKeys.filter((k) => !keys.has(k))
       if (missing.length > 0) out.push(fail(d.file, 18, `presets.${name} does not set ${missing.join(', ')}, which normal sets`))

@@ -1233,7 +1233,7 @@
     {
       "id": "thin-line",
       "name": "Thin Line",
-      "description": "Revives per floor −2 (minimum 0): 1 on Normal, 0 on Hard and Nightmare.",
+      "description": "Revives per floor −2 (minimum 0): 1 on Normal, 0 on Hard and Dread.",
       "weight": 2,
       "knobs": {
         "revivesPerFloor": 1
@@ -1426,7 +1426,7 @@
       "bossExtraRareParts": 1,
       "finalBossExtraShards": 0
     },
-    "nightmare": {
+    "dread": {
       "enemyHpPercent": 150,
       "enemyDamagePercent": 145,
       "enemyCountPercent": 125,

@@ -1,6 +1,6 @@
 # 05 — Species
 
-*Last updated 2026-10-26 · rev. 1 · numbers are tuning starting points*
+*Last updated 2026-10-27 · rev. 2 (checkpoint 1: open questions answered by delegation — D-099) · rev. 1 2026-10-26 · numbers are tuning starting points*
 
 *Leans on `03-GAME-DESIGN.md` §2, §4.2, §4.4, §5 and §6.1. Feeds `11-ART-PIPELINE.md` and `tools/blender/hero/build_body.py`. Classes are `04-CLASSES.md`; this file only says which bodies suit which kits.*
 
@@ -354,14 +354,14 @@ Each card: the name, a one-line blurb, three pro chips, three con chips (three w
 
 ## 7. Open questions for James
 
-1. **Draconid tail — keep or cut?** The tail is the species' best 200 px read, but it costs a `_drc` port on every Legs mesh in four families plus skirted Robe Chests. *Cheap middle:* author every Legs piece with the port already in it and cover it on the other five species with one shared `belt_flap` mesh. Recommended: keep the tail, do the flap.
-2. **Human: Adaptable or a seventh free creation point?** A point is simpler and shows on the card at once; Adaptable is felt later and keeps "generalist, not better" true. Recommended: keep Adaptable.
-3. **Hero Accuracy by light band.** §4.2 lists only the monsters' bonus; the Orc and Draconid "Dark-steady aim" needs a hero-side penalty to ignore. Proposed: heroes −5 pp Accuracy in Dark, −10 pp in Pitch, added to the §4.2 table.
-4. **Halfling heavy-weapon rule: do bows count?** This file says no (weight 1,400 only), which keeps the Halfling Ranger a ◎. If bows count, Ranger drops to ○.
-5. **Two builds per species (A / B bodies)?** The creation line has no build choice. A second build doubles shape-key transfer and face work. Recommended: one build per species at launch with `body_lean` / `body_heavy` / `body_muscle` sliders; revisit after the first playable.
-6. **Dwarf and Elf share Darkvision verbatim.** Differentiate (Dwarf: only Pitch → Dark and Dark → Shadowy; Elf: every band) or keep identical? Recommended: identical at launch; one rule to teach.
-7. **A seventh species later?** **Revenant** (undead, raised in the Crypts): +Will, +End, −Vit, −Luck; Poison and Bleed immune, no HP regen at rests, Holy ×1.5, Vitality never trains; the cheapest body on the rig (Human proportions, a tint, a `spc_revenant_gaunt` key) but awkward lore for a Gravehollow hero. **Beastkin** (fur, muzzle, claws): +Per, +Agi, −Wis, −End; Keen Senses, Fire ×1.25, no Plate; the most expensive body (muzzle, digitigrade legs, tail, fur cards — nearly a variant rig). If a seventh is wanted: Revenant first.
-8. **Learning-rate spread.** Human +10% and Draconid −10% put two players in one party 22% apart in time-to-level. Fine for co-op (credit is by participation, nothing is level-gated), or cap the spread at ±5%?
+1. ~~**Draconid tail — keep or cut?** The tail is the species' best 200 px read, but it costs a `_drc` port on every Legs mesh in four families plus skirted Robe Chests. *Cheap middle:* author every Legs piece with the port already in it and cover it on the other five species with one shared `belt_flap` mesh. Recommended: keep the tail, do the flap.~~ *Checkpoint 1 (D-099): keep the tail and do the flap — every Legs piece carries the port, and one shared `belt_flap` covers it on the other five species.*
+2. ~~**Human: Adaptable or a seventh free creation point?** A point is simpler and shows on the card at once; Adaptable is felt later and keeps "generalist, not better" true. Recommended: keep Adaptable.~~ *Checkpoint 1 (D-099): keep Adaptable, as built.*
+3. ~~**Hero Accuracy by light band.** §4.2 lists only the monsters' bonus; the Orc and Draconid "Dark-steady aim" needs a hero-side penalty to ignore. Proposed: heroes −5 pp Accuracy in Dark, −10 pp in Pitch, added to the §4.2 table.~~ *Checkpoint 1 (D-032): yes — heroes take −5 pp Accuracy in Dark and −10 pp in Pitch (built in `tuning.json`); Orcs and Draconids ignore it.*
+4. ~~**Halfling heavy-weapon rule: do bows count?** This file says no (weight 1,400 only), which keeps the Halfling Ranger a ◎. If bows count, Ranger drops to ○.~~ *Checkpoint 1 (D-032): no — only 1,400-weight weapons; bows and staves are exempt, so the Halfling Ranger stays ◎.*
+5. ~~**Two builds per species (A / B bodies)?** The creation line has no build choice. A second build doubles shape-key transfer and face work. Recommended: one build per species at launch with `body_lean` / `body_heavy` / `body_muscle` sliders; revisit after the first playable.~~ *Checkpoint 1 (D-099): one build per species at launch, with the `body_lean` / `body_heavy` / `body_muscle` sliders; revisit after the first playable.*
+6. ~~**Dwarf and Elf share Darkvision verbatim.** Differentiate (Dwarf: only Pitch → Dark and Dark → Shadowy; Elf: every band) or keep identical? Recommended: identical at launch; one rule to teach.~~ *Checkpoint 1 (D-099): identical at launch — one rule to teach, as built.*
+7. ~~**A seventh species later?** **Revenant** (undead, raised in the Crypts): +Will, +End, −Vit, −Luck; Poison and Bleed immune, no HP regen at rests, Holy ×1.5, Vitality never trains; the cheapest body on the rig (Human proportions, a tint, a `spc_revenant_gaunt` key) but awkward lore for a Gravehollow hero. **Beastkin** (fur, muzzle, claws): +Per, +Agi, −Wis, −End; Keen Senses, Fire ×1.25, no Plate; the most expensive body (muzzle, digitigrade legs, tail, fur cards — nearly a variant rig). If a seventh is wanted: Revenant first.~~ *Checkpoint 1 (D-099): not now — a seventh species goes to the post-launch backlog (`14-IDEAS.md`), Revenant first if one is ever made.*
+8. ~~**Learning-rate spread.** Human +10% and Draconid −10% put two players in one party 22% apart in time-to-level. Fine for co-op (credit is by participation, nothing is level-gated), or cap the spread at ±5%?~~ *Checkpoint 1 (D-099): keep ±10% with no cap, as built — it is the Human's pro and the Draconid's con, and each hero's equal share of battle XP takes their own bonus (D-096).*
 
 ---
 

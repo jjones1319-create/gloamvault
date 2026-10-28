@@ -43,8 +43,8 @@ export function choosePolicyCommand(policy: PolicyName, state: DelveState, actio
   // D-089: a healer who can raise the dead does so before anything else (Mortal).
   const raise = find((a) => a.command.kind === 'raise')
   if (raise) return raise
-  // D-088: under Mortal a death sends a careful party home with the body (the Shrine raises it, D-089).
-  const mortalDeath = state.options.deathRule === 'mortal' && anyFallen
+  // D-088: under Mortal (and Nightmare, D-095) a death sends a careful party home with the body (the Shrine raises it, D-089).
+  const mortalDeath = (state.options.deathRule === 'mortal' || state.options.deathRule === 'nightmare') && anyFallen
   const restAt = policy === 'cautious' ? 75 : policy === 'greedy' ? 40 : 60
   if (worst < restAt || anyFallen) {
     const rest = find((a) => a.command.kind === 'rest')

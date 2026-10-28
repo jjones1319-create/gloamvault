@@ -1,6 +1,6 @@
 import type { Content } from './content.ts'
 import type { DelveState } from './delve-types.ts'
-import type { FightState } from './fight-types.ts'
+import type { Actor, FightState } from './fight-types.ts'
 import type { Tuning } from './tuning.ts'
 import type { ThreatBand } from './types/enums.ts'
 
@@ -40,14 +40,20 @@ export function threatBand(t: Tuning, encounterLevel: number, partyLevel: number
   return 'even'
 }
 
+/** One monster's level as the threat chip reads it: +1 per champion affix, +3 for a boss or the hunter. Battle XP reads it too (D-096). */
+export function monsterThreatLevel(t: Tuning, m: ThreatMonster): number {
+  const th = t.dungeon.threat
+  return m.level + m.championAffixes * th.perChampionAffix + (m.isBoss ? th.bossBonus : 0) + (m.isHunter ? th.hunterBonus : 0)
+}
+
+export function threatMonsterOf(a: Actor): ThreatMonster {
+  return { level: a.level, championAffixes: a.monster?.champion?.affixIds.length ?? 0, isBoss: a.monster?.isBoss ?? false, isHunter: a.monster?.isHunter ?? false }
+}
+
 /** One encounter's level from its monsters (the strongest one sets it). */
 export function encounterLevelOf(t: Tuning, monsters: readonly ThreatMonster[]): number {
-  const th = t.dungeon.threat
   let best = 1
-  for (const m of monsters) {
-    const level = m.level + m.championAffixes * th.perChampionAffix + (m.isBoss ? th.bossBonus : 0) + (m.isHunter ? th.hunterBonus : 0)
-    best = Math.max(best, level)
-  }
+  for (const m of monsters) best = Math.max(best, monsterThreatLevel(t, m))
   return best
 }
 
@@ -65,7 +71,7 @@ export function delvePartyLevel(state: DelveState): number {
 export function fightThreat(t: Tuning, fight: FightState): ThreatRead {
   const monsters: ThreatMonster[] = fight.actors
     .filter((a) => a.side !== 'party' && a.kind === 'monster' && !a.monster?.summonedBy)
-    .map((a) => ({ level: a.level, championAffixes: a.monster?.champion?.affixIds.length ?? 0, isBoss: a.monster?.isBoss ?? false, isHunter: a.monster?.isHunter ?? false }))
+    .map(threatMonsterOf)
   const heroes = fight.actors.filter((a) => a.side === 'party' && a.kind === 'hero' && !a.fallen).map((a) => a.level)
   return threatRead(t, monsters, partyLevelOf(heroes))
 }

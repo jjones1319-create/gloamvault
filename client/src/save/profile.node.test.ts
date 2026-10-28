@@ -3,7 +3,8 @@ import { describe, expect, it } from 'vitest'
 import { addHero, newProfile } from '../../../sim/src/town.ts'
 import { loadContentDir } from '../../../tools/sim/loadContent.ts'
 import { KEYS, memoryStore } from './db.ts'
-import { BACKUP_KEYS, exportSave, importSave, readProfile, SAVE_VERSION, validateProfile, writeBackup, writeProfile } from './profile.ts'
+import { addToHall, HALL_KEY, HALL_MAX, readHall, validateHall } from './hall.ts'
+import { BACKUP_KEYS, endRun, exportSave, importSave, readProfile, SAVE_VERSION, validateProfile, writeBackup, writeProfile } from './profile.ts'
 
 const content = loadContentDir(path.resolve('content'))
 
@@ -63,5 +64,51 @@ describe('the game save (10 §6)', () => {
     expect(r.profile?.purse).toBe(2)
     expect(r.notes.some((n) => /backup/.test(n))).toBe(true)
     expect(((await store.get(BACKUP_KEYS[1]!)) as { purse: number }).purse).toBe(1)
+  })
+
+  it('a version-1 save migrates to version 2 and keeps its death rule (D-095)', () => {
+    const fixture = { ...profileWithHero(), saveVersion: 1, deathRule: 'sheltered' }
+    const r = validateProfile(content, JSON.parse(JSON.stringify(fixture)))
+    expect(SAVE_VERSION).toBe(2)
+    expect(r.profile?.saveVersion).toBe(2)
+    expect(r.profile?.deathRule).toBe('sheltered')
+  })
+
+  it('a Nightmare save round-trips, and an unknown rule falls back to Mortal', async () => {
+    const store = memoryStore()
+    await writeProfile(store, { ...profileWithHero(), deathRule: 'nightmare' })
+    expect((await readProfile(store, content)).profile?.deathRule).toBe('nightmare')
+    expect(validateProfile(content, { ...profileWithHero(), deathRule: 'deathless' }).profile?.deathRule).toBe('mortal')
+  })
+
+  it('an ended Nightmare erases the save and every backup, and nothing brings it back', async () => {
+    const store = memoryStore()
+    const p = { ...profileWithHero(), deathRule: 'nightmare' as const }
+    await writeProfile(store, p)
+    await writeBackup(store, p)
+    await writeBackup(store, p)
+    await endRun(store)
+    expect((await readProfile(store, content)).profile).toBeNull()
+    for (const key of BACKUP_KEYS) expect(await store.get(key)).toBeUndefined()
+  })
+})
+
+describe('the Hall of Nightmares (D-095)', () => {
+  const line = { name: 'Orrin', speciesId: 'dwarf', classId: 'blade', level: 7, dungeonId: 'gravehollow-keep', floor: 3, deepest: 2, delves: 9, wayfarers: 2, how: 'fell' as const }
+
+  it('keeps the newest first, at most HALL_MAX lines, outside the save', async () => {
+    const store = memoryStore()
+    await addToHall(store, line, new Date('2026-10-27T12:00:00Z'))
+    const after = await addToHall(store, { ...line, name: 'Varra' }, new Date('2026-10-28T12:00:00Z'))
+    expect(after.map((e) => e.name)).toEqual(['Varra', 'Orrin'])
+    expect(after[1]?.endedAt).toBe('2026-10-27T12:00:00.000Z')
+    for (let i = 0; i < HALL_MAX + 5; i++) await addToHall(store, line, new Date('2026-10-29T12:00:00Z'))
+    expect((await readHall(store)).length).toBe(HALL_MAX)
+    expect(HALL_KEY.startsWith('gloamvault/')).toBe(true)
+  })
+
+  it('drops lines that do not read and never throws', () => {
+    expect(validateHall('junk')).toEqual([])
+    expect(validateHall([null, { name: 3 }, { ...line, endedAt: 'x' }]).map((e) => e.name)).toEqual(['Orrin'])
   })
 })

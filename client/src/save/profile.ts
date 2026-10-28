@@ -16,8 +16,11 @@ export const SAVE_VERSION = PROFILE_VERSION
 
 export const BACKUP_KEYS = [0, 1, 2].map((i) => `${KEY_PREFIX}profile-backup-${i}`)
 
-/** Step N → N+1. Empty while version 1 is the only one that ever shipped. */
-const MIGRATIONS: Record<number, (raw: Record<string, unknown>) => Record<string, unknown>> = {}
+/** Step N → N+1. */
+const MIGRATIONS: Record<number, (raw: Record<string, unknown>) => Record<string, unknown>> = {
+  // 1 → 2: the Nightmare death rule joins Sheltered and Mortal (D-095); a version-1 save needs nothing changed.
+  1: (raw) => raw,
+}
 
 export function migrate(raw: Record<string, unknown>): Record<string, unknown> {
   let out = raw
@@ -39,7 +42,7 @@ const ProfileSchema = v.object({
   saveVersion: v.fallback(v.number(), SAVE_VERSION),
   heroes: v.fallback(v.array(v.looseObject({ id: v.string(), name: v.string(), speciesId: v.string(), classId: v.string() })), []),
   partyIds: v.fallback(v.array(v.string()), []),
-  deathRule: v.fallback(v.picklist(['mortal', 'sheltered']), 'mortal' as DeathRule),
+  deathRule: v.fallback(v.picklist(['mortal', 'sheltered', 'nightmare']), 'mortal' as DeathRule),
   chosenId: v.fallback(v.nullable(v.string()), null),
   wayfarerOf: record(v.string()),
   dead: v.fallback(v.array(v.object({ heroId: v.string(), dungeonId: v.string(), floor: int(1) })), []),
@@ -231,6 +234,12 @@ export async function writeProfile(store: KeyValueStore, profile: Profile): Prom
 export async function eraseProfile(store: KeyValueStore): Promise<void> {
   await safeSet(store, KEYS.erased, true)
   await store.del(KEYS.profile).catch(() => undefined)
+}
+
+/** A Nightmare save that ended (D-095): the save and its backups are gone for good, and nothing falls back to them. */
+export async function endRun(store: KeyValueStore): Promise<void> {
+  await eraseProfile(store)
+  for (const key of BACKUP_KEYS) await store.del(key).catch(() => undefined)
 }
 
 /** Rotates the three backups (taken after every delve and before an import). */

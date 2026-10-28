@@ -1,10 +1,10 @@
 # 09 — Skills (index and rules)
 
-*Last updated 2026-10-26 · rev. 1. The rules are `03-GAME-DESIGN.md` §7 (this file restates them in one place); the lists are the seven class sheets in `docs/classes/` (45 skills each, 315 in all) and become `content/skills/<class>/<id>.json` against `content/schemas/skill.schema.json`.*
+*Last updated 2026-10-27 · rev. 2 (checkpoint 1: open questions answered by delegation — D-099) · rev. 1 2026-10-26. The rules are `03-GAME-DESIGN.md` §7 (this file restates them in one place); the lists are the seven class sheets in `docs/classes/` (45 skills each, 315 in all) and become `content/skills/<class>/<id>.json` against `content/schemas/skill.schema.json`.*
 
 ## 1. The shape (one paragraph)
 
-Every class has **three schools**, each a way to play the class. Each school has **fifteen skills in five tiers** (three per tier). **Tier** is fixed and opens with hero level (I at 1, II at 5, III at 12, IV at 20, V at 30); **rank** 1–10 grows by use and tunes the skill (+4% effect, −2% cost per rank; rank 10 unlocks the **Mastery** line). Each Tier II–V skill needs **one** Tier N−1 skill of its school. The **Ultimate** (Tier III, 100 Momentum, never misses, its own button — D-027 proposed) is the class's signature. Exactly two Tier III–IV skills per class are **monster techniques** that can only Insight while that monster uses the move (`06-MONSTERS.md` says which monster teaches which). Loadout: **4 actives + 2 passives + the pet stance**. The town **Skill Hall** sells Tiers I–III; **Insight** in the dungeon teaches Tier IV (and anything below); Tier V comes from endgame bosses and Divine Shards.
+Every class has **three schools**, each a way to play the class. Each school has **fifteen skills in five tiers** (three per tier). **Tier** is fixed and opens with hero level (I at 1, II at 5, III at 12, IV at 20, V at 30); **rank** 1–10 grows by use and tunes the skill (+4% effect, −2% cost per rank; rank 10 unlocks the **Mastery** line). Each Tier II–V skill needs **one** Tier N−1 skill of its school. The **Ultimate** (Tier III, 100 Momentum, never misses, its own button — D-027) is the class's signature. Exactly two Tier III–IV skills per class are **monster techniques** that can only Insight while that monster uses the move (`06-MONSTERS.md` says which monster teaches which). Loadout: **4 actives + 2 passives + the pet stance**. The town **Skill Hall** sells Tiers I–III; **Insight** in the dungeon teaches Tier IV (and anything below); Tier V comes from endgame bosses and Divine Shards.
 
 ## 2. The seven lists
 
@@ -39,7 +39,7 @@ Weights: light 800 (daggers, quick skills) · normal 1,000 · heavy 1,400 (two-h
 | Starter | 3 Tier I picks at creation | from the class's recommended three or any Tier I |
 | Skill Hall | Tiers I–III for gold | Tier I 0.1 R · II 0.3 R · III 1.0 R; +20% per purchase within a tier, capped ×3; Tier IV never sold |
 | Insight | any tier-adjacent skill of the school you just used, Tier IV included | 4% × S(enemyLevel − tier×6) × (1 + 1%·(Wis−10)); S = 1 at 0, 0.5 at ±3, 0.25 at ±6, 0 beyond ±10; pity 1 per 60 qualifying uses; teaches you, drops a **Tome** for the party |
-| Monster technique | the marked Tier III–IV skills | flat 10% per witnessed use of the move (D-028 proposed) |
+| Monster technique | the marked Tier III–IV skills | flat 10% per witnessed use of the move, pity at 10 uses (D-028; the pity is the class sheets' proposal, checkpoint 1) |
 | Tomes | from bosses (guaranteed Tier III+ on first kill), Skill Chests (bag without replacement per tier), Insights | a duplicate Tome = rank XP for that skill |
 | Tier V | endgame | final bosses of Dungeons 2+ and Divine Shards (Segment 3) |
 
@@ -61,5 +61,5 @@ Weights: light 800 (daggers, quick skills) · normal 1,000 · heavy 1,400 (two-h
 Each skill is a list of effects from the closed set in `content/schemas/common.schema.json` (`damage`, `heal`, `shield`, `applyStatus`, `removeStatus`, `buffStat`, `debuffStat`, `momentum`, `pool`, `timeline`, `rowSwap`, `summon`, `revive`, `light`, `loot`, `taunt`, `dispel`, `custom`) with typed fields; `custom` effects name a handler in `sim/src/skills/custom/<id>.ts` and the linter requires the handler to exist. Rank scaling and Mastery are data too.
 
 **Open questions**
-1. D-027 (Ultimate button outside the loadout), D-028 (monster-technique rate), D-029 (charged casts); D-041 (weapon handling) is superseded by `08` §1.
-2. Should the Skill Hall show a "next Insight likely from…" hint (which monsters at which level)? *Proposed: yes, from Phase 7.*
+1. ~~D-027 (Ultimate button outside the loadout), D-028 (monster-technique rate), D-029 (charged casts); D-041 (weapon handling) is superseded by `08` §1.~~ *Checkpoint 1 (D-098): all three Accepted as built — the Ultimate's own button, monster techniques at a flat 10% per witnessed use (with the class sheets' pity at 10), heavy Mana casts charged; D-041 stays superseded by `08` §1.*
+2. ~~Should the Skill Hall show a "next Insight likely from…" hint (which monsters at which level)? *Proposed: yes, from Phase 7.*~~ *Checkpoint 1 (D-099): yes, from Phase 7, as proposed.*

@@ -1,6 +1,6 @@
 # Blade — class sheet
 
-*Last updated 2026-10-26 · rev. 1 · numbers are tuning starting points*
+*Last updated 2026-10-27 · rev. 2 (checkpoint 1: open questions answered by delegation; the Nightmare preset renamed Dread — D-095, D-099) · rev. 1 2026-10-26 · numbers are tuning starting points*
 
 *Every number below (costs, multipliers, durations, the Cellars monster stats in §8) is a starting point for the simulator and the balance runner, not a commitment. Rules referenced are `03-GAME-DESIGN.md` (§2 stats, §3 timeline, §5 level-by-use, §6 gear, §7 skills). Status numbers quoted in skill lines (Bleed 25% of the applying hit per turn for 3 turns, ignores Defense · Poison 3% of max HP per turn, ignores Defense · Weaken −20% Attack · Fortify +20% Defense · Mark +20% damage taken · Slow ×0.67 Speed · Haste ×1.5 · Daze −500 energy · Petrify −1,000 energy) belong to `content/statuses/<id>.json` (`03` §3.5 is the table) and are repeated here only so the lines read on their own.*
 
@@ -143,7 +143,7 @@ The Blade's Ultimate is the only time it hits the back row. Iron Dance builds re
 |---|---|---|---|---|
 | **Dancer** (L1–12, dual swords) | Twin Cut · Flurry · Quickstep · Mirror Step | Flowing Guard · Blade Rhythm | Fierce (Cellar Hound) | Twin Cut, Flurry, Twin Cut — every action is 800 and the Rhythm stacks climb to +24%; Mirror Step when the strip shows two enemies acting before you; the Ultimate lands every fourth turn. Watch Stamina: Flurry twice in a row drains 28 of 60. |
 | **Headsman** (L5+, greatsword) | Cleaving Blow · Execute · Wind-up · Sundering Swing | Headsman's Eye · Heavy Hands | Guard (Moss Tortoise) | Wind-up (800), then a 1,400-weight swing at +40%; let the Warden and Ranger bring an elite to 30% and Execute it for 3.4×. Sunder the front row when three fodder stand there. Fewest turns of any build — each one is a decision. |
-| **Red Mist** (L20+, solo or Nightmare) | Open Vein · Hemorrhage · Berserk · Exsanguinate | Pain Threshold · Undying Rage | Mend (Wisp) | Open Vein on everything, Berserk at 50% HP, Exsanguinate the thing with three Bleed turns left for 2.4× +150%. The pet heals; Red Thirst (swap it in for Undying Rage below L20) pays the Berserk tax. Dangerous and self-sufficient. |
+| **Red Mist** (L20+, solo or Dread) | Open Vein · Hemorrhage · Berserk · Exsanguinate | Pain Threshold · Undying Rage | Mend (Wisp) | Open Vein on everything, Berserk at 50% HP, Exsanguinate the thing with three Bleed turns left for 2.4× +150%. The pet heals; Red Thirst (swap it in for Undying Rage below L20) pays the Berserk tax. Dangerous and self-sufficient. |
 
 ---
 
@@ -199,8 +199,8 @@ Four Blade actions in 28 ticks against the Warden's two in 20: that is the Speed
 
 ## 10. Open questions (for James)
 
-1. **Two-hander basics.** Settled by `08-ITEMS.md` §1 (D-041 superseded): two-handers hit at 1.0× with a higher Base Attack plus Cleave, dual is 2 × 0.5× at 800. Remaining question: is Cleave at 50% enough to make the Greatsword a real alternative to two Longswords on the sim?
-2. **Greatsword from level 1?** The starter kit is two Copper swords; a Crude Greatsword is sold for 0.05 R. Should the creation screen offer the greatsword as an alternative kit so an Executioner starter does not need a shop trip?
-3. **Monster-technique Insight rule.** Ghoul's Grasp (Tier III) comes from Crypts ghouls at L5–10, far below the Tier III sweet spot of L18. Proposed: a flat 10% per witnessed use, pity at 10 — confirm?
-4. **Berserk + Undying Rage on Nightmare.** A Blade that cannot die below 25% HP twice a fight (Deathless) is the strongest solo line here; should Undying Rage be once per *floor* instead of once per fight?
-5. **Quicksilver** (act again immediately) is the only energy-refund skill in the four sheets; is a free turn acceptable at Tier IV, or should it refund 400 (half a light action)?
+1. ~~**Two-hander basics.** Settled by `08-ITEMS.md` §1 (D-041 superseded): two-handers hit at 1.0× with a higher Base Attack plus Cleave, dual is 2 × 0.5× at 800. Remaining question: is Cleave at 50% enough to make the Greatsword a real alternative to two Longswords on the sim?~~ *Checkpoint 1 (D-099): keep Cleave at 50% for now; Phase 7's class-damage pass compares greatsword and dual Blades on the runner and tunes the number.*
+2. ~~**Greatsword from level 1?** The starter kit is two Copper swords; a Crude Greatsword is sold for 0.05 R. Should the creation screen offer the greatsword as an alternative kit so an Executioner starter does not need a shop trip?~~ *Checkpoint 1 (D-099): yes — from Phase 7, New hero offers a greatsword kit (a Copper Greatsword instead of the two swords), because the town sells no weapons; `08` §12 gains the row.*
+3. ~~**Monster-technique Insight rule.** Ghoul's Grasp (Tier III) comes from Crypts ghouls at L5–10, far below the Tier III sweet spot of L18. Proposed: a flat 10% per witnessed use, pity at 10 — confirm?~~ *Checkpoint 1 (D-028): confirmed — a flat 10% per witnessed use, pity at 10.*
+4. ~~**Berserk + Undying Rage on Dread.** A Blade that cannot die below 25% HP twice a fight (Deathless) is the strongest solo line here; should Undying Rage be once per *floor* instead of once per fight?~~ *Checkpoint 1 (D-099): once per floor (Deathless: twice per floor) — under the Mortal rule a once-per-fight cheat-death would make solo Blades too safe for the tower James asked for (D-084).*
+5. ~~**Quicksilver** (act again immediately) is the only energy-refund skill in the four sheets; is a free turn acceptable at Tier IV, or should it refund 400 (half a light action)?~~ *Checkpoint 1 (D-099): keep the free turn, once per fight — it reads plainly on the strip, and a 400 refund on an 800-weight skill would cost more than it gives.*

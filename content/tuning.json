@@ -415,7 +415,15 @@
       "vitalityEveryLevels": {
         "value": 2,
         "note": "D-082: +1 Vitality on every level divisible by this."
-      }
+      },
+      "levelGapSource": "D-096 (James, checkpoint 1): each defeated monster's XP × this curve of (its threat level − the party's level); the heroes standing split the pool × 3.",
+      "levelGap": [
+        { "delta": -10, "multiplier": 0.05 },
+        { "delta": -5, "multiplier": 0.25 },
+        { "delta": 0, "multiplier": 1 },
+        { "delta": 5, "multiplier": 2 },
+        { "delta": 10, "multiplier": 3 }
+      ]
     }
   },
   "equipment": {
@@ -1104,7 +1112,7 @@
     "partyRevivesPerFloor": {
       "normal": 3,
       "hard": 1,
-      "nightmare": 0
+      "dread": 0
     },
     "flee": {
       "basePercent": 50,

@@ -1,6 +1,6 @@
 # 11 — Art Pipeline (Blender → glTF → three.js)
 
-*Last updated 2026-10-26 · rev. 1 (Claude). Decision D-019. The sister project's `prototype/blender/shade/` (ProjectAscend) is the proven ancestor of this pipeline: scripted, headless, re-runnable, reviewed by looking at renders; its `LOG.md` lists honestly what a script can and cannot reach. This document keeps what worked and fixes what didn't.*
+*Last updated 2026-10-27 · rev. 2 (checkpoint 1: open questions answered by delegation — D-099) · rev. 1 2026-10-26 (Claude). Decision D-019. The sister project's `prototype/blender/shade/` (ProjectAscend) is the proven ancestor of this pipeline: scripted, headless, re-runnable, reviewed by looking at renders; its `LOG.md` lists honestly what a script can and cannot reach. This document keeps what worked and fixes what didn't.*
 
 ## 1. The look (style guide)
 
@@ -94,6 +94,6 @@ Defects go in `art/LOG.md` as a numbered list with the fix, round by round (the 
 Faces with character, folds in cloth, hair that is not clumps, and anything that must look *drawn* rather than *built*. The plan reaches "good stylized game art that reads on a phone"; the step beyond is an artist's pass on the same rig and slot split — the pipeline is designed so that pass replaces meshes without touching code. `art/LOG.md` keeps the honest list, as Ascend's does.
 
 **Open questions**
-1. Base meshes from the CC0 bundle (recommended) vs. the procedural loft body for everything (faster, worse faces)?
-2. Outline pass: inverted hull (cheap, Ascend-proven) vs. a screen-space edge pass (cleaner, costs a post pass on the phone)?
-3. Commission an artist for the six heads once the pipeline is proven — budget question for James.
+1. ~~Base meshes from the CC0 bundle (recommended) vs. the procedural loft body for everything (faster, worse faces)?~~ *Checkpoint 1 (D-019): the CC0 base meshes, as recommended; the procedural loft body stays for silhouette tests only.*
+2. ~~Outline pass: inverted hull (cheap, Ascend-proven) vs. a screen-space edge pass (cleaner, costs a post pass on the phone)?~~ *Checkpoint 1 (D-099): inverted hull, as §1 and `10` §2 already plan; a screen-space pass only if Phase 5's renders show hull defects and the phone budget allows it.*
+3. ~~Commission an artist for the six heads once the pipeline is proven — budget question for James.~~ *Checkpoint 1 (D-099): not now — decided at checkpoint 2, after James sees the Phase 5 renders; nothing is paid without his yes.*

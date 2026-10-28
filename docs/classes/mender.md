@@ -1,6 +1,6 @@
 # Mender — class sheet
 
-*Last updated 2026-10-26 · rev. 1 · numbers are tuning starting points*
+*Last updated 2026-10-27 · rev. 2 (checkpoint 1: open questions answered by delegation — D-099) · rev. 1 2026-10-26 · numbers are tuning starting points*
 
 Every number here is a **starting point for the simulator and the balance runner**, not a promise. The rules it rests on are `03-GAME-DESIGN.md` (§2 attributes, §3 the timeline, §5 level-by-use, §7 skills, §12 downed and revive) and `04-CLASSES.md`, which holds the shared multiplier bands per tier. Column headers are identical across the seven sheets so the tables can become `content/skills/mender/<id>.json` (one record per skill).
 
@@ -209,8 +209,8 @@ What the runner should see: the Mender spent 34 of 84 Mana over three turns to r
 
 ## 10. Open questions (for James)
 
-1. **Heal scaling.** Heals here are a % of the *target's* max HP × healing power (1 + 2%/Wis point). The alternative is a flat heal = spell Attack × multiplier, like damage. The percentage keeps a Tier I heal relevant on a level-30 Warden; the flat version makes gear matter more. Which?
-2. **Breath of Life's weight.** The in-combat revive is heavy (1,400) and charged, so a Bone Knight can interrupt it. That makes the Warden's Taunt matter, but a failed revive at a 3-turn deadline is the worst feeling in the game. Make it normal weight (1,000) and uninterruptible, at a higher cost?
-3. **Holy vs living targets.** Smite is 1.4× against a bandit and ≈ 2× against a skeleton. Is "the Mender is a striker only in the Crypts and the Frostmarch wights" the right shape, or should Sanctity get one living-target tool (Judgement's execute is the current one)?
-4. **Momentum gifts.** Rally (+10 each) and Hymn (+20 each) let a Mender feed a Blade's Ultimate every other fight. If the sim shows the Blade's Ultimate every fight, cap gifted Momentum at 50 per fight.
-5. **Three Menders.** The con "a party of three Menders kills nothing" is true by design. Should the matchmaking lobby warn when a party has no striker, or let people find out?
+1. ~~**Heal scaling.** Heals here are a % of the *target's* max HP × healing power (1 + 2%/Wis point). The alternative is a flat heal = spell Attack × multiplier, like damage. The percentage keeps a Tier I heal relevant on a level-30 Warden; the flat version makes gear matter more. Which?~~ *Checkpoint 1 (D-099): a percentage of the target's max HP × healing power, as built.*
+2. ~~**Breath of Life's weight.** The in-combat revive is heavy (1,400) and charged, so a Bone Knight can interrupt it. That makes the Warden's Taunt matter, but a failed revive at a 3-turn deadline is the worst feeling in the game. Make it normal weight (1,000) and uninterruptible, at a higher cost?~~ *Checkpoint 1 (D-099): yes — normal weight (1,000), so it is never interrupted, at 28 Mana instead of 20; under the Mortal rule a revive that misses the window means a death (raised only for levels, D-089), and that should not come down to one roll (D-088).*
+3. ~~**Holy vs living targets.** Smite is 1.4× against a bandit and ≈ 2× against a skeleton. Is "the Mender is a striker only in the Crypts and the Frostmarch wights" the right shape, or should Sanctity get one living-target tool (Judgement's execute is the current one)?~~ *Checkpoint 1 (D-099): keep the shape — Judgement is the living-target tool, as built; Phase 7's class-damage pass decides the rest (the runner already shows the Mender out-damaging the Ranger).*
+4. ~~**Momentum gifts.** Rally (+10 each) and Hymn (+20 each) let a Mender feed a Blade's Ultimate every other fight. If the sim shows the Blade's Ultimate every fight, cap gifted Momentum at 50 per fight.~~ *Checkpoint 1 (D-099): keep them; the cap of 50 gifted Momentum per fight goes in only if the runner shows an Ultimate every fight (Phase 7).*
+5. ~~**Three Menders.** The con "a party of three Menders kills nothing" is true by design. Should the matchmaking lobby warn when a party has no striker, or let people find out?~~ *Checkpoint 1 (D-099): a quiet hint, never a block — the Inn's party screen (and the co-op lobby in Phase 9) shows **No striker: fights will be long**.*

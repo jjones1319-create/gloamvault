@@ -1,5 +1,5 @@
 /**
- * `npm run balance [-- --seeds 100 --tag first-pass --fixture --death mortal|sheltered]`
+ * `npm run balance [-- --seeds 100 --tag first-pass --fixture --death mortal|sheltered|nightmare]`
  * The batch runner (12 Phase 2; 10-TECH-PLAN §7): seeds × party recipes × the zone, played by the scripted policies,
  * written as JSON to tools/balance/out/<date>-<tag>.json and as a dated report with judgement lines to
  * docs/balance/<date>-<tag>.md. Targets: 03 §3.6 and 06 §8.9 (fight rounds), 03 §8.1 (gold ≈ R, repair ≤ 30% of R),
@@ -27,8 +27,10 @@ const SEEDS = Number(flag('seeds', '100'))
 const TAG = flag('tag', 'first-pass')
 const DATE = flag('date', new Date().toISOString().slice(0, 10))
 const useFixture = args.includes('--fixture')
-/** D-088: the save's death rule. Sheltered (the Phase 3 rules) by default, so D-084's clear-rate targets keep their meaning; Mortal is the game James asked for. */
-const DEATH: 'mortal' | 'sheltered' = flag('death', 'sheltered') === 'mortal' ? 'mortal' : 'sheltered'
+/** D-088, D-095: the save's death rule. Sheltered (the Phase 3 rules) by default, so D-084's clear-rate targets keep their meaning; Mortal is the game James asked for; Nightmare ends the run when the recipe's first hero (the chosen hero) dies. */
+const DEATH_FLAG = flag('death', 'sheltered')
+const DEATH: 'mortal' | 'sheltered' | 'nightmare' = DEATH_FLAG === 'mortal' || DEATH_FLAG === 'nightmare' ? DEATH_FLAG : 'sheltered'
+const DEATH_NAME = DEATH === 'nightmare' ? 'Nightmare' : DEATH === 'mortal' ? 'Mortal' : 'Sheltered'
 
 let root: string | null = null
 let content: Content = loadContentDir('content')
@@ -93,6 +95,8 @@ interface RunRow {
   /** Under Mortal: heroes carried home dead (to the Shrine) and heroes lost for good in a wipe. */
   carriedHome: number
   lostForGood: number
+  /** Under Nightmare (D-095): the chosen hero (the recipe's first hero) died, so the save would end. */
+  ended: boolean
   floorReached: number
   rooms: number
   fights: number
@@ -169,7 +173,8 @@ function row(seed: number, recipe: Recipe, state: DelveState): RunRow {
   }
   const outcome = state.phase.kind === 'over' ? state.phase.outcome : 'running'
   const deadAtEnd = state.heroes.filter((h) => h.fallen).length
-  const mortal = state.options.deathRule === 'mortal'
+  const mortal = state.options.deathRule === 'mortal' || state.options.deathRule === 'nightmare'
+  const leader = state.heroes.find((h) => h.record.id === state.options.leaderId)
   return {
     seed,
     recipe: recipe.name,
@@ -178,6 +183,7 @@ function row(seed: number, recipe: Recipe, state: DelveState): RunRow {
     raises: s.raises,
     carriedHome: mortal && outcome !== 'wiped' ? deadAtEnd : 0,
     lostForGood: mortal && outcome === 'wiped' ? state.heroes.length : 0,
+    ended: state.options.deathRule === 'nightmare' && leader !== undefined && leader.fallen,
     floorReached: state.floor.number,
     rooms: s.rooms,
     fights: s.fights,
@@ -211,7 +217,7 @@ for (const recipe of RECIPES) {
       .map((p, i) => heroFor(p, i, seed))
       .map((h) => (recipe.petStance && h.petInstance ? { ...h, petInstance: { ...h.petInstance, stance: recipe.petStance }, loadout: { ...h.loadout, stance: recipe.petStance } } : h))
       .map((h, i) => ground(h, recipe, seed * 131 + i))
-    const options: DelveOptions = { dungeonId: dungeon.id, zone: 1, seed, difficulty: 'normal', pactIds: [], auto: true, policy: recipe.policy, deathRule: DEATH }
+    const options: DelveOptions = { dungeonId: dungeon.id, zone: 1, seed, difficulty: 'normal', pactIds: [], auto: true, policy: recipe.policy, deathRule: DEATH, ...(DEATH === 'nightmare' ? { leaderId: party[0]!.id } : {}) }
     let state: DelveState
     try {
       state = runDelveAuto(content, createDelve(content, options, party), 3000)
@@ -246,19 +252,20 @@ const judge = (label: string, value: number, lo: number, hi: number, unit = '') 
   return verdict
 }
 
-lines.push(`# Balance report — ${DATE} — ${TAG}`, '', `*Written by \`npm run balance\` on ${contentNote}; ${SEEDS} seeds × ${RECIPES.length} recipes, zone **${zone.name}** of **${dungeon.name}** (floors ${zone.floors.from}–${zone.floors.to}), Normal, no Pacts, death rule **${DEATH === 'mortal' ? 'Mortal' : 'Sheltered'}** (D-088); ${elapsed} s.*`, '')
-lines.push('## 1. Outcomes per recipe', '', '| Recipe | Cleared | Retreated | Wiped | Capped | Floors reached (mean) | Rooms | Fights | Downs/delve | Commands |', '|---|---|---|---|---|---|---|---|---|---|')
+lines.push(`# Balance report — ${DATE} — ${TAG}`, '', `*Written by \`npm run balance\` on ${contentNote}; ${SEEDS} seeds × ${RECIPES.length} recipes, zone **${zone.name}** of **${dungeon.name}** (floors ${zone.floors.from}–${zone.floors.to}), Normal, no Pacts, death rule **${DEATH_NAME}** (D-088, D-095); ${elapsed} s.*`, '')
+lines.push('## 1. Outcomes per recipe', '', '| Recipe | Cleared | Retreated | Wiped | Chosen hero died (Nightmare) | Capped | Floors reached (mean) | Rooms | Fights | Downs/delve | Commands |', '|---|---|---|---|---|---|---|---|---|---|---|')
 for (const recipe of RECIPES) {
   const rs = rows.filter((r) => r.recipe === recipe.name)
   const count = (o: string) => rs.filter((r) => r.outcome === o).length
   if (recipe.clearTarget) judge(`${recipe.name}: Cellars cleared, % of delves`, (100 * count('cleared')) / rs.length, recipe.clearTarget[0], recipe.clearTarget[1], '%')
-  lines.push(`| ${recipe.name} | ${f0((100 * count('cleared')) / rs.length)}% | ${f0((100 * count('retreated')) / rs.length)}% | ${f0((100 * count('wiped')) / rs.length)}% | ${f0((100 * count('capped')) / rs.length)}% | ${f1(mean(rs.map((r) => r.floorReached)))} | ${f1(mean(rs.map((r) => r.rooms)))} | ${f1(mean(rs.map((r) => r.fights)))} | ${f1(mean(rs.map((r) => r.downs)))} | ${f0(mean(rs.map((r) => r.commands)))} |`)
+  lines.push(`| ${recipe.name} | ${f0((100 * count('cleared')) / rs.length)}% | ${f0((100 * count('retreated')) / rs.length)}% | ${f0((100 * count('wiped')) / rs.length)}% | ${f0((100 * count('chosenDied')) / rs.length)}% | ${f0((100 * count('capped')) / rs.length)}% | ${f1(mean(rs.map((r) => r.floorReached)))} | ${f1(mean(rs.map((r) => r.rooms)))} | ${f1(mean(rs.map((r) => r.fights)))} | ${f1(mean(rs.map((r) => r.downs)))} | ${f0(mean(rs.map((r) => r.commands)))} |`)
 }
 // D-088–D-092: how often heroes die, and how often a party is lost for good (reported, not judged, until James sets targets).
-lines.push('', '## 1b. Deaths (D-088)', '', '| Recipe | Falls / delve | Delves with a fall | Raised in the dungeon / delve | Carried home dead / delve | Lost for good / delve | Delves losing a hero for good |', '|---|---|---|---|---|---|---|')
+lines.push('', '## 1b. Deaths (D-088, D-095)', '', '| Recipe | Falls / delve | Delves with a fall | Raised in the dungeon / delve | Carried home dead / delve | Lost for good / delve | Delves losing a hero for good | Nightmare: the save ends |', '|---|---|---|---|---|---|---|---|')
 for (const recipe of RECIPES) {
   const rs = rows.filter((r) => r.recipe === recipe.name)
-  lines.push(`| ${recipe.name} | ${f1(mean(rs.map((r) => r.falls)))} | ${f0((100 * rs.filter((r) => r.falls > 0).length) / Math.max(1, rs.length))}% | ${f1(mean(rs.map((r) => r.raises)))} | ${f1(mean(rs.map((r) => r.carriedHome)))} | ${f1(mean(rs.map((r) => r.lostForGood)))} | ${f0((100 * rs.filter((r) => r.lostForGood > 0).length) / Math.max(1, rs.length))}% |`)
+  const endedPct = DEATH === 'nightmare' ? `${f0((100 * rs.filter((r) => r.ended).length) / Math.max(1, rs.length))}%` : '-'
+  lines.push(`| ${recipe.name} | ${f1(mean(rs.map((r) => r.falls)))} | ${f0((100 * rs.filter((r) => r.falls > 0).length) / Math.max(1, rs.length))}% | ${f1(mean(rs.map((r) => r.raises)))} | ${f1(mean(rs.map((r) => r.carriedHome)))} | ${f1(mean(rs.map((r) => r.lostForGood)))} | ${f0((100 * rs.filter((r) => r.lostForGood > 0).length) / Math.max(1, rs.length))}% | ${endedPct} |`)
 }
 if (DEATH === 'sheltered') lines.push('', '*Under Sheltered nobody is lost: the falls column is what Mortal would turn into deaths. Run `--death mortal` for the game James asked for.*')
 lines.push('', '## 2. Fight length (rounds) by fight kind', '', '| Recipe | fight | elite | boss | hunter | trap/curio |', '|---|---|---|---|---|---|')

@@ -1,6 +1,6 @@
 # 08 — Items, materials and chests
 
-*Last updated 2026-10-27 · rev. 2 (§10.2 the Wayfarer Chest, D-091; §10.1 pity keys per chest family) · rev. 1 2026-10-26 · numbers are tuning starting points*
+*Last updated 2026-10-27 · rev. 3 (checkpoint 1: open questions answered by delegation; the Nightmare difficulty preset renamed Dread — D-095, D-099) · rev. 2 (§10.2 the Wayfarer Chest, D-091; §10.1 pity keys per chest family) · rev. 1 2026-10-26 · numbers are tuning starting points*
 
 **How to read this file.** Every base number is written **for grade F**; every grade multiplies it by the ladder (F ×1.00 · E ×1.35 · D ×1.80 · C ×2.45 · B ×3.30 · A ×4.45 · S ×6.00 · SS ×8.10 · God ×11.0), rounded half up to an integer after the multiply. Percentages (Block, Crit, Dodge) do **not** ride the ladder; they step by a fixed amount per grade where the table says so. Ordinary pieces are named `<Material> <Type>` — "Iron Longsword", "Wolf Hide Jerkin", "Oak Shortbow" — where the material is the rung of the item's ladder at its grade (§8); named uniques exist from B up (§7) and keep their own names. Grade index **g** runs F 0 … God 8 and is used in requirement formulas. Each table here becomes one folder under `content/items/<kind>/`, one record per `<id>.json` (`10-TECH-PLAN.md` §3 owns the layout); column headers are the field names. Rules live in the rulebook (`03-GAME-DESIGN.md` §2, §6, §8); this file is the content.
 
@@ -316,7 +316,7 @@ Using an item is weight 600 (rulebook §3.2). Potions are percentages so one tab
 | Bandage | cleanse Bleed and a small heal (+15% HP) on one ally, in or out of combat (Item action); never a revive — revives are First Aid (`03` §12.1), Mender skills and the Phoenix Feather | 0.2 | 0.02 | everywhere, shop |
 | Ration | rest room: +10% HP and pool to the party (one per rest) | 0.5 | 0.02 | shop, Foraging |
 | Cooking Ingredient (herb, mushroom, meat, fish, salt) | with Cooking at a rest room: a meal, +5% to one stat for the next floor | 0.3 | 0.01 | Foraging in rest rooms; monster parts (meat) |
-| Divine Shard | 10 forge one God item at the blacksmith, or convert 1 → 5 units of any God-rung material | 0 | never sold | Grand chests 5% from band D; every final boss's first kill (1; +1 on Nightmare, `07` §6.1); the Hollow King 10% on later kills (`06` §3.4) |
+| Divine Shard | 10 forge one God item at the blacksmith, or convert 1 → 5 units of any God-rung material | 0 | never sold | Grand chests 5% from band D; every final boss's first kill (1; +1 on Dread, `07` §6.1); the Hollow King 10% on later kills (`06` §3.4) |
 | Skill Tome (Tier I–V) | learn the skill; duplicate → rank XP (rulebook §7) | 0.5 | Tier I 0.1 / II 0.3 / III 1.0 (Skill Hall; IV–V never sold) | Insights, boss first kills (Tier III+), Skill Tome chests |
 | Arrows ×50 | ammo for bows; one per shot | 2 | 0.02 | shop, merchant, Cellars bandits 15%, Foraging (+10 per success with a bow equipped) |
 | Bolts ×50 | ammo for crossbows; one per shot | 2.5 | 0.03 | shop, merchant, Tidebound constructs 10% |
@@ -453,7 +453,7 @@ Fixed signature line in one affix slot; the remaining slots roll normally. "Gran
 
 ### God — Divine (white-gold, animated): eleven named items
 
-Eleven items, one per slot, with Main Hand holding three class-family options; the Off Hand is covered because two of the three weapons are two-handed and fill both hands (a dedicated God shield is an open question). The Pet slot's "God item" is a God-grade egg (rulebook §9, `06-MONSTERS.md` §9), not an item in this file. God armor pieces are **family-less**: they take the wearer's class family for look, speed penalty share and requirement, so every class can wear every God armor piece. Each God item has 4 rolled affix slots plus its **unique power**. **How obtained:** each is bound to one final boss and drops from any kill of that boss at 1% on Normal / 2% Hard / 4% Nightmare; or **10 Divine Shards** forge any God item of the player's choice at the blacksmith (deterministic path). Never in a random table.
+Eleven items, one per slot, with Main Hand holding three class-family options; the Off Hand is covered because two of the three weapons are two-handed and fill both hands (a dedicated God shield is an open question). The Pet slot's "God item" is a God-grade egg (rulebook §9, `06-MONSTERS.md` §9), not an item in this file. God armor pieces are **family-less**: they take the wearer's class family for look, speed penalty share and requirement, so every class can wear every God armor piece. Each God item has 4 rolled affix slots plus its **unique power**. **How obtained:** each is bound to one final boss and drops from any kill of that boss at 1% on Normal / 2% Hard / 4% Dread; or **10 Divine Shards** forge any God item of the player's choice at the blacksmith (deterministic path). Never in a random table.
 
 | # | Name | Slot | Class lock | Bound boss |
 |---|---|---|---|---|
@@ -559,7 +559,7 @@ Every monster family maps to one common part (35% per kill) and one rare part (4
 | Frostmarch | ice wyrms | Dragon Scale ×1–3 guaranteed; Frostroot (World-tree Bough) | Wyrmward Buckler | 10 Dragon Scale |
 | Frostmarch · F10 (global floor 40) | the Pale Dragon | — | — | 1–3 Dragon Scale first kill, 1 every later kill; 12 Adamantine + 12 Moonweave + 1 Divine Shard first kill (`06` §6) |
 
-God-rung materials (Starmetal, Ancient Dragon Scale, Celestial Thread, Godwood) come only from final bosses on Hard or Nightmare (1–2 units) and from Divine Shard conversion (1 → 5 units of one God material). A Starmetal fall (a rare curio, 2% of floors from band A) gives 3 Starmetal.
+God-rung materials (Starmetal, Ancient Dragon Scale, Celestial Thread, Godwood) come only from final bosses on Hard or Dread (1–2 units) and from Divine Shard conversion (1 → 5 units of one God material). A Starmetal fall (a rare curio, 2% of floors from band A) gives 3 Starmetal.
 
 ### §8.4 Salvage returns
 
@@ -714,7 +714,7 @@ Gold is per fight, split at banking; R per delve at the band lands near the R ta
 | Captain Vexa Marrow, the Grinning Captain (F3) | 60 | the stack — Copper ×8 + Rawhide ×8 on the first kill, Copper ×4 + Rawhide ×4 after; 2 Whetstones | a Tier III Tome (bag draw); one D-grade item; the Grinning Mask (C Relic); 1 Standard chest key |
 | the Barrow Warden (F6) | 100 | the stack — Iron ×8 + Wool ×8 + Bone Shards ×10 on the first kill, half after; 2 Whetstones; after the first kill an A-grade item 10% | a Tier III Tome; one A-grade item; the Barrow Bell (D Relic); 1 Grand chest key |
 | Sister Naesa, the Tidebound Priestess (F9) | 150 | the stack — Steel ×10 + Silk ×10 + Brine Pearl ×3 on the first kill, half after; 3 Whetstones; after the first kill an A-grade item 10% | a Tier III Tome; one A-grade item; the Tidebound Idol (C Relic); 1 Grand chest key |
-| the Hollow King (F10) | 300 | the stack — Steel ×12 + Silk ×12 + Iron ×12 on the first kill, half after; 3 Whetstones; after the first kill: Crown / Signet / Last Lantern 1% (2% Hard, 4% Nightmare), a Divine Shard 10% | one Divine Shard; one S-grade item; a Tier IV Tome (bag draw); the Hollow Coin (C Relic); 2 Grand keys; +1 Luck (rulebook §2 open question) |
+| the Hollow King (F10) | 300 | the stack — Steel ×12 + Silk ×12 + Iron ×12 on the first kill, half after; 3 Whetstones; after the first kill: Crown / Signet / Last Lantern 1% (2% Hard, 4% Dread), a Divine Shard 10% | one Divine Shard; one S-grade item; a Tier IV Tome (bag draw); the Hollow Coin (C Relic); 2 Grand keys; +1 Luck (rulebook §2 open question) |
 | the Warden's Hound (hunter, any floor) | 1 fight's gold ×2 | a rare part of the floor's family; a Large chest | — |
 
 ---
@@ -739,14 +739,14 @@ Plate and Mail at F are both Copper; the type word tells them apart ("Copper Hel
 
 ## Open questions (for James)
 
-1. **The promotion counts** are settled (`03` §6.5 rev. 2: forge F = 4, then 6 / 8 / 10 / 12 / 16 / 20 / 30 / 50; D-031). Remaining question: should S→SS at 30 Dragon Scale stay, given Dragon Scale drops 1–3 per Pale Dragon kill?
-2. **God items and the Off Hand.** Eleven named God items cover every slot only because the God bow and staff are two-handed. Accept that, or make the launch list twelve with a God Tower shield for the Warden?
-3. **Hollow King at L14 with God drops.** A 1% God chance on the first dungeon's final boss is a long-term reason to return; is a God item that early in the dungeon list right, or should Gravehollow's three God items be shard-only until Emberforge is cleared?
-4. **Chest band cap at A.** SS is never a chest centre here (band A Grand is SS 50%). Right, or should floors 35+ open a band SS table?
-5. **Repair at 0.5% per point** lands a Warden's delve bill at ~27% of R, at the edge of the "≥ 70% left" rule. Hold, or cut to 0.4%?
-6. **Armor-less God pieces.** God armor adopting the wearer's family lets a Mender wear the Ancient Dragon's Mantle; is that the feel wanted, or should God armor pieces be family-locked (then eleven becomes more than eleven)?
-7. **Beast Tamer weapons.** This file gives Beast Tamers one-handed swords and maces besides whips and spears so Daybreak Edge has a third class; `04-CLASSES.md` should confirm the list.
-8. **Trinket wear.** Rings, Talismans and Relics wear only on a wipe here (−10%). Keep, or exempt trinkets from the wipe penalty entirely?
+1. ~~**The promotion counts** are settled (`03` §6.5 rev. 2: forge F = 4, then 6 / 8 / 10 / 12 / 16 / 20 / 30 / 50; D-031). Remaining question: should S→SS at 30 Dragon Scale stay, given Dragon Scale drops 1–3 per Pale Dragon kill?~~ *Checkpoint 1 (D-031): keep 30 — the Pale Dragon is not the only source: Frostmarch's ice wyrms drop 1–3 every kill and their boss a stack of 10 (§8.3).*
+2. ~~**God items and the Off Hand.** Eleven named God items cover every slot only because the God bow and staff are two-handed. Accept that, or make the launch list twelve with a God Tower shield for the Warden?~~ *Checkpoint 1 (D-099): eleven, as written — the God bow and staff fill both hands; a God Tower shield can come with a later dungeon.*
+3. ~~**Hollow King at L14 with God drops.** A 1% God chance on the first dungeon's final boss is a long-term reason to return; is a God item that early in the dungeon list right, or should Gravehollow's three God items be shard-only until Emberforge is cleared?~~ *Checkpoint 1 (D-099): keep — his three God items at 1% (Hard 2%, Dread 4%) with pity at 100, plus the 10-Shard forge, are the long-term reason to return; God stays boss-bound (D-008).*
+4. ~~**Chest band cap at A.** SS is never a chest centre here (band A Grand is SS 50%). Right, or should floors 35+ open a band SS table?~~ *Checkpoint 1 (D-030): right — chest bands cap at A with no band SS table; SS comes from band A's chests (Standard 19%, Grand 50%), bosses and promotion.*
+5. ~~**Repair at 0.5% per point** lands a Warden's delve bill at ~27% of R, at the edge of the "≥ 70% left" rule. Hold, or cut to 0.4%?~~ *Checkpoint 1 (D-099): hold 0.5%, as built — it is the knob the balance runner turns to keep the delve bill at 20–30% of R.*
+6. ~~**Armor-less God pieces.** God armor adopting the wearer's family lets a Mender wear the Ancient Dragon's Mantle; is that the feel wanted, or should God armor pieces be family-locked (then eleven becomes more than eleven)?~~ *Checkpoint 1 (D-099): family-less, as written — any class may wear any God armor piece, and eleven stays eleven.*
+7. ~~**Beast Tamer weapons.** This file gives Beast Tamers one-handed swords and maces besides whips and spears so Daybreak Edge has a third class; `04-CLASSES.md` should confirm the list.~~ *Checkpoint 1 (D-099): the class sheet owns a class's weapons (`03` ownership table), so the Beast Tamer keeps its sheet's **whip and short spear**; this file's other Beast Tamer weapon rows and Daybreak Edge's third class are corrected when the class is built in Phase 11. A whip-and-spear Tamer reads as its own class rather than a second Warden.*
+8. ~~**Trinket wear.** Rings, Talismans and Relics wear only on a wipe here (−10%). Keep, or exempt trinkets from the wipe penalty entirely?~~ *Checkpoint 1 (D-099): keep, as built — trinkets wear only from a wipe's −10%, the same wear the bearers' gear takes under Mortal (D-088).*
 
 ---
 

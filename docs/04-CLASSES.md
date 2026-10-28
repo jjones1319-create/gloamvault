@@ -1,6 +1,6 @@
 # 04 — Classes
 
-*Last updated 2026-10-27 · rev. 2 (§7 the Wayfarer Chest's cast, James's direction of 2026-10-27, D-091) · rev. 1 2026-10-26 · numbers are tuning starting points*
+*Last updated 2026-10-27 · rev. 3 (checkpoint 1: open questions answered by delegation — D-099) · rev. 2 (§7 the Wayfarer Chest's cast, James's direction of 2026-10-27, D-091) · rev. 1 2026-10-26 · numbers are tuning starting points*
 
 Seven classes, one sheet each in `docs/classes/`. This file is the index: the rule every sheet follows, the seven at a glance, what each one covers, what parties they make, and what all of them share. The rulebook is `03-GAME-DESIGN.md`; the skill rules are its §7.
 
@@ -117,12 +117,12 @@ This section **owns the cast** (names, species, class, grade, points, starter sk
 Each species appears three times and each class three times; six are D, six C, four B and two A. A wayfarer whose starter skills differ from the class's picks carries an AI rule that uses them (the generator's table); the others use the class default. Every starter skill works with the class's starter kit (`node tools/balance/check-starters.ts`). The cast grows with the dungeons (Phase 7 and Segment 3: S-grade wayfarers, the Beast Tamer's).
 
 **Open questions**
-1. Eighteen wayfarers for Segment 1, graded D–A — enough variety to make "hopefully redraw them" matter?
-2. Should higher grades bring more than points (a personal trait, a better starting kit)?
+1. ~~Eighteen wayfarers for Segment 1, graded D–A — enough variety to make "hopefully redraw them" matter?~~ *Checkpoint 1 (D-098): enough for Segment 1; the cast grows with each dungeon (S-grade wayfarers in Phase 7, Beast Tamers in Segment 3).*
+2. ~~Should higher grades bring more than points (a personal trait, a better starting kit)?~~ *Checkpoint 1 (D-099): not now — a grade brings creation points and rarity only, as built; every wayfarer already differs by species, class, starter skills and AI rule.*
 
 ## 8. Open questions (for James)
 
-1. **Which classes to build first.** Proposed: **Warden, Blade, Ranger, Shade, Arcanist and Mender in Segments 1–2** (every armor family, both pools, every column of §3 covered) and **the Beast Tamer in Segment 3**, once pets are timeline actors and the summon rules have something to summon. If Segment 1 needs fewer, start with Warden, Blade and Mender — the three the first thirty minutes (§13) teach the timeline with.
-2. **Monster techniques and the Insight sweet spot.** The Tier IV Insight formula peaks at enemy level 24; Gravehollow Keep ends at 14. Proposed: for monster techniques only, the sweet spot is the monster's own level — if it is using the move in front of you, the roll is at full strength. Otherwise every Tier IV technique must come from Dungeon 2 or later.
-3. **Tier V at launch** (the rulebook's §7 question) — all 45 are designed now; the proposal stands to build Tier V in Segment 3.
-4. **Weights by weapon vs by skill.** The sheets give every skill its own weight regardless of weapon. The alternative — the weapon shifts every action's weight (staff +200, dagger −200) — is felt every turn but doubles the tuning surface. Decide before `content/skills/*.json` is generated.
+1. ~~**Which classes to build first.** Proposed: **Warden, Blade, Ranger, Shade, Arcanist and Mender in Segments 1–2** (every armor family, both pools, every column of §3 covered) and **the Beast Tamer in Segment 3**, once pets are timeline actors and the summon rules have something to summon. If Segment 1 needs fewer, start with Warden, Blade and Mender — the three the first thirty minutes (§13) teach the timeline with.~~ *Checkpoint 1 (D-099): as proposed and built — the six in Segments 1–2, the Beast Tamer in Segment 3.*
+2. ~~**Monster techniques and the Insight sweet spot.** The Tier IV Insight formula peaks at enemy level 24; Gravehollow Keep ends at 14. Proposed: for monster techniques only, the sweet spot is the monster's own level — if it is using the move in front of you, the roll is at full strength. Otherwise every Tier IV technique must come from Dungeon 2 or later.~~ *Checkpoint 1 (D-028): techniques skip the curve — a flat 10% per witnessed use of the move, with a pity at 10 uses (the class sheets' proposal) — so every Gravehollow technique can be learned in Gravehollow.*
+3. ~~**Tier V at launch** (the rulebook's §7 question) — all 45 are designed now; the proposal stands to build Tier V in Segment 3.~~ *Checkpoint 1 (D-099): Tier V is in the game at launch — from endgame bosses and Divine Shards, built in Segment 3.*
+4. ~~**Weights by weapon vs by skill.** The sheets give every skill its own weight regardless of weapon. The alternative — the weapon shifts every action's weight (staff +200, dagger −200) — is felt every turn but doubles the tuning surface. Decide before `content/skills/*.json` is generated.~~ *Checkpoint 1 (D-099): by skill, as built — the weapon sets only the basic attack's weight (`08` §1).*

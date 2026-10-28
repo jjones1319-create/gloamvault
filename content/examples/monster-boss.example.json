@@ -140,7 +140,7 @@
       { "kind": "item", "grade": "D" },
       { "kind": "item", "id": "the-grinning-coin", "note": "the zone Relic: once per fight call it — heads the party gains Haste (2), tails the next party hit crits" },
       { "kind": "item", "id": "standard-chest-key" },
-      { "kind": "item", "id": "marked-cards", "difficultyMin": "hard", "note": "+1 rare part on Hard and Nightmare" },
+      { "kind": "item", "id": "marked-cards", "difficultyMin": "hard", "note": "+1 rare part on Hard and Dread" },
       { "kind": "title", "id": "toll-breaker" },
       { "kind": "waystone", "id": "the-cellars" }
     ],

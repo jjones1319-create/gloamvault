@@ -1,7 +1,7 @@
 import { useState } from 'preact/hooks'
 import type { Content } from '../../../../../sim/src/content.ts'
 import { floorThreat, partyLevelOf, type ThreatRead } from '../../../../../sim/src/threat.ts'
-import { partyHeroes, waystoneFloors, type Profile } from '../../../../../sim/src/town.ts'
+import { nightmareBlocker, partyHeroes, waystoneFloors, type Profile } from '../../../../../sim/src/town.ts'
 import type { DungeonDef } from '../../../../../sim/src/types/content.ts'
 import { content, enterDelve, profile } from '../../../game/session.ts'
 import { Btn, Empty, Gold, Section } from '../../kit/kit.tsx'
@@ -56,6 +56,8 @@ export function Waystone() {
   const perilous = atFloor !== null && (isPerilous(atFloor.floor.band) || (atFloor.boss !== null && isPerilous(atFloor.boss.band)))
   const firstDelve = p.progress.delves === 0
   const resuming = p.activeDelve !== null
+  // D-095: under Nightmare the chosen hero leads every delve.
+  const nightmareBlock = nightmareBlocker(p)
 
   return (
     <PlacePage id="waystone">
@@ -137,7 +139,7 @@ export function Waystone() {
               Normal
             </span>
             <span class="tw-pill tw-pill--off">Hard · later</span>
-            <span class="tw-pill tw-pill--off">Nightmare · later</span>
+            <span class="tw-pill tw-pill--off">Dread · later</span>
           </div>
         </div>
 
@@ -176,9 +178,15 @@ export function Waystone() {
               </Btn>
             )}
           </div>
-          {p.deathRule === 'mortal' && perilous && !resuming && (
+          {p.deathRule !== 'sheltered' && perilous && !resuming && (
             <p class="tw-warn-line" data-testid="waystone-mortal-warning">
-              Floor {floor} is {atFloor && isPerilous(atFloor.floor.band) ? THREAT_NAMES[atFloor.floor.band] : `${THREAT_NAMES[atFloor!.boss!.band]} at its boss`} for your party. Heroes who die here stay dead.
+              Floor {floor} is {atFloor && isPerilous(atFloor.floor.band) ? THREAT_NAMES[atFloor.floor.band] : `${THREAT_NAMES[atFloor!.boss!.band]} at its boss`} for your party.{' '}
+              {p.deathRule === 'nightmare' ? 'If your chosen hero dies here, the save ends.' : 'Heroes who die here stay dead.'}
+            </p>
+          )}
+          {nightmareBlock && !resuming && (
+            <p class="tw-warn-line" data-testid="waystone-nightmare-block">
+              {nightmareBlock}.
             </p>
           )}
           {resuming ? (
@@ -191,7 +199,7 @@ export function Waystone() {
               size="big"
               testid="waystone-enter"
               class="tw-enter"
-              disabled={party.length === 0 || !floorDef}
+              disabled={party.length === 0 || !floorDef || nightmareBlock !== null}
               onClick={() => void enterDelve({ dungeonId: dungeon.id, floor, firstDelve })}
             >
               Enter <small>floor {floor}</small>

@@ -223,7 +223,7 @@
         },
         "firstKill": {
           "$ref": "common.schema.json#/$defs/rewardList",
-          "description": "Lines the first kill adds on top of everyKill (06 §3 'First-kill drops', 08 §11 'First kill adds'): the zone Relic, the Tier III+ Tome, chest keys, a title, the zone's Waystone, +1 Luck on a final boss. Hard/Nightmare extras carry difficultyMin."
+          "description": "Lines the first kill adds on top of everyKill (06 §3 'First-kill drops', 08 §11 'First kill adds'): the zone Relic, the Tier III+ Tome, chest keys, a title, the zone's Waystone, +1 Luck on a final boss. Hard/Dread extras carry difficultyMin."
         },
         "immunities": {
           "type": "array",

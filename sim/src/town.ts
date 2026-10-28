@@ -27,7 +27,8 @@ import { skillRankFor, skillRankThreshold, tierOpenAt } from './xp.ts'
  * from the Wayfarer Chest; the dead carried home lie at the Ember Shrine until raised (for gold and levels) or laid to
  * rest; a hero lost for good leaves a **legacy** (a share of their battle XP) and a line on the Memorial.
  */
-export const PROFILE_VERSION = 1
+/** 2: the Nightmare death rule (D-095). */
+export const PROFILE_VERSION = 2
 
 export interface TowerProgress {
   /** The deepest floor reached-and-finished per dungeon (D-083): the Waystone offers the floor below it. */
@@ -64,6 +65,27 @@ export interface DelveSummaryRecord {
   lost: string[]
   /** Heroes a healer raised in the dungeon (D-089). */
   raises: number
+  /** Under Nightmare, the chosen hero died and the save ended (D-095). */
+  ended?: boolean
+}
+
+/**
+ * A Nightmare run that ended (D-095): the line the Hall of Nightmares keeps outside the save. The client stamps the
+ * date (the sim never reads the clock).
+ */
+export interface HallRecord {
+  name: string
+  speciesId: string
+  classId: string
+  level: number
+  dungeonId: string
+  /** The floor they died on. */
+  floor: number
+  /** The deepest floor the save ever finished in that dungeon. */
+  deepest: number
+  delves: number
+  wayfarers: number
+  how: 'fell' | 'wipe'
 }
 
 /** A dead hero brought home: they lie at the Ember Shrine until raised or laid to rest (D-089). */
@@ -103,7 +125,7 @@ export interface MemorialRecord {
 
 export interface Profile {
   saveVersion: number
-  /** How death works in this save (D-088): chosen at New game; Settings may lower Mortal to Sheltered. */
+  /** How death works in this save (D-088, D-095): chosen at New game; Settings may lower it in town (Nightmare → Mortal → Sheltered). */
   deathRule: DeathRule
   heroes: HeroRecord[]
   /** The heroes going into the next delve, in row order (never the dead). */
@@ -298,9 +320,25 @@ export function partyHeroes(profile: Profile): HeroRecord[] {
     .filter((h): h is HeroRecord => h !== undefined)
 }
 
-/** D-088: Settings may lower Mortal to Sheltered, never raise it. */
-export function lowerDeathRule(profile: Profile): Profile {
-  return profile.deathRule === 'mortal' ? { ...profile, deathRule: 'sheltered' } : profile
+const DEATH_RULE_RANK: Record<DeathRule, number> = { sheltered: 0, mortal: 1, nightmare: 2 }
+
+/** The rules a save may be lowered to (D-088, D-095): gentler ones only. */
+export function lowerRulesFor(rule: DeathRule): DeathRule[] {
+  return (['mortal', 'sheltered'] as const).filter((r) => DEATH_RULE_RANK[r] < DEATH_RULE_RANK[rule])
+}
+
+/** D-088, D-095: Settings may lower the rule (Nightmare → Mortal → Sheltered), never raise it, and only in town. */
+export function lowerDeathRule(profile: Profile, to: DeathRule = 'sheltered'): Profile {
+  if (profile.activeDelve) fail('the death rule can only be lowered in town')
+  return DEATH_RULE_RANK[to] < DEATH_RULE_RANK[profile.deathRule] ? { ...profile, deathRule: to } : profile
+}
+
+/** D-095: under Nightmare the chosen hero leads every delve; the reason the party cannot go, or null. */
+export function nightmareBlocker(profile: Profile): string | null {
+  if (profile.deathRule !== 'nightmare') return null
+  const chosen = profile.chosenId ? profile.heroes.find((h) => h.id === profile.chosenId) : undefined
+  if (!chosen) return 'Under Nightmare your chosen hero leads every delve'
+  return profile.partyIds.includes(chosen.id) ? null : `Under Nightmare ${chosen.name} leads every delve: add them to the party`
 }
 
 /* ---------- death, the Ember Shrine and legacies (D-088–D-090) ---------- */
@@ -401,6 +439,8 @@ export function startDelve(content: Content, profile: Profile, input: StartDelve
   if (profile.activeDelve) fail('a delve is already in progress')
   const party = partyHeroes(profile)
   if (party.length === 0) fail(profile.heroes.length === 0 ? 'make a hero first' : 'the party needs a living hero')
+  const blocked = nightmareBlocker(profile)
+  if (blocked) fail(blocked)
   if (!waystoneFloors(content, profile, input.dungeonId).includes(input.floor)) fail(`floor ${input.floor} is not open yet`)
   const dungeon = content.dungeons.get(input.dungeonId)!
   const zone = dungeon.zones.find((z) => input.floor >= z.floors.from && input.floor <= z.floors.to)
@@ -416,6 +456,7 @@ export function startDelve(content: Content, profile: Profile, input: StartDelve
     ...(input.firstDelve ? { firstDelve: true } : {}),
     lastFloor: zone?.floors.to ?? Math.max(...dungeon.floors.map((f) => f.floor)),
     deathRule: profile.deathRule,
+    ...(profile.deathRule === 'nightmare' && profile.chosenId ? { leaderId: profile.chosenId } : {}),
   }
   const state = createDelve(content, options, party)
   state.gold = profile.purse
@@ -433,7 +474,7 @@ export function recordDelveCommand(profile: Profile, command: DelveCommand): Pro
  * the found gear into the armory, materials, the floors finished and the bosses beaten, and the party slots they
  * unlock.
  */
-export function settleDelve(content: Content, profile: Profile, state: DelveState): { profile: Profile; summary: DelveSummaryRecord } {
+export function settleDelve(content: Content, profile: Profile, state: DelveState): { profile: Profile; summary: DelveSummaryRecord; hall: HallRecord | null } {
   if (state.phase.kind !== 'over') fail('the delve is not over')
   const outcome = state.phase.outcome
   const dungeonId = state.options.dungeonId
@@ -498,9 +539,28 @@ export function settleDelve(content: Content, profile: Profile, state: DelveStat
     activeDelve: null,
     lastDelve: summary,
   }
-  // D-088: under Mortal the dead stay dead. Carried home they lie at the Shrine; in a wipe nobody carries them and
-  // they are lost for good (their gear and pets come home with the Lantern Inn's bearers, their legacy waits).
-  if (state.options.deathRule === 'mortal') {
+  // D-095: under Nightmare the chosen hero's death ends the save — everything is lost; only the Hall's line remains.
+  const leader = state.options.deathRule === 'nightmare' && state.options.leaderId ? state.heroes.find((h) => h.record.id === state.options.leaderId) : undefined
+  if (leader?.fallen) {
+    const r = leader.record
+    const hall: HallRecord = {
+      name: r.name,
+      speciesId: r.speciesId,
+      classId: r.classId,
+      level: r.level,
+      dungeonId,
+      floor: state.floor.number,
+      deepest: progress.deepest[dungeonId] ?? 0,
+      delves: progress.delves,
+      wayfarers: Object.keys(profile.wayfarerOf).length,
+      how: wiped && state.heroes.length > 1 ? 'wipe' : 'fell',
+    }
+    const ended = newProfile(seedFor('ended', profile.rng.a, profile.rng.b, profile.seedCounter + 1)[1], 'nightmare')
+    return { profile: { ...ended, lastDelve: { ...summary, ended: true } }, summary: { ...summary, ended: true }, hall }
+  }
+  // D-088: under Mortal (and Nightmare, for wayfarers) the dead stay dead. Carried home they lie at the Shrine; in a
+  // wipe nobody carries them and they are lost for good (their gear and pets come home with the bearers, their legacy waits).
+  if (state.options.deathRule === 'mortal' || state.options.deathRule === 'nightmare') {
     const where = { dungeonId, floor: state.floor.number }
     for (const h of state.heroes) {
       if (!h.fallen || !next.heroes.some((x) => x.id === h.record.id)) continue
@@ -514,7 +574,7 @@ export function settleDelve(content: Content, profile: Profile, state: DelveStat
     }
     next = { ...next, lastDelve: summary }
   }
-  return { profile: next, summary }
+  return { profile: next, summary, hall: null }
 }
 
 /** Abandons a saved delve that can no longer be replayed (content changed): the party comes home as it went in. */

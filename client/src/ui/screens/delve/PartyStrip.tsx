@@ -34,7 +34,7 @@ export function PartyStrip() {
               )}
             </div>
             {dead ? (
-              <p class="dv-hero__carried">The party carries the body.</p>
+              <p class="dv-hero__carried">{d.heroes.every((x) => x.fallen) ? 'Nobody is left to carry them.' : 'The party carries the body.'}</p>
             ) : (
               <>
                 <Meter tone="hp" value={h.fallen ? 0 : hp} max={max.hp} label="HP" />

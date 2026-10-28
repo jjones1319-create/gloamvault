@@ -1,5 +1,6 @@
 import { useState } from 'preact/hooks'
-import { lowerDeathRule } from '../../../../sim/src/town.ts'
+import { lowerDeathRule, lowerRulesFor } from '../../../../sim/src/town.ts'
+import type { DeathRule } from '../../../../sim/src/types/enums.ts'
 import { act, eraseSave, ephemeral, profile, toast } from '../../game/session.ts'
 import { Choice, Toggle } from '../components/Toggle.tsx'
 import { TopBar } from '../components/TopBar.tsx'
@@ -10,7 +11,7 @@ import { resetSettings, settings, updateSettings } from '../store/settings.ts'
 import { checkForUpdate, lastCheck, needRefresh } from '../store/updates.ts'
 import { navigate } from '../router.ts'
 import { DownloadSaveButton, ImportSaveButton } from './town/save-controls.tsx'
-import { deathRuleLine } from './town/text.ts'
+import { deathRuleLine, deathRuleName } from './town/text.ts'
 
 const CHECK_TEXT = {
   checking: 'Checking…',
@@ -146,7 +147,7 @@ export function SettingsScreen() {
 function SaveGroup() {
   const p = profile.value
   const [asking, setAsking] = useState(false)
-  const [lowering, setLowering] = useState(false)
+  const [lowering, setLowering] = useState<DeathRule | null>(null)
   const has = p !== null && p.heroes.length > 0
   return (
     <section class="group" data-testid="settings-save">
@@ -154,14 +155,17 @@ function SaveGroup() {
       {p && (
         <div class="row" data-testid="save-death-rule">
           <span class="toggle__text">
-            <span class="toggle__label">Death rule: {p.deathRule === 'mortal' ? 'Mortal' : 'Sheltered'}</span>
-            <span class="toggle__hint">{ruleHint(p.deathRule)}</span>
+            <span class="toggle__label">Death rule: {deathRuleName(p.deathRule)}</span>
+            <span class="toggle__hint">
+              {ruleHint(p.deathRule)}
+              {p.activeDelve && p.deathRule !== 'sheltered' ? ' Finish the delve to lower it: the rule changes only in town.' : ''}
+            </span>
           </span>
-          {p.deathRule === 'mortal' && (
-            <Btn testid="save-lower-rule" onClick={() => setLowering(true)}>
-              Lower to Sheltered
+          {lowerRulesFor(p.deathRule).map((r) => (
+            <Btn key={r} testid={r === 'sheltered' ? 'save-lower-rule' : `save-lower-${r}`} disabled={p.activeDelve !== null} onClick={() => setLowering(r)}>
+              Lower to {deathRuleName(r)}
             </Btn>
-          )}
+          ))}
         </div>
       )}
       <div class="row">
@@ -189,29 +193,30 @@ function SaveGroup() {
           Erase
         </Btn>
       </div>
-      {lowering && (
+      {lowering && p && (
         <Modal
-          title="Lower to Sheltered?"
+          title={`Lower to ${deathRuleName(lowering)}?`}
           testid="save-lower-modal"
-          onClose={() => setLowering(false)}
+          onClose={() => setLowering(null)}
           actions={
             <>
-              <Btn onClick={() => setLowering(false)}>Keep Mortal</Btn>
+              <Btn onClick={() => setLowering(null)}>Keep {deathRuleName(p.deathRule)}</Btn>
               <Btn
                 tone="danger"
                 testid="save-lower-confirm"
                 onClick={() => {
-                  setLowering(false)
-                  act((_c, pp) => lowerDeathRule(pp), 'This save is Sheltered now')
+                  const to = lowering
+                  setLowering(null)
+                  act((_c, pp) => lowerDeathRule(pp, to), `This save is ${deathRuleName(to)} now`)
                 }}
               >
-                Lower to Sheltered
+                Lower to {deathRuleName(lowering)}
               </Btn>
             </>
           }
         >
-          <p class="prose">{ruleHint('sheltered')}</p>
-          <p class="prose">This cannot be undone: the save stays Sheltered for good.</p>
+          <p class="prose">{ruleHint(lowering)}</p>
+          <p class="prose">This cannot be undone: a rule can be lowered again, never raised.</p>
         </Modal>
       )}
       {asking && (
@@ -246,7 +251,7 @@ function SaveGroup() {
 }
 
 /** The rule's line without its name: "A hero who dies in the tower stays dead…". */
-function ruleHint(rule: 'mortal' | 'sheltered'): string {
+function ruleHint(rule: DeathRule): string {
   const line = deathRuleLine(rule).replace(/^[A-Za-z]+: /, '')
   return line[0]!.toUpperCase() + line.slice(1)
 }

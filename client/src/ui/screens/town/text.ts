@@ -55,7 +55,7 @@ export function withGold(text: string, r: number): string {
     .replace(/(\d+(?:\.\d+)?)\s*R\b/g, (_m, n: string) => `${goldFor(Number(n), r)} gold`)
 }
 
-const DIFFICULTY_NAMES: Record<string, string> = { normal: 'Normal', hard: 'Hard', nightmare: 'Nightmare' }
+const DIFFICULTY_NAMES: Record<string, string> = { normal: 'Normal', hard: 'Hard', dread: 'Dread' }
 
 /** The contract's target as short chips: where, how many, and the conditions. */
 export function contractChips(c: Content, k: ContractDef, r: number): string[] {
@@ -153,11 +153,17 @@ export function levelAfterRaise(level: number, loss: number): number {
   return Math.max(1, level - Math.max(0, loss))
 }
 
-/** The save's death rule in plain words (D-088). */
+/** The save's death rule in plain words (D-088, D-095). */
 export function deathRuleLine(rule: DeathRule): string {
+  if (rule === 'nightmare') return 'Nightmare: your chosen hero leads every delve, and if they die the save ends; other heroes who die stay dead until raised.'
   return rule === 'mortal'
     ? 'Mortal: a hero who dies in the tower stays dead until raised, and a wipe loses the whole party.'
     : 'Sheltered: the fallen get up after a fight, and nobody is lost for good.'
+}
+
+/** The rule's name (D-088, D-095). */
+export function deathRuleName(rule: DeathRule): string {
+  return rule === 'nightmare' ? 'Nightmare' : rule === 'mortal' ? 'Mortal' : 'Sheltered'
 }
 
 /** One Memorial line after the name: "Human Warden · level 2 · laid to rest after falling on floor 1 of Gravehollow Keep". */

@@ -66,8 +66,16 @@ export function DelveHeader() {
           </span>
         )}
         {mortal ? (
-          <span class="dv-chip dv-chip--mortal" data-testid="dv-death-rule" title="Mortal: a hero who dies in the dungeon stays dead (a healer of level 10 or the Ember Shrine can raise them, for levels)">
-            <Icon name="skull" size={14} /> Mortal
+          <span
+            class="dv-chip dv-chip--mortal"
+            data-testid="dv-death-rule"
+            title={
+              d.options.deathRule === 'nightmare'
+                ? 'Nightmare: if your chosen hero dies, the save ends; other heroes who die stay dead'
+                : 'Mortal: a hero who dies in the dungeon stays dead (a healer of level 10 or the Ember Shrine can raise them, for levels)'
+            }
+          >
+            <Icon name="skull" size={14} /> {d.options.deathRule === 'nightmare' ? 'Nightmare' : 'Mortal'}
           </span>
         ) : (
           <span class="dv-chip" data-testid="dv-death-rule" title="Sheltered: the fallen get up after a fight while the floor's revives last">

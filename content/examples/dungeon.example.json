@@ -737,7 +737,7 @@
       "bossExtraRareParts": 1,
       "finalBossExtraShards": 0
     },
-    "nightmare": {
+    "dread": {
       "enemyHpPercent": 150,
       "enemyDamagePercent": 145,
       "enemyCountPercent": 125,

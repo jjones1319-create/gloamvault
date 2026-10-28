@@ -89,7 +89,7 @@ export const GRADES = ['F', 'E', 'D', 'C', 'B', 'A', 'S', 'SS', 'God'] as const
 export type Grade = (typeof GRADES)[number]
 
 /** The three launch presets (03 §11.2), in order. */
-export const DIFFICULTIES = ['normal', 'hard', 'nightmare'] as const
+export const DIFFICULTIES = ['normal', 'hard', 'dread'] as const
 export type Difficulty = (typeof DIFFICULTIES)[number]
 
 /** Timeline weight subtracted from the accumulator after an action (03 §3.1). */
@@ -434,7 +434,8 @@ export function lightBandIndex(band: LightBand): number {
 }
 
 /** The save's death rule (D-088): Mortal, the dead stay dead; Sheltered, the Phase 3 revive rules and nobody is lost. */
-export const DEATH_RULES = ['mortal', 'sheltered'] as const
+/** D-088, D-095: Sheltered (nobody is lost), Mortal (the dead stay dead), Nightmare (Mortal, and the chosen hero's death ends the save). */
+export const DEATH_RULES = ['mortal', 'sheltered', 'nightmare'] as const
 export type DeathRule = (typeof DEATH_RULES)[number]
 
 /** wayfarer.schema.json `grade` (D-091): the Segment 1 cast is graded D to A. */

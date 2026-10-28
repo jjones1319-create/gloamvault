@@ -12,10 +12,8 @@ export function isGated(t: Tuning, enemyLevel: number, heroLevel: number): boole
   return enemyLevel >= heroLevel - t.xp.gate.enemyLevelBelowHero
 }
 
-/** D(enemyLevel − heroLevel) in hundredths: 10 at −10 or lower, 100 at 0, 200 at +5, 300 at +10 or higher; linear between. */
-export function difficultyMultiplier(t: Tuning, enemyLevel: number, heroLevel: number): number {
-  const curve = t.xp.difficultyCurve
-  const delta = enemyLevel - heroLevel
+/** A piecewise-linear curve of (delta, multiplier) points read at `delta`, in hundredths; flat past both ends. */
+function curveHundredths(curve: readonly { delta: number; multiplier: number }[], delta: number): number {
   const first = curve[0]
   const last = curve[curve.length - 1]
   if (!first || !last) return 100
@@ -32,6 +30,19 @@ export function difficultyMultiplier(t: Tuning, enemyLevel: number, heroLevel: n
     }
   }
   return 100
+}
+
+/** D(enemyLevel − heroLevel) in hundredths: 10 at −10 or lower, 100 at 0, 200 at +5, 300 at +10 or higher; linear between. */
+export function difficultyMultiplier(t: Tuning, enemyLevel: number, heroLevel: number): number {
+  return curveHundredths(t.xp.difficultyCurve, enemyLevel - heroLevel)
+}
+
+/**
+ * Battle XP's level-gap multiplier in hundredths (D-096, James): a monster's threat level against the party's level —
+ * 5 at −10 or lower, 25 at −5, 100 level, 200 at +5, 300 at +10 or higher; linear between.
+ */
+export function levelGapMultiplier(t: Tuning, gap: number): number {
+  return curveHundredths(t.xp.heroLevel.levelGap, gap)
 }
 
 /** The per-delve use budget (§5.1): uses 1–20 pay 100%, 21–60 pay 50%, later 10%. `usesBefore` is the count already made. */

@@ -444,7 +444,7 @@ html[data-reduce-motion='1'] * {
 /* New game → how death works (D-088): two big cards, Mortal first. */
 .death-choice {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr);
   gap: 12px;
 }
 .death-choice__card {
@@ -471,9 +471,38 @@ html[data-reduce-motion='1'] * {
 .death-choice__card--main {
   border-color: var(--light);
 }
+/* D-095: Nightmare reads as the dangerous choice. */
+.death-choice__card--nightmare {
+  border-color: var(--bad);
+}
+.hall {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.hall__row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 12px;
+  background: var(--bg-panel);
+  border-left: 3px solid var(--bad);
+  border-radius: 8px;
+}
+.hall__row span,
+.hall__row small {
+  color: var(--ink-dim);
+}
 .death-choice__card:focus-visible,
 .death-choice__card:hover {
   border-color: var(--light);
+}
+.death-choice__card--nightmare:focus-visible,
+.death-choice__card--nightmare:hover {
+  border-color: var(--bad);
 }
 .death-choice__note {
   margin: 10px 0 0;

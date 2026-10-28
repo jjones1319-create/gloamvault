@@ -78,14 +78,14 @@
         "hard": {
           "$ref": "#/$defs/knobs"
         },
-        "nightmare": {
+        "dread": {
           "$ref": "#/$defs/knobs"
         }
       },
       "required": [
         "normal",
         "hard",
-        "nightmare"
+        "dread"
       ],
       "additionalProperties": false
     },
@@ -807,7 +807,7 @@
         },
         "revivesPerFloor": {
           "type": "integer",
-          "description": "Party revive budget per floor (§12.1: Normal 3, Hard 1, Nightmare 0).",
+          "description": "Party revive budget per floor (§12.1: Normal 3, Hard 1, Dread 0).",
           "minimum": 0
         },
         "trapDifficultyBonus": {
@@ -839,7 +839,7 @@
         },
         "chestCentreShift": {
           "type": "integer",
-          "description": "Grades an in-dungeon chest's centre moves up (07 §6.1 Nightmare: 1).",
+          "description": "Grades an in-dungeon chest's centre moves up (07 §6.1 Dread: 1).",
           "minimum": 0,
           "maximum": 2
         },
@@ -850,7 +850,7 @@
         },
         "finalBossExtraShards": {
           "type": "integer",
-          "description": "Extra Divine Shards on a final boss's first kill (07 §6.1 Nightmare: 1).",
+          "description": "Extra Divine Shards on a final boss's first kill (07 §6.1 Dread: 1).",
           "minimum": 0
         }
       },

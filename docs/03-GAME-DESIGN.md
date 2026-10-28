@@ -1,6 +1,6 @@
 # 03 — Game Design (the rulebook)
 
-*Last updated 2026-10-27 · rev. 4 (James's direction during Phase 4: the Mortal and Sheltered death rules, raising the dead, the chosen hero and legacies, party members from the Wayfarer Chest, the threat read — D-088–D-093; §5.3, §8.2, §8.3, §10.3–§10.4, §12, §13) · rev. 3 (James's direction of 2026-10-27: Final Fantasy-style levels, leaving by the entrance or a floor's end, a very difficult tower best taken with a party, turn-based combat — D-082–D-085; and the Phase 3 balance pass, D-077–D-084) · rev. 2 (Claude, from James's brief of 2026-10-26 and the three research reports in `docs/research/`; rev. 2 after the independent review — ownership table, status table, promotion counts, First Aid, Pacts). Every number in this document is a **tuning starting point**, never a commitment; the simulator and the balance runner decide the final values. Each section ends with **Open questions** for James.*
+*Last updated 2026-10-27 · rev. 6 (checkpoint 1: the open questions of §1–§11 answered by delegation — D-099) · rev. 5 (checkpoint 1, James's answers: **Nightmare**, the third death rule; battle XP split through the party and scaled by the level gap to the party's average; each level costs more; every open question answered by delegation; the Nightmare difficulty preset renamed Dread — D-095–D-099; §2.2, §5, §11.2, §12, §13) · rev. 4 (James's direction during Phase 4: the Mortal and Sheltered death rules, raising the dead, the chosen hero and legacies, party members from the Wayfarer Chest, the threat read — D-088–D-093; §5.3, §8.2, §8.3, §10.3–§10.4, §12, §13) · rev. 3 (James's direction of 2026-10-27: Final Fantasy-style levels, leaving by the entrance or a floor's end, a very difficult tower best taken with a party, turn-based combat — D-082–D-085; and the Phase 3 balance pass, D-077–D-084) · rev. 2 (Claude, from James's brief of 2026-10-26 and the three research reports in `docs/research/`; rev. 2 after the independent review — ownership table, status table, promotion counts, First Aid, Pacts). Every number in this document is a **tuning starting point**, never a commitment; the simulator and the balance runner decide the final values. Each section ends with **Open questions** for James.*
 
 **Who owns what (when two docs disagree, the owner wins and the other is fixed):**
 
@@ -33,14 +33,14 @@ TOWN (Emberfall) ──► choose dungeon & zone at the Waystone ──► DELVE
 ```
 
 - **A delve** is one trip: a zone of 3–4 floors ending in a zone boss, 20–40 minutes, pausable at any room. A floor is 5–10 minutes — the mobile session unit (GameAnalytics 2025: median session 5–6 min).
-- **A dungeon** is 10 floors in three zones, each zone with its own monster family, its own boss, and a **Waystone** that lets you start the next delve from that zone once its boss is dead. The final boss sits on the last floor. Beating it opens the next dungeon on the overworld map.
+- **A dungeon** is a tower of floors in three zones (Gravehollow: **8 floors**, D-098), each zone with its own monster family, its own boss, and a **Waystone** that lets you start the next delve from that zone once its boss is dead. The final boss sits on the last floor. Beating it opens the next dungeon on the overworld map.
 - **Gold** is found only in the dungeon and spent only in town. It is the stake: a party wipe loses the gold carried in that delve, never your gear, XP or skills.
 - **Four verbs** carry the game: *Delve* (explore and fight), *Tend* (repair, upgrade, feed the pet), *Learn* (skills by use, by shop, by Insight), *Open* (chests).
 
 **Pillars** (from `01-VISION.md`): 1. *Stats you can feel* — faster means more turns, perception means fewer ambushes. 2. *Everything grows by use.* 3. *Care for your things.* 4. *Better together, fine alone.* 5. *Readable on a phone.*
 
 **Open questions**
-1. Delve length: 3–4 floors per delve (recommended) or whole-dungeon runs with Waystones only at zone bosses? *Proposed: zones of 3–4 floors; a party can keep going past a zone boss without returning (the Waystone is optional).*
+1. ~~Delve length: 3–4 floors per delve (recommended) or whole-dungeon runs with Waystones only at zone bosses? *Proposed: zones of 3–4 floors; a party can keep going past a zone boss without returning (the Waystone is optional).*~~ *Checkpoint 1 (D-098): a delve is one zone — Gravehollow's F1–3, F4–6 or F7–8 — ending at its boss, and the Waystone remembers the deepest floor finished so the next delve can start below it (D-083).*
 
 ---
 
@@ -91,7 +91,7 @@ Starting formulas at an ordinary adult (all 10s) with no gear. The sim owns thes
 
 - **Hit** = roll < Accuracy − targetDodge (never below 50%); Ultimates and most AoE never miss.
 - **Damage** = Attack × skillMultiplier × (1 + Σ bonuses) × elementMod × 100 / (100 + effectiveDefense) × critMod × variance. Same shape as Ascend §4.3 so the two sims stay cousins.
-- **Levels (Final Fantasy style, D-082 — James, 2026-10-27).** A hero's **level** comes from **battle XP**: the heroes standing at the end of a won fight share its XP (each takes the monsters' XP × 3 ÷ standing heroes, × the difficulty curve D of §5.1). Level N costs 60 × 1.28^(N−2) battle XP (L2 60, L5 126, L10 432; `tuning.json` → `xp.heroLevel`). Each level-up adds **+1 to the class's bonus attributes in turn** (the Blade: Str, Agi, Str …) and **+1 Vitality on every even level**, plus the HP line above (+3 per level). Level unlocks skill tiers (§7.2) and sets the soft caps (§5.3). Skills, attributes, items and pets **still grow by use** (§5): the level is the second road, not a replacement. *(Rev. 2's "level = total skill ranks ÷ 8" is superseded.)*
+- **Levels (Final Fantasy style, D-082 — James, 2026-10-27).** A hero's **level** comes from **battle XP**: the heroes standing at the end of a won fight **split** its XP equally, and each monster's XP is scaled by the **level gap** between that monster and the **party's average level** (D-096 — James, checkpoint 1: ×2 for a monster 5 levels above the party, ×0.25 for one 5 below; §5.1). Level N costs 60 × 1.28^(N−2) battle XP — **each level costs more than the one before** (D-097: L1→2 60, 2→3 77, 3→4 98, L9→10 432; `tuning.json` → `xp.heroLevel`). Each level-up adds **+1 to the class's bonus attributes in turn** (the Blade: Str, Agi, Str …) and **+1 Vitality on every even level**, plus the HP line above (+3 per level). Level unlocks skill tiers (§7.2) and sets the soft caps (§5.3). Skills, attributes, items and pets **still grow by use** (§5): the level is the second road, not a replacement. *(Rev. 2's "level = total skill ranks ÷ 8" is superseded.)*
 
 ### 2.3 Creation
 
@@ -104,8 +104,8 @@ Starting attributes = 10 + species modifiers + class modifiers + free points (`0
 Species · class · level · the eight attributes with a small "+" when one grew this delve · derived stats · the four active skills + two passives equipped (§7.3) · pet and stance · eleven gear slots with wear pips (§6) · titles · AI rule (one gambit line, used when you are AFK or delegate — §10.3).
 
 **Open questions**
-1. Six free creation points (recommended) or none at all, pure species + class?
-2. Should Luck have *any* training path (e.g., +1 per dungeon final boss first-kill)? *Proposed: a permanent +1 Luck per dungeon's final boss first kill, capped at +4.*
+1. ~~Six free creation points (recommended) or none at all, pure species + class?~~ *Checkpoint 1 (D-099): six points, as built (creation total 92, D-044).*
+2. ~~Should Luck have *any* training path (e.g., +1 per dungeon final boss first-kill)? *Proposed: a permanent +1 Luck per dungeon's final boss first kill, capped at +4.*~~ *Checkpoint 1 (D-098, D-037): yes — +1 permanent Luck for each dungeon's final boss first kill, up to +4.*
 
 ---
 
@@ -183,8 +183,8 @@ Elite affixes (`06` §2) are not statuses; they are rules on the monster.
 - **Auto:** each hero carries one **AI rule** line (a gambit: *IF ally HP < 40% THEN Skill 2 on lowest ally; ELSE basic attack nearest*). Auto uses it; so does a disconnected or timed-out player's hero (§10.2). The same scripted policies drive the balance runner.
 
 **Open questions**
-1. Weights 800 / 1,000 / 1,400 and jitter ±10% — tune on the sim; is ±10% enough for the order to feel alive?
-2. Should Guard also parry (reflect 10%) for shield users? *Proposed: a Warden passive, not a global rule.*
+1. ~~Weights 800 / 1,000 / 1,400 and jitter ±10% — tune on the sim; is ±10% enough for the order to feel alive?~~ *Checkpoint 1 (D-099): keep 800 / 1,000 / 1,400 and ±10%, as built; the runner and James's play at checkpoint 2 decide any change.*
+2. ~~Should Guard also parry (reflect 10%) for shield users? *Proposed: a Warden passive, not a global rule.*~~ *Checkpoint 1 (D-099): a Warden passive, not a global rule — Spiked Rim (Tier II) reflects 15% on a block, as built.*
 
 ---
 
@@ -232,8 +232,8 @@ No hunger (DCSS removed food as featuritis; Darkest Dungeon's hunger was tolerat
 Room kinds and their weights per floor (§11.1): Fight 50% · Elite 8% · Rest/campfire 10% · Merchant 5% · Treasure 7% · Curio 15% · Trap gauntlet 5%; fixed: Entry, Stairs, and on the zone's last floor the Boss. **Curios** are interactable objects with a choice (a sealed sarcophagus: open / leave / use a Holy Water — outcomes from a table; Darkest Dungeon's curios, with the item key that turns a gamble into a purchase). **Rest rooms** restore 30% HP and pool, let you swap loadouts and feed the pet; one per floor; sleeping advances the floor clock 5.
 
 **Open questions**
-1. Torch −5 per new room and 40-tick hunter — tune on the generator; should the hunter also stalk on boss floors? *Proposed: no hunter on boss floors.*
-2. Should there be a hard inventory limit per delve (Etrian's cap, which forces trips home) or only the carry-weight speed penalty? *Proposed: weight penalty only, plus a 40-slot bag.*
+1. ~~Torch −5 per new room and 40-tick hunter — tune on the generator; should the hunter also stalk on boss floors? *Proposed: no hunter on boss floors.*~~ *Checkpoint 1 (D-055): keep −5 a room and the hunter at 40 ticks, with no hunter on boss floors, as built.*
+2. ~~Should there be a hard inventory limit per delve (Etrian's cap, which forces trips home) or only the carry-weight speed penalty? *Proposed: weight penalty only, plus a 40-slot bag.*~~ *Checkpoint 1 (D-055): no hard limit — the carry-weight penalty plus a 40-slot bag, as built.*
 
 ---
 
@@ -244,6 +244,14 @@ Room kinds and their weights per floor (§11.1): Fight 50% · Elite 8% · Rest/c
 XP is granted only for **meaningful actions**: an action that resolves against a hostile at or above your **gate** (enemy level ≥ your level − 10), or resolves a dungeon event (trap, lock, curio, treasure). Hitting allies, walls, corpses, empty tiles; casting with no target; re-using a resolved curio — **zero**. (Every Elder Scrolls exploit comes from rewarding the action instead of the challenge; UO, Kenshi and DCSS show the fixes — `docs/research/…systems…` §2.)
 
 **Difficulty curve D** (Kenshi/UO shape): the gain is multiplied by D(enemyLevel − yourLevel): 0.1× at −10 or lower · 1.0× at 0 · 2.0× at +5 · **3.0× cap at +10**. Fighting above your weight is the fast route.
+
+**Battle XP and the level gap (D-096 — James, checkpoint 1).** James: *"Experience is split though the party and level disparity give more or less experience so if you beat an enemy 5 levels higher you get a lot of experience multiplier 5 lower you get diminished. If you have a party it is the average level of the party that decides the multiplier so weaker members do help with experience but it takes longer to grind them up."* The XP that fills the level bar (§2.2) follows its own curve. A won fight's **XP pool** is the sum, over its defeated monsters, of each monster's XP (`06`: xp class × the level's XP unit) × the **level-gap multiplier** of that monster's level against the **party's level** — the average of the heroes who fought, rounded down: the same two numbers the threat chip compares (§12.6), so a monster's level here counts +1 per champion affix and +3 for a boss or the hunter. The pool × 3 (the encounter table's party size) is **split equally among the heroes standing** at the end; Wisdom and the Human bonus apply to each share; a pet takes half its owner's share by participation (§9).
+
+| Monster level − party level | −10 or lower | −5 | 0 | +5 | +10 or higher |
+|---|---|---|---|---|---|
+| Battle-XP multiplier | ×0.05 | ×0.25 | ×1.0 | ×2.0 | ×3.0 |
+
+Linear between the columns (−2 → ×0.70, +2 → ×1.40, +4 → ×1.80; `tuning.json` → `xp.heroLevel.levelGap`). A weaker hero lowers the party's average, so the whole party earns more from the same fight; they take an equal share, though, not the multiplier they would earn alone against those monsters, so a low-level wayfarer catches up steadily rather than at once. The **D curve above** still drives skills, attributes and items, which grow by use against the enemy in front of each hero.
 
 **Per-delve use budget** (UO's rate-over-time, per delve rather than per clock): per skill, the first 20 meaningful uses pay full, uses 21–60 pay 50%, later uses 10%. It resets in town.
 
@@ -262,12 +270,12 @@ XP is granted only for **meaningful actions**: an action that resolves against a
 ### 5.3 Co-op fairness and death
 
 - Kill credit is by **participation** (damage, healing, buffs, tanking) never last hit; budgets are per player.
-- **Under Sheltered, death never costs XP** (Valheim's 5% is its most-hated rule); death costs durability (§6.4) and unbanked gold (§12.2). **Under Mortal** (D-088, James), the dead stay dead: a raise costs levels (§12.4) and a hero lost for good leaves a legacy of half their battle XP (§12.5).
+- **Under Sheltered, death never costs XP** (Valheim's 5% is its most-hated rule); death costs durability (§6.4) and unbanked gold (§12.2). **Under Mortal** (D-088, James), the dead stay dead: a raise costs levels (§12.4) and a hero lost for good leaves a legacy of half their battle XP (§12.5). **Under Nightmare** (D-095, James) the chosen hero's death ends the save (§12.0).
 - Wisdom raises all XP by 1% per point above 10 (the learning stat); the Human species adds +10%.
 
 **Open questions**
-1. Rank curve 100 × 1.5^(N−1) (rank 10 ≈ 3,800 XP ≈ 380 full-value uses) — right length for a 40-hour game?
-2. Should attributes also get a tiny trickle from *any* kill (so the status screen moves every fight)? *Proposed: +0.2 to the class's two affinity attributes per gated kill.*
+1. ~~Rank curve 100 × 1.5^(N−1) (rank 10 ≈ 3,800 XP ≈ 380 full-value uses) — right length for a 40-hour game?~~ *Checkpoint 1 (D-099): keep it, as built (D-056: rank 10 at 3,844 XP ≈ 384 full uses); the runner and Segment 2's play judge the length.*
+2. ~~Should attributes also get a tiny trickle from *any* kill (so the status screen moves every fight)? *Proposed: +0.2 to the class's two affinity attributes per gated kill.*~~ *Checkpoint 1 (D-055): yes — +0.2 to the class's two affinity attributes per gated kill, as built.*
 
 ---
 
@@ -354,9 +362,9 @@ An armor piece's **material is its grade**. Upgrading it with the next material 
 - **Generic stones** for +N are a separate drop family (§6.2).
 
 **Open questions**
-1. Dragon Scale at SS with Ancient Dragon Scale at God (recommended) — or should dragon scale be the very top?
-2. 25–35% wear per delve (≈3 delves to broken) — too harsh for a phone? The sim reports "delves to broken" per item.
-3. Should promotion keep +N instead of resetting it? *Proposed: reset, with the stones refunded at 50%.*
+1. ~~Dragon Scale at SS with Ancient Dragon Scale at God (recommended) — or should dragon scale be the very top?~~ *Checkpoint 1 (D-099): as recommended — Dragon Scale at SS, Ancient Dragon Scale at God (D-010).*
+2. ~~25–35% wear per delve (≈3 delves to broken) — too harsh for a phone? The sim reports "delves to broken" per item.~~ *Checkpoint 1 (D-099): not too harsh — keep the target, since Repair all is one tap; the short Cellars delves wear about 8–18% today, and the runner tunes toward the target on the full tower in Phase 7.*
+3. ~~Should promotion keep +N instead of resetting it? *Proposed: reset, with the stones refunded at 50%.*~~ *Checkpoint 1 (D-055): reset, with the stones refunded at 50%, as built.*
 
 ---
 
@@ -403,9 +411,9 @@ Duplicate Tomes become rank XP for that skill (never dead loot). Tomes also come
 Eight non-combat skills, all level-by-use, all shown on the card: **Lockpicking** (chests, doors; Shade bonus) · **Trap Disarm** (Ranger bonus) · **Foraging** (torches, herbs, cooking ingredients in rest rooms) · **Field Repair** (§6.4; Dwarf bonus) · **First Aid** (revive a downed ally out of combat at any rank; from rank 5 also in combat as a weight-1,000 action; bandages Bleed; Mender bonus) · **Haggling** (shop prices: 130% − 1% per rank → floor 85%; sell 40% + 0.5%/rank) · **Cooking** (rest-room meals: +5% to a stat for the next floor) · **Cartography** (the minimap reveals one extra ring of rooms per 3 ranks). Rank effects are owned by `09-SKILLS.md` §5; class and species starting bonuses by the class sheets and `05`.
 
 **Open questions**
-1. 4 + 2 loadout (recommended) vs 5 + 2?
-2. Insight base 4% and pity at 60 uses — tune on the sim so a 40-floor game yields roughly 60% of a class's Tier IV skills.
-3. Should Tier V exist at launch or be the first content patch? *Proposed: designed now, built in Segment 3.*
+1. ~~4 + 2 loadout (recommended) vs 5 + 2?~~ *Checkpoint 1 (D-027): 4 + 2, with the Ultimate on its own button.*
+2. ~~Insight base 4% and pity at 60 uses — tune on the sim so a 40-floor game yields roughly 60% of a class's Tier IV skills.~~ *Checkpoint 1 (D-099): keep 4% and the pity at 60, as built; the runner measures the Tier IV yield when Tier IV ships in Phase 7 and tunes the numbers, not the formula.*
+3. ~~Should Tier V exist at launch or be the first content patch? *Proposed: designed now, built in Segment 3.*~~ *Checkpoint 1 (D-099): at launch — from endgame bosses and Divine Shards, built in Segment 3.*
 
 ---
 
@@ -453,8 +461,8 @@ Found in the dungeon only: on monsters, in treasure rooms, in curios, from selli
 A wandering merchant appears in one Merchant room per floor (always on the floor before a zone boss): potions, torches, repair kits, a few F–C pieces at 1.5× town price, and he buys parts. Haggling applies.
 
 **Open questions**
-1. R ≈ 300 at floors 1–3 — set by the runner once monsters carry gold values.
-2. Should daily contracts exist at launch (a reason to come back) or wait for Segment 3? *Proposed: a simple board in Segment 2.*
+1. ~~R ≈ 300 at floors 1–3 — set by the runner once monsters carry gold values.~~ *Checkpoint 1 (D-099): R stays 300 at the Cellars band, ×1.6 per band (`tuning.json` → `economy.R`); Phase 4's runner finds about 150–460 gold per delve around it.*
+2. ~~Should daily contracts exist at launch (a reason to come back) or wait for Segment 3? *Proposed: a simple board in Segment 2.*~~ *Checkpoint 1 (D-099): yes — the Quest Board already offers the Cellars' contracts (Phase 4); the daily and weekly rotation goes live in Phase 7 (Segment 2).*
 
 ---
 
@@ -472,7 +480,7 @@ One pet per player, always present — in solo and in co-op (Monster Hunter's on
 - **Wildsong Ranch import** (future, `14-IDEAS.md`): a Wildsong share code maps the monster's LIF/POW/INT/SKI/SPD/DEF onto the nearest grade's budget (never above **A** at import; SS/God are dungeon-only), tagged *Ranch-raised* with a unique trait slot. One-way; the ranch owns breeding.
 
 **Open questions**
-1. One pet per player in co-op (8 actors on the party side) — or a party cap of two pets? *Proposed: one each; the sim measures fight length with 4 + 4.*
+1. ~~One pet per player in co-op (8 actors on the party side) — or a party cap of two pets? *Proposed: one each; the sim measures fight length with 4 + 4.*~~ *Checkpoint 1 (D-099): one each, no party cap — as built, every hero may bring one pet (wayfarers take theirs from the Stables, D-091), so a full party is 4 + 4, solo or in co-op; the runner watches fight length.*
 
 ---
 
@@ -504,8 +512,8 @@ James: *"I think the only way to get new party members is through the chests. Yo
 - The **Lantern Inn** holds up to **12** heroes; the party has **four** places from the start (no unlocks — D-084's schedule is superseded). Co-op (Segment 3) lets friends bring their heroes into the same four places.
 
 **Open questions**
-1. Loot pick order vs. host decides vs. roll — pick order (recommended) is fair and needs no UI dialog.
-2. Hired companions in solo — launch or later? *Proposed: Segment 3.*
+1. ~~Loot pick order vs. host decides vs. roll — pick order (recommended) is fair and needs no UI dialog.~~ *Checkpoint 1 (D-026): pick order by lowest total item value, as recommended and as in `tuning.json`.*
+2. ~~Hired companions in solo — launch or later? *Proposed: Segment 3.*~~ *Checkpoint 1 (D-091): no hired companions — a solo player fills the party with wayfarers from the Wayfarer Chest.*
 
 ---
 
@@ -522,9 +530,9 @@ Seeded by the host's 64-bit match seed; integer-only; identical on every phone.
 
 ### 11.2 Scaling
 
-- **Monster level** = floor band level (floor 1 = L1 … floor 10 = L14; dungeon 2 starts at L12). Everything about a monster derives from its level and its template.
+- **Monster level** = floor band level (floor 1 = L1; Phase 7 sets Gravehollow's band levels for its 8 floors — rev. 2's ten floors ran L1–14; dungeon 2 starts at L12). Everything about a monster derives from its level and its template.
 - **Party size:** encounter tables are written for three heroes; for 1 / 2 / 3 / 4 heroes the monster *count* scales, then monster *HP*, then monster *damage* (minimum 1 monster; a Special or Monster is never removed). Rev. 2's starting values were count ×0.6 / ×0.8 / ×1.0 / ×1.2 and HP ×0.7 / ×0.85 / ×1.0 / ×1.15; the runner's Phase 3 values are **count ×0.6 / 0.8 / 1.0 / 1.6, HP ×0.5 / 1.0 / 1.0 / 1.6, damage ×0.8 / 1.0 / 1.0 / 1.0** (`tuning.json` → `dungeon.partyScaling`; D-080, D-084). The runner tunes so solo and 4-hero fights land on the same 3–6 rounds, and so the tower is **very difficult**: not soloable the first time without levels and gear, possible solo after a lot of grinding, best taken with a party (D-084, James).
-- **Difficulty knobs** (a menu of scalars like Hades' Pact, each sweepable by the runner): enemy HP %, damage %, count %, speed %, hunter clock, light start, revives per floor. Normal is the baseline; **Hard** and **Nightmare** presets and the modifier menu ("Pacts", `07` §6) ship in Phase 7.
+- **Difficulty knobs** (a menu of scalars like Hades' Pact, each sweepable by the runner): enemy HP %, damage %, count %, speed %, hunter clock, light start, revives per floor. Normal is the baseline; **Hard** and **Dread** presets (Dread was called Nightmare until checkpoint 1; the word now names the death rule, D-095) and the modifier menu ("Pacts", `07` §6) ship in Phase 7.
 
 ### 11.3 Monster families and bosses
 
@@ -534,7 +542,7 @@ Each zone has one family of 8–12 monsters with every role present; each dungeo
 
 Four dungeons are designed; one is built in Segment 1–2, two more in Segment 3, the fourth after launch:
 
-1. **Gravehollow Keep** (floors 1–10, L1–14): the Cellars (vermin and the Grinning Company bandits) → the Crypts (undead and spiders) → the Drowned Vault (the Tidebound cult, constructs, oozes); final boss **the Hollow King**.
+1. **Gravehollow Keep** (8 floors, D-098): the Cellars F1–3 (vermin and the Grinning Company bandits) → the Crypts F4–6 (undead and spiders) → the Drowned Vault F7–8 (the Tidebound cult, constructs, oozes; Sister Naesa on F7); final boss **the Hollow King** on F8.
 2. **The Fungal Deep** (L12–26): capfolk, trolls, slimes, cave beasts; final boss **the Sporemother**.
 3. **Emberforge** (L24–38): salamanders, fire elementals, forge-golems, the deep dwarves; final boss **the Forge-Tyrant**.
 4. **Frostmarch Citadel** (L36–50): frost giants, wights, ice wyrms; final boss **the Pale Dragon** — the dungeon where Dragon Scale (SS) drops.
@@ -542,8 +550,8 @@ Four dungeons are designed; one is built in Segment 1–2, two more in Segment 3
 Travel: the overworld map at the Waystone; a dungeon unlocks when the previous final boss is dead (solo or in a party where the host has it).
 
 **Open questions**
-1. 10 floors per dungeon in three zones (recommended) or 15 floors in five?
-2. Monster level per floor and party scaling — runner.
+1. ~~10 floors per dungeon in three zones (recommended) or 15 floors in five?~~ *Checkpoint 1 (D-098): neither — Gravehollow has 8 floors in three zones (Cellars F1–3, Crypts F4–6, the Drowned Vault F7–8); each later dungeon keeps three zones and gets its floor count in `07` when it is built.*
+2. ~~Monster level per floor and party scaling — runner.~~ *Checkpoint 1 (D-099): the runner's values stand (§11.2, D-084); Phase 7 re-runs monster levels and party scaling for the 8-floor tower.*
 
 ---
 
@@ -556,14 +564,15 @@ James: *"if your hero dies in the dungeon they die for good. This adds danger wh
 | Rule | What a death means | For whom |
 |---|---|---|
 | **Mortal** (recommended) | A hero who dies in the dungeon is **dead**. The living carry the body; a powerful healer can raise it in the dungeon, the Ember Shrine can raise it in town, both for levels (§12.4). If the **whole party** falls, nobody carries anyone: they are **lost for good** (§12.2). | the game James asked for |
+| **Nightmare** (James, checkpoint 1: *"make a 3rd nightmare mode … if you die you lose everything"*) | The Mortal rules, and the **chosen hero is your life**: they lead every delve (the Waystone opens only with them in the party), and if they **die** — past the downed window, or in a wipe — **the save ends** at once. Everything is lost: every hero and wayfarer, pets and eggs, the armory and materials, the purse and the bank, the tower's progress, the Memorial, and the save's backups. What remains is a line in the **Hall of Nightmares** on the title (the chosen hero's name, species, class and level, the deepest floor, the delves, how they fell). Wayfarers who die are carried, raised or laid to rest as under Mortal. | players who want every fight to matter |
 | **Sheltered** | The rev. 3 rules: the fallen get back up after the fight from the floor's revive budget, at a rest room or by First Aid; a wipe wakes the party at the Lantern Inn; nobody is ever lost. | a gentler game, friends new to it |
 
-Settings may **lower** Mortal to Sheltered, never raise it. The title's Continue line shows the rule. The rest of this section says which rule a line belongs to when it matters.
+Settings may **lower** the rule — Nightmare → Mortal → Sheltered — never raise it, and only in town, never during a delve (D-095). The title's Continue line shows the rule. The rest of this section says which rule a line belongs to when it matters.
 
 ### 12.1 In a fight
 
 - **Downed** at 0 HP (both rules). An ally can **revive** within **3 of the downed hero's turns** (a Mender revive skill, a Phoenix Feather, or First Aid at rank ≥ 5 as a weight-1,000 action) at 30% HP — under Mortal this is the last chance and costs nothing. A downed hero still inside the window when the fight is **won** gets up at 30%.
-- Past the window the hero has **fallen**. *Sheltered:* fallen heroes revive at 30% HP after the fight if anyone survived, spending one of **three party revives per floor** on Normal (Hard 1, Nightmare 0); at 0 budget a fallen hero stays down until a rest room or town. *Mortal:* the fallen hero is **dead**; there is no revive budget, rest rooms and First Aid do not raise the dead, and the party carries the body (§12.4).
+- Past the window the hero has **fallen**. *Sheltered:* fallen heroes revive at 30% HP after the fight if anyone survived, spending one of **three party revives per floor** on Normal (Hard 1, Dread 0); at 0 budget a fallen hero stays down until a rest room or town. *Mortal:* the fallen hero is **dead**; there is no revive budget, rest rooms and First Aid do not raise the dead, and the party carries the body (§12.4).
 - **Flee** (both rules; James: *"You obviously will … need to flee battles as well"*): a party vote; chance = 50% + the party's average Speed − the enemies' average Speed, + the best Smoke Pellet bonus, clamped 5–95%; the Flee button shows it (D-092). Failure costs everyone a turn. Not from bosses. The fled room keeps its monsters; the downed come out at 10% HP, the dead are carried.
 - A status carried by an attack lands only if the attack hits (D-093).
 
@@ -572,13 +581,14 @@ Settings may **lower** Mortal to Sheltered, never raise it. The title's Continue
 All heroes fallen = **wipe**. Both rules lose the delve's **unbanked gold** (the purse carried in and the gold found) and every equipped item takes **−10% durability**; gear found in the delve still reaches the armory.
 
 - **Sheltered:** the party wakes at the Lantern Inn and keeps every XP point and Insight. *(Rogue Legacy / Moonlighter gold loss + Diablo 3's durability hit; Children of Morta's kept progress.)*
+- **Nightmare:** the chosen hero is in every party, so a wipe ends the save (§12.0).
 - **Mortal:** every hero in the party is **lost for good**. The Lantern Inn's bearers bring back what the Vault leaves — the heroes' worn gear (to the armory) and their pets (to the Stables) — never the heroes. Each lost hero leaves a **legacy** and a line on the **Memorial** (§12.5).
 
 The per-hero Hardcore badge of rev. 2 is superseded by the Mortal rule.
 
 ### 12.3 Retreat
 
-**Leaving (D-083 — James, 2026-10-27):** the party leaves only by **walking out of a floor's entrance room** or **teleporting out at the floor's end** (the stairs room, or the boss's room once the boss is down). Both keep everything carried and are free on Normal (Hard and Nightmare keep a 15% / 25% toll). Reaching a floor's way down records it, and the next delve may **start on the floor below** — the tower remembers. Not from a fight. Under Mortal, a party that loses a hero far from both exits must decide whether to push on to the floor's end or walk the body back. *(Rev. 2's "from any room, 10% toll" is superseded.)*
+**Leaving (D-083 — James, 2026-10-27):** the party leaves only by **walking out of a floor's entrance room** or **teleporting out at the floor's end** (the stairs room, or the boss's room once the boss is down). Both keep everything carried and are free on Normal (Hard and Dread keep a 15% / 25% toll). Reaching a floor's way down records it, and the next delve may **start on the floor below** — the tower remembers. Not from a fight. Under Mortal, a party that loses a hero far from both exits must decide whether to push on to the floor's end or walk the body back. *(Rev. 2's "from any room, 10% toll" is superseded.)*
 
 ### 12.4 Raising the dead (D-089 — James: *"You can resurrect them … if you have a powerful enough healer or take them to a shrine, but they will lose levels either way"*)
 
@@ -614,18 +624,18 @@ It shows on the fight's opening banner, on scouted rooms and the map, on the Way
 ### 12.7 Open questions from James's direction of 2026-10-27
 
 1. ~~**The party-member unlock schedule** (D-084, Proposed).~~ *Answered by James on 2026-10-27: party members come only from chests (D-091).*
-2. **Gravehollow at 8 floors** instead of 10 (D-085, Proposed): Cellars F1–3, Crypts F4–6, Drowned Vault F7–8 with the Hollow King on F8?
-3. **Battle XP shared or whole** (D-082 reading): shared (each standing hero takes XP × 3 ÷ standing heroes, so a solo hero levels faster per fight) or every hero takes the whole fight's XP?
-4. **The names Mortal and Sheltered**, and whether Settings may lower Mortal (D-088).
-5. **The raise costs** (D-089): a healer at level 10 for −1 level; the Shrine for 0.3 R + 0.05 R per level and −2 levels.
-6. **A Mortal wipe's gear and pets** (D-088): the bearers bring them home (built), or they are lost with the heroes?
-7. **The legacy** at 50% of battle XP (D-090).
-8. **The Wayfarer Chest** (D-091): 1.2 R; 18 wayfarers graded D–A; arriving at the weakest living hero's level; the Inn holds 12.
-9. **The threat bands** (D-092) at −2 / ±1 / +2 / +4 levels.
+2. ~~**Gravehollow at 8 floors** instead of 10 (D-085, Proposed): Cellars F1–3, Crypts F4–6, Drowned Vault F7–8 with the Hollow King on F8?~~ *Checkpoint 1 (D-098): yes — 8 floors; Sister Naesa is the Vault's zone boss on F7, the Hollow King on F8.*
+3. ~~**Battle XP shared or whole** (D-082 reading)?~~ *James, checkpoint 1: split through the party, scaled by the level gap to the party's average level (D-096, §5.1).*
+4. ~~**The names Mortal and Sheltered**, and whether Settings may lower Mortal (D-088).~~ *Checkpoint 1: the names stay, James added **Nightmare** (D-095); a rule may be lowered in town, never raised.*
+5. ~~**The raise costs** (D-089).~~ *Checkpoint 1 (D-098): kept; the runner and James's play decide any change.*
+6. ~~**A Mortal wipe's gear and pets** (D-088).~~ *Checkpoint 1 (D-098): the bearers bring them home under Mortal; under Nightmare everything is lost (D-095).*
+7. ~~**The legacy** at 50% of battle XP (D-090).~~ *Checkpoint 1 (D-098): kept.*
+8. ~~**The Wayfarer Chest** (D-091).~~ *Checkpoint 1 (D-098): kept; the cast grows with each dungeon (S grades and the Grand Wayfarer Chest in Phase 7).*
+9. ~~**The threat bands** (D-092).~~ *Checkpoint 1 (D-098): kept.*
 
 ## 13. The first thirty minutes
 
-1. Title → **New game**: choose how death works — **Mortal** (recommended: the dead stay dead) or **Sheltered** (D-088) — then **New hero**: pick a species (six cards, pros and cons in one line each), a class (six cards; the seventh arrives later), three Tier I skills, a pet egg of three, six points and a name. Two minutes.
+1. Title → **New game**: choose how death works — **Sheltered**, **Mortal** (recommended: the dead stay dead) or **Nightmare** (your chosen hero's death ends the save) (D-088, D-095) — then **New hero**: pick a species (six cards, pros and cons in one line each), a class (six cards; the seventh arrives later), three Tier I skills, a pet egg of three, six points and a name. Two minutes.
 2. Emberfall at dusk; Hesper the blacksmith hands you a Crude sword and says the Keep's cellars are paying bounties. The Waystone offers **Gravehollow Keep — the Cellars**.
 3. Floor 1: three rooms, the first fight teaches the timeline strip (a rat is faster than you; your Warden pet is slower), the second a trap your Perception reveals, the third the stairs. Floor 2 adds a curio and a Dim-light ambush. Floor 3 ends with **the Grinning Captain**.
 4. Back in town with ~R gold: Repair all (watch the pips go green), buy one Tier I skill, open one Standard chest, hatch the egg. The status screen shows what grew. A **Wayfarer Chest** (1.2 R) is the first goal after that: the first party member (D-091). The threat chips on the Waystone say how far the party can safely go (D-092).

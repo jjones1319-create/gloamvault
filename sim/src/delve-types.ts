@@ -196,7 +196,7 @@ export type DelvePhase =
   | { kind: 'fight' }
   | { kind: 'result'; title: string; lines: string[] }
   | { kind: 'curio'; curioId: string }
-  | { kind: 'over'; outcome: 'cleared' | 'retreated' | 'wiped' | 'capped'; summary: string }
+  | { kind: 'over'; outcome: 'cleared' | 'retreated' | 'wiped' | 'capped' | 'chosenDied'; summary: string }
 
 export interface DelveEvent {
   floor: number
@@ -224,8 +224,10 @@ export interface DelveOptions {
   firstDelve?: boolean
   /** Stop the delve after this floor (the zone's last floor by default). */
   lastFloor?: number
-  /** The save's death rule (D-088): Mortal, the dead stay dead; Sheltered (the default here), the Phase 3 revives. */
+  /** The save's death rule (D-088, D-095): Mortal, the dead stay dead; Nightmare, Mortal and the leader's death ends the delve; Sheltered (the default here), the Phase 3 revives. */
   deathRule?: DeathRule
+  /** Under Nightmare (D-095): the chosen hero, who leads the delve; their death ends it, and the save. */
+  leaderId?: string
 }
 
 export interface DelveState {

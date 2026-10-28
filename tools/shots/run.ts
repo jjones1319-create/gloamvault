@@ -29,6 +29,9 @@ const SHOTS: Shot[] = [
   { name: 'title-portrait', hash: '#title', portrait: true },
   // New game asks how death works first (D-088).
   { name: 'title-death-rule', hash: '#title', settings: { installCardDismissed: true }, act: async (page) => page.getByTestId('new-game').click() },
+  // Checkpoint 1 (D-095): a Nightmare run that ends, and the Hall of Nightmares it leaves on the title.
+  { name: 'delve-nightmare-end', hash: '#delve=gravehollow-keep&floor=1&seed=3&party=blade&death=nightmare&end=1' },
+  { name: 'title-hall', hash: '#delve=gravehollow-keep&floor=1&seed=3&party=blade&death=nightmare&end=1', act: async (page) => page.getByTestId('dv-home').click() },
   // Phase 4: the game. `demo=1` is an ephemeral level-1 Warden with gold and an egg; a delve link with a seed is an ephemeral party.
   { name: 'new-hero', hash: '#new-hero' },
   { name: 'town', hash: '#town&demo=1' },

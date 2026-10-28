@@ -3,7 +3,7 @@
  * One delve in the terminal (10-TECH-PLAN §7, CLAUDE.md). Options:
  *   --delve <dungeon id or prefix>   --zone <n> | --floor <n>   --seed <n>   --party <class[:species[:name]],…>
  *   --auto (play it with the scripted policy; default when not a TTY)   --policy textbook|cautious|greedy|random
- *   --difficulty normal|hard|nightmare   --pacts a,b   --fixture (use the Phase 2 fixture content; the default
+ *   --difficulty normal|hard|dread   --pacts a,b   --fixture (use the Phase 2 fixture content; the default
  *   while content/ has no dungeons)   --ascii (print each floor's map)   --quiet (summary only)
  */
 import { rmSync } from 'node:fs'

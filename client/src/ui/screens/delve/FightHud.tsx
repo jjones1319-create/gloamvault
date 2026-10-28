@@ -419,7 +419,7 @@ function Hud({ c, fight, pb, version }: { c: Content; fight: FightState; pb: Fig
   else if (pb.playing && actingName) banner = { kind: 'acting', name: `${actingName} acts` }
   else if (auto && !fight.over) banner = { kind: 'auto' }
 
-  const mortal = delve.value?.options.deathRule === 'mortal'
+  const mortal = delve.value?.options.deathRule === 'mortal' || delve.value?.options.deathRule === 'nightmare'
   const threat = fightThreat(t, fight)
   const x: CardContext = {
     mortal,

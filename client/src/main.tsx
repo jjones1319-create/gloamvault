@@ -27,8 +27,9 @@ void bootSettings()
       classes: (p.party ?? 'warden').split(',').filter(Boolean),
       level: Math.max(1, Number(p.level ?? 1) || 1),
       auto: p.auto === '1',
-      deathRule: p.death === 'sheltered' ? 'sheltered' : 'mortal',
+      deathRule: p.death === 'sheltered' ? 'sheltered' : p.death === 'nightmare' ? 'nightmare' : 'mortal',
       learn: (p.learn ?? '').split(',').filter(Boolean),
+      toEnd: p.end === '1',
     })
   } else if (p.demo === '1') void startDemoTown()
   else void bootSession()

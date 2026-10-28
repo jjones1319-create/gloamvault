@@ -94,7 +94,7 @@ Two more shared shapes live beside it. A **`requirement`** (`{kind, id?, min?, a
 15. Every id in a floor's `encounterTableIds` is carried by at least one encounter whose `floorBand` covers that floor and whose `dungeonId` matches; a composition totals 2–6 monsters with at most 2 Specials and 1 Monster; each monster's `row` is one of its `rows`.
 16. Each curio choice's `outcomes[].chance` sum to **100** (or the list is empty); a curio with a `safeItemId` has exactly one choice whose `requires` is that single item; a `requires` line of kind `fieldSkillRank`/`attribute` names a real field skill/attribute (the schema does this), of kind `classId`/`speciesId` a real class/species. A trap's `difficulty` lies within some floor's `trapBand` of that dungeon, its `revealedBy.detection` ≤ its `difficulty`, and its `disarmReward` lines resolve.
 17. A template's `doors[].offset` is inside its footprint on that side; `kinds` contains at least one rolled kind or one fixed kind; `triBudget ≤ 30000` and `drawCallBudget ≤ 60` (`07` §2.2). A dungeon's loot tables tile its floors by `floorBand`; `bossFirstKill` names the boss on the band's last floor.
-18. Presets: `hard` and `nightmare` set every knob `normal` sets; a Pact's `weight` is 1–3 and the 12 launch Pacts exist on the first dungeon.
+18. Presets: `hard` and `dread` (named Nightmare until checkpoint 1, D-095) set every knob `normal` sets; a Pact's `weight` is 1–3 and the 12 launch Pacts exist on the first dungeon.
 
 **Items, affixes, sets, chests, loot tables**
 19. `affixSlots` matches the grade (F 0 · E 1 · D 1 · C 2 · B 2 · A 3 · S 3 · SS 4 · God 4) and `maxPlusN` the grade (F 3 · E 4 · D 5 · C 6 · B 7 · A 8 · S 9 · SS 10 · God 10).

@@ -1,6 +1,6 @@
 # 14 — Ideas backlog
 
-*Last updated 2026-10-26 · rev. 1. Things not in the design yet. Each has a one-line why and the phase it could join. Promote an idea by writing it into the owning doc and logging a decision.*
+*Last updated 2026-10-27 · rev. 2 (checkpoint 1: a seventh species waits here, Revenant first — D-099) · rev. 1. Things not in the design yet. Each has a one-line why and the phase it could join. Promote an idea by writing it into the owning doc and logging a decision.*
 
 ## A. Wildsong Ranch crossover (James's stated future; Phase 11 does the first half)
 
@@ -12,7 +12,7 @@
 
 - **Oracle** (support: buffs, pool drain/restore, timeline control) — Ascend's seventh Path; a natural eighth class after the Beast Tamer.
 - **Monk / Brawler** (unarmed, Stamina-heavy, light-weight everything) — the most distinct weapon profile left.
-- **Revenant** (undead species: potions do nothing, Shadow heals, immune Bleed/Poison, Holy weakness) and **Beastkin** (claws, scent = Detection, Fear-prone) — `05-SPECIES.md` open question 8.
+- **Revenant** (undead species: potions do nothing, Shadow heals, immune Bleed/Poison, Holy weakness) and **Beastkin** (claws, scent = Detection, Fear-prone) — `05-SPECIES.md` open question 8; at checkpoint 1 a seventh species went to this post-launch backlog, **Revenant first** if one is made (D-099).
 - **Species sub-variants** by palette and parts (hill/mountain Dwarf; wood/high Elf) — cheap once the shape-key pipeline exists.
 
 ## C. Dungeon and systems

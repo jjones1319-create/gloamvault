@@ -21,7 +21,8 @@ export * from './chests.ts'
 export { activeHooks, installHook, removeHook, removeHooksById, hooksOf } from './hooks.ts'
 export type { ActiveHook, InstallOptions } from './hooks.ts'
 export { linesAtRank, rankEffectPercent } from './skill-lines.ts'
-export { battleXpForLevel, heroLevelForXp, heroLevelXpCost } from './xp.ts'
+export { battleXpForLevel, heroLevelForXp, heroLevelXpCost, levelGapMultiplier } from './xp.ts'
+export { fightXpPool } from './progress.ts'
 export { addBattleXp, applyBattleXpLevel, heroAtLevel, levelUpGains, loseLevels } from './hero.ts'
 
 export { generateFloor, hashFloor, DEFAULT_GRAMMAR } from './generator.ts'
@@ -47,7 +48,7 @@ export { renderFloorAscii, roomLetter, doorCell, ROOM_LETTERS, ASCII_LEGEND } fr
 
 // The game loop (Phase 4): fights, delves and the town, for the client.
 export { applyFightCommand, createFight, fleeChance, legalFightActions, runFight, runFightAuto, turnForecast } from './fight.ts'
-export { canRaise, createDelve, delveSummary, hashDelve, hopsOf, isMortal, legalDelveActions, replayDelve, runDelveAuto, stepDelve } from './delve.ts'
+export { canRaise, createDelve, deadLeader, delveSummary, hashDelve, hopsOf, isMortal, isNightmare, legalDelveActions, replayDelve, runDelveAuto, stepDelve } from './delve.ts'
 export type * from './delve-types.ts'
 export type * from './fight-types.ts'
 export * from './town.ts'

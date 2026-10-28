@@ -103,7 +103,14 @@ export interface OverWords {
   tone: 'good' | 'bad' | 'plain'
 }
 
-export function overWords(outcome: string, atFloorEnd: boolean, floor: number, zoneName: string, mortal = false): OverWords {
+export function overWords(outcome: string, atFloorEnd: boolean, floor: number, zoneName: string, mortal = false, endedLeader?: string): OverWords {
+  // D-095: under Nightmare the chosen hero's death (or a wipe, which takes them too) ends the save.
+  if (endedLeader)
+    return {
+      title: 'Your Nightmare ends',
+      line: `${endedLeader} died on floor ${floor}. Under Nightmare that ends the save: every hero, the gold, the gear and the pets are gone. ${endedLeader}'s name goes into the Hall of Nightmares.`,
+      tone: 'bad',
+    }
   if (outcome === 'wiped' && mortal)
     return { title: 'The party is lost', line: "Every hero in the party is lost for good. Their gear and pets come home with the Lantern Inn's bearers; the gold carried is lost.", tone: 'bad' }
   switch (outcome) {
@@ -217,11 +224,12 @@ export interface StairsThreat {
   warn: string | null
 }
 
-/** What the stairs say about the next floor (D-092), and what dying there means under the save's rule (D-088). */
-export function stairsThreat(nextFloor: number, floorBand: Band, bossBand: Band | null, mortal: boolean): StairsThreat {
+/** What the stairs say about the next floor (D-092), and what dying there means under the save's rule (D-088, D-095: under Nightmare, the leader's name). */
+export function stairsThreat(nextFloor: number, floorBand: Band, bossBand: Band | null, mortal: boolean, nightmareLeader?: string): StairsThreat {
   const worst: Band = bossBand && rank(bossBand) > rank(floorBand) ? bossBand : floorBand
   const text = `Floor ${nextFloor} below: ${THREAT_NAMES[floorBand]}${bossBand ? ` · its boss: ${THREAT_NAMES[bossBand]}` : ''}`
-  const warn = mortal && rank(worst) >= rank('dangerous') ? 'Heroes who die there stay dead.' : null
+  const perilous = mortal && rank(worst) >= rank('dangerous')
+  const warn = !perilous ? null : nightmareLeader ? `If ${nightmareLeader} dies there, the save ends.` : 'Heroes who die there stay dead.'
   return { text, band: worst, warn }
 }
 

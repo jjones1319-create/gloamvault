@@ -111,7 +111,7 @@ export function RoomPanel({ onItems, onPets }: { onItems: () => void; onPets: ()
   const descendAction = groups.leave.find((i) => i.action.command.kind === 'descend')
   if (descendAction && f.number < (d.options.lastFloor ?? f.number)) {
     const next = floorThreat(c, d.options.dungeonId, f.number + 1, delvePartyLevel(d))
-    if (next) note = stairsThreat(f.number + 1, next.floor.band, next.boss?.band ?? null, mortal)
+    if (next) note = stairsThreat(f.number + 1, next.floor.band, next.boss?.band ?? null, mortal, d.options.deathRule === 'nightmare' ? d.heroes.find((h) => h.record.id === d.options.leaderId)?.record.name : undefined)
   }
 
   const descend = groups.leave.filter((i) => i.action.command.kind === 'descend')

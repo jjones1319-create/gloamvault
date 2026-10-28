@@ -173,9 +173,20 @@ function emptyStats(): DelveState['stats'] {
   return { rooms: 0, fights: 0, eliteFights: 0, bossFights: 0, roundsByKind: {}, ambushedParty: 0, ambushedMonsters: 0, trapsRevealed: 0, trapsTriggered: 0, trapsDisarmed: 0, curiosUsed: 0, chestsOpened: 0, torchesUsed: 0, hunterArrived: 0, hunterKilled: 0, downs: 0, wipes: 0, goldFound: 0, goldLost: 0, itemsFound: 0, partsFound: 0, insights: 0, secretsFound: 0, ticksToStairs: [], lightAtStairs: [], fled: 0, xpEvents: 0, hookStubs: {}, deepestFloorCompleted: 0, falls: 0, raises: 0 }
 }
 
-/** D-088: under the Mortal rule the dead stay dead; Sheltered (the Phase 3 rules) is the default for the sim's tools. */
+/** D-088: under the Mortal rule (and Nightmare, which keeps it, D-095) the dead stay dead; Sheltered (the Phase 3 rules) is the default for the sim's tools. */
 export function isMortal(state: DelveState): boolean {
-  return state.options.deathRule === 'mortal'
+  return state.options.deathRule === 'mortal' || state.options.deathRule === 'nightmare'
+}
+
+/** D-095: Nightmare — the chosen hero leads the delve and their death ends it, and the save. */
+export function isNightmare(state: DelveState): boolean {
+  return state.options.deathRule === 'nightmare'
+}
+
+/** Under Nightmare, the leader when they have died (null otherwise). */
+export function deadLeader(state: DelveState): DelveHero | null {
+  if (!isNightmare(state) || !state.options.leaderId) return null
+  return state.heroes.find((h) => h.record.id === state.options.leaderId && h.fallen) ?? null
 }
 
 /** D-089: a living hero who knows a revive-tagged skill and has reached the raise level can raise the dead. */
@@ -1190,6 +1201,11 @@ function finishFight(content: Content, state: DelveState, rng: Rng): void {
   state.fight = null
   state.fightContext = null
   for (const h of state.heroes) h.downed = false
+  // D-095: under Nightmare the chosen hero's death ends the delve at once (a wipe already has; the save ends with it).
+  const leader = deadLeader(state)
+  if (leader && state.phase.kind !== 'over') {
+    state.phase = { kind: 'over', outcome: 'chosenDied', summary: `${leader.record.name} died on floor ${state.floor.number}. The Nightmare ends.` }
+  }
 }
 
 function wipeDurability(content: Content, h: DelveHero): void {

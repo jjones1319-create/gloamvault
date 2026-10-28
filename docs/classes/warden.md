@@ -1,6 +1,6 @@
 # Warden — class sheet
 
-*Last updated 2026-10-26 · rev. 1 · numbers are tuning starting points*
+*Last updated 2026-10-27 · rev. 2 (checkpoint 1: open questions answered by delegation; the Nightmare preset renamed Dread — D-095, D-099) · rev. 1 2026-10-26 · numbers are tuning starting points*
 
 *Every number below (costs, multipliers, durations, the Cellars monster stats in §9) is a starting point for the simulator and the balance runner, not a commitment. Rules referenced are `03-GAME-DESIGN.md` (§2 stats, §3 timeline, §5 level-by-use, §6 gear, §7 skills). Status numbers quoted in skill lines (Bleed 25% of the applying hit per turn for 3 turns, ignores Defense · Poison 3% of max HP per turn, ignores Defense · Weaken −20% Attack · Fortify +20% Defense · Mark +20% damage taken · Slow ×0.67 Speed · Haste ×1.5 · Daze −500 energy · Petrify −1,000 energy) belong to `content/statuses/<id>.json` (`03` §3.5 is the table) and are repeated here only so the lines read on their own.*
 
@@ -199,8 +199,8 @@ Twelve ticks pass between the Warden's two actions; the Rat gets 1.6 of its own 
 
 ## 10. Open questions (for James)
 
-1. **Spear from level 1?** The sheet lets a Warden start with the spear (Vanguard). Keep both starts, or make the shield the only starter and sell the spear at the Blacksmith for 0.05 R?
-2. **Ultimate button.** The Ultimate is written as a fifth button outside the 4 + 2 loadout (it is its own action in §3.2). Should it instead occupy one of the four active slots to keep the thumb bar at four?
-3. **Monster-technique Insight rule.** Bone Knight's Stand (Tier III) and Sentinel's Sweep (Tier IV) come from Gravehollow monsters at L8–14, which the normal S-curve (peak at tier × 6 = 18 / 24) would make nearly unlearnable there. Proposed: a flat 10% per witnessed use, pity at 10 — confirm, or move both techniques to later dungeons' monsters?
-4. **Plate relief rate.** One Speed point per spare Strength point means the −20 penalty is mostly gone by Str 25. Fast enough, or should Plate relief be 2 per point so a Dwarf Warden feels normal-speed by level 10?
-5. **Oath of the Vault** (Tier V) makes the party unkillable for 3 turns; is "cannot drop below 1 HP" acceptable on Nightmare, or should it cap at one trigger per ally?
+1. ~~**Spear from level 1?** The sheet lets a Warden start with the spear (Vanguard). Keep both starts, or make the shield the only starter and sell the spear at the Blacksmith for 0.05 R?~~ *Checkpoint 1 (D-099): both starts — from Phase 7, New hero offers a spear kit (a Copper Spear instead of the sword and buckler) beside sword-and-shield, because the town sells no weapons; `08` §12 gains the row.*
+2. ~~**Ultimate button.** The Ultimate is written as a fifth button outside the 4 + 2 loadout (it is its own action in §3.2). Should it instead occupy one of the four active slots to keep the thumb bar at four?~~ *Checkpoint 1 (D-027): its own button; the thumb bar stays four skills plus the Ultimate.*
+3. ~~**Monster-technique Insight rule.** Bone Knight's Stand (Tier III) and Sentinel's Sweep (Tier IV) come from Gravehollow monsters at L8–14, which the normal S-curve (peak at tier × 6 = 18 / 24) would make nearly unlearnable there. Proposed: a flat 10% per witnessed use, pity at 10 — confirm, or move both techniques to later dungeons' monsters?~~ *Checkpoint 1 (D-028): confirmed — a flat 10% per witnessed use, pity at 10; both techniques stay on Gravehollow's monsters.*
+4. ~~**Plate relief rate.** One Speed point per spare Strength point means the −20 penalty is mostly gone by Str 25. Fast enough, or should Plate relief be 2 per point so a Dwarf Warden feels normal-speed by level 10?~~ *Checkpoint 1 (D-099): keep 1 per point, as built — D-057 relieves each piece by the Strength over its own requirement, so Copper Plate's −20 is gone at Str 20, not 25.*
+5. ~~**Oath of the Vault** (Tier V) makes the party unkillable for 3 turns; is "cannot drop below 1 HP" acceptable on Dread, or should it cap at one trigger per ally?~~ *Checkpoint 1 (D-099): cap it — each ally is saved once per cast (the first blow that would drop them leaves them at 1 HP), on every preset.*

@@ -204,7 +204,7 @@
       "enum": [
         "normal",
         "hard",
-        "nightmare"
+        "dread"
       ]
     },
     "weight": {
@@ -634,7 +634,7 @@
     },
     "reward": {
       "type": "object",
-      "description": "One reward line. `id` is the item, material or skill (tome) id, the title id, or the zone id (waystone); an item line with `grade` and no `id` rolls a random item of that grade; a tome line with no `id` draws the party class's bag at `tier`. `chance` omitted means guaranteed; `difficultyMin` restricts the line to Hard or Nightmare.",
+      "description": "One reward line. `id` is the item, material or skill (tome) id, the title id, or the zone id (waystone); an item line with `grade` and no `id` rolls a random item of that grade; a tome line with no `id` draws the party class's bag at `tier`. `chance` omitted means guaranteed; `difficultyMin` restricts the line to Hard or Dread.",
       "properties": {
         "kind": {
           "$ref": "#/$defs/rewardKind"

@@ -1,4 +1,4 @@
-import { isMortal } from '../../../../../sim/src/delve.ts'
+import { isMortal, isNightmare } from '../../../../../sim/src/delve.ts'
 import { content, delve, delveVersion, ephemeral, finishDelve } from '../../../game/session.ts'
 import { navigate } from '../../router.ts'
 import { Btn, Gold, Modal, Stat } from '../../kit/kit.tsx'
@@ -20,7 +20,10 @@ export function OverCard() {
   const atEnd = d.floor.currentRoomId === d.floor.graph.exitId
   const mortal = isMortal(d)
   const outcome = d.phase.outcome
-  const words = overWords(outcome, atEnd, d.floor.number, zone?.name ?? dungeon?.name ?? 'The zone', mortal)
+  // D-095: under Nightmare the leader's death, or a wipe (the leader is always in the party), ends the save.
+  const leader = d.heroes.find((h) => h.record.id === d.options.leaderId)
+  const ended = isNightmare(d) && leader !== undefined && leader.fallen && (outcome === 'chosenDied' || outcome === 'wiped')
+  const words = overWords(outcome, atEnd, d.floor.number, zone?.name ?? dungeon?.name ?? 'The zone', mortal, ended ? leader.record.name : undefined)
   const deaths = deathLines(
     d.heroes.map((h) => ({ name: h.record.name, fallen: h.fallen, hasPet: h.record.petInstance !== null })),
     outcome,
@@ -31,7 +34,31 @@ export function OverCard() {
   const home = () => {
     const toTitle = ephemeral.value
     finishDelve()
-    navigate(toTitle ? 'title' : 'town')
+    if (ended) navigate('title', { hall: '1' })
+    else navigate(toTitle ? 'title' : 'town')
+  }
+  if (ended) {
+    return (
+      <Modal
+        title={words.title}
+        testid="dv-over"
+        actions={
+          <Btn tone="danger" testid="dv-home" onClick={home}>
+            To the Hall of Nightmares
+          </Btn>
+        }
+      >
+        <p class="dv-over__line dv-over__line--bad" data-testid="dv-over-ended">
+          {words.line}
+        </p>
+        <div class="stat-grid dv-over__stats">
+          <Stat label="Floors" value={from === d.floor.number ? `${from}` : `${from}–${d.floor.number}`} />
+          <Stat label="Fights" value={d.stats.fights} />
+          <Stat label="Rooms" value={d.stats.rooms} />
+          <Stat label={`${leader.record.name}'s level`} value={leader.record.level} />
+        </div>
+      </Modal>
+    )
   }
   return (
     <Modal

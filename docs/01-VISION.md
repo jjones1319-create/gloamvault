@@ -1,6 +1,6 @@
 # 01 — Vision
 
-*Last updated 2026-10-26 · rev. 1 (Claude, from James's brief). Working title **Gloamvault** (D-001).*
+*Last updated 2026-10-27 · rev. 2 (checkpoint 1: open questions answered by delegation — D-099) · rev. 1 2026-10-26 (Claude, from James's brief). Working title **Gloamvault** (D-001).*
 
 ## The pitch
 
@@ -32,12 +32,12 @@ Grim places, warm people. The dungeon is wet stone, bone and brass under torchli
 
 ## What this game is not
 
-Not an action RPG (no joystick), not a gacha for money (chests cost dungeon gold only), not permadeath by default, not a live-service (no server state), not realistic (stylized, readable).
+Not an action RPG (no joystick), not a gacha for money (chests cost dungeon gold only), not consequence-free (under the default **Mortal** rule a hero who dies stays dead unless raised — D-088; **Sheltered** is the gentle choice and **Nightmare** the one where your chosen hero's death ends the save — D-095), not a live-service (no server state), not realistic (stylized, readable).
 
 ## Names (D-001; James can rename at checkpoint 1)
 
 Game: **Gloamvault**. Town: **Emberfall**. Dungeons: **Gravehollow Keep**, **The Fungal Deep**, **Emberforge**, **Frostmarch Citadel**. Classes: Warden, Blade, Ranger, Shade, Arcanist, Mender, Beast Tamer. Species: Human, Dwarf, Elf, Orc, Halfling, Draconid.
 
 **Open questions**
-1. Names — keep, or James's own?
-2. Tone: how dark is too dark for the friends' table? (Proposed: PEGI 12 / Teen — fantasy violence, no gore.)
+1. ~~Names — keep, or James's own?~~ *Checkpoint 1 (D-098): keep them — every name above stays.*
+2. ~~Tone: how dark is too dark for the friends' table? (Proposed: PEGI 12 / Teen — fantasy violence, no gore.)~~ *Checkpoint 1 (D-099): PEGI 12 / Teen, as proposed — fantasy violence, no gore, death a fall and a fade.*

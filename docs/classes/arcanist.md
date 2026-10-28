@@ -1,6 +1,6 @@
 # Arcanist — class sheet
 
-*Last updated 2026-10-26 · rev. 1 · numbers are tuning starting points*
+*Last updated 2026-10-27 · rev. 2 (checkpoint 1: open questions answered by delegation — D-099) · rev. 1 2026-10-26 · numbers are tuning starting points*
 
 Every number here is a **starting point for the simulator and the balance runner**, not a promise. The rules it rests on are `03-GAME-DESIGN.md` (§2 attributes, §3 the timeline, §5 level-by-use, §7 skills) and `04-CLASSES.md`, which holds the shared multiplier bands per tier. Column headers are identical across the seven sheets so the tables can become `content/skills/arcanist/<id>.json` (one record per skill).
 
@@ -209,8 +209,8 @@ What the runner should see: the Arcanist did 64% of the damage, took 60% of the 
 
 ## 10. Open questions (for James)
 
-1. **The charge window.** This sheet reads §3.1's "charging a cast" as *declare at 1,000, resolve 400 energy later, interruptible in between*. The alternative is no window at all (the spell lands at once, the 1,400 weight is the only price). The window makes Willpower matter and gives tanks a job; it also makes heavy casts feel bad at low level. Which?
-2. **Staff vs wand.** As written the weapon only changes the basic attack, focusPower and Mana (`08` §1). Should the staff also make casts heavier (+200) and the wand lighter (−100) so the choice is felt on every turn?
-3. **Monster techniques and the Insight sweet spot.** The formula's Tier IV sweet spot is enemy level 24; Gravehollow tops out at 14. Proposed: for monster techniques only, S = 1.0 whenever the monster is using the move in the fight. Otherwise Hag's Cauldron and Sentinel Pulse move to Dungeon 2 monsters.
-4. **Shatter for everyone.** Shatter (Tier I passive) grants the +30% to *every* ally's hit on a Frozen target. That makes Rime a party school rather than a selfish one — but it means a Blade benefits from a passive it did not equip. Keep, or make it Arcanist-only hits?
-5. **Prismatic Ruin's refund.** 30% Mana back on the Ultimate turns it into a resource reset as well as a nuke. Drop the refund if the sim shows Arcanists never running dry.
+1. ~~**The charge window.** This sheet reads §3.1's "charging a cast" as *declare at 1,000, resolve 400 energy later, interruptible in between*. The alternative is no window at all (the spell lands at once, the 1,400 weight is the only price). The window makes Willpower matter and gives tanks a job; it also makes heavy casts feel bad at low level. Which?~~ *Checkpoint 1 (D-029): the window, as built — declared at 1,000, resolved 400 later; a hit in between pushes it back 300 unless the concentration check passes.*
+2. ~~**Staff vs wand.** As written the weapon only changes the basic attack, focusPower and Mana (`08` §1). Should the staff also make casts heavier (+200) and the wand lighter (−100) so the choice is felt on every turn?~~ *Checkpoint 1 (D-099): no — skills keep their own weights (`04` §8 q4); staff and wand still differ in focusPower, Mana and the basic attack (`08` §1).*
+3. ~~**Monster techniques and the Insight sweet spot.** The formula's Tier IV sweet spot is enemy level 24; Gravehollow tops out at 14. Proposed: for monster techniques only, S = 1.0 whenever the monster is using the move in the fight. Otherwise Hag's Cauldron and Sentinel Pulse move to Dungeon 2 monsters.~~ *Checkpoint 1 (D-028): techniques skip the curve — a flat 10% per witnessed use, pity at 10 — so Hag's Cauldron and Sentinel Pulse stay in Gravehollow.*
+4. ~~**Shatter for everyone.** Shatter (Tier I passive) grants the +30% to *every* ally's hit on a Frozen target. That makes Rime a party school rather than a selfish one — but it means a Blade benefits from a passive it did not equip. Keep, or make it Arcanist-only hits?~~ *Checkpoint 1 (D-099): keep it party-wide, as built — Rime is a party school.*
+5. ~~**Prismatic Ruin's refund.** 30% Mana back on the Ultimate turns it into a resource reset as well as a nuke. Drop the refund if the sim shows Arcanists never running dry.~~ *Checkpoint 1 (D-099): keep the 30% refund, as built; Phase 7's class-damage pass drops it if the runner shows Arcanists never running dry.*

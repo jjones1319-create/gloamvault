@@ -1,6 +1,6 @@
 # 10 — Tech Plan
 
-*Last updated 2026-10-27 · rev. 4 (Phase 4: the town, the save, the screens and the client map as built; James's death and party rules, D-087–D-094) · rev. 3 (Claude; rev. 2 after Phase 1 built the skeleton: the §3 layout notes on the Vite root, the three TypeScript projects and Node-direct tools, and the §7 screenshot viewport — D-048, D-052; rev. 3 after Phase 2 built the sim: the §3 module map). The engine decision is D-002 in `13-DECISIONS.md`; the research behind it is `docs/research/2026-10-26-tech-engine-android-coop.md` (which recommended Godot + APK under an "APK on GitHub" framing — §1 below says why the web path wins for James specifically).*
+*Last updated 2026-10-27 · rev. 5 (checkpoint 1: open questions answered by delegation — D-099; save version 2 and the Hall of Nightmares key — D-095) · rev. 4 (Phase 4: the town, the save, the screens and the client map as built; James's death and party rules, D-087–D-094) · rev. 3 (Claude; rev. 2 after Phase 1 built the skeleton: the §3 layout notes on the Vite root, the three TypeScript projects and Node-direct tools, and the §7 screenshot viewport — D-048, D-052; rev. 3 after Phase 2 built the sim: the §3 module map). The engine decision is D-002 in `13-DECISIONS.md`; the research behind it is `docs/research/2026-10-26-tech-engine-android-coop.md` (which recommended Godot + APK under an "APK on GitHub" framing — §1 below says why the web path wins for James specifically).*
 
 ## 1. The decision: a web app installed from GitHub Pages
 
@@ -132,8 +132,8 @@ Pacing rules live in the rulebook §10.2 (grouped decision windows, 20 s timer, 
 
 ## 6. Saves and data
 
-- Profile (the death rule, the roster with the chosen hero and wayfarers, the party, the purse and the bank, the armory, materials, eggs and stabled pets, chest pity and Tome bags, the dead at the Shrine, legacies, the Memorial, the tower's progress, the town's RNG) in IndexedDB under `gloamvault/profile`, three rotating backups (`gloamvault/profile-backup-0..2`), an erase marker; a delve in progress as its options, the party's starting records and the command log (tiny, replayed on reload). Settings live apart under `gloamvault/settings`.
-- `SAVE_VERSION` bumped on every schema change with a migration and a fixture test; everything loaded is validated and clamped; never crash on bad data.
+- Profile (the death rule, the roster with the chosen hero and wayfarers, the party, the purse and the bank, the armory, materials, eggs and stabled pets, chest pity and Tome bags, the dead at the Shrine, legacies, the Memorial, the tower's progress, the town's RNG) in IndexedDB under `gloamvault/profile`, three rotating backups (`gloamvault/profile-backup-0..2`), an erase marker; a delve in progress as its options, the party's starting records and the command log (tiny, replayed on reload). Settings live apart under `gloamvault/settings`. The **Hall of Nightmares** (D-095) lives apart too, under `gloamvault/hall` (validated, newest first, at most 50 lines), because an ended Nightmare erases the profile and its backups.
+- `SAVE_VERSION` bumped on every schema change with a migration and a fixture test (version 2 at checkpoint 1: the Nightmare death rule, D-095); everything loaded is validated and clamped; never crash on bad data.
 - Backup: Settings → *Share save…* / *Download save (.json)* / *Import a save…*; a reminder every ~7 days of play. A hero can be shared by code/QR later (Wildsong's `shareCode` pattern).
 - **Wildsong Ranch import** (Segment 3, `14-IDEAS.md`): read a Wildsong share code (its `src/save/shareCode.ts` format) → map LIF/POW/INT/SKI/SPD/DEF onto a pet of grade ≤ A → tag *Ranch-raised*. One-way.
 
@@ -165,6 +165,6 @@ Pacing rules live in the rulebook §10.2 (grouped decision windows, 20 s timer, 
 | Session-length autonomy in Claude Code | context runs out mid-phase | `STATUS.md` checkpoints + commits at every milestone; the *Continue* prompt in `PROMPT.md` |
 
 **Open questions**
-1. Preact for the HUD (recommended, Wildsong's pattern) or render the HUD in three.js/canvas too?
-2. KTX2/Basis textures from day one (smaller, faster uploads) or PNG until Phase 8?
-3. Cloudflare relay (free account needed) vs. a $5 VPS with a tiny Node relay — the Worker needs no server maintenance; is the account acceptable?
+1. ~~Preact for the HUD (recommended, Wildsong's pattern) or render the HUD in three.js/canvas too?~~ *Checkpoint 1 (D-099): Preact, as recommended and as built in Phase 4.*
+2. ~~KTX2/Basis textures from day one (smaller, faster uploads) or PNG until Phase 8?~~ *Checkpoint 1 (D-099): PNG until Phase 8's asset-loading pass (as §4 already says: PNG until the loader is in); sooner only if Phase 6's phone pass shows texture memory or uploads over budget.*
+3. ~~Cloudflare relay (free account needed) vs. a $5 VPS with a tiny Node relay — the Worker needs no server maintenance; is the account acceptable?~~ *Checkpoint 1 (D-099): the Cloudflare Worker on the free tier — not a $5 VPS, which costs money; James still creates the free account himself when Phase 9 reaches it (his one-time approval, CLAUDE.md).*
