@@ -8,7 +8,11 @@ client/shots/*.json
 test-results/
 playwright-report/
 art/build/
-art/renders/history/
+# full-size review renders stay local (~300 MB); tools/blender/curate_renders.py copies the key sheets to art/review/
+art/renders/
+# The CC0 Human Base Meshes bundle (48 MB) is a build input, not a deliverable: see tools/blender/README.md for where it comes from.
+art/ref/human-base-meshes/
+__pycache__/
 *.blend1
 *.log
 .DS_Store

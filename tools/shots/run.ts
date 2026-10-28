@@ -14,11 +14,15 @@ interface Shot {
   name: string
   hash: string
   portrait?: boolean
+  /** A viewport other than the phone's (the acceptance matrix is shot at twice its size, to check details). */
+  viewport?: { width: number; height: number }
   /** Settings to seed before load (so the overlay shows without taps). */
   settings?: Record<string, unknown>
   /** Actions after load. */
   act?: (page: import('@playwright/test').Page) => Promise<void>
 }
+
+const MATRIX_VIEWPORT = { width: 1784, height: 824 }
 
 const SHOTS: Shot[] = [
   { name: 'title', hash: '#title' },
@@ -54,6 +58,37 @@ const SHOTS: Shot[] = [
   { name: 'delve-room-perf', hash: '#delve=gravehollow&zone=1&seed=17&party=warden,mender', settings: { perfOverlay: true, installCardDismissed: true } },
   { name: 'delve-fight', hash: '#delve=gravehollow&zone=1&seed=17&party=warden,mender&auto=1' },
   { name: 'delve-fight-four', hash: '#delve=gravehollow&zone=1&seed=21&party=warden,blade,mender,arcanist&level=5&auto=1' },
+  // Phase 5: the heroes as 3D characters — the viewer (species × class × frame × tier, a close-up at the minimum
+  // distance, gear off, a clip), the new hero's Look step, and the delve and a four-hero fight with mixed species.
+  { name: 'viewer-dwarf-warden-F', hash: '#viewer=dwarf,warden,F' },
+  { name: 'viewer-elf-ranger-S-slight', hash: '#viewer=elf,ranger,S&frame=slight&preset=2' },
+  { name: 'viewer-orc-blade-S', hash: '#viewer=orc,blade,S&preset=1&yaw=-40' },
+  { name: 'viewer-human-mender-F-slight', hash: '#viewer=human,mender,F&frame=slight&preset=2&skin=2' },
+  { name: 'viewer-closeup-draconid', hash: '#viewer=draconid,arcanist,F&zoom=min&yaw=-30' },
+  { name: 'viewer-halfling-gear-off', hash: '#viewer=halfling,shade,F&frame=slight&gear=0&preset=1' },
+  { name: 'viewer-clip-cast', hash: '#viewer=human,arcanist,S&frame=slight&clip=Cast' },
+  {
+    name: 'new-hero-look',
+    hash: '#new-hero',
+    act: async (page) => {
+      await page.getByTestId('nh-species-dwarf').click()
+      await page.getByTestId('nh-next').click()
+      await page.getByTestId('nh-class-warden').click()
+      await page.getByTestId('nh-next').click()
+      await page.getByTestId('nh-look-face-2').click()
+      await page.waitForTimeout(2500)
+    },
+  },
+  { name: 'delve-room-four', hash: '#delve=gravehollow&zone=1&seed=17&party=warden,ranger,mender,arcanist&species=dwarf,elf,human,draconid' },
+  { name: 'delve-fight-four-perf', hash: '#delve=gravehollow&zone=1&seed=21&party=warden,blade,mender,arcanist&level=5&auto=1&species=dwarf,orc,elf,draconid', settings: { perfOverlay: true, installCardDismissed: true } },
+  // The acceptance matrix: 36 species × class heroes, one clip, one instant, at twice the phone's size.
+  { name: 'matrix-idle-F', hash: '#viewer=matrix&clip=Idle&tier=F&t=0', viewport: MATRIX_VIEWPORT },
+  { name: 'matrix-idle-S', hash: '#viewer=matrix&clip=Idle&tier=S&t=0', viewport: MATRIX_VIEWPORT },
+  { name: 'matrix-run-F', hash: '#viewer=matrix&clip=Run&tier=F&t=0.25', viewport: MATRIX_VIEWPORT },
+  { name: 'matrix-run-S', hash: '#viewer=matrix&clip=Run&tier=S&t=0.25', viewport: MATRIX_VIEWPORT },
+  { name: 'matrix-heavy-F', hash: '#viewer=matrix&clip=Attack_Heavy&tier=F&at=hit', viewport: MATRIX_VIEWPORT },
+  { name: 'matrix-heavy-S', hash: '#viewer=matrix&clip=Attack_Heavy&tier=S&at=hit', viewport: MATRIX_VIEWPORT },
+  { name: 'matrix-idle-S-slight', hash: '#viewer=matrix&clip=Idle&tier=S&frame=slight&t=0', viewport: MATRIX_VIEWPORT },
 ]
 
 const args = process.argv.slice(2)
@@ -82,7 +117,7 @@ try {
   browser = await chromium.launch({ channel: 'chrome', headless: true })
   for (const shot of SHOTS) {
     if (only && !only.has(shot.name)) continue
-    const viewport = shot.portrait ? { width: 412, height: 892 } : { width: 892, height: 412 }
+    const viewport = shot.viewport ?? (shot.portrait ? { width: 412, height: 892 } : { width: 892, height: 412 })
     const context = await browser.newContext({
       viewport,
       deviceScaleFactor: 2.625,

@@ -15,5 +15,11 @@
     "blade-flowing-guard"
   ],
   "aiRule": null,
-  "bio": "A duelist from the ash-coasts who counts scars the way merchants count coins."
+  "bio": "A duelist from the ash-coasts who counts scars the way merchants count coins.",
+  "look": {
+    "frame": "slight",
+    "skin": 0,
+    "face": 1,
+    "hair": 1
+  }
 }

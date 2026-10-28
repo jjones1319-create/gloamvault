@@ -16,5 +16,11 @@
     "ranger-hunters-mark"
   ],
   "aiRule": "IF self HP < 30% THEN item small hp potion on self; IF enemies count > 2 THEN caltrop toss; IF enemy status mark THEN aimed shot on marked enemy; ELSE hunters mark on strongest enemy",
-  "bio": "A poacher turned bounty-tracker: the Keep's rats pay better than the lord's deer ever did."
+  "bio": "A poacher turned bounty-tracker: the Keep's rats pay better than the lord's deer ever did.",
+  "look": {
+    "frame": "broad",
+    "skin": 0,
+    "face": 2,
+    "hair": 3
+  }
 }

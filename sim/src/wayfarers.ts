@@ -113,6 +113,7 @@ export function heroFromWayfarer(content: Content, t: Tuning, rng: Rng, def: Way
     starterSkillIds: def.starterSkillIds,
     eggPetId: null,
     ...(def.aiRule ? { aiRule: def.aiRule } : {}),
+    ...(def.look ? { look: def.look } : {}),
   })
   return level > 1 ? heroAtLevel(content, t, hero, level) : hero
 }

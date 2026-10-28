@@ -15,5 +15,11 @@
     "blade-red-thirst"
   ],
   "aiRule": "IF self HP < 30% THEN item small hp potion on self; IF self HP > 60% THEN reckless swing on front enemy; ELSE twin cut on weakest enemy",
-  "bio": "Fights with two blades because the first one kept getting stuck in things."
+  "bio": "Fights with two blades because the first one kept getting stuck in things.",
+  "look": {
+    "frame": "broad",
+    "skin": 2,
+    "face": 0,
+    "hair": 0
+  }
 }

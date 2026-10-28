@@ -15,5 +15,11 @@
     "warden-brace"
   ],
   "aiRule": null,
-  "bio": "A stablehand who once held a gate against wolves and never quite stopped standing in doorways."
+  "bio": "A stablehand who once held a gate against wolves and never quite stopped standing in doorways.",
+  "look": {
+    "frame": "broad",
+    "skin": 1,
+    "face": 0,
+    "hair": 2
+  }
 }

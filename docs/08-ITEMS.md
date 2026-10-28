@@ -1,21 +1,21 @@
 # 08 — Items, materials and chests
 
-*Last updated 2026-10-27 · rev. 3 (checkpoint 1: open questions answered by delegation; the Nightmare difficulty preset renamed Dread — D-095, D-099) · rev. 2 (§10.2 the Wayfarer Chest, D-091; §10.1 pity keys per chest family) · rev. 1 2026-10-26 · numbers are tuning starting points*
+*Last updated 2026-10-28 · rev. 4 (Phase 7 prep: Gravehollow at 8 floors — the floor numbers of the R table, the Vault's rows in §6, §8.3 and §11, the boss table — D-104) · rev. 3 (checkpoint 1: open questions answered by delegation; the Nightmare difficulty preset renamed Dread — D-095, D-099) · rev. 2 (§10.2 the Wayfarer Chest, D-091; §10.1 pity keys per chest family) · rev. 1 2026-10-26 · numbers are tuning starting points*
 
 **How to read this file.** Every base number is written **for grade F**; every grade multiplies it by the ladder (F ×1.00 · E ×1.35 · D ×1.80 · C ×2.45 · B ×3.30 · A ×4.45 · S ×6.00 · SS ×8.10 · God ×11.0), rounded half up to an integer after the multiply. Percentages (Block, Crit, Dodge) do **not** ride the ladder; they step by a fixed amount per grade where the table says so. Ordinary pieces are named `<Material> <Type>` — "Iron Longsword", "Wolf Hide Jerkin", "Oak Shortbow" — where the material is the rung of the item's ladder at its grade (§8); named uniques exist from B up (§7) and keep their own names. Grade index **g** runs F 0 … God 8 and is used in requirement formulas. Each table here becomes one folder under `content/items/<kind>/`, one record per `<id>.json` (`10-TECH-PLAN.md` §3 owns the layout); column headers are the field names. Rules live in the rulebook (`03-GAME-DESIGN.md` §2, §6, §8); this file is the content.
 
-**The R table used throughout.** R = median gold per delve at the band; prices below are written in R so they survive retuning. Bands are the chest/grade bands; R ×1.6 per band from 300.
+**The R table used throughout.** R = median gold per delve at the band; prices below are written in R so they survive retuning. Bands are the chest/grade bands; R ×1.6 per band from 300. *Global floors* count Gravehollow's 8 floors, then each later dungeon's in order at its outline's 10 (D-104; they move again when those dungeons get their floor counts, `03` §11.4).
 
 | Band | Global floors | Centre grade | R (gold) |
 |---|---|---|---|
 | F | 1–3 | F | 300 |
 | E | 4–6 | E | 480 |
-| D | 7–10 | D | 770 |
-| C | 11–15 | C | 1,230 |
-| B | 16–22 | B | 1,970 |
-| A | 23–30 | A | 3,150 |
-| S | 31–34 | S | 5,040 |
-| SS | 35–40 | SS | 8,060 |
+| D | 7–8 | D | 770 |
+| C | 9–13 | C | 1,230 |
+| B | 14–20 | B | 1,970 |
+| A | 21–28 | A | 3,150 |
+| S | 29–32 | S | 5,040 |
+| SS | 33–38 | SS | 8,060 |
 
 **Item value** (what repair, promotion, salvage and sell prices are computed from) = `gradeValue × slotFactor`. Grade value is 0.5 × R of the grade's own band: F 150 · E 240 · D 380 · C 600 · B 1,000 · A 1,600 · S 2,500 · SS 4,000 · God 6,500. Slot factors: Main Hand 1.0 (two-handed 1.5) · Shield 0.8 · Off-hand focus or weapon 0.6 · Chest 1.0 · Helmet 0.7 · Legs 0.7 · Boots 0.5 · Gloves 0.5 · Ring 0.6 · Talisman 0.8 · Relic 1.2. Sell price = 40% of value (+0.5% per Haggling rank).
 
@@ -392,7 +392,7 @@ Set pieces drop as named family pieces ("Barrow Warden's Helm") with the set lin
 |---|---|---|---|---|---|---|
 | Barrow Warden's Vigil | Plate | the Crypts, Gravehollow F4–6 | Warden | D–B | +5 Defense; +10% Resistance to Fear and Curse | Guard also Taunts every enemy and grants Fortify 1 round |
 | Cinderborn Bulwark | Plate | Emberforge deep dwarves | Warden | A–S | +15% Fire resistance; +5% Block | Burn immunity; on block 20% chance to Burn the attacker |
-| Tidebound Reaver's Mail | Mail | the Drowned Vault, F7–9 | Blade, Beast Tamer | D–B | +2 Speed; +10% Poison resistance | basic attacks restore +10% Stamina; Haste 1 round on a kill |
+| Tidebound Reaver's Mail | Mail | the Drowned Vault, F7–8 | Blade, Beast Tamer | D–B | +2 Speed; +10% Poison resistance | basic attacks restore +10% Stamina; Haste 1 round on a kill |
 | Wolfmarch Harness | Mail | Frostmarch winter wolves | Beast Tamer, Blade | S–SS | +10% Frost resistance; pet +5% stats | Chill immunity; the pet's Fierce attacks apply Bleed |
 | Grinning Company's Cut | Leather | the Cellars bandits, F1–3 | Shade, Ranger | E–C | +5% gold found; +1 Detection | your first attack each fight is a guaranteed crit; +3% Dodge |
 | Sporestalker's Weave | Leather | the Fungal Deep | Ranger, Shade | B–A | Poison immunity | +3 Detection; ambush chance −10%; Mark on crit |
@@ -541,10 +541,10 @@ Every monster family maps to one common part (35% per kill) and one rare part (4
 | Gravehollow · the Cellars | the Grinning Company (bandits) | Copper (stolen gear); Leather; arrows ×10 | Bronze ×2; Grinning Mask (Captain, first kill) | Grinning Captain: 8 Copper + 8 Rawhide first kill, half after (`06` §3.1) |
 | Gravehollow · the Crypts (F4–6, L5–8) | the Restless Dead | Bone Shard; Bronze or Iron (grave goods); Linen (shrouds) | Wool ×2; Iron ×2; Whetstone | zone boss: 8 Iron + 8 Wool + 10 Bone Shards first kill, half after; rare: Barrow Bell |
 | Gravehollow · the Crypts | crypt spiders | Spidersilk (counts as Silk) | Spidersilk ×3 | — |
-| Gravehollow · the Drowned Vault (F7–9, L10–13) | the Tidebound cult | Steel (blades); Silk (vestments); Ash (staves) | Brine Pearl; Yew | zone boss: 10 Steel + 10 Silk + 3 Brine Pearl first kill, half after; rare: Tidebound Idol |
+| Gravehollow · the Drowned Vault (F7–8, L11–13) | the Tidebound cult | Steel (blades); Silk (vestments); Ash (staves) | Brine Pearl; Yew | zone boss: 10 Steel + 10 Silk + 3 Brine Pearl first kill, half after; rare: Tidebound Idol |
 | Gravehollow · the Drowned Vault | constructs | Iron; bolts ×10 | Steel ×2 | — |
 | Gravehollow · the Drowned Vault | oozes | Boiled Leather (dissolved hides) | Honing Oil | — |
-| Gravehollow · F10 (L14) | the Hollow King | — | — | 12 Steel + 12 Silk + 12 Iron first kill, half after; Hollow Coin and a Divine Shard first kill |
+| Gravehollow · F8 (L13) | the Hollow King | — | — | 12 Steel + 12 Silk + 12 Iron first kill, half after; Hollow Coin and a Divine Shard first kill |
 | the Fungal Deep (L12–26) | capfolk | Sporecloth (Glyphweave) | Honing Oil | bosses: 8 Glyphweave |
 | the Fungal Deep | trolls | Troll Hide (Wyvern Hide) | Trollgut Hauberk | 8 Wyvern Hide |
 | the Fungal Deep | slimes | Honing Oil; Bloodwood (digested timber) | Twin Serpents ring | — |
@@ -557,7 +557,7 @@ Every monster family maps to one common part (35% per kill) and one rare part (4
 | Frostmarch | winter wolves | Winter Wolf Pelt (counts as Drake Scale) | Wolfmarch set piece | — |
 | Frostmarch | ice wights | Gloomweave (Voidcloth) | Wightfire Staff | 8 Voidcloth |
 | Frostmarch | ice wyrms | Dragon Scale ×1–3 guaranteed; Frostroot (World-tree Bough) | Wyrmward Buckler | 10 Dragon Scale |
-| Frostmarch · F10 (global floor 40) | the Pale Dragon | — | — | 1–3 Dragon Scale first kill, 1 every later kill; 12 Adamantine + 12 Moonweave + 1 Divine Shard first kill (`06` §6) |
+| Frostmarch · F10 (global floor 38) | the Pale Dragon | — | — | 1–3 Dragon Scale first kill, 1 every later kill; 12 Adamantine + 12 Moonweave + 1 Divine Shard first kill (`06` §6) |
 
 God-rung materials (Starmetal, Ancient Dragon Scale, Celestial Thread, Godwood) come only from final bosses on Hard or Dread (1–2 units) and from Divine Shard conversion (1 → 5 units of one God material). A Starmetal fall (a rare curio, 2% of floors from band A) gives 3 Starmetal.
 
@@ -696,14 +696,14 @@ A locked chest opens with Lockpicking (success per `09-SKILLS.md` §5 — +5% pe
 
 ## §11 Loot tables by floor band — Gravehollow Keep
 
-Gold is per fight, split at banking; R per delve at the band lands near the R table at the top of this file (≈15 fights per 3-floor delve + treasure + boss). Item chance is per fight for a gear item (weapons, armor, trinkets); elites always drop one; parts are per monster (§8.3); stones 8% per fight. **Grade shape** is the floor-drop shape (centre 56 · −1 25 · +1 14 · +2 4 · +3 1, D-008), with a missing lower grade folded into the centre; every line sums to 100.
+Gold is per fight, split at banking; R per delve at the band lands near the R table at the top of this file (≈15 fights per 3-floor delve + treasure + boss; the Drowned Vault's two floors hold about 8 fights and two bosses). Item chance is per fight for a gear item (weapons, armor, trinkets); elites always drop one; parts are per monster (§8.3); stones 8% per fight. **Grade shape** is the floor-drop shape (centre 56 · −1 25 · +1 14 · +2 4 · +3 1, D-008), with a missing lower grade folded into the centre; every line sums to 100.
 
 | Floors | Monster levels | Centre | Gold per fight | Item chance | Grade shape | Part chance (per monster) | Consumable drop |
 |---|---|---|---|---|---|---|---|
 | 1–3 (the Cellars) | 1–4 | F | 10–20 | 35% | F 81 · E 14 · D 4 · C 1 | common 35% · rare 4% | 40%: potion S, torch, arrows, bandage |
 | 4–6 (the Crypts) | 5–8 | E | 16–32 | 40% | F 25 · E 56 · D 14 · C 4 · B 1 | 35% · 4% | 40%: potion S, Cleansing Salt, Repair Kit |
-| 7–9 (the Drowned Vault) | 10–13 | D | 25–50 | 45% | E 25 · D 56 · C 14 · B 4 · A 1 | 35% · 4% | 45%: potion M (from F8), Fortify, bolts |
-| 10 (the Hollow King's floor) | 14 | C | 40–60 | 50% | D 25 · C 56 · B 14 · A 4 · S 1 | 35% · 4% | 50%: potion M, Haste Tonic |
+| 7 (the Drowned Vault) | 11 | D | 25–50 | 45% | E 25 · D 56 · C 14 · B 4 · A 1 | 35% · 4% | 45%: potion M, Fortify, bolts |
+| 8 (the Hollow King's floor) | 13 | C | 40–60 | 50% | D 25 · C 56 · B 14 · A 4 · S 1 | 35% · 4% | 50%: potion M, Haste Tonic |
 
 **Treasure rooms** (7% of rooms): 2–4 gold piles worth two fights' gold, one guaranteed Small chest, a Large chest 20% (locked 40%, trapped 25%, §10.3), one consumable bundle (3 items of the floor's list), hidden treasure on a Detection find (an extra item at +1 shape or a Skeleton Key 10%). **Curios** pay by their own tables (`07-DUNGEONS.md`). **Darkness** multiplies item chance by the rulebook §4.2 light band bonus (+10% / +25% / +50% / +75%).
 
@@ -713,8 +713,8 @@ Gold is per fight, split at banking; R per delve at the band lands near the R ta
 |---|---|---|---|
 | Captain Vexa Marrow, the Grinning Captain (F3) | 60 | the stack — Copper ×8 + Rawhide ×8 on the first kill, Copper ×4 + Rawhide ×4 after; 2 Whetstones | a Tier III Tome (bag draw); one D-grade item; the Grinning Mask (C Relic); 1 Standard chest key |
 | the Barrow Warden (F6) | 100 | the stack — Iron ×8 + Wool ×8 + Bone Shards ×10 on the first kill, half after; 2 Whetstones; after the first kill an A-grade item 10% | a Tier III Tome; one A-grade item; the Barrow Bell (D Relic); 1 Grand chest key |
-| Sister Naesa, the Tidebound Priestess (F9) | 150 | the stack — Steel ×10 + Silk ×10 + Brine Pearl ×3 on the first kill, half after; 3 Whetstones; after the first kill an A-grade item 10% | a Tier III Tome; one A-grade item; the Tidebound Idol (C Relic); 1 Grand chest key |
-| the Hollow King (F10) | 300 | the stack — Steel ×12 + Silk ×12 + Iron ×12 on the first kill, half after; 3 Whetstones; after the first kill: Crown / Signet / Last Lantern 1% (2% Hard, 4% Dread), a Divine Shard 10% | one Divine Shard; one S-grade item; a Tier IV Tome (bag draw); the Hollow Coin (C Relic); 2 Grand keys; +1 Luck (rulebook §2 open question) |
+| Sister Naesa, the Tidebound Priestess (F7) | 150 | the stack — Steel ×10 + Silk ×10 + Brine Pearl ×3 on the first kill, half after; 3 Whetstones; after the first kill an A-grade item 10% | a Tier III Tome; one A-grade item; the Tidebound Idol (C Relic); 1 Grand chest key |
+| the Hollow King (F8) | 300 | the stack — Steel ×12 + Silk ×12 + Iron ×12 on the first kill, half after; 3 Whetstones; after the first kill: Crown / Signet / Last Lantern 1% (2% Hard, 4% Dread), a Divine Shard 10% | one Divine Shard; one S-grade item; a Tier IV Tome (bag draw); the Hollow Coin (C Relic); 2 Grand keys; +1 Luck (rulebook §2 open question) |
 | the Warden's Hound (hunter, any floor) | 1 fight's gold ×2 | a rare part of the floor's family; a Large chest | — |
 
 ---

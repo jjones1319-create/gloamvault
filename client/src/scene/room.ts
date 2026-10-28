@@ -6,18 +6,21 @@ import type { Actor, FightState } from '../../../sim/src/fight-types.ts'
 import type { SceneCue } from './sceneBus.ts'
 import type { Stage } from './stage.ts'
 import { isMortal } from '../../../sim/src/delve.ts'
+import { buildCharacter } from './characters/factory.ts'
+import { characterSpec, specKey } from './characters/outfit.ts'
 import { ActorLayer, type ActorInput, type ActorLook, type ActorShape, type ActorState } from './room/actors.ts'
 import { buildDynamic, buildStaticRoom, type DoorState, type DynamicDressing, type StaticRoom } from './room/dress.ts'
 import { fitView, lerpFit, NO_INSETS, type Fit, type Insets } from './room/fit.ts'
 import { createKit, PALETTE, type Kit } from './room/kit.ts'
-import { approachFor, doorway, fightFormation, nudgeFormation, previousRoomId, roomFormation, roomFrame, type Approach, type FormationActor, type Mark } from './room/layout.ts'
+import { approachFor, cameraRight, doorway, fightSideFormation, nudgeFormation, previousRoomId, roomFormation, roomFrame, type Approach, type FormationActor, type Mark } from './room/layout.ts'
 import { lightLook, type LightLook } from './room/look.ts'
 
 /**
- * The delve's 3D room (Phase 4, placeholder art): the current room's template as a grey box in the Cellars palette
- * with the party standing inside the door it came through, the fight laid out across the room, the light meter as
- * the room's light and fog, and the fight HUD's cues shown on the actors. One persistent scene for the whole delve
- * screen: the room is rebuilt only when the party changes rooms; materials, textures and lights are kept.
+ * The delve's 3D room (Phase 4, placeholder art; Phase 5 heroes): the current room's template as a grey box in the
+ * Cellars palette with the party standing inside the door it came through — the heroes as their assembled 3D
+ * characters (characters/), their capsules standing in while they load — the fight laid out across the room, the
+ * light meter as the room's light and fog, and the fight HUD's cues shown on the actors. One persistent scene for the
+ * whole delve screen: the room is rebuilt only when the party changes rooms; materials, textures and lights are kept.
  */
 
 /** Where each actor stands on screen (CSS px): for UI that wants to point at one. */
@@ -26,8 +29,26 @@ export const roomAnchors = signal<Record<string, { x: number; y: number; top: nu
 const SIZE_M: Readonly<Record<string, number>> = { small: 0.6, medium: 1.0, large: 1.6, huge: 2.4 }
 /** How far a formation may slide to stay clear of the furniture (metres along / across its approach). */
 const ROOM_STEPS = { along: [0, 0.6, 1.2, -0.4], across: [0, 0.8, -0.8, 1.6, -1.6, 2.4, -2.4] } as const
-const FIGHT_STEPS = { along: [0, 1, -1, 2, -2], across: [0, 1.5, -1.5, 3, -3, 4.5, -4.5] } as const
+const FIGHT_STEPS = { along: [0, 0.5, -0.5, 1, -1], across: [0, 0.8, -0.8, 1.6, -1.6, 2.4, -2.4] } as const
+/**
+ * Phase 5 framing: a hero stands about this share of the screen's height — the fight close enough that both sides
+ * read on the phone, the room near enough to see who is who (the view never zooms in further than this).
+ */
+const FIGHT_HERO_SHARE = 0.27
+const ROOM_HERO_SHARE = 0.24
+/** How much floor around the party the room view keeps in frame (metres). */
+const ROOM_CONTEXT_M = 2.6
 const SPECIES_RADIUS: Readonly<Record<string, number>> = { dwarf: 0.34, orc: 0.33, draconid: 0.31, human: 0.28, elf: 0.25, halfling: 0.24 }
+
+/** Floor points round a centre: the room view keeps this much of the room in frame round the party. */
+function ringAround(c: THREE.Vector3, r: number): THREE.Vector3[] {
+  const out: THREE.Vector3[] = []
+  for (let i = 0; i < 8; i++) {
+    const a = (i / 8) * Math.PI * 2
+    out.push(new THREE.Vector3(c.x + Math.cos(a) * r, 0, c.z + Math.sin(a) * r))
+  }
+  return out
+}
 
 function hex(s: string | undefined, fallback: number): number {
   if (!s || !/^#[0-9a-f]{6}$/i.test(s)) return fallback
@@ -99,7 +120,7 @@ export class RoomScene {
     this.fireLight = new THREE.PointLight(PALETTE.fireLight, 20, 0, 1.6)
     this.torchLight = new THREE.PointLight(PALETTE.torchLight, 20, 14, 1.5)
     scene.add(this.hemi, this.fireLight, this.torchLight, this.root)
-    this.layer = new ActorLayer(this.kit, camera)
+    this.layer = new ActorLayer(this.kit, camera, (spec) => buildCharacter(this.content, spec))
     this.layer.setReduceMotion(this.reduceMotion)
     this.layer.onChange = () => this.publishAnchors()
     scene.add(this.layer.group)
@@ -233,6 +254,11 @@ export class RoomScene {
     this.layer.cue(c)
   }
 
+  /** Resolves when the heroes' 3D characters asked for so far have arrived (or failed): the screen's ready flag. */
+  actorsReady(): Promise<void> {
+    return this.layer.modelsSettled()
+  }
+
   /* ---------- actors ---------- */
 
   private heroLook(state: DelveState, index: number, id: string, side: 'party' | 'enemy'): ActorLook {
@@ -242,6 +268,7 @@ export class RoomScene {
     const cls = rec ? this.content.classes.get(rec.classId) : undefined
     const pal = cls?.visual.palette ?? []
     const height = species?.body.heightM ?? 1.8
+    const spec = rec ? characterSpec(this.content, rec) : null
     return {
       id,
       side,
@@ -251,8 +278,9 @@ export class RoomScene {
       shape: 'biped',
       body: readable(hex(pal[0], 0x8a8a92)),
       trim: hex(pal[1], 0xb45309),
-      face: hex(species?.body.skinTones[0], 0xe8c4a8),
+      face: hex(species?.body.skinTones[spec?.look.skin ?? 0] ?? species?.body.skinTones[0], 0xe8c4a8),
       eyes: 0x1a1414,
+      ...(spec ? { model: { key: specKey(spec), spec } } : {}),
     }
   }
 
@@ -345,7 +373,8 @@ export class RoomScene {
       entries.push({ look: this.heroLook(state, i, `hero-${i}`, 'party'), line: 'pet', state: { hp: 0, maxHp: 1, down: true, gone: false, dead: mortal, body: true } })
     })
     const formation = entries.map((e) => this.formationOf(e.look, e.line))
-    const marks = this.clearOfFurniture(fightFormation(room.frame, this.approach!, formation), formation, room, FIGHT_STEPS)
+    // Phase 5: seen from the side — the party on the camera's left, the enemies on its right (layout.ts).
+    const marks = this.clearOfFurniture(fightSideFormation(room.frame, room.camDir, formation), formation, room, FIGHT_STEPS, cameraRight(room.camDir))
     return entries.map(({ look, state: s }) => ({
       look,
       state: s,
@@ -354,9 +383,9 @@ export class RoomScene {
   }
 
   /** Slides a formation off the tables and crates (the props' footprints), staying in the room. */
-  private clearOfFurniture(marks: Map<string, Mark>, formation: readonly FormationActor[], room: StaticRoom, steps: { along: readonly number[]; across: readonly number[] }): Map<string, Mark> {
+  private clearOfFurniture(marks: Map<string, Mark>, formation: readonly FormationActor[], room: StaticRoom, steps: { along: readonly number[]; across: readonly number[] }, axis?: { x: number; z: number }): Map<string, Mark> {
     const girth = new Map(formation.map((f) => [f.id, f.girth]))
-    return nudgeFormation(marks, girth, room.obstacles, room.frame, { x: this.approach!.nx, z: this.approach!.nz }, steps)
+    return nudgeFormation(marks, girth, room.obstacles, room.frame, axis ?? { x: this.approach!.nx, z: this.approach!.nz }, steps)
   }
 
   /* ---------- camera, light ---------- */
@@ -411,7 +440,14 @@ export class RoomScene {
     cam.clearViewOffset()
     cam.updateProjectionMatrix()
     cam.updateMatrixWorld(true)
-    const pts = this.mode === 'fight' ? this.layer.points() : [...room.framePoints, ...this.layer.points()]
+    // Phase 5: frame the actors (the fight; the party with some floor round it in the room), never closer than a hero
+    // at about a quarter of the screen's height. With no actors yet, the room.
+    const actors = this.layer.points()
+    let pts = actors
+    if (this.mode === 'room') {
+      const party = this.layer.partyCentre()
+      pts = party ? [...actors, ...ringAround(party, ROOM_CONTEXT_M)] : [...room.framePoints, ...actors]
+    }
     const b = { x0: Infinity, x1: -Infinity, y0: Infinity, y1: -Infinity }
     const v = new THREE.Vector3()
     for (const p of pts) {
@@ -422,7 +458,9 @@ export class RoomScene {
       b.y0 = Math.min(b.y0, v.y)
       b.y1 = Math.max(b.y1, v.y)
     }
-    const target = Number.isFinite(b.x0) ? fitView(b, w, h, this.insets, this.mode === 'fight' ? { margin: 0.06, minZoom: 0.45, maxZoom: 1.7 } : { margin: 0.03, minZoom: 0.5, maxZoom: 1.25 }) : { zoom: 1, offsetX: 0, offsetY: 0 }
+    const centre = this.layer.actorsCentre()
+    const cap = centre ? this.heroZoom(centre, this.mode === 'fight' ? FIGHT_HERO_SHARE : ROOM_HERO_SHARE) : 1.7
+    const target = Number.isFinite(b.x0) ? fitView(b, w, h, this.insets, this.mode === 'fight' ? { margin: 0.03, minZoom: 0.45, maxZoom: cap } : { margin: 0.04, minZoom: 0.5, maxZoom: cap }) : { zoom: 1, offsetX: 0, offsetY: 0 }
     if (instant || this.reduceMotion) {
       this.fit = target
       this.fitFrom = target
@@ -435,6 +473,15 @@ export class RoomScene {
     }
     this.applyFit(this.fit)
     this.publishAnchors()
+  }
+
+  /** The zoom at which a 1.8 m figure standing at `at` is `share` of the screen's height (camera at zoom 1). */
+  private heroZoom(at: THREE.Vector3, share: number): number {
+    const cam = this.stage.camera
+    const a = new THREE.Vector3(at.x, 0, at.z).project(cam)
+    const b = new THREE.Vector3(at.x, 1.8, at.z).project(cam)
+    const span = Math.abs(b.y - a.y)
+    return span > 1e-4 ? Math.max(0.6, Math.min(4, (2 * share) / span)) : 1.7
   }
 
   private applyFit(f: Fit): void {

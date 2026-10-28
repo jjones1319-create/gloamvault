@@ -1,16 +1,23 @@
 import * as THREE from 'three'
+import type { CharacterModel } from '../characters/assembler.ts'
+import type { CharacterSpec } from '../characters/outfit.ts'
 import type { SceneCue } from '../sceneBus.ts'
 import { MeshBuilder, trs } from './builder.ts'
 import type { Kit } from './kit.ts'
 import type { Mark } from './layout.ts'
 
 /**
- * The actors (Phase 4 placeholders): heroes and humanoid monsters as capsules in their colours with a face patch;
- * rats, spiders and hounds as low beasts; a floating HP bar each; a blob shadow; one ring for whose turn it is and
- * one arrow for the target. The fight HUD's cues (sceneBus) flash, shake and topple them; the sim's state, read a
- * moment later, settles what the cues did not say. Every effect has a still version for Reduce motion.
+ * The actors: humanoid monsters as capsules in their colours with a face patch (Phase 4 placeholders until Phase 6);
+ * rats, spiders and hounds as low beasts; heroes as their assembled 3D characters (Phase 5) — the capsule stands in
+ * while the model loads, and stays if it cannot. A floating HP bar each; a blob shadow; one ring for whose turn it is
+ * and one arrow for the target. The fight HUD's cues (sceneBus) flash, shake and topple them, and play a hero's clips
+ * (attack, cast, shoot, hit, dodge, downed, revive, victory); the sim's state, read a moment later, settles what the
+ * cues did not say. Every effect has a still version for Reduce motion.
  */
 export type ActorShape = 'biped' | 'rat' | 'spider' | 'hound'
+
+/** Builds a hero's 3D character (characters/factory.ts), or null to keep the capsule. */
+export type CharacterFactory = (spec: CharacterSpec) => Promise<CharacterModel | null>
 
 export interface ActorLook {
   id: string
@@ -25,6 +32,8 @@ export interface ActorLook {
   trim: number
   face: number
   eyes: number
+  /** A hero's 3D character (Phase 5); its key changes when anything the model shows changes. */
+  model?: { key: string; spec: CharacterSpec }
 }
 
 export interface ActorState {
@@ -78,6 +87,14 @@ interface View {
   hopT: number
   leaving: boolean
   state: ActorState
+  /** The hero's 3D character once built (the capsule hides then). */
+  model: CharacterModel | null
+  modelToken: number
+  /** Walking or running to a new mark, and which. */
+  moving: boolean
+  gait: 'Walk' | 'Run'
+  /** The model is in its Downed hold. */
+  modelDown: boolean
 }
 
 const STATUS_TINT: Record<string, number> = {
@@ -162,6 +179,13 @@ const sQ = new THREE.Quaternion()
 const sRight = new THREE.Vector3()
 const sBack = new THREE.Vector3()
 const ZERO = new THREE.Matrix4().makeScale(0, 0, 0)
+const sTint = new THREE.Color()
+/** How fast a hero with a 3D model walks and runs between marks (m/s); a long way is run. */
+const WALK_MPS = 1.7
+const RUN_MPS = 3.2
+const RUN_OVER_M = 2.5
+/** An attack clip starts this long before its hit frame (clips.json) so the blow lands with the beat. */
+const STRIKE_LEAD_S = 0.12
 
 export class ActorLayer {
   readonly group = new THREE.Group()
@@ -182,15 +206,20 @@ export class ActorLayer {
   private reduceMotion = false
   private readonly centre = new THREE.Vector3()
   private centreKnown = false
+  private readonly factory: CharacterFactory | null
+  private readonly pendingBuilds = new Set<Promise<void>>()
+  private builds = 0
+  private disposed = false
   /** Called after the layer changed something outside an animation frame (Reduce motion keeps updaters off). */
   onChange: (() => void) | null = null
 
   private readonly kit: Kit
   private readonly camera: THREE.Camera
 
-  constructor(kit: Kit, camera: THREE.Camera) {
+  constructor(kit: Kit, camera: THREE.Camera, factory: CharacterFactory | null = null) {
     this.kit = kit
     this.camera = camera
+    this.factory = factory
     const plane = new THREE.PlaneGeometry(1, 1)
     const bgMat = new THREE.MeshBasicMaterial({ color: 0x0b090d, transparent: true, opacity: 0.85, depthTest: false, depthWrite: false, toneMapped: false })
     const fillMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, depthTest: false, depthWrite: false, toneMapped: false })
@@ -277,18 +306,94 @@ export class ActorLayer {
       hopT: 0,
       leaving: false,
       state: { ...s },
+      model: null,
+      modelToken: 0,
+      moving: false,
+      gait: 'Walk',
+      modelDown: false,
     }
     if (s.gone) mat.transparent = true
     this.views.set(input.look.id, view)
     this.pose(view)
+    if (input.look.model && this.factory) this.requestModel(view)
     return view
+  }
+
+  /** Builds the hero's character in the background; the capsule stands in until it arrives. */
+  private requestModel(view: View): void {
+    const spec = view.look.model?.spec
+    if (!spec || !this.factory) return
+    const token = ++this.builds
+    view.modelToken = token
+    const p: Promise<void> = this.factory(spec)
+      .then((model) => {
+        if (!model) return
+        if (this.disposed || this.views.get(view.look.id) !== view || view.modelToken !== token) {
+          model.dispose()
+          return
+        }
+        view.model = model
+        view.pose.add(model.root)
+        view.mesh.visible = false
+        if (view.lieTarget >= 0.5) this.setModelDown(view, true, true)
+        model.update(0)
+        this.pose(view)
+        this.onChange?.()
+      })
+      .catch((e: unknown) => console.warn('hero model failed', e))
+      .finally(() => {
+        this.pendingBuilds.delete(p)
+      })
+    this.pendingBuilds.add(p)
+  }
+
+  /** Resolves when every hero model asked for so far has arrived (or failed). */
+  async modelsSettled(): Promise<void> {
+    while (this.pendingBuilds.size > 0) await Promise.all([...this.pendingBuilds])
   }
 
   private drop(view: View): void {
     this.group.remove(view.root)
     view.geo.dispose()
     view.mat.dispose()
+    view.modelToken = -1
+    view.model?.dispose()
+    view.model = null
     this.views.delete(view.look.id)
+  }
+
+  /** A hero model goes down into its Downed hold (or straight to its last frame), or gets back up. */
+  private setModelDown(view: View, down: boolean, instant = false): void {
+    const a = view.model?.animator
+    if (!a || !a.hasClips() || view.modelDown === down) return
+    view.modelDown = down
+    if (down) a.play('Downed', { hold: true, ...(instant ? { offset: 99 } : {}) })
+    else {
+      a.release()
+      if (!instant) a.play('Revive')
+    }
+  }
+
+  /** One of a hero's clips for a fight beat, started so its hit (or release) frame lands just after the cue. */
+  private playClip(view: View, wanted: string, speed = 1): void {
+    const a = view.model?.animator
+    // A shield bearer guards behind the shield (the clips pass's Guard_Shield, when the file has it).
+    const clip = wanted === 'Guard' && view.model?.hasShield && a?.has('Guard_Shield') ? 'Guard_Shield' : wanted
+    if (!a || view.modelDown || view.lieTarget >= 0.5 || !a.has(clip)) return
+    const k = Math.max(1, Math.min(3, speed))
+    const strike = a.eventTime(clip, 'hit') ?? a.eventTime(clip, 'release')
+    a.play(clip, { offset: strike !== null ? Math.max(0, strike - STRIKE_LEAD_S * k) : 0, timeScale: k })
+  }
+
+  /** Sets the walk or run loop for a move, matched to how fast the hero actually goes. */
+  private gaitOn(view: View): void {
+    const m = view.model
+    if (!m) return
+    const a = m.animator
+    a.setBase(view.gait)
+    const clipSpeed = a.speedOf(a.baseClip())
+    const speed = view.gait === 'Run' ? RUN_MPS : WALK_MPS
+    if (clipSpeed) a.setBaseTimeScale(Math.max(0.6, Math.min(2, speed / (clipSpeed * m.stride))))
   }
 
   /** Who stands where now. New actors appear, missing ones leave, the rest walk to their marks. */
@@ -369,6 +474,7 @@ export class ActorLayer {
     view.state = { ...s }
     view.hpTarget = s.maxHp > 0 ? Math.max(0, Math.min(1, s.hp / s.maxHp)) : 0
     view.lieTarget = s.down ? 1 : 0
+    this.setModelDown(view, s.down)
     if (s.gone && view.fadeTarget > 0) {
       view.fadeTarget = 0
       view.mat.transparent = true
@@ -417,9 +523,14 @@ export class ActorLayer {
         if (c.amount) view.hpTarget = Math.max(0, view.hpTarget - c.amount / max)
         this.flashOn(view, c.kind === 'crit' ? 0xff6a2a : 0xffffff, c.kind === 'crit' ? 420 : 240)
         view.shakeT = c.kind === 'crit' ? 1 : 0.6
+        this.playClip(view, 'Hit')
         break
       case 'miss':
         view.dodgeT = 1
+        this.playClip(view, 'Dodge')
+        break
+      case 'anim':
+        if (c.clip) this.playClip(view, c.clip, c.speed ?? 1)
         break
       case 'heal':
         if (c.amount) view.hpTarget = Math.min(1, view.hpTarget + c.amount / max)
@@ -431,9 +542,11 @@ export class ActorLayer {
         break
       case 'down':
         view.lieTarget = 1
+        this.setModelDown(view, true)
         break
       case 'revive':
         view.lieTarget = 0
+        this.setModelDown(view, false)
         this.flashOn(view, 0x5fe07a, 420)
         break
       case 'gone':
@@ -462,10 +575,21 @@ export class ActorLayer {
     for (const view of [...this.views.values()]) {
       const d = view.target.distanceTo(view.pos)
       if (d > 0.005) {
-        const step = Math.min(d, (dt / 1000) * 4.2)
+        // A hero with a model walks (or, a long way, runs) at its clip's pace; capsules glide.
+        if (view.model && !view.moving && !view.modelDown) {
+          view.moving = true
+          view.gait = d > RUN_OVER_M ? 'Run' : 'Walk'
+          this.gaitOn(view)
+        }
+        const speed = view.model && view.moving ? (view.gait === 'Run' ? RUN_MPS : WALK_MPS) : 4.2
+        const step = Math.min(d, (dt / 1000) * speed)
         view.pos.lerp(view.target, step / d)
         busy = true
+      } else if (view.moving) {
+        view.moving = false
+        view.model?.animator.setBase('Idle')
       }
+      view.model?.update(dt)
       let dy = view.yaw - view.root.rotation.y
       dy = Math.atan2(Math.sin(dy), Math.cos(dy))
       if (Math.abs(dy) > 0.002) {
@@ -506,6 +630,10 @@ export class ActorLayer {
 
   private pose(view: View): void {
     const { root, pose, mat, look } = view
+    if (view.model) {
+      this.poseModel(view, view.model)
+      return
+    }
     const shake = view.shakeT > 0 ? Math.sin(view.shakeT * 40) * 0.09 * view.shakeT : 0
     const dodge = view.dodgeT > 0 ? Math.sin(view.dodgeT * Math.PI) * 0.45 : 0
     const hop = view.hopT > 0 ? Math.sin(view.hopT * Math.PI) * 0.18 : 0
@@ -531,6 +659,30 @@ export class ActorLayer {
       mat.emissiveIntensity = 0
     }
     mat.opacity = view.fade
+    root.visible = view.fade > 0.01
+  }
+
+  /** A hero's character: moved like the capsule; it lies down by its Downed clip, or tips over without clips. */
+  private poseModel(view: View, model: CharacterModel): void {
+    const { root, pose } = view
+    const shake = view.shakeT > 0 ? Math.sin(view.shakeT * 40) * 0.05 * view.shakeT : 0
+    const dodge = view.dodgeT > 0 && !model.animator.has('Dodge') ? Math.sin(view.dodgeT * Math.PI) * 0.45 : 0
+    const hop = view.hopT > 0 ? Math.sin(view.hopT * Math.PI) * 0.12 : 0
+    root.position.set(view.pos.x, hop, view.pos.z)
+    const c = Math.cos(root.rotation.y)
+    const s = Math.sin(root.rotation.y)
+    root.position.x += (shake + dodge) * c
+    root.position.z -= (shake + dodge) * s
+    if (model.animator.hasClips()) {
+      pose.rotation.set(0, 0, 0)
+      pose.position.set(0, 0, 0)
+    } else {
+      pose.rotation.set(-(Math.PI / 2) * view.lie, 0, 0)
+      pose.position.set(0, view.look.radius * view.lie, 0)
+    }
+    model.setTint(sTint.copy(WHITE).lerp(view.state.dead ? DEAD_TINT : DOWN_TINT, view.lie * 0.8))
+    model.setFlash(view.flashT > 0 ? view.flash : null, view.flashT * 1.2)
+    model.setOpacity(view.fade)
     root.visible = view.fade > 0.01
   }
 
@@ -635,6 +787,18 @@ export class ActorLayer {
     return out
   }
 
+  /** The middle of everyone on stage (where the camera's framing measures a hero's height), or null. */
+  actorsCentre(): THREE.Vector3 | null {
+    const c = new THREE.Vector3()
+    let n = 0
+    for (const view of this.views.values()) {
+      if (view.leaving || view.state.gone) continue
+      c.add(view.target)
+      n++
+    }
+    return n > 0 ? c.divideScalar(n) : null
+  }
+
   /** The party's centre (for the torch light); worked out when the marks change, read every frame. */
   partyCentre(): THREE.Vector3 | null {
     return this.centreKnown ? this.centre : null
@@ -653,6 +817,7 @@ export class ActorLayer {
   }
 
   dispose(): void {
+    this.disposed = true
     if (this.flushTimer !== null) clearTimeout(this.flushTimer)
     for (const view of [...this.views.values()]) this.drop(view)
     for (const o of this.owned) o.dispose()
@@ -661,5 +826,5 @@ export class ActorLayer {
 }
 
 function sameLook(a: ActorLook, b: ActorLook): boolean {
-  return a.shape === b.shape && a.height === b.height && a.radius === b.radius && a.body === b.body && a.trim === b.trim && a.face === b.face && a.eyes === b.eyes
+  return a.shape === b.shape && a.height === b.height && a.radius === b.radius && a.body === b.body && a.trim === b.trim && a.face === b.face && a.eyes === b.eyes && (a.model?.key ?? '') === (b.model?.key ?? '')
 }

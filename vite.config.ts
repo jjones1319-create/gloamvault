@@ -1,7 +1,9 @@
 import { readFileSync } from 'node:fs'
+import { sep } from 'node:path'
 import preact from '@preact/preset-vite'
 import { VitePWA } from 'vite-plugin-pwa'
-import { defineConfig } from 'vite'
+import { defineConfig, type Plugin } from 'vite'
+import { writeModelIndex } from './tools/build/model-index.ts'
 
 /**
  * Gloamvault lives at https://<user>.github.io/gloamvault/ so every URL starts with BASE (CLAUDE.md gotchas).
@@ -13,6 +15,26 @@ const THEME = '#120f14'
 
 const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')) as { version: string }
 
+/**
+ * Phase 5: models are runtime-cached CacheFirst, so every model URL carries a content hash from
+ * client/src/scene/characters/modelIndex.json (tools/build/model-index.ts). The index is rewritten at the start of
+ * every build and dev server, and in dev whenever a file under client/public/models/ changes.
+ */
+function modelIndex(): Plugin {
+  return {
+    name: 'gloamvault-model-index',
+    buildStart() {
+      writeModelIndex()
+    },
+    configureServer(server) {
+      writeModelIndex()
+      server.watcher.on('all', (_event, file) => {
+        if (file.includes(`${sep}public${sep}models${sep}`) || file.includes('/public/models/')) writeModelIndex()
+      })
+    },
+  }
+}
+
 export default defineConfig({
   root: 'client',
   base: BASE,
@@ -21,6 +43,7 @@ export default defineConfig({
     __APP_VERSION__: JSON.stringify(pkg.version),
   },
   plugins: [
+    modelIndex(),
     preact(),
     VitePWA({
       registerType: 'prompt',

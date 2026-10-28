@@ -594,7 +594,7 @@ export const warden: ClassSheet = {
   aiRuleDefault: 'IF self HP < 30% THEN item small hp potion on self; IF allies count > 1 AND ally HP < 40% THEN provoke; IF self HP < 60% AND self not status fortify THEN brace; ELSE shield slam front enemy',
   visual: {
     gearSetId: 'warden-copper-plate',
-    palette: ['#6b7280', '#b45309', '#1f2937'],
+    palette: ['#4a6a8c', '#9e1c2c', '#1f2937', '#5d636b'],
     notes: 'Wide shoulders and a shield silhouette; the shield must read at 200px.',
   },
   pros: ['Toughest front line in the game', 'Daze and push-back skills delete enemy turns', 'Plate and shields from the first floor'],

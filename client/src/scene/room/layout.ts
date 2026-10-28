@@ -386,6 +386,62 @@ export function fightFormation(frame: RoomFrame, approach: Approach, actors: rea
   return place(actors, { x: 0, z: 0 }, axis, lateralHalf, depth, yaw)
 }
 
+/** The screen's right as a floor direction for a camera looking along −camDir. */
+export function cameraRight(camDir: { x: number; z: number }): { x: number; z: number } {
+  return { x: camDir.z, z: -camDir.x }
+}
+
+/**
+ * A fight seen from the side (Phase 5, so real heroes read on the phone): the party on the left of the room's fixed
+ * camera, the enemies on its right, facing each other across the room's middle and turned a little toward the camera.
+ * Each line steps back from the camera in a short diagonal (the further, the further out), so every actor and its
+ * bar shows; pets stand in front of their party, low in the picture. Lines are squeezed to stay inside the room.
+ */
+export function fightSideFormation(frame: RoomFrame, camDir: { x: number; z: number }, actors: readonly FormationActor[]): Map<string, Mark> {
+  const right = cameraRight(camDir)
+  const away = { x: -camDir.x, z: -camDir.z }
+  // How far the room reaches along the screen's right and into the picture (the room is axis-aligned).
+  const halfX = Math.abs(right.x) * (frame.width / 2) + Math.abs(right.z) * (frame.depth / 2)
+  const halfD = Math.abs(away.x) * (frame.width / 2) + Math.abs(away.z) * (frame.depth / 2)
+  const limX = Math.max(1.5, halfX - 0.7)
+  const limD = Math.max(1, halfD - 0.9)
+  const groups = new Map<string, FormationActor[]>()
+  for (const a of actors) {
+    const k = `${a.side}:${a.line}`
+    const g = groups.get(k)
+    if (g) g.push(a)
+    else groups.set(k, [a])
+  }
+  const girthOf = (k: string) => Math.max(0.6, ...(groups.get(k) ?? []).map((a) => a.girth))
+  const enemyFront = girthOf('enemy:front')
+  const lineX = (side: string, line: string): number => {
+    if (side === 'party') return line === 'front' ? -1.35 : line === 'back' ? -2.55 : -0.55
+    const first = 0.85 + enemyFront / 2
+    return line === 'front' ? first : first + enemyFront / 2 + 0.5 + girthOf('enemy:back') / 2
+  }
+  const turn = 0.55
+  const faceParty = Math.atan2(right.x + camDir.x * turn, right.z + camDir.z * turn)
+  const faceEnemy = Math.atan2(-right.x + camDir.x * turn, -right.z + camDir.z * turn)
+  const out = new Map<string, Mark>()
+  for (const [k, g] of groups) {
+    const [side, line] = k.split(':') as [string, string]
+    const outward = side === 'party' ? -1 : 1
+    const step = Math.max(0.95, girthOf(k) * 0.85)
+    const span = Math.min(((g.length - 1) * step) / 2, limD)
+    const each = g.length > 1 ? (2 * span) / (g.length - 1) : 0
+    // Pets come toward the camera, so they stand low in the picture in front of their heroes.
+    const pull = line === 'pet' ? -0.6 : 0
+    g.forEach((a, i) => {
+      const d = (g.length > 1 ? -span + i * each : 0) + pull
+      const zig = g.length >= 3 ? (i % 2 === 0 ? -0.22 : 0.22) : 0
+      const x = Math.max(-limX, Math.min(limX, lineX(side, line) + outward * (d * 0.35 + zig)))
+      const dd = Math.max(-limD, Math.min(limD, d))
+      out.set(a.id, { x: right.x * x + away.x * dd, z: right.z * x + away.z * dd, yaw: side === 'party' ? faceParty : faceEnemy })
+    })
+  }
+  return out
+}
+
 /* ---------- the floor: which 2 m tiles a pit removes ---------- */
 
 export interface Rect {

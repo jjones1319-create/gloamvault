@@ -27,8 +27,8 @@ import { skillRankFor, skillRankThreshold, tierOpenAt } from './xp.ts'
  * from the Wayfarer Chest; the dead carried home lie at the Ember Shrine until raised (for gold and levels) or laid to
  * rest; a hero lost for good leaves a **legacy** (a share of their battle XP) and a line on the Memorial.
  */
-/** 2: the Nightmare death rule (D-095). */
-export const PROFILE_VERSION = 2
+/** 2: the Nightmare death rule (D-095). 3: every hero has a look (Phase 5). */
+export const PROFILE_VERSION = 3
 
 export interface TowerProgress {
   /** The deepest floor reached-and-finished per dungeon (D-083): the Waystone offers the floor below it. */

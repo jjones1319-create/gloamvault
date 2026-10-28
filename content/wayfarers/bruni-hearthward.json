@@ -15,5 +15,11 @@
     "mender-blessing"
   ],
   "aiRule": "IF self HP < 30% THEN item small hp potion on self; IF ally HP < 50% THEN mend on lowest ally; IF ally HP < 75% THEN soothing word on lowest ally; ELSE attack front enemy",
-  "bio": "Sets bones, patches heads and makes a stew that has raised at least one man from the dead, he says."
+  "bio": "Sets bones, patches heads and makes a stew that has raised at least one man from the dead, he says.",
+  "look": {
+    "frame": "broad",
+    "skin": 0,
+    "face": 0,
+    "hair": 2
+  }
 }

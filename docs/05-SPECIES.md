@@ -1,6 +1,6 @@
 # 05 — Species
 
-*Last updated 2026-10-27 · rev. 2 (checkpoint 1: open questions answered by delegation — D-099) · rev. 1 2026-10-26 · numbers are tuning starting points*
+*Last updated 2026-10-28 · rev. 3 (Phase 5: §5 as built) · rev. 2 (checkpoint 1: open questions answered by delegation — D-099) · rev. 1 2026-10-26 · numbers are tuning starting points*
 
 *Leans on `03-GAME-DESIGN.md` §2, §4.2, §4.4, §5 and §6.1. Feeds `11-ART-PIPELINE.md` and `tools/blender/hero/build_body.py`. Classes are `04-CLASSES.md`; this file only says which bodies suit which kits.*
 
@@ -334,6 +334,18 @@
 **Face presets** are data: each species' record `content/species/<id>.json` carries its 3 presets (18 in all) as weights over the 12 shared `face_*` keys plus part choices (horn set, tusk size, beard style). Skin, hair and eyes are tints.
 
 **Export** from `tools/blender/hero/build_body.py --species <name>` (renders and builds under `art/`, `.glb` to `client/public/models/hero/` per `11` §7): `rig_base.glb` once (armature + body + the 17 shared clips + 2 species specials), `spc_<species>_<part>.glb` per extra mesh, four turntable PNGs and one 200 px thumbnail, which the agent reads before the build counts as done. Gear exports as `gear_<family>_<slot>_<tier>[_<species>].glb`, with `_drc`, `_orc` and `_elf` suffixes only where §3 says a variant exists. Budgets: hero with gear ≤ 15 k triangles, species parts ≤ 1.5 k of that, 4 bone influences, one 1024² atlas per body.
+
+
+**As built (Phase 5, 2026-10-28).** The species keys and the twelve face keys are built procedurally from the skeleton
+(`tools/blender/hero/build_species.py`) on both body frames (broad and slight — D-100); the round ears are folded flat by
+the Elf, Orc and Draconid keys, so the ear parts need no hidden region. **Bone scales are absolute**: each bone's scale =
+`root` × its group factor (an Orc's hands 1.12 × 1.15 = 1.29), never compounded down the chain. The parts are the
+names in `body.parts` plus shared hair styles (crop, shaggy, long, tied, swept, bun) and brows (soft, heavy, arched); a
+part carries only the species keys of the species that may wear it. The three presets per species (the names in §3)
+live in `client/public/models/hero/manifest.json` with their face weights, parts and tints (skin, hair or horn, eye);
+a hero's look is saved as `{ frame, skin, face, hair }` (D-105). Not reached by the script (`art/LOG.md`): freckles,
+scars and painted brows (no decals in the palette material), the Draconid's slit pupils, scale texture, belly plates and
+heel raise.
 
 ---
 

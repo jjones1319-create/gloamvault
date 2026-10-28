@@ -1,6 +1,6 @@
 # 03 — Game Design (the rulebook)
 
-*Last updated 2026-10-27 · rev. 6 (checkpoint 1: the open questions of §1–§11 answered by delegation — D-099) · rev. 5 (checkpoint 1, James's answers: **Nightmare**, the third death rule; battle XP split through the party and scaled by the level gap to the party's average; each level costs more; every open question answered by delegation; the Nightmare difficulty preset renamed Dread — D-095–D-099; §2.2, §5, §11.2, §12, §13) · rev. 4 (James's direction during Phase 4: the Mortal and Sheltered death rules, raising the dead, the chosen hero and legacies, party members from the Wayfarer Chest, the threat read — D-088–D-093; §5.3, §8.2, §8.3, §10.3–§10.4, §12, §13) · rev. 3 (James's direction of 2026-10-27: Final Fantasy-style levels, leaving by the entrance or a floor's end, a very difficult tower best taken with a party, turn-based combat — D-082–D-085; and the Phase 3 balance pass, D-077–D-084) · rev. 2 (Claude, from James's brief of 2026-10-26 and the three research reports in `docs/research/`; rev. 2 after the independent review — ownership table, status table, promotion counts, First Aid, Pacts). Every number in this document is a **tuning starting point**, never a commitment; the simulator and the balance runner decide the final values. Each section ends with **Open questions** for James.*
+*Last updated 2026-10-28 · rev. 7 (Phase 7 prep: Gravehollow's 8 floors written in — the band levels in §11.2; a merchant on the floor before every boss floor and the Boss on each boss floor in §4.6, §8 and §11.1; the global floor ranges in §6.2; a delve of 2–4 floors in §1; no hunter clock in the Drowned Vault in §4.5 — D-104) · rev. 6 (checkpoint 1: the open questions of §1–§11 answered by delegation — D-099) · rev. 5 (checkpoint 1, James's answers: **Nightmare**, the third death rule; battle XP split through the party and scaled by the level gap to the party's average; each level costs more; every open question answered by delegation; the Nightmare difficulty preset renamed Dread — D-095–D-099; §2.2, §5, §11.2, §12, §13) · rev. 4 (James's direction during Phase 4: the Mortal and Sheltered death rules, raising the dead, the chosen hero and legacies, party members from the Wayfarer Chest, the threat read — D-088–D-093; §5.3, §8.2, §8.3, §10.3–§10.4, §12, §13) · rev. 3 (James's direction of 2026-10-27: Final Fantasy-style levels, leaving by the entrance or a floor's end, a very difficult tower best taken with a party, turn-based combat — D-082–D-085; and the Phase 3 balance pass, D-077–D-084) · rev. 2 (Claude, from James's brief of 2026-10-26 and the three research reports in `docs/research/`; rev. 2 after the independent review — ownership table, status table, promotion counts, First Aid, Pacts). Every number in this document is a **tuning starting point**, never a commitment; the simulator and the balance runner decide the final values. Each section ends with **Open questions** for James.*
 
 **Who owns what (when two docs disagree, the owner wins and the other is fixed):**
 
@@ -26,13 +26,13 @@ Content JSON is written from the owner. Where this file restates an owned fact i
 **Gloamvault** is a party dungeon crawler: you make a hero (species + class), descend into a dungeon floor by floor with up to three friends, fight monsters on a speed-driven timeline, find gold, gear and materials, and come back up to the town of **Emberfall** to repair, upgrade, learn, and buy chests. Everything you use gets better: your skills, your stats, your weapons, your pet.
 
 ```
-TOWN (Emberfall) ──► choose dungeon & zone at the Waystone ──► DELVE (3–4 floors)
+TOWN (Emberfall) ──► choose dungeon & zone at the Waystone ──► DELVE (2–4 floors)
   ▲  repair · upgrade · learn skills · open chests · stables · bank      │
   │                                                                      │
   └──────────── return by Waystone (or wipe: lose unbanked gold) ◄───────┘
 ```
 
-- **A delve** is one trip: a zone of 3–4 floors ending in a zone boss, 20–40 minutes, pausable at any room. A floor is 5–10 minutes — the mobile session unit (GameAnalytics 2025: median session 5–6 min).
+- **A delve** is one trip: a zone of 2–4 floors ending in its boss (Gravehollow's zones are 3, 3 and 2 floors — D-098), 20–40 minutes, pausable at any room. A floor is 5–10 minutes — the mobile session unit (GameAnalytics 2025: median session 5–6 min).
 - **A dungeon** is a tower of floors in three zones (Gravehollow: **8 floors**, D-098), each zone with its own monster family, its own boss, and a **Waystone** that lets you start the next delve from that zone once its boss is dead. The final boss sits on the last floor. Beating it opens the next dungeon on the overworld map.
 - **Gold** is found only in the dungeon and spent only in town. It is the stake: a party wipe loses the gold carried in that delve, never your gear, XP or skills.
 - **Four verbs** carry the game: *Delve* (explore and fight), *Tend* (repair, upgrade, feed the pet), *Learn* (skills by use, by shop, by Insight), *Open* (chests).
@@ -225,11 +225,11 @@ Each encounter rolls **surprise**: base 15% + light band modifier (§4.2) + mons
 
 ### 4.5 The floor clock, and the hunter
 
-No hunger (DCSS removed food as featuritis; Darkest Dungeon's hunger was tolerated, not loved). Instead a visible **floor clock**: it ticks once per room entered and once per fight round. At **40 ticks** a floor's **hunter** (a unique stalking monster of that family, e.g. Gravehollow's *Warden's Hound*) enters the floor and moves one room toward the party every 2 ticks; it is beatable but above the floor's band, and it drops a guaranteed rare part. Taking the stairs ends the chase (Barony's Minotaur, made fair and visible).
+No hunger (DCSS removed food as featuritis; Darkest Dungeon's hunger was tolerated, not loved). Instead a visible **floor clock**: it ticks once per room entered and once per fight round. At **40 ticks** a floor's **hunter** (a unique stalking monster of that family, e.g. Gravehollow's *Warden's Hound*) enters the floor and moves one room toward the party every 2 ticks; it is beatable but above the floor's band, and it drops a guaranteed rare part. Taking the stairs ends the chase (Barony's Minotaur, made fair and visible). No hunter stalks a boss floor (open question 1, D-055), so Gravehollow's Drowned Vault — both of whose floors carry a boss — has none on the clock (`07` §2.9).
 
 ### 4.6 Rooms and curios
 
-Room kinds and their weights per floor (§11.1): Fight 50% · Elite 8% · Rest/campfire 10% · Merchant 5% · Treasure 7% · Curio 15% · Trap gauntlet 5%; fixed: Entry, Stairs, and on the zone's last floor the Boss. **Curios** are interactable objects with a choice (a sealed sarcophagus: open / leave / use a Holy Water — outcomes from a table; Darkest Dungeon's curios, with the item key that turns a gamble into a purchase). **Rest rooms** restore 30% HP and pool, let you swap loadouts and feed the pet; one per floor; sleeping advances the floor clock 5.
+Room kinds and their weights per floor (§11.1): Fight 50% · Elite 8% · Rest/campfire 10% · Merchant 5% · Treasure 7% · Curio 15% · Trap gauntlet 5%; fixed: Entry, Stairs, and on a boss floor the Boss (each zone's last floor, and both of the Drowned Vault's). **Curios** are interactable objects with a choice (a sealed sarcophagus: open / leave / use a Holy Water — outcomes from a table; Darkest Dungeon's curios, with the item key that turns a gamble into a purchase). **Rest rooms** restore 30% HP and pool, let you swap loadouts and feed the pet; one per floor; sleeping advances the floor clock 5.
 
 **Open questions**
 1. ~~Torch −5 per new room and 40-tick hunter — tune on the generator; should the hunter also stalk on boss floors? *Proposed: no hunter on boss floors.*~~ *Checkpoint 1 (D-055): keep −5 a room and the hunter at 40 ticks, with no hunter on boss floors, as built.*
@@ -310,14 +310,15 @@ Grade is *what the item is*; +N and item level are *what you did to it* (every s
 |---|---|---|---|---|---|---|
 | **F** | grey | Crude | 1.00 | 0 | +3 | floors 1–3, starter kits, shop |
 | **E** | white | Common | 1.35 | 1 | +4 | floors 1–6, shop |
-| **D** | green | Fine | 1.80 | 1 | +5 | floors 4–10, shop |
-| **C** | blue | Superior | 2.45 | 2 | +6 | floors 8–15, shop (last grade shops sell) |
-| **B** | purple | Masterwork | 3.30 | 2 | +7 | floors 12–22, chests |
-| **A** | orange | Heroic | 4.45 | 3 | +8 | floors 18–30, chests, zone bosses |
-| **S** | red | Legendary | 6.00 | 3 | +9 | floors 26–40, Grand chests, final bosses |
-| **SS** | gold | Mythic | 8.10 | 4 | +10 | floors 35+, endgame bosses, pity only |
+| **D** | green | Fine | 1.80 | 1 | +5 | floors 4–8, shop |
+| **C** | blue | Superior | 2.45 | 2 | +6 | floors 7–13, shop (last grade shops sell) |
+| **B** | purple | Masterwork | 3.30 | 2 | +7 | floors 10–20, chests |
+| **A** | orange | Heroic | 4.45 | 3 | +8 | floors 16–28, chests, zone bosses |
+| **S** | red | Legendary | 6.00 | 3 | +9 | floors 24–38, Grand chests, final bosses |
+| **SS** | gold | Mythic | 8.10 | 4 | +10 | floors 33+, endgame bosses, pity only |
 | **God** | white-gold, animated | Divine | 11.0 | 4 + a **unique power** | +10 | endgame bosses and **Divine Shards** (10 forge one); never in a random table |
 
+- *Floors* in the table are global floors: Gravehollow's 8, then each later dungeon's in order (`08`'s R table; D-104).
 - ×1.35 per grade is an 11× spread over nine steps — enough for four dungeons without six-digit numbers.
 - **+N** costs gold and generic stones (Whetstone F–C, Honing Oil B–A, Star Grit S–God) and adds **+5% of the item's own base per level**, so a +10 A-grade (×1.5) beats a +0 S (×1.35) and loses to a +3 S — a cared-for weapon is a real choice against a fresh find. +N never adds affix lines.
 - **Affixes** roll from the pool in `08-ITEMS.md` §5 (attribute points, derived stats, element damage, on-hit effects, "+10% gold found"). One line can be locked and the rest re-rolled at the blacksmith for gold and a stone.
@@ -458,7 +459,7 @@ Found in the dungeon only: on monsters, in treasure rooms, in curios, from selli
 
 ### 8.4 Dungeon shops
 
-A wandering merchant appears in one Merchant room per floor (always on the floor before a zone boss): potions, torches, repair kits, a few F–C pieces at 1.5× town price, and he buys parts. Haggling applies.
+A wandering merchant appears in one Merchant room per floor (always on the floor before a boss floor — Gravehollow's F2, F5, F6 and F7, `07` §2.7): potions, torches, repair kits, a few F–C pieces at 1.5× town price, and he buys parts. Haggling applies.
 
 **Open questions**
 1. ~~R ≈ 300 at floors 1–3 — set by the runner once monsters carry gold values.~~ *Checkpoint 1 (D-099): R stays 300 at the Cellars band, ×1.6 per band (`tuning.json` → `economy.R`); Phase 4's runner finds about 150–460 gold per delve around it.*
@@ -524,13 +525,13 @@ James: *"I think the only way to get new party members is through the chests. Yo
 Seeded by the host's 64-bit match seed; integer-only; identical on every phone.
 
 1. **Mission graph** (small grammar): Entry → … → Stairs, with a guaranteed path, 8–14 rooms (tutorial and throne floors excepted, `07` §2), up to 3 side branches, one Key-and-Lock pair on 30% of floors, a secret room on 25%. **Boss rooms are farthest from the entry by room count** (Darkest Dungeon's rule).
-2. **Room kinds** by weight (§4.6) with fixed slots: Entry, Stairs, one Rest per floor, a Merchant on every floor before a zone boss, the Boss on the zone's last floor; Elite rooms carry 1 affix on floors 1–2, 2 on 3–6, 3 on 7+ (Diablo 3's scaling) from a pool of 12 (`06-MONSTERS.md` §2).
+2. **Room kinds** by weight (§4.6) with fixed slots: Entry, Stairs, one Rest per floor, a Merchant on the floor before every boss floor, the Boss on each boss floor (a zone's last, and both of the Drowned Vault's — `07` §2.3); Elite rooms carry 1 affix on floors 1–2, 2 on 3–6, 3 on 7+ (Diablo 3's scaling) from a pool of 12 (`06-MONSTERS.md` §2).
 3. **Layout** on a coarse grid from room templates (door sockets must meet; backtracking on collision), decorated by a tile-variation pass.
 4. **Encounter tables** per floor band from the zone's family: 2–6 monsters sized by party count (§11.2) with at least one of each role across a floor (fodder / armored elite / disabler special / monster / boss — Vermintide's taxonomy keeps every co-op role relevant).
 
 ### 11.2 Scaling
 
-- **Monster level** = floor band level (floor 1 = L1; Phase 7 sets Gravehollow's band levels for its 8 floors — rev. 2's ten floors ran L1–14; dungeon 2 starts at L12). Everything about a monster derives from its level and its template.
+- **Monster level** = floor band level. Gravehollow's eight (`07` §2.3 owns them; D-104, Proposed for the runner): **F1 L1 · F2 L2 · F3 L4 · F4 L5 · F5 L7 · F6 L8 · F7 L11 · F8 L13** — rev. 2's ten floors ran L1–14; dungeon 2 starts at L12, one level under the Hollow King. Everything about a monster derives from its level and its template.
 - **Party size:** encounter tables are written for three heroes; for 1 / 2 / 3 / 4 heroes the monster *count* scales, then monster *HP*, then monster *damage* (minimum 1 monster; a Special or Monster is never removed). Rev. 2's starting values were count ×0.6 / ×0.8 / ×1.0 / ×1.2 and HP ×0.7 / ×0.85 / ×1.0 / ×1.15; the runner's Phase 3 values are **count ×0.6 / 0.8 / 1.0 / 1.6, HP ×0.5 / 1.0 / 1.0 / 1.6, damage ×0.8 / 1.0 / 1.0 / 1.0** (`tuning.json` → `dungeon.partyScaling`; D-080, D-084). The runner tunes so solo and 4-hero fights land on the same 3–6 rounds, and so the tower is **very difficult**: not soloable the first time without levels and gear, possible solo after a lot of grinding, best taken with a party (D-084, James).
 - **Difficulty knobs** (a menu of scalars like Hades' Pact, each sweepable by the runner): enemy HP %, damage %, count %, speed %, hunter clock, light start, revives per floor. Normal is the baseline; **Hard** and **Dread** presets (Dread was called Nightmare until checkpoint 1; the word now names the death rule, D-095) and the modifier menu ("Pacts", `07` §6) ship in Phase 7.
 

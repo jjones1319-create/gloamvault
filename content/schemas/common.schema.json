@@ -1306,6 +1306,37 @@
       },
       "minItems": 3,
       "maxItems": 3
+    },
+    "heroLook": {
+      "type": "object",
+      "description": "How a hero looks (Phase 5; tools/blender/README.md): one body frame, a skin tone and a face preset of the species, a hair colour. Cosmetic: no rule reads it. The linter checks skin < the species' skinTones and face < its facePresets.",
+      "properties": {
+        "frame": {
+          "type": "string",
+          "enum": ["broad", "slight"],
+          "description": "The body frame: broad (built from the stylized male base, 1.79 m) or slight (the stylized female base, 1.61 m)."
+        },
+        "skin": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 15,
+          "description": "Index into the species' body.skinTones."
+        },
+        "face": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 15,
+          "description": "Index into the species' face presets (body.facePresets; the presets themselves are in the hero manifest)."
+        },
+        "hair": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 15,
+          "description": "Index into the species' hair colours (the hero manifest); the client wraps it to the colours it has."
+        }
+      },
+      "required": ["frame", "skin", "face", "hair"],
+      "additionalProperties": false
     }
   }
 }

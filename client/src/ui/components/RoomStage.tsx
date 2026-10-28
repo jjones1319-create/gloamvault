@@ -38,7 +38,13 @@ export function RoomStage({ insets }: { insets: Insets }) {
         frameMode: settings.value.frameMode,
         reduceMotion: settings.value.reduceMotion,
         onFirstFrame: () => {
-          stageReady.value = true
+          // Phase 5: the ready flag also waits for the heroes' 3D characters (never more than a few seconds).
+          const r = room
+          const done = () => {
+            stageReady.value = true
+          }
+          if (!r) return done()
+          void Promise.race([r.actorsReady(), new Promise<void>((res) => setTimeout(res, 6000))]).then(done, done)
         },
       })
       room = new RoomScene(stage, c, { reduceMotion: settings.value.reduceMotion })

@@ -1,8 +1,10 @@
 import * as v from 'valibot'
 import type { Content } from '../../../sim/src/content.ts'
+import { SAVE_VERSION as HERO_RECORD_VERSION } from '../../../sim/src/hero.ts'
+import { clampLook, defaultLook, LOOK_INDEX_MAX } from '../../../sim/src/look.ts'
 import { newProfile, PROFILE_VERSION, type Profile } from '../../../sim/src/town.ts'
 import type { HeroRecord, ItemInstance } from '../../../sim/src/types/content.ts'
-import type { DeathRule } from '../../../sim/src/types/enums.ts'
+import { BODY_FRAMES, type DeathRule } from '../../../sim/src/types/enums.ts'
 import { KEY_PREFIX, KEYS, safeGet, safeSet, type KeyValueStore } from './db.ts'
 
 /**
@@ -16,23 +18,48 @@ export const SAVE_VERSION = PROFILE_VERSION
 
 export const BACKUP_KEYS = [0, 1, 2].map((i) => `${KEY_PREFIX}profile-backup-${i}`)
 
-/** Step N → N+1. */
-const MIGRATIONS: Record<number, (raw: Record<string, unknown>) => Record<string, unknown>> = {
-  // 1 → 2: the Nightmare death rule joins Sheltered and Mortal (D-095); a version-1 save needs nothing changed.
-  1: (raw) => raw,
+/** A hero record from before save 3 gets its look: the same one a hash of its id always gives (Phase 5). */
+function withLook(content: Content | null, hero: unknown): unknown {
+  if (typeof hero !== 'object' || hero === null || Array.isArray(hero)) return hero
+  const h = hero as Record<string, unknown>
+  if (h.look !== undefined || typeof h.id !== 'string') return hero
+  const species = typeof h.speciesId === 'string' ? content?.species.get(h.speciesId) : undefined
+  return { ...h, look: defaultLook(h.id, species), saveVersion: Math.max(typeof h.saveVersion === 'number' ? h.saveVersion : 1, HERO_RECORD_VERSION) }
 }
 
-export function migrate(raw: Record<string, unknown>): Record<string, unknown> {
+/** Step N → N+1. */
+const MIGRATIONS: Record<number, (raw: Record<string, unknown>, content: Content | null) => Record<string, unknown>> = {
+  // 1 → 2: the Nightmare death rule joins Sheltered and Mortal (D-095); a version-1 save needs nothing changed.
+  1: (raw) => raw,
+  // 2 → 3: every hero has a look (Phase 5) — the roster and the party records of a delve in progress alike.
+  2: (raw, content) => {
+    const out: Record<string, unknown> = { ...raw }
+    if (Array.isArray(raw.heroes)) out.heroes = raw.heroes.map((h) => withLook(content, h))
+    const active = raw.activeDelve as Record<string, unknown> | null | undefined
+    if (active && typeof active === 'object' && Array.isArray(active.party)) out.activeDelve = { ...active, party: active.party.map((h) => withLook(content, h)) }
+    return out
+  },
+}
+
+export function migrate(raw: Record<string, unknown>, content: Content | null = null): Record<string, unknown> {
   let out = raw
   let version = typeof out.saveVersion === 'number' ? out.saveVersion : 1
   while (version < SAVE_VERSION) {
     const step = MIGRATIONS[version]
     if (!step) break
-    out = { ...step(out), saveVersion: version + 1 }
+    out = { ...step(out, content), saveVersion: version + 1 }
     version += 1
   }
   return out
 }
+
+/**
+ * A look's shape: indexes rounded and clamped to the schema's 0–15 here, to the species' own ranges in repairHero
+ * (clampLook); a field that is not a number or a frame is dropped and takes the hero id's default; a look that is not
+ * an object is rebuilt whole from the id.
+ */
+const lookIndex = v.fallback(v.optional(v.pipe(v.number(), v.finite(), v.transform((n: number) => Math.min(LOOK_INDEX_MAX, Math.max(0, Math.round(n)))))), undefined)
+const LookSchema = v.fallback(v.optional(v.object({ frame: v.fallback(v.optional(v.picklist(BODY_FRAMES)), undefined), skin: lookIndex, face: lookIndex, hair: lookIndex })), undefined)
 
 const int = (min = 0) => v.fallback(v.pipe(v.number(), v.integer(), v.minValue(min)), min)
 const record = <T extends v.GenericSchema>(item: T) => v.fallback(v.record(v.string(), item), {} as never)
@@ -40,7 +67,7 @@ const record = <T extends v.GenericSchema>(item: T) => v.fallback(v.record(v.str
 /** The envelope's shape: numbers clamped to their range, every list defaulted when missing. Heroes are checked below. */
 const ProfileSchema = v.object({
   saveVersion: v.fallback(v.number(), SAVE_VERSION),
-  heroes: v.fallback(v.array(v.looseObject({ id: v.string(), name: v.string(), speciesId: v.string(), classId: v.string() })), []),
+  heroes: v.fallback(v.array(v.looseObject({ id: v.string(), name: v.string(), speciesId: v.string(), classId: v.string(), look: LookSchema })), []),
   partyIds: v.fallback(v.array(v.string()), []),
   deathRule: v.fallback(v.picklist(['mortal', 'sheltered', 'nightmare']), 'mortal' as DeathRule),
   chosenId: v.fallback(v.nullable(v.string()), null),
@@ -138,6 +165,8 @@ function repairHero(content: Content, raw: HeroRecord, notes: string[]): HeroRec
   const petInstance = raw.petInstance && content.pets.has(raw.petInstance.petId) ? raw.petInstance : null
   return {
     ...raw,
+    // Phase 5: the look fits the species (a tone or preset the species no longer has falls back to the id's own).
+    look: clampLook(raw.look, content.species.get(raw.speciesId), raw.id),
     level: Math.max(1, Math.round(raw.level ?? 1)),
     battleXp: Math.max(0, Math.round(raw.battleXp ?? 0)),
     gold: Math.max(0, Math.round(raw.gold ?? 0)),
@@ -154,7 +183,7 @@ export function validateProfile(content: Content, raw: unknown): LoadReport {
   const notes: string[] = []
   try {
     if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) return { profile: null, notes }
-    const migrated = migrate(raw as Record<string, unknown>)
+    const migrated = migrate(raw as Record<string, unknown>, content)
     if (typeof migrated.saveVersion === 'number' && migrated.saveVersion > SAVE_VERSION) {
       return { profile: null, notes: [`This save comes from a newer version of the game (save ${migrated.saveVersion}); update the app first.`] }
     }

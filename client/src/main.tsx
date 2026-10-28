@@ -25,6 +25,7 @@ void bootSettings()
       floor: Math.max(1, Number(p.floor ?? p.zone ?? 1) || 1),
       seed: Math.max(1, Number(p.seed) || 17),
       classes: (p.party ?? 'warden').split(',').filter(Boolean),
+      species: (p.species ?? '').split(','),
       level: Math.max(1, Number(p.level ?? 1) || 1),
       auto: p.auto === '1',
       deathRule: p.death === 'sheltered' ? 'sheltered' : p.death === 'nightmare' ? 'nightmare' : 'mortal',

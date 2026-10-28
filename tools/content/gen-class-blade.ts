@@ -593,7 +593,7 @@ export const blade: ClassSheet = {
   aiRuleDefault: 'IF self HP < 30% THEN item small hp potion on self; IF enemy status bleed THEN twin cut on weakest enemy; ELSE open vein on front enemy',
   visual: {
     gearSetId: 'blade-copper-mail',
-    palette: ['#3f3f46', '#8a4b2a', '#e7dfc8', '#71717a'],
+    palette: ['#4b5563', '#a3262a', '#e7dfc8', '#71717a'],
     notes: 'An X silhouette: two hilts crossed above the shoulders, or one long two-hander diagonal; a single spaulder, bare forearms, no shield.',
   },
   pros: ['Highest sustained single-target damage of the four', 'Two tempos: 800-weight dual strikes or 1,400-weight executes', 'Bloodletter sustain clears floors without potions'],

@@ -1,4 +1,5 @@
 import { useLayoutEffect, useRef, useState } from 'preact/hooks'
+import type { Content } from '../../../../../../sim/src/content.ts'
 import type { FightState } from '../../../../../../sim/src/fight-types.ts'
 import type { StatusDef } from '../../../../../../sim/src/types/content.ts'
 import {
@@ -18,6 +19,7 @@ import {
   type NameBook,
   type StageState,
 } from '../../../../game/fightView.ts'
+import { beatAnims } from '../../../../game/fightAnims.ts'
 import { cue as sceneCue, type SceneCue } from '../../../../scene/sceneBus.ts'
 
 /**
@@ -66,6 +68,8 @@ export class FightPlayback {
   rev = 0
   speed = 1
   reduceMotion = false
+  /** The content (Phase 5): with it, each beat also cues the acting hero's clip. */
+  content: Content | null = null
   private queue: Beat[] = []
   private queuedTo = 0
   private book: NameBook | null = null
@@ -157,6 +161,7 @@ export class FightPlayback {
     const book = this.book
     if (!book) return
     if (cues) {
+      if (this.content && this.fight) for (const c of beatAnims(beat, this.fight, this.content, this.speed)) this.host.cue(c)
       const list = beatCues(beat)
       noteCues(list, this.known)
       for (const c of list) this.host.cue(c)
@@ -208,7 +213,7 @@ export class FightPlayback {
 }
 
 /** The playback for the HUD: one controller per mount, synced on every render, started after it. */
-export function usePlayback(fight: FightState | null, opts: { speed: number; reduceMotion: boolean; statuses?: ReadonlyMap<string, StatusDef> }): FightPlayback {
+export function usePlayback(fight: FightState | null, opts: { speed: number; reduceMotion: boolean; statuses?: ReadonlyMap<string, StatusDef>; content?: Content | null }): FightPlayback {
   const [, setTick] = useState(0)
   const ref = useRef<FightPlayback | null>(null)
   if (ref.current === null) {
@@ -222,6 +227,7 @@ export function usePlayback(fight: FightState | null, opts: { speed: number; red
   const pb = ref.current
   pb.speed = opts.speed
   pb.reduceMotion = opts.reduceMotion
+  pb.content = opts.content ?? null
   pb.sync(fight, opts.statuses)
   useLayoutEffect(() => {
     pb.kick()

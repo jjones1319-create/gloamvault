@@ -2,7 +2,8 @@ import type { Content } from '../../../../../sim/src/content.ts'
 import { createHero, creationAttributes } from '../../../../../sim/src/hero.ts'
 import { Rng } from '../../../../../sim/src/rng.ts'
 import type { Tuning } from '../../../../../sim/src/tuning.ts'
-import type { ClassDef, HeroRecord, PetDef, SkillDef, SpeciesDef } from '../../../../../sim/src/types/content.ts'
+import { clampLook } from '../../../../../sim/src/look.ts'
+import type { ClassDef, HeroLook, HeroRecord, PetDef, SkillDef, SpeciesDef } from '../../../../../sim/src/types/content.ts'
 import { ATTRIBUTES, type Attribute } from '../../../../../sim/src/types/enums.ts'
 
 /**
@@ -10,12 +11,13 @@ import { ATTRIBUTES, type Attribute } from '../../../../../sim/src/types/enums.t
  * free points (at most three on one attribute) × a name. Pure, so the rules are tested apart from the screen.
  */
 
-export const STEPS = ['species', 'class', 'skills', 'egg', 'points', 'review'] as const
+export const STEPS = ['species', 'class', 'look', 'skills', 'egg', 'points', 'review'] as const
 export type StepId = (typeof STEPS)[number]
 
 export const STEP_LABEL: Readonly<Record<StepId, string>> = {
   species: 'Species',
   class: 'Class',
+  look: 'Look',
   skills: 'Skills',
   egg: 'Egg',
   points: 'Points',
@@ -30,6 +32,8 @@ export type FreePoints = Partial<Record<Attribute, number>>
 export interface Draft {
   speciesId: string | null
   classId: string | null
+  /** Phase 5: body frame, skin tone, face preset, hair colour (indexes are clamped to the species at creation). */
+  look: HeroLook
   skillIds: readonly string[]
   eggPetId: string | null
   petName: string
@@ -37,7 +41,18 @@ export interface Draft {
   name: string
 }
 
-export const EMPTY_DRAFT: Draft = { speciesId: null, classId: null, skillIds: [], eggPetId: null, petName: '', points: {}, name: '' }
+/** The look a new hero starts from: the broad frame, the first tone and face, dark brown hair. */
+export const DEFAULT_LOOK: HeroLook = { frame: 'broad', skin: 0, face: 0, hair: 1 }
+
+export const EMPTY_DRAFT: Draft = { speciesId: null, classId: null, look: DEFAULT_LOOK, skillIds: [], eggPetId: null, petName: '', points: {}, name: '' }
+
+/** The draft's look made valid for its species (a tone or preset the species lacks falls back to the first). */
+export function draftLook(content: Content, draft: Draft): HeroLook {
+  const species = draft.speciesId ? content.species.get(draft.speciesId) : undefined
+  const tones = species?.body.skinTones.length ?? 1
+  const faces = species?.body.facePresets ?? 1
+  return clampLook({ ...draft.look, skin: draft.look.skin < tones ? draft.look.skin : 0, face: draft.look.face < faces ? draft.look.face : 0 }, species, 'draft')
+}
 
 /* ---------- names (our own inventions, a handful per species) ---------- */
 
@@ -180,6 +195,7 @@ export function provisionalHero(content: Content, draft: Draft): HeroRecord | nu
       freePoints: draft.points,
       starterSkillIds: skills,
       eggPetId: draft.eggPetId,
+      look: draftLook(content, draft),
     })
   } catch {
     return null
@@ -203,6 +219,9 @@ export function stepBlocker(content: Content, step: StepId, draft: Draft, ctx: S
       return draft.speciesId && content.species.has(draft.speciesId) ? null : 'Choose a species.'
     case 'class':
       return draft.classId && content.classes.has(draft.classId) ? null : 'Choose a class.'
+    case 'look':
+      // Every pick has a default: the look never holds the player up.
+      return null
     case 'skills': {
       const ok = skillOptions(content, draft.classId).map((s) => s.id)
       const valid = draft.skillIds.filter((id) => ok.includes(id))

@@ -15,5 +15,11 @@
     "shade-toxic-jab"
   ],
   "aiRule": null,
-  "bio": "Nobody watches the halfling. That is the whole trick."
+  "bio": "Nobody watches the halfling. That is the whole trick.",
+  "look": {
+    "frame": "slight",
+    "skin": 0,
+    "face": 0,
+    "hair": 4
+  }
 }

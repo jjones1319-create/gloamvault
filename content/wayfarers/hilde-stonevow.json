@@ -15,5 +15,11 @@
     "warden-wall-stance"
   ],
   "aiRule": "IF self HP < 30% THEN item small hp potion on self; IF self HP < 70% THEN counter stance; ELSE shield slam front enemy",
-  "bio": "Swore to hold the Keep's lower gate. The Keep fell; the vow did not."
+  "bio": "Swore to hold the Keep's lower gate. The Keep fell; the vow did not.",
+  "look": {
+    "frame": "slight",
+    "skin": 0,
+    "face": 2,
+    "hair": 5
+  }
 }

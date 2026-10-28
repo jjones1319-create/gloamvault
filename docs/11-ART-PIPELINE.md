@@ -1,6 +1,6 @@
 # 11 — Art Pipeline (Blender → glTF → three.js)
 
-*Last updated 2026-10-27 · rev. 2 (checkpoint 1: open questions answered by delegation — D-099) · rev. 1 2026-10-26 (Claude). Decision D-019. The sister project's `prototype/blender/shade/` (ProjectAscend) is the proven ancestor of this pipeline: scripted, headless, re-runnable, reviewed by looking at renders; its `LOG.md` lists honestly what a script can and cannot reach. This document keeps what worked and fixes what didn't.*
+*Last updated 2026-10-28 · rev. 3 (Phase 5: the hero pipeline as built — §11; the palette replaces the mask textures of §2, D-100–D-109) · rev. 2 (checkpoint 1: open questions answered by delegation — D-099) · rev. 1 2026-10-26 (Claude). Decision D-019. The sister project's `prototype/blender/shade/` (ProjectAscend) is the proven ancestor of this pipeline: scripted, headless, re-runnable, reviewed by looking at renders; its `LOG.md` lists honestly what a script can and cannot reach. This document keeps what worked and fixes what didn't.*
 
 ## 1. The look (style guide)
 
@@ -92,6 +92,41 @@ Defects go in `art/LOG.md` as a numbered list with the fix, round by round (the 
 ## 10. What a script will not reach (say it early)
 
 Faces with character, folds in cloth, hair that is not clumps, and anything that must look *drawn* rather than *built*. The plan reaches "good stylized game art that reads on a phone"; the step beyond is an artist's pass on the same rig and slot split — the pipeline is designed so that pass replaces meshes without touching code. `art/LOG.md` keeps the honest list, as Ascend's does.
+
+## 11. As built in Phase 5 (2026-10-28)
+
+The heroes are built, reviewed and exported; `tools/blender/README.md` is the contract the scripts follow and
+`art/LOG.md` the round-by-round history (round 1 plus every pass's rounds). What changed from the plan above:
+
+- **Two body frames on one topology** (D-100): the CC0 bundle's stylized male and female bodies share one mesh, so they
+  are the **broad** (1.794 m) and **slight** (1.613 m) frames — decimated once to 10.5k triangles with the eyes, the slight
+  shape bound to the full mesh's triangles. Both carry the five species keys and twelve face keys (`build_species.py`).
+- **The rig** (D-102): 65 bones placed by plane cuts on the full mesh (each joint the centre of the loop a cut makes around
+  a limb; fingers walked to their webs; the thumb found as the loop in front of them), the same loops on both frames;
+  bone-heat weights; 8 sockets. Bone scales are absolute (each bone = root × its group factor).
+- **The palette** (D-101) replaces §2's RGB mask textures and `10` §4's "~12 calls per hero": one COLOR_0 attribute
+  (16 palette slots, 10 body regions); the client bakes the species and face morphs at assembly, drops body triangles the
+  gear covers and merges body, parts, gear and weapons into **one skinned mesh = 1 draw call + 1 for the outline**.
+- **Parts**: 30 per frame — six hair styles, three brows, four beards (`beard_tuck` for cheek-guard helms), braids, two
+  Elf ears, Orc ears, three tusk sizes, a topknot, Halfling feet and curls, the Draconid tail, three horn sets, crest and
+  claws; 18 face presets in `client/public/models/hero/manifest.json`. Ears that a species does not have are folded flat by
+  its key, so no body region has to be hidden for them.
+- **Gear** (D-103): six class sets (Warden, Blade, Ranger, Shade, Arcanist, Mender), five pieces each in tier **F** and
+  **S** (+ the Shade's half-cloak and knife handles), built from the body (pushed faces, plane-cut hems, bound free
+  geometry) so they fit both frames and every species key; each set ≤ 4.5k triangles; `hides` per piece.
+- **Weapons**: 46 rigid meshes (every `weaponType` in F and S, three shield types, a quiver with two fills), grip at the
+  origin, blade along +Y (`weapons.glb`, 632 KB).
+- **Clips**: the 17 + 2 of §3 plus **`Guard_Shield`** (20 in `hero_clips.glb`, 1.1 MB; events in `clips.json`). The
+  client keeps only the rotation tracks and the Hips position (scaled by the hero's hips height).
+- **Budgets met**: a dressed hero is 9.1k–11.0k triangles; a four-hero fight 25 draw calls and ~81k triangles (desktop
+  Chrome; the phone numbers are on James's checklist). Exports: `hero_{broad,slight}.glb` 1.3 MB each, gear 0.6–0.8 MB
+  per class and frame — runtime-cached with a content hash in the URL (D-108).
+- **Review renders** are written full size to `art/renders/` (local) and curated to `art/review/` as JPEGs (D-109).
+- **What a script did not reach** (§10, honest list in `art/LOG.md`): faces are 2–8 mm keys without freckles, scars or
+  painted brows; the Draconid has no slit pupils or scale texture; hair is shells and chunky locks; cloth has no sway
+  (no cape bones yet); poses are keyframed tables without secondary motion; the shoulders pinch when an arm rises above
+  the head; a few species variants the class sheets ask for (Draconid hood-down, Orc wider mask, Dwarf short hem, tail
+  splits in coats) are not built — the client hides horns and ears under helmets instead.
 
 **Open questions**
 1. ~~Base meshes from the CC0 bundle (recommended) vs. the procedural loft body for everything (faster, worse faces)?~~ *Checkpoint 1 (D-019): the CC0 base meshes, as recommended; the procedural loft body stays for silhouette tests only.*

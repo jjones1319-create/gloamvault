@@ -4,7 +4,9 @@ import {
   approachFor,
   CELL,
   doorway,
+  cameraRight,
   fightFormation,
+  fightSideFormation,
   floorTiles,
   freeSpot,
   placedRect,
@@ -147,6 +149,48 @@ describe('formations', () => {
     for (const mark of m.values()) {
       expect(Math.abs(mark.x)).toBeLessThan(4)
       expect(Math.abs(mark.z)).toBeLessThan(4)
+    }
+  })
+
+  it('seen from the side, the party stands left of the camera and the enemies right, everyone in the room', () => {
+    const foes: FormationActor[] = [
+      { id: 'rat-1', side: 'enemy', line: 'front', girth: 1 },
+      { id: 'rat-2', side: 'enemy', line: 'front', girth: 1 },
+      { id: 'rat-3', side: 'enemy', line: 'front', girth: 1 },
+      { id: 'boss', side: 'enemy', line: 'back', girth: 2 },
+    ]
+    const four: FormationActor[] = [
+      ...party,
+      { id: 'hero-2', side: 'party', line: 'front', girth: 0.6 },
+      { id: 'hero-3', side: 'party', line: 'back', girth: 0.6 },
+    ]
+    for (const camDir of [
+      { x: 0, z: 1 },
+      { x: 0, z: -1 },
+      { x: 1, z: 0 },
+      { x: -Math.SQRT1_2, z: Math.SQRT1_2 },
+    ]) {
+      const m = fightSideFormation(f, camDir, [...four, ...foes])
+      const right = cameraRight(camDir)
+      const sx = (id: string) => m.get(id)!.x * right.x + m.get(id)!.z * right.z
+      const depth = (id: string) => -(m.get(id)!.x * camDir.x + m.get(id)!.z * camDir.z)
+      for (const id of ['hero-0', 'hero-1', 'hero-2', 'hero-3', 'pet-0']) expect(sx(id)).toBeLessThan(0)
+      for (const id of ['rat-1', 'rat-2', 'rat-3', 'boss']) expect(sx(id)).toBeGreaterThan(0)
+      // The back line stands further out than the front line; the pet comes toward the camera.
+      expect(sx('hero-1')).toBeLessThan(sx('hero-0'))
+      expect(sx('boss')).toBeGreaterThan(sx('rat-2'))
+      expect(depth('pet-0')).toBeLessThan(depth('hero-0'))
+      // A short depth spread (the free part of the phone screen is wide and low).
+      const depths = ['rat-1', 'rat-2', 'rat-3'].map(depth)
+      expect(Math.max(...depths) - Math.min(...depths)).toBeLessThan(2.2)
+      // The two sides face each other (each turned a little toward the camera).
+      const face = (id: string) => ({ x: Math.sin(m.get(id)!.yaw), z: Math.cos(m.get(id)!.yaw) })
+      expect(face('hero-0').x * right.x + face('hero-0').z * right.z).toBeGreaterThan(0.6)
+      expect(face('rat-1').x * right.x + face('rat-1').z * right.z).toBeLessThan(-0.6)
+      for (const mark of m.values()) {
+        expect(Math.abs(mark.x)).toBeLessThan(4)
+        expect(Math.abs(mark.z)).toBeLessThan(4)
+      }
     }
   })
 

@@ -1683,8 +1683,22 @@ function rule28(ctx: Ctx): Failure[] {
   return out
 }
 
+/** A look's skin tone and face preset must exist for the species (Phase 5: heroLook in common.schema.json). */
+function lookFailures(file: string, rule: number, look: Json | undefined, sp: Rec | undefined): Failure[] {
+  const l = obj(look)
+  if (!l || !sp) return []
+  const out: Failure[] = []
+  const tones = Array.isArray(at(sp.json, 'body', 'skinTones')) ? (at(sp.json, 'body', 'skinTones') as Json[]).length : 0
+  const faces = num(at(sp.json, 'body', 'facePresets')) ?? 0
+  const skin = num(l.skin)
+  const face = num(l.face)
+  if (skin !== undefined && skin >= tones) out.push(fail(file, rule, `look.skin ${skin}: species '${sp.id}' has ${tones} skin tones`))
+  if (face !== undefined && face >= faces) out.push(fail(file, rule, `look.face ${face}: species '${sp.id}' has ${faces} face presets`))
+  return out
+}
+
 // ---------------------------------------------------------------------------------------------------------------
-// Rule 29: hero presets by species, naturalArmor, free points, creation values (saves only)
+// Rule 29: hero presets by species, naturalArmor, free points, creation values, the look (saves only)
 
 function rule29(ctx: Ctx): Failure[] {
   const out: Failure[] = []
@@ -1692,6 +1706,7 @@ function rule29(ctx: Ctx): Failure[] {
     const sp = ctx.species.get(str(h.json.speciesId) ?? '')
     const cl = ctx.classes.get(str(h.json.classId) ?? '')
     const presets = objs(h.json.loadoutPresets)
+    out.push(...lookFailures(h.file, 29, h.json.look, sp))
     if (sp) {
       const traits = objs(sp.json.traits)
       let allowed = ctx.t.defaultLoadoutPresets
@@ -1884,6 +1899,7 @@ function rule34(ctx: Ctx): Failure[] {
     const species = str(w.json.speciesId)
     const classId = str(w.json.classId)
     if (species !== undefined && !ctx.species.has(species)) out.push(fail(w.file, 34, `species '${species}' does not exist`))
+    out.push(...lookFailures(w.file, 34, w.json.look, ctx.species.get(species ?? '')))
     if (classId !== undefined && !ctx.classes.has(classId)) out.push(fail(w.file, 34, `class '${classId}' does not exist`))
     let actives = 0
     let passives = 0

@@ -328,6 +328,10 @@
       "type": "integer",
       "description": "Battle XP earned from won fights (D-082); the level follows it.",
       "minimum": 0
+    },
+    "look": {
+      "$ref": "common.schema.json#/$defs/heroLook",
+      "description": "How the hero looks (Phase 5). Optional for records written before save 3; the save loader gives every hero one (a hash of the id) and createHero always writes one."
     }
   },
   "required": [

@@ -1,8 +1,8 @@
 # 06 — Monsters
 
-*Last updated 2026-10-27 · rev. 2 (checkpoint 1: open questions answered by delegation; the Nightmare difficulty preset renamed Dread — D-095, D-099) · rev. 1 2026-10-26 · numbers are tuning starting points*
+*Last updated 2026-10-28 · rev. 3 (Phase 7 prep: Gravehollow at 8 floors — the Drowned Vault F7–8 with Sister Naesa on F7 (L11) and the Hollow King on F8 (L13), the Vault's encounters and monsters re-floored, the Vault Leech without a clock — D-098, D-104) · rev. 2 (checkpoint 1: open questions answered by delegation; the Nightmare difficulty preset renamed Dread — D-095, D-099) · rev. 1 2026-10-26 · numbers are tuning starting points*
 
-**How to read this file.** Every monster is a template over a **per-level baseline** the simulator owns and tunes: at level L, **HP 40 + 12L · Attack 8 + 2L · Defense 2 + 1.5L · Speed 100 · gold 5 + 3L** (in `tuning.json` → `dungeon.monsterBaseline` since D-078; the XP unit is 8 + 2L). An entry gives multipliers of that baseline (HP× / Att× / Def× / gold×), an absolute Speed, and an **XP class** (fodder 1 · special 2 · elite 3 · monster 6 · boss 25, times the level's XP unit). Monster level is the floor's (rulebook §11.2): Gravehollow F1 L1 · F2 L2 · F3 L4 · F4 L5 · F5 L7 · F6 L8 · F7 L10 · F8 L11 · F9 L13 · F10 L14. **Roles** are Vermintide's, and every family has all five: **Fodder** (many, weak), **Elite** (armored — needs the right damage type), **Special** (a disabler — Grab / Net / Web / Stun / Fear / pull — that removes one hero until the party reacts), **Monster** (big, rare, a fight on its own), **Boss**; plus the zone's **Hunter** (§4.5) and the **Elite affixes** of §2. Attack lines read `Name — type/element — weight — multiplier — effect — AI weight %` (weights sum to 100; the behavior line overrides them). Statuses are only the rulebook's set (§3.5). Each entry becomes `content/monsters/<id>.json` with the block's field names; the visual brief becomes `art/briefs/monsters/<id>.md` (`11-ART-PIPELINE.md`); encounter tables go to `content/encounters/<id>.json` (one record per encounter; `10-TECH-PLAN.md` §3 owns the layout). A `Technique:` line names the class-sheet skill(s) a monster teaches (`docs/classes/<class>.md` owns the skill; this file owns which monster teaches it). Nothing is borrowed from another franchise; generic words (skeleton, ghoul, troll) are the only shared vocabulary.
+**How to read this file.** Every monster is a template over a **per-level baseline** the simulator owns and tunes: at level L, **HP 40 + 12L · Attack 8 + 2L · Defense 2 + 1.5L · Speed 100 · gold 5 + 3L** (in `tuning.json` → `dungeon.monsterBaseline` since D-078; the XP unit is 8 + 2L). An entry gives multipliers of that baseline (HP× / Att× / Def× / gold×), an absolute Speed, and an **XP class** (fodder 1 · special 2 · elite 3 · monster 6 · boss 25, times the level's XP unit). Monster level is the floor's (rulebook §11.2): Gravehollow F1 L1 · F2 L2 · F3 L4 · F4 L5 · F5 L7 · F6 L8 · F7 L11 · F8 L13 (eight floors, `07` §2.3; D-104). **Roles** are Vermintide's, and every family has all five: **Fodder** (many, weak), **Elite** (armored — needs the right damage type), **Special** (a disabler — Grab / Net / Web / Stun / Fear / pull — that removes one hero until the party reacts), **Monster** (big, rare, a fight on its own), **Boss**; plus the zone's **Hunter** (§4.5) and the **Elite affixes** of §2. Attack lines read `Name — type/element — weight — multiplier — effect — AI weight %` (weights sum to 100; the behavior line overrides them). Statuses are only the rulebook's set (§3.5). Each entry becomes `content/monsters/<id>.json` with the block's field names; the visual brief becomes `art/briefs/monsters/<id>.md` (`11-ART-PIPELINE.md`); encounter tables go to `content/encounters/<id>.json` (one record per encounter; `10-TECH-PLAN.md` §3 owns the layout). A `Technique:` line names the class-sheet skill(s) a monster teaches (`docs/classes/<class>.md` owns the skill; this file owns which monster teaches it). Nothing is borrowed from another franchise; generic words (skeleton, ghoul, troll) are the only shared vocabulary.
 
 ---
 
@@ -14,7 +14,7 @@ Twelve families across four dungeons. **Materials** follow the ladder of ruleboo
 |---|---|---|---|---|---|---|---|
 | **Vermin & the Grinning Company** | Gravehollow / the Cellars (F1–3) | 1–4 | Rawhide, Copper, Burlap, Pine; Leather (E) from F2 / Rat-tail Charm, Marked Cards (affix stones), Bandit Lockpick (a Skeleton Key) | Bleed, Poison, Web, Grab (net), Fear | +15 (rats and bandits ambush) | Fire (vermin), Blunt (Bruiser) | Poison (vermin ×0.5); bandits none |
 | **The Restless Dead** | Gravehollow / the Crypts (F4–6) | 5–8 | Bronze, Iron, Linen, Wool, Ash; Cured Ghoulhide (= Boiled Leather, D) / Bone Shards (sell, +Vit stone), Grave Candle (Holy stone) | Fear, Grab, Web, Curse, Blind, Daze | −5 (they shamble; bats and wraiths +10 individually) | Holy ×1.5, Fire ×1.5 (corpses), Blunt ×1.5 (bone) | Pierce ×0.5 (bone), Shadow ×0.5; immune Poison, Fear, Bleed (bone) |
-| **The Tidebound** | Gravehollow / the Drowned Vault (F7–9) | 10–13 | Steel, Silk, Yew; Sharkskin (= Wolf Hide, C) / Brine Pearl (Frost stone), Tide Glass (Lightning stone), Sentinel Core | Chill, Grab, Root (pull), Silence, Curse, Petrify | +5 (tentacles +15 individually) | Lightning ×1.5 (wet), Blunt (sentinels), Fire (oozes) | Frost ×0.5; constructs immune Poison, Bleed |
+| **The Tidebound** | Gravehollow / the Drowned Vault (F7–8) | 11–13 | Steel, Silk, Yew; Sharkskin (= Wolf Hide, C) / Brine Pearl (Frost stone), Tide Glass (Lightning stone), Sentinel Core | Chill, Grab, Root (pull), Silence, Curse, Petrify | +5 (tentacles +15 individually) | Lightning ×1.5 (wet), Blunt (sentinels), Fire (oozes) | Frost ×0.5; constructs immune Poison, Bleed |
 | **Capfolk & cave beasts** | Fungal Deep / Mycelium Gardens | 12–16 | Boiled Leather, Oak; Iron / Spore Sac (Poison stone), Owl Feather (Detection stone) | Poison, Daze, Blind, Silence | −10 (capfolk), +15 (beasts) | Fire ×1.5 | Poison ×0.5; capfolk immune Poison |
 | **Trolls & slimes** | Fungal Deep / Troll Warrens | 17–21 | Wolf Hide, Steel, Yew / Troll Marrow (Regen stone), Acid Gland (wear stone) | Grab, Weaken, Bleed, Slow | +5 | Fire ×1.5 (trolls), Frost (slimes) | Blunt ×0.5 (slimes), Slash ×0.5 (slimes split) |
 | **The spore-touched** | Fungal Deep / Spore Heart | 22–26 | Wolf Hide, Silk / Blacksteel (B) seed stock / Bloom Heart (Regen stone), Hierophant's Eye | Poison, Silence, Curse, Mark | 0 | Fire ×1.5, Holy ×1.5 | Poison immune, Frost ×0.5 |
@@ -54,7 +54,7 @@ Pool per dungeon: all 12 are available from F3 of Gravehollow; F1–2 roll from 
 
 ## §3 Gravehollow Keep — the full bestiary
 
-Ten floors, three zones, 35 regular monsters, 3 hunters, 3 zone bosses, 1 final boss. Level bands: Cellars L1–4, Crypts L5–8, Vault L10–13, throne L14. Encounter compositions are the 3-player table; §8 scales them.
+Eight floors (D-098), three zones, 35 regular monsters, 3 hunters, 3 zone bosses, 1 final boss. Level bands (`07` §2.3): Cellars L1–4 (F1–3), Crypts L5–8 (F4–6), the Drowned Vault L11 (F7, Sister Naesa's floor) and the throne L13 (F8). Encounter compositions are the 3-player table; §8 scales them.
 
 ### 3.1 Zone 1 — the Cellars (F1–3): Vermin & the Grinning Company
 
@@ -333,7 +333,7 @@ Ten floors, three zones, 35 regular monsters, 3 hunters, 3 zone bosses, 1 final 
 - First-kill drops: Iron ×8 + Wool ×8 + Bone Shards ×10, a Tier III Tome, **one A-grade item** (zone-boss rule, rulebook §6.2), the zone Relic **the Barrow Bell** (D Relic, `08` §3: once per fight, Taunt every enemy onto you for 2 rounds and Fortify 1 round), 1 Grand chest key. Later kills: stack halves, no Relic, A-grade 10 %.
 - Visual: a three-metre skeletal knight in a bell-hung mantle, lantern on a chain in one hand, a slab-sword in the other, 3.0 m; skeleton base, scale 1.75, mantle, lantern and bell props; palette iron-black / bone / lantern green→blue; must read: the swinging lantern; anims Idle/Move/Attack1/Attack2/Hit/Death/Toll/Bulwark/Verdict/Grip/PhaseTurn; 11k tris.
 
-### 3.3 Zone 3 — the Drowned Vault (F7–9): the Tidebound
+### 3.3 Zone 3 — the Drowned Vault (F7–8): the Tidebound
 
 **How the family fights.** The Vault is flooded to the knee and the cult that worships what lives under it fights as a **procession**: Blades in front with paired hooks, Acolytes behind singing Fortify into them, and the floor itself a threat — **Deep Tentacles** rise from either row and drag a hero under (Grab), while a **Flagellant** hauls your archer to the front by the ankle (pull + Root). Two elites: the **Drowner** in a diving-bell helm (plate — Lightning and maces) and the **Vault Sentinel**, a construct that ignores Poison and Bleed entirely — a Shade with only daggers has nothing here, which is the point. The **Brine Hag** Curses first, then petrifies a Cursed hero (cleanse the Curse and the Hex fails). Oozes are slow walls that split under Slash and burn. Everything is wet: Lightning ×1.5 across the family, Frost ×0.5. Ignore the Acolytes and Fortified Blades outlast the healer's Mana; ignore the Tentacle and you lose a hero every three turns.
 
@@ -341,17 +341,19 @@ Ten floors, three zones, 35 regular monsters, 3 hunters, 3 zone bosses, 1 final 
 
 | Encounter | Composition | Floors | Weight |
 |---|---|---|---|
-| Tide Procession | 2 Tidebound Blade + 2 Tidebound Acolyte | F7–8 | 20 |
-| Drowned Choir | 3 Drowned Thrall + 1 Vault Lantern | F7–9 | 15 |
-| Penance | 1 Tidebound Flagellant + 2 Tidebound Blade + 1 Tidebound Acolyte | F7–9 | 15 |
-| Sentinel Post | 1 Vault Sentinel + 2 Drowned Thrall | F8–9 | 12 |
-| Hag's Salt Circle | 1 Brine Hag + 2 Brine Ooze | F8–9 | 12 |
-| From the Deep | 2 Deep Tentacle + 1 Tidebound Drowner | F8–9 | 14 |
-| The Maw (Monster) | 1 Deep Maw + 1 Deep Tentacle | F8–9 | 8 (max one per floor) |
-| *Pearl Ooze* | joins any Vault fight at 5 % | F7–9 | — |
+| Tide Procession | 2 Tidebound Blade + 2 Tidebound Acolyte | F7 | 20 |
+| Drowned Choir | 3 Drowned Thrall + 1 Vault Lantern | F7 | 15 |
+| Penance | 1 Tidebound Flagellant + 2 Tidebound Blade + 1 Tidebound Acolyte | F7 | 15 |
+| Sentinel Post | 1 Vault Sentinel + 2 Drowned Thrall | F7 | 12 |
+| Hag's Salt Circle | 1 Brine Hag + 2 Brine Ooze | F7 | 12 |
+| From the Deep | 2 Deep Tentacle + 1 Tidebound Drowner | F7; F8's antechamber at ×1.2 count (`07` §2.3) | 14 |
+| The Maw (Monster) | 1 Deep Maw + 1 Deep Tentacle | F7 | 8 (max one per floor) |
+| *Pearl Ooze* | joins any Vault fight at 5 % | F7–8 | — |
+
+*The eight-floor tower (D-098) folds rev. 1's F7–9 into F7, so every Vault encounter is legal there; the throne floor's antechamber is the only fight on F8 (D-104).*
 
 #### Tidebound Acolyte
-`tidebound-acolyte` · Fodder · Medium · Back · F7–9 (L10–13) · HP ×0.8 · Att ×1.1 (spell) · Def ×0.7 · Spd 100 · XP fodder (1) · gold ×1.2
+`tidebound-acolyte` · Fodder · Medium · Back · F7 (L11) · HP ×0.8 · Att ×1.1 (spell) · Def ×0.7 · Spd 100 · XP fodder (1) · gold ×1.2
 - Attacks: Brine Lash — Frost — normal 1,000 — ×1.0, either row — Chill (2) — 55 % · Hymn of the Deep — — normal 1,000 — — Fortify (2) on all Tidebound in the front — 30 % · Salt Flask — Frost — light 800 — ×0.6 to one target — Slow (1) — 15 %
 - Resist Frost ×0.5 · weak Lightning ×1.5 · immune —
 - Behavior: Hymns on its first turn when a Blade is alive; Lashes the hero already Chilled (a second Chill is Freeze).
@@ -360,7 +362,7 @@ Ten floors, three zones, 35 regular monsters, 3 hunters, 3 zone bosses, 1 final 
 - Visual: a barefoot cultist in a wet grey shroud with a conch at the belt, 1.7 m; humanoid base, cult costume set A; palette wet-grey / sea-green trim / pearl white; must read: the hanging conch; anims Idle/Move/Attack1/Attack2/Hit/Death/Cast; 3.5k tris.
 
 #### Tidebound Blade
-`tidebound-blade` · Fodder · Medium · Front · F7–9 (L10–13) · HP ×1.0 · Att ×1.2 · Def ×0.9 · Spd 120 · XP fodder (1) · gold ×1.2
+`tidebound-blade` · Fodder · Medium · Front · F7 (L11) · HP ×1.0 · Att ×1.2 · Def ×0.9 · Spd 120 · XP fodder (1) · gold ×1.2
 - Attacks: Hook Pair — Slash — light 800 — ×0.7 ×2 hits — 30 % Bleed (2) per hit — 65 % · Gut Hook — Pierce — normal 1,000 — ×1.3 — Bleed (3) — 35 %
 - Resist Frost ×0.5 · weak Lightning ×1.5 · immune —
 - Behavior: attacks the hero with the lowest Defense in reach; under Fortify it stops dodging and attacks twice (Haste).
@@ -369,7 +371,7 @@ Ten floors, three zones, 35 regular monsters, 3 hunters, 3 zone bosses, 1 final 
 - Visual: a lean cultist with two boat-hooks and a sewn-shut mouth, 1.7 m; humanoid base, cult set A + hooks; palette wet-grey / rust hooks / blue thread; must read: the paired hooks; anims as cultist + DualAttack; 3.5k tris.
 
 #### Tidebound Flagellant
-`tidebound-flagellant` · Special · Medium · Front · F7–9 (L10–13) · HP ×1.4 · Att ×1.1 · Def ×0.6 · Spd 105 · XP special (2) · gold ×1.5
+`tidebound-flagellant` · Special · Medium · Front · F7 (L11) · HP ×1.4 · Att ×1.1 · Def ×0.6 · Spd 105 · XP special (2) · gold ×1.5
 - Attacks: Chain of Penance — Pierce — normal 1,000 — ×0.8 — **pulls** one back-row hero to the front and Roots (2) them — 45 % · Scourge — Slash — normal 1,000 — ×1.2, self-damage 5 % — Bleed (2) — 40 % · Ecstasy — — light 800 — — Haste (2) + Weaken (2) on itself — 15 %
 - Resist Frost ×0.5 · weak Lightning ×1.5 · immune Fear, Taunt
 - Behavior: pulls the hero with the highest ranged Attack; gains +10 % Attack per 10 % HP lost (shown as a rising red bar); kill it fast or heal around it.
@@ -378,7 +380,7 @@ Ten floors, three zones, 35 regular monsters, 3 hunters, 3 zone bosses, 1 final 
 - Visual: a shirtless cultist wrapped in barbed chain, dragging a hooked length of it, 1.8 m; humanoid base, cult set B (chain rig); palette raw-pink / rust chain / grey water; must read: the trailing chain; anims as cultist + Throw/Pull; 4k tris.
 
 #### Tidebound Drowner
-`tidebound-drowner` · Elite · Large · Front · F8–9 (L11–13) · HP ×2.3 · Att ×1.3 · Def ×1.8 · Spd 85 · XP elite (3) · gold ×2.5
+`tidebound-drowner` · Elite · Large · Front · F7–8 (L11–13) · HP ×2.3 · Att ×1.3 · Def ×1.8 · Spd 85 · XP elite (3) · gold ×2.5
 - Attacks: Anchor Maul — Blunt — heavy 1,400 — ×1.7 — Daze 30 % — 50 % · Bell Toll — — normal 1,000 — ×0.5 to the front row — Silence (1) — 25 % · Hold Under — Blunt — normal 1,000 — ×1.0 — Grab (release after 2 turns) — 25 %
 - Resist Slash ×0.5, Pierce ×0.5 (plate), Frost ×0.5 · weak Lightning ×1.5 (×2.0 while standing in water: the Vault's rule), Blunt ×1.5 · immune Chill, Freeze
 - Behavior: Tolls when a caster is in the back row; Holds Under whoever is Chilled.
@@ -387,7 +389,7 @@ Ten floors, three zones, 35 regular monsters, 3 hunters, 3 zone bosses, 1 final 
 - Visual: a huge cultist in a riveted brass diving-bell helm and lead-weighted plate, 2.2 m; humanoid base, scale 1.3, cult set C (bell plate); palette verdigris brass / lead grey / pale glass; must read: the round bell helm; anims as cultist + Maul/Toll/Hold; 5.5k tris.
 
 #### Drowned Thrall
-`drowned-thrall` · Fodder · Medium · Front · F7–9 (L10–13) · HP ×1.3 · Att ×1.1 · Def ×0.7 · Spd 75 · XP fodder (1) · gold ×1.0
+`drowned-thrall` · Fodder · Medium · Front · F7 (L11) · HP ×1.3 · Att ×1.1 · Def ×0.7 · Spd 75 · XP fodder (1) · gold ×1.0
 - Attacks: Waterlogged Fist — Blunt — normal 1,000 — ×1.1 — Chill (2) — 65 % · Cling — — normal 1,000 — ×0.5 — Slow (2), the thrall takes ×1.5 from the target's allies while clinging — 35 %
 - Resist Frost ×0.5, Fire ×0.5 (wet) · weak Lightning ×1.5, Holy ×1.5 · immune Poison, Fear, Chill
 - Behavior: Clings to the hero with the highest Speed; keeps attacking the hero it Clung to; a Lightning hit on a Clinging thrall chains ×0.5 to every wet Tidebound in the front.
@@ -396,7 +398,7 @@ Ten floors, three zones, 35 regular monsters, 3 hunters, 3 zone bosses, 1 final 
 - Visual: a drowned, barnacled corpse in cult rags with kelp in its hair, 1.8 m; zombie base, barnacle decals, wet shader; palette blue-grey / barnacle white / kelp green; must read: the barnacle crust; anims as zombie + Cling; 3k tris.
 
 #### Vault Lantern
-`vault-lantern` · Fodder · Small · Back · F7–9 (L10–13) · HP ×0.5 · Att ×1.0 (spell) · Def ×0.3 · Spd 120 · XP fodder (1) · gold ×0.8
+`vault-lantern` · Fodder · Small · Back · F7 (L11) · HP ×0.5 · Att ×1.0 (spell) · Def ×0.3 · Spd 120 · XP fodder (1) · gold ×0.8
 - Attacks: Drowned Light — Holy/Shadow — light 800 — ×0.7 — Blind (2) — 55 % · Lure — — normal 1,000 — — the floor's light meter −10 on the fight's end if it survives; shown as a dimming icon — 25 % · Flicker — — light 800 — — Dodge 50 % until its next turn — 20 %
 - Resist Holy ×0.5, Shadow ×0.5 · weak Lightning ×1.5 · immune Poison, Bleed, Grab, Web, Root, Petrify
 - Behavior: Blinds the hero with the highest Perception; Flickers when Marked; dies into +5 light (a reward for killing it).
@@ -405,7 +407,7 @@ Ten floors, three zones, 35 regular monsters, 3 hunters, 3 zone bosses, 1 final 
 - Visual: a drowned lantern wrapped in a pale will-o'-wisp, 0.5 m floating; **wisp base**, lantern cage prop; palette sea-green glow / rusted cage / white core; must read: the cage around the glow; anims Idle(hover)/Move/Attack1/Hit/Death/Flicker; 1.5k tris.
 
 #### Deep Tentacle
-`deep-tentacle` · Special · Large · either · F7–9 (L10–13) · HP ×1.6 · Att ×1.3 · Def ×0.9 · Spd 90 · XP special (2) · gold ×1.5
+`deep-tentacle` · Special · Large · either · F7–8 (L11–13) · HP ×1.6 · Att ×1.3 · Def ×0.9 · Spd 90 · XP special (2) · gold ×1.5
 - Attacks: Drag Under — — normal 1,000 — ×0.5 — **Grab**; the grabbed hero also takes Chill each of the tentacle's turns — 50 % · Slam — Blunt — heavy 1,400 — ×1.6, either row — Daze 25 % — 35 % · Submerge — — light 800 — — cannot be targeted until its next turn; **tell:** ripples under a hero's row — 15 %
 - Resist Frost ×0.5, Pierce ×0.5 · weak Slash ×1.5, Lightning ×1.5 · immune Fear, Grab, Web, Root, Petrify, Blind
 - Behavior: rises in the row with the most heroes; Drags the hero with the lowest Strength; releases at 10 % of its HP (§7) — Slash is quickest; ambush +15.
@@ -414,7 +416,7 @@ Ten floors, three zones, 35 regular monsters, 3 hunters, 3 zone bosses, 1 final 
 - Visual: a single grey-green tentacle thick as a hero, 2.5 m out of the water, ringed with pale suckers; **tentacle base**; palette kelp-green / sucker white / black tip; must read: the suckers; anims Rise/Idle/Attack1/Attack2/Hit/Death/Submerge/Grab-hold; 3.5k tris.
 
 #### Deep Maw
-`deep-maw` · Monster · Huge · Front · F8–9 (L11–13) · HP ×6 · Att ×1.5 · Def ×1.2 · Spd 80 · XP monster (6) · gold ×5
+`deep-maw` · Monster · Huge · Front · F7 (L11) · HP ×6 · Att ×1.5 · Def ×1.2 · Spd 80 · XP monster (6) · gold ×5
 - Attacks: Undertow — Frost — heavy 1,400 — ×1.2 to every hero — Chill (2), front-row heroes also Slow (1) — 30 % · Tentacle Ring — Blunt — normal 1,000 — ×0.9 to both front heroes — 30 % · Swallow — — normal 1,000 — — Grab a Chilled front hero; they take ×0.5 Frost per Maw turn — 25 % · Spawn — — normal 1,000 — — raises 1 Deep Tentacle (×0.6 HP) — 15 %
 - Resist Frost ×0.5, Pierce ×0.5 · weak Lightning ×1.5, Slash ×1.5 · immune Fear, Grab, Web, Root, Petrify, Blind, Taunt
 - Behavior: Undertow every third turn (tell: the water drops); Swallows only a Chilled hero — cleanse Chill and it cannot; Huge (§7).
@@ -423,7 +425,7 @@ Ten floors, three zones, 35 regular monsters, 3 hunters, 3 zone bosses, 1 final 
 - Visual: a ring of five tentacles around a toothed throat that fills the water in front of the party, 4 m across; tentacle base ×5 instanced around a maw plate; palette kelp-green / throat pink / teeth white; must read: the ring of tentacles; anims Idle/Attack1/Attack2/Hit/Death/Undertow/Swallow/Spawn; 8k tris.
 
 #### Vault Sentinel
-`vault-sentinel` · Elite · Large · Front · F8–9 (L11–13) · HP ×2.6 · Att ×1.2 · Def ×2.0 · Spd 80 · XP elite (3) · gold ×2.5
+`vault-sentinel` · Elite · Large · Front · F7 (L11) · HP ×2.6 · Att ×1.2 · Def ×2.0 · Spd 80 · XP elite (3) · gold ×2.5
 - Attacks: Halberd — Slash — heavy 1,400 — ×1.5, reaches the back row — — 45 % · Tide Ward — — normal 1,000 — — Shield (25 % max HP) on itself, Fortify (2) on the front — 30 % · Core Pulse — Lightning — heavy 1,400 — ×1.0 to the front row — Shock (2) — 25 % (only below 50 % HP)
 - Resist Slash ×0.5, Pierce ×0.5, Frost ×0.5, Fire ×0.5 · weak Lightning ×1.5, Blunt ×1.5 · immune Poison, Bleed, Fear, Chill, Freeze, Grab, Petrify
 - Behavior: Wards on its first turn and every 4th; Halberds the hero with the highest Attack; its chest core glows when Core Pulse is next (tell).
@@ -432,7 +434,7 @@ Ten floors, three zones, 35 regular monsters, 3 hunters, 3 zone bosses, 1 final 
 - Visual: a verdigris bronze statue-knight with a halberd and a lit crystal in its chest, water pouring from its joints, 2.4 m; **sentinel base**; palette verdigris / bronze / blue core; must read: the chest crystal; anims Idle/Move/Attack1/Attack2/Hit/Death/Ward/Pulse; 5.5k tris.
 
 #### Brine Hag
-`brine-hag` · Special · Medium · Back · F8–9 (L11–13) · HP ×1.3 · Att ×1.3 (spell) · Def ×0.7 · Spd 100 · XP special (2) · gold ×2.0
+`brine-hag` · Special · Medium · Back · F7 (L11) · HP ×1.3 · Att ×1.3 (spell) · Def ×0.7 · Spd 100 · XP special (2) · gold ×2.0
 - Attacks: Salt Curse — Shadow — normal 1,000 — ×0.6 — Curse (3) — 40 % · Salt Hex — Shadow — heavy 1,400 — — **Petrify** a Cursed hero (2 turns; fails on an un-Cursed one); **tell:** she cackles the turn before — 30 % · Cackle — — light 800 — — Fear (1) on the hero with the lowest Willpower — 15 % · Brine Claw — Slash — light 800 — ×0.9 — — 15 %
 - Resist Frost ×0.5, Shadow ×0.5 · weak Lightning ×1.5, Holy ×1.5 · immune Fear, Silence (she sings through it)
 - Behavior: Curses the healer, Hexes the Cursed hero with the highest Attack; Silencing her does nothing but Dazing or Blinding her skips the Hex.
@@ -441,7 +443,7 @@ Ten floors, three zones, 35 regular monsters, 3 hunters, 3 zone bosses, 1 final 
 - Visual: a long-limbed crone of salt-crusted skin with a brine-pearl crown, 1.9 m; humanoid base, crone costume set; palette salt-white / drowned blue / pearl pink; must read: the pearl crown; anims Idle/Move/Attack1/Attack2/Hit/Death/Cast/Cackle; 4.5k tris.
 
 #### Brine Ooze
-`brine-ooze` · Fodder · Large · Front · F7–9 (L10–13) · HP ×1.6 · Att ×1.0 · Def ×0.5 · Spd 70 · XP fodder (1) · gold ×0.8
+`brine-ooze` · Fodder · Large · Front · F7 (L11) · HP ×1.6 · Att ×1.0 · Def ×0.5 · Spd 70 · XP fodder (1) · gold ×0.8
 - Attacks: Engulf — Blunt/Frost — normal 1,000 — ×1.1 — Chill (2), −5 % durability on the target's chest piece — 70 % · Spit — Frost — normal 1,000 — ×0.8, either row — Slow (1) — 30 %
 - Resist Blunt ×0.5, Frost ×0.5 · weak Fire ×1.5, Lightning ×1.5 · immune Pierce (×0.25), Poison, Bleed, Fear, Grab, Web, Root, Blind, Petrify
 - Behavior: a Slash hit that does not kill it **splits** it into two Oozes at half HP (max 4); attacks the hero in heaviest armor.
@@ -450,7 +452,7 @@ Ten floors, three zones, 35 regular monsters, 3 hunters, 3 zone bosses, 1 final 
 - Visual: a waist-high mound of grey-green brine with things suspended in it, 1.4 m; **ooze base**; palette sea-glass green / foam white / rust objects; must read: the objects inside; anims Idle/Move/Attack1/Attack2/Hit/Death/Split; 2.5k tris.
 
 #### Pearl Ooze
-`pearl-ooze` · Fodder (rare) · Medium · Back · F7–9 (L10–13) · HP ×1.2 · Att ×0.5 · Def ×0.4 · Spd 140 · XP fodder (1) · gold ×6
+`pearl-ooze` · Fodder (rare) · Medium · Back · F7–8 (L11–13) · HP ×1.2 · Att ×0.5 · Def ×0.4 · Spd 140 · XP fodder (1) · gold ×6
 - Attacks: Spit — Frost — light 800 — ×0.5 — — 40 % · Flee — — light 800 — — leaves the fight after 3 of its turns (tell: a countdown on its nameplate) — 60 %
 - Resist Frost ×0.5 · weak Fire ×1.5, Lightning ×1.5 · immune Pierce (×0.25), Poison, Bleed, Grab, Web
 - Behavior: never attacks a hero that is attacking it; Root or Slow stops the countdown; a kill drops its whole stack.
@@ -459,17 +461,17 @@ Ten floors, three zones, 35 regular monsters, 3 hunters, 3 zone bosses, 1 final 
 - Visual: a translucent ooze full of pearls, shimmering, 1.0 m; ooze base, scale 0.8, pearl inclusions, iridescent shader; palette pearl white / rainbow sheen / sea-glass; must read: the pearls; anims as ooze + Flee; 2.5k tris.
 
 #### Hunter — the Vault Leech
-`vault-leech` · Hunter · Huge · Front · F7–8 (level = floor +3) · HP ×9 · Att ×1.5 · Def ×1.3 · Spd 105 · XP monster (6) · gold ×6
+`vault-leech` · Hunter · Huge · Front · F7 (level = floor +3: L14; no clock — see Stalking) · HP ×9 · Att ×1.5 · Def ×1.3 · Spd 105 · XP monster (6) · gold ×6
 - Attacks: Latch — Pierce — normal 1,000 — ×1.0 — Grab; each of its turns while latched drains 15 % of the hero's pool and heals the Leech 5 % — 45 % · Bloat Slam — Blunt — heavy 1,400 — ×1.9 to the front row — Daze — 30 % · Brine Spray — Frost — normal 1,000 — ×0.9 to all — Chill (2) — 25 %
 - Resist Frost ×0.5, Blunt ×0.5 · weak Lightning ×1.5, Fire ×1.5, Slash ×1.5 · immune Poison, Bleed, Fear, Grab, Web, Root, Petrify, Blind
 - Behavior: Latches the hero with the fullest pool; releases on 10 % HP damage; Bloat Slams after two Latch turns.
 - Parts: Steel ×3 (100 %) / **guaranteed** rare: Leech Heart (Leech stone) / break: mouth ring → no drain
 - Technique: —
-- Stalking: enters at clock 40 through the water, one room per 2 ticks (a slick on the minimap); cannot be fled from in its room; stairs end it; never on F9.
+- Stalking: **none in Gravehollow** — no hunter stalks a boss floor (D-055) and both Vault floors carry one (Naesa on F7, the King on F8; `07` §2.9). It comes when the Leech Jar rolls it (`07` §2.4: a fight in that room, not an ambush, and it cannot be fled) and answers the Hollow King in phase 3 unless killed this delve. Its hunter block keeps the numbers it would stalk by (clock 40, through the water, one room per 2 ticks, a slick on the minimap); rev. 1's moving through rests went with the clock (D-104).
 - Visual: a segmented leech with a ringed mouth as wide as a hero, trailing a sack of swallowed lantern-light, 4.0 m; **leech base**; palette drowned purple / mouth pink / inner glow; must read: the ringed mouth; anims Idle/Move/Attack1/Attack2/Hit/Death/Latch-hold/Bloat; 8k tris.
 
 #### Zone boss — Sister Naesa, the Tidebound Priestess
-`sister-naesa` · Boss · Medium → Large · Back → Front · F9 (L13) · HP ×15 · Att ×1.7 (spell) · Def ×1.4 · Spd 105 · XP boss (25) · gold ×10 (×3 first kill)
+`sister-naesa` · Boss · Medium → Large · Back → Front · F7 (L11) · HP ×15 · Att ×1.7 (spell) · Def ×1.4 · Spd 105 · XP boss (25) · gold ×10 (×3 first kill)
 - **Arena — the Drowned Chapel** (`vlt_t_drowned_chapel`; `07` §2.8 owns the room, the arena rule — the rising tide and its steps — add timing, tells and light — **arena light per `07`**). What the attacks below need from it: a water level the party can see, and a way to lower it (the sluice wheel, `07`).
 - **Phase 1 (100–50 %) — the Altar.** Back row, with **2 Tidebound Acolyte + 1 Tidebound Blade**. Brine Lash — Frost — normal 1,000 — ×1.3 — Chill (2) — 35 % · Hymn of the Deep — — normal 1,000 — — Fortify (2) + Regen (2) on all adds — 25 % · Tidal Call — — heavy 1,400 — — a Deep Tentacle (×0.5 HP) rises and Grabs the hero with the lowest Strength; **tell:** she raises the conch the turn before (Silence or Daze her, or Guard that hero) — 25 % · Drown — Frost — normal 1,000 — ×1.0 — Silence (1) on a caster — 15 %. Adds re-enter on `07`'s timing.
 - **Phase 2 (50–0 %) — the Ascension.** Her arms become tentacles; she steps to the front (Large) with a **Silence aura** (the hero she last hit is Silenced 1 turn). Tentacle Lash — Blunt — normal 1,000 — ×1.5 to the front row — Chill (2) — 35 % · Embrace — — normal 1,000 — ×0.6 — Grab (2 turns), Frost ×0.5 per turn — 30 % · Undertow — Frost — heavy 1,400 — ×1.0 to all — Chill, pulls one back-row hero forward; **tell:** the water drops for a turn — 20 % · Tidal Call — 15 %. Under 20 % the tide rises faster (`07`'s rule).
@@ -477,13 +479,13 @@ Ten floors, three zones, 35 regular monsters, 3 hunters, 3 zone bosses, 1 final 
 - First-kill drops: Steel ×10 + Silk ×10 + Brine Pearl ×3, a Tier III Tome, **one A-grade item**, the zone Relic **the Tidebound Idol** (C Relic, `08` §3: once per fight, cleanse every debuff on the party), 1 Grand chest key; opens the Hollow King's stair. Later kills: stack halves, A-grade 10 %.
 - Visual: P1 a gaunt priestess in a pearl-sewn shroud with a conch staff, 1.8 m; P2 the shroud torn, two tentacle arms, 2.3 m; humanoid base, cult set D + tentacle-arm attachment (tentacle base 0.6); palette pearl white / drowned blue / kelp green; must read: the conch (P1), the arms (P2); anims Idle/Move/Attack1/Attack2/Hit/Death/Cast/Call/Ascend/Embrace/Undertow; 12k tris.
 
-### 3.4 Floor 10 — the Hollow King
+### 3.4 Floor 8 — the Hollow King
 
-`hollow-king` · Final boss · Large (seated) → Huge (risen) · Front · F10 (L14) · HP ×30 (phases 12 / 10 / 8) · Att ×2.0 · Def ×1.8 · Spd 100 (P3 120) · XP boss (25, ×2 first kill) · gold ×25 (×3 first kill)
+`hollow-king` · Final boss · Large (seated) → Huge (risen) · Front · F8 (L13) · HP ×30 (phases 12 / 10 / 8) · Att ×2.0 · Def ×1.8 · Spd 100 (P3 120) · XP boss (25, ×2 first kill) · gold ×25 (×3 first kill)
 
 **Who he is.** The Keep's last lord, who drowned his own vault to keep what was in it and kept ruling after he drowned with it. The three families are his memory of a household: rats and bandits his servants, the dead his guard, the Tidebound his new faith.
 
-**Arena — the Drowned Throne** (`vlt_t_throne`; `07` §2.8 owns the room, the arena rule, add timing, tells and light — **arena light per `07`**). A long hall, the throne at the far end, **four braziers** that set light, water to the shin. **The King snuffs the light at each phase change** (the step is `07`'s). In **Dark or Pitch** his Hollow Gaze reaches the back row and crits +20 %; in **Radiant** his Shadow attacks are ×0.75 and his adds Fear. An **Item action with a Torch** relights one brazier (+25), once per brazier per phase — four torches is the preparation the F9 merchant sells. Rows: the throne's **tide** pulls every 3 rounds (tell: water lines the floor) — front-row heroes who do not swap back are Slowed (1) and his next Blade is ×1.5 against them; back-row heroes who do not swap forward are Chilled. The rhythm is "swap on the tide, relight on the snuff."
+**Arena — the Drowned Throne** (`vlt_t_throne`; `07` §2.8 owns the room, the arena rule, add timing, tells and light — **arena light per `07`**). A long hall, the throne at the far end, **four braziers** that set light, water to the shin. **The King snuffs the light at each phase change** (the step is `07`'s). In **Dark or Pitch** his Hollow Gaze reaches the back row and crits +20 %; in **Radiant** his Shadow attacks are ×0.75 and his adds Fear. An **Item action with a Torch** relights one brazier (+25), once per brazier per phase — four torches is the preparation the F7 merchant sells (`07` §2.7: the Vault's raft before Naesa's anteroom, the last merchant before the throne, always stocks four — D-099). Rows: the throne's **tide** pulls every 3 rounds (tell: water lines the floor) — front-row heroes who do not swap back are Slowed (1) and his next Blade is ×1.5 against them; back-row heroes who do not swap forward are Chilled. The rhythm is "swap on the tide, relight on the snuff."
 
 - **Phase 1 (100–60 %) — the Seated King.** He stays on the throne (Front, Large; Taunt works this phase only). Hollow Blade — Slash/Shadow — heavy 1,400 — ×1.8 — Curse (2) — 35 % · Hollow Gaze — Shadow — normal 1,000 — ×1.2, back row only in Shadowy or darker — Fear (2) — 25 % · Court Call — — normal 1,000 — — **adds from the Cellars**: 2 Giant Rat + 1 Grinning Crossbowman — 25 % · Snuff — — light 800 — — light drops by `07`'s step, phase start only — 15 %.
 - **Phase 2 (60–25 %) — the Guard Wakes.** The throne rises on a column; he stands (Huge). **Adds from the Crypts:** 2 Skeleton Footman + 1 Wraith, re-called once at 40 %. Hollow Blade — 30 % · Drowned Crown — Frost — heavy 1,400 — ×1.4 to all — Chill (2) — 25 % · Verdict of the Hollow — Shadow — heavy 1,400 — ×2.2 — Mark (3) on the hero with the most Momentum; **tell:** he points for one turn — 20 % · Grave Grip — — normal 1,000 — — Grab a Marked or Chilled hero, 2 turns — 15 % · Snuff — 10 %.
@@ -658,7 +660,7 @@ Zone bands: Outer Walls L36–40, Frozen Court L41–45, the Roost L46–50.
 2. **Role mix per floor.** A generated floor's fight rooms together hold ≥ 2 Fodder-only packs, ≥ 1 encounter with a Special, ≥ 1 with a role-Elite (F2+), and at most one Monster room (8 %, never adjacent to Entry or Boss); the generator rerolls a floor that fails. One encounter never holds more than 2 Specials or 1 Monster.
 3. **Ambush** (§4.4): base 15 % + light band + the **family modifier** of §1 or the highest individual modifier in the encounter (not the sum) − the party's Perception bonus. Individual: rats, hounds, bandits, Cellar Spider, Deep Tentacle, beasts +15; Grave Bat, Wraith, wolves +10; constructs −15; giants −10. The reverse roll ignores family modifiers.
 4. **Elite rooms** (8 %): the floor's encounter with one champion; affixes 1 / 2 / 3 by floor (§2), F1–2 from the five-affix teaching pool; never a Monster or a Hunter. Dungeons 2–4: 2 / 3 / 4.
-5. **Gold per fight** = Σ (baseline gold × gold×) × (1 + 0.1 per affix) × 1.25 in a Monster room; the runner rescales baseline gold so a 3-floor delve lands on **R** (≈ 300 at F1–3, ×1.6 per band) with the boss worth about 25 % of R. Treasure and curios are on top.
+5. **Gold per fight** = Σ (baseline gold × gold×) × (1 + 0.1 per affix) × 1.25 in a Monster room; the runner rescales baseline gold so a delve (one zone: three floors, the Drowned Vault's two) lands on **R** (≈ 300 at F1–3, ×1.6 per band) with the boss worth about 25 % of R. Treasure and curios are on top.
 6. **XP per fight** = Σ XP class × the level's XP unit × the difficulty curve D (§5.1), by participation. Champions +2 classes; hunters use their raised level for D.
 7. **No palette swaps past floor 5.** A monster sharing a base mesh with an earlier one and appearing on F6+ must carry **one attack the earlier one lacks** and **one silhouette element** (prop, limb, morph, glow) that reads at 200 px. The lint checks base-mesh pairs in `content/monsters/*.json` (Drowned Thrall vs Shambling Corpse: Cling + barnacles passes; a grey rat on F6 fails).
 8. **Techniques.** Each class has exactly two monster techniques (Tier III–IV, on its sheet); this file says which monster teaches each so Insight (§7.5) has targets. Dungeon 1 teaches: Warden 2 (Bone Knight's Stand, Sentinel's Sweep), Blade 2 (Ghoul's Grasp, Bone Knight's Cleave), Ranger 2 (Deep Tentacle's Drag, Grave Bat's Screech), Shade 2 (Wraith-step, Hag's Hex), Arcanist 2 (Hag's Cauldron, Sentinel Pulse), Beast Tamer 1 (Grave Bat's Shriek), Mender 1 (Wraith's Lament); Dungeon 2 teaches the Beast Tamer's Capfolk's Bloom (Capfolk Warder) and the Mender's Troll's Regrowth (Warren Troll) — see Open questions.

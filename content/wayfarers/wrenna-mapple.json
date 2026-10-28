@@ -15,5 +15,11 @@
     "arcanist-quicken"
   ],
   "aiRule": null,
-  "bio": "The smallest scholar of the Ember Academy, and the only one who came back from the Crypts."
+  "bio": "The smallest scholar of the Ember Academy, and the only one who came back from the Crypts.",
+  "look": {
+    "frame": "slight",
+    "skin": 2,
+    "face": 1,
+    "hair": 1
+  }
 }

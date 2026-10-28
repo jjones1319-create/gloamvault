@@ -13,6 +13,7 @@ import type {
   AiRole,
   ArmorFamily,
   Attribute,
+  BodyFrame,
   ChestKind,
   ChestSubtype,
   ChestTier,
@@ -1057,6 +1058,8 @@ export interface WayfarerDef {
   readonly aiRule: string | null
   /** One line: who they are. */
   readonly bio: string
+  /** How they look (Phase 5); a look from a hash of the hero id when absent. */
+  readonly look?: HeroLook
 }
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -1271,6 +1274,20 @@ export interface HeroStats {
 }
 
 /** The save-side hero (03 §2, §5, §7.3, §12.2): hero.schema.json. Migrated by `saveVersion`. */
+/**
+ * A hero's look (Phase 5, hero.schema.json `look`): the body frame, a skin tone and a face preset of the species, and
+ * a hair colour. Cosmetic only: no rule reads it.
+ */
+export interface HeroLook {
+  readonly frame: BodyFrame
+  /** Index into the species' `body.skinTones`. */
+  readonly skin: number
+  /** Index into the species' face presets (`body.facePresets`). */
+  readonly face: number
+  /** Index into the species' hair colours (the hero manifest); the client wraps it to the palette it has. */
+  readonly hair: number
+}
+
 export interface HeroRecord {
   readonly saveVersion: number
   /** Unique within the player's armory. */
@@ -1302,4 +1319,6 @@ export interface HeroRecord {
   readonly titles: readonly string[]
   readonly hardcore: boolean
   readonly stats: HeroStats
+  /** How the hero looks (Phase 5). Optional for records made before save 3; createHero always writes one. */
+  readonly look?: HeroLook
 }

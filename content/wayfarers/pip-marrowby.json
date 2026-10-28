@@ -15,5 +15,11 @@
     "ranger-keen-eyes"
   ],
   "aiRule": null,
-  "bio": "Can hit a rat at forty paces, and will tell you about it all the way home."
+  "bio": "Can hit a rat at forty paces, and will tell you about it all the way home.",
+  "look": {
+    "frame": "broad",
+    "skin": 1,
+    "face": 2,
+    "hair": 2
+  }
 }

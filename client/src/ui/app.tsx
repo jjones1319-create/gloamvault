@@ -13,10 +13,11 @@ import { PhoneScreen } from './screens/Phone.tsx'
 import { SettingsScreen } from './screens/Settings.tsx'
 import { TitleScreen } from './screens/Title.tsx'
 import { TownScreen } from './screens/Town.tsx'
+import { ViewerScreen } from './screens/Viewer.tsx'
 import { settingsLoaded } from './store/settings.ts'
 
 /** Screens that mount a three.js stage; `data-ready` on <html> waits for their first frame (tools/shots). */
-const HAS_STAGE = new Set(['title', 'delve'])
+const HAS_STAGE = new Set(['title', 'delve', 'viewer'])
 /** Screens that need a profile; without one they fall back to the title. */
 const NEEDS_PROFILE = new Set(['town', 'hero', 'delve'])
 
@@ -46,6 +47,9 @@ export function App() {
         break
       case 'delve':
         screen = <DelveScreen />
+        break
+      case 'viewer':
+        screen = ready0 ? <ViewerScreen route={r} /> : <Loading />
         break
       default:
         // Deep links to screens that arrive in later phases land on the title with a note.

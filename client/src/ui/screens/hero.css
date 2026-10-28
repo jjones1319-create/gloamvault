@@ -608,3 +608,11 @@
 .hr-modal-scroll.list {
   padding-right: 2px;
 }
+
+/* Phase 5: the hero in the character viewer */
+.hr-view3d {
+  flex: none;
+  min-height: 44px;
+  padding: 0 14px;
+  white-space: nowrap;
+}

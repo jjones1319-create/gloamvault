@@ -1,5 +1,6 @@
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
+import { defaultLook } from '../../../sim/src/look.ts'
 import { addHero, newProfile } from '../../../sim/src/town.ts'
 import { loadContentDir } from '../../../tools/sim/loadContent.ts'
 import { KEYS, memoryStore } from './db.ts'
@@ -66,12 +67,53 @@ describe('the game save (10 §6)', () => {
     expect(((await store.get(BACKUP_KEYS[1]!)) as { purse: number }).purse).toBe(1)
   })
 
-  it('a version-1 save migrates to version 2 and keeps its death rule (D-095)', () => {
+  it('a version-1 save migrates through to the current version and keeps its death rule (D-095)', () => {
     const fixture = { ...profileWithHero(), saveVersion: 1, deathRule: 'sheltered' }
     const r = validateProfile(content, JSON.parse(JSON.stringify(fixture)))
-    expect(SAVE_VERSION).toBe(2)
-    expect(r.profile?.saveVersion).toBe(2)
+    expect(SAVE_VERSION).toBe(3)
+    expect(r.profile?.saveVersion).toBe(3)
     expect(r.profile?.deathRule).toBe('sheltered')
+  })
+
+  it('a version-2 save gives every hero a look from a hash of its id, the delve party too (Phase 5)', () => {
+    const p = profileWithHero()
+    const second = addHero(content, p, { name: 'Pell', speciesId: 'halfling', classId: 'ranger' }).profile
+    // A version-2 fixture: hero records of version 1 with no look, and a delve in progress.
+    const strip = (h: (typeof second.heroes)[number]) => {
+      const { look: _look, ...rest } = h
+      return { ...rest, saveVersion: 1 }
+    }
+    const fixture = JSON.parse(
+      JSON.stringify({
+        ...second,
+        saveVersion: 2,
+        heroes: second.heroes.map(strip),
+        activeDelve: { options: { dungeonId: 'gravehollow-keep', floor: 1, seed: 5 }, party: second.heroes.map(strip), commands: [] },
+      }),
+    )
+    expect(fixture.heroes[0].look).toBeUndefined()
+    const r = validateProfile(content, fixture)
+    expect(r.profile?.saveVersion).toBe(3)
+    for (const h of r.profile!.heroes) {
+      expect(h.look).toEqual(defaultLook(h.id, content.species.get(h.speciesId)))
+      expect(h.saveVersion).toBe(2)
+    }
+    expect(r.profile?.activeDelve?.party.map((h) => h.look)).toEqual(r.profile?.heroes.map((h) => h.look))
+    // Deterministic: the same save loads to the same looks.
+    expect(validateProfile(content, fixture).profile?.heroes.map((h) => h.look)).toEqual(r.profile?.heroes.map((h) => h.look))
+    // New heroes get the same look the migration would give them.
+    expect(second.heroes[1]!.look).toEqual(defaultLook(second.heroes[1]!.id, content.species.get('halfling')))
+  })
+
+  it('clamps a look to what the species has and repairs a broken one', () => {
+    const p = profileWithHero()
+    const hero = p.heroes[0]!
+    const tones = content.species.get('dwarf')!.body.skinTones.length
+    const r1 = validateProfile(content, { ...p, heroes: [{ ...hero, look: { frame: 'towering', skin: 99, face: -3, hair: 2.4 } }] })
+    expect(r1.profile?.heroes[0]?.look).toEqual({ frame: defaultLook(hero.id, content.species.get('dwarf')).frame, skin: tones - 1, face: 0, hair: 2 })
+    const r2 = validateProfile(content, { ...p, heroes: [{ ...hero, look: 'pretty' }] })
+    expect(r2.profile?.heroes[0]?.look).toEqual(defaultLook(hero.id, content.species.get('dwarf')))
+    expect(r2.profile?.heroes[0]?.name).toBe('Orrin')
   })
 
   it('a Nightmare save round-trips, and an unknown rule falls back to Mortal', async () => {

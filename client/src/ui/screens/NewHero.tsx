@@ -12,6 +12,7 @@ import {
   STEP_LABEL,
   addPoint,
   cleanName,
+  draftLook,
   furthestStep,
   stepBlocker,
   suggestPoints,
@@ -19,12 +20,14 @@ import {
   toggleSkill,
   type Draft,
 } from './newhero/draft.ts'
+import { LookStep } from './newhero/LookStep.tsx'
 import { ClassStep, EggStep, PointsStep, ReviewStep, SkillsStep, SpeciesStep } from './newhero/steps.tsx'
 import './newhero.css'
 
 /**
- * New hero (03 §2.3, 05 §6): a six-step stepper that fits the landscape phone — species, class, three Tier I skills,
- * the egg, six free points and a name, then a review and Create. Next opens when the step is done; the steps above
+ * New hero (03 §2.3, 05 §6): a seven-step stepper that fits the landscape phone — species, class, the look (Phase 5:
+ * body, face, skin, hair with a live 3D preview in the class's starter gear), three Tier I skills, the egg, six free
+ * points and a name, then a review and Create. Next opens when the step is done; the steps above
  * jump back to anything already chosen. This is the selection of D-090: it makes the player's chosen hero — the save's
  * first, or a new one once the chosen hero is gone (a legacy they left passes on at once). Only the first hero brings
  * an egg; every other party member comes from the Wayfarer Chest (D-091).
@@ -97,6 +100,7 @@ export function NewHeroScreen() {
       starterSkillIds: skills,
       eggPetId: firstHero ? effective.eggPetId : null,
       ...(petName && firstHero ? { petName } : {}),
+      look: draftLook(c, effective),
     })
     if (!id) return
     navigate('town')
@@ -158,6 +162,7 @@ export function NewHeroScreen() {
             }}
           />
         )}
+        {stepId === 'look' && <LookStep c={c} draft={effective} onLook={(look) => set({ look })} />}
         {stepId === 'skills' && cls && (
           <SkillsStep
             c={c}

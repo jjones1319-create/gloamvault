@@ -15,5 +15,11 @@
     "mender-gentle-hands"
   ],
   "aiRule": null,
-  "bio": "Keeps a candle lit for every patient lost, and has not run out of candles yet."
+  "bio": "Keeps a candle lit for every patient lost, and has not run out of candles yet.",
+  "look": {
+    "frame": "slight",
+    "skin": 1,
+    "face": 2,
+    "hair": 4
+  }
 }

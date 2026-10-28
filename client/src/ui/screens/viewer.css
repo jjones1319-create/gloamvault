@@ -1,0 +1,211 @@
+/* The character viewer (Phase 5): the hero full screen, a slim top bar, the pickers in a panel on the right. */
+.char-canvas {
+  position: relative;
+  touch-action: none;
+  overflow: hidden;
+}
+.char-canvas .stage {
+  position: absolute;
+  inset: 0;
+}
+
+.viewer {
+  background: #17121b;
+}
+.viewer__canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.viewer__top {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: calc(var(--sat) + 6px) calc(var(--sar) + 12px) 6px calc(var(--sal) + 12px);
+  pointer-events: none;
+}
+.viewer__top > * {
+  pointer-events: auto;
+}
+.viewer__heading {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+  text-shadow: 0 1px 2px #000;
+}
+.viewer__title {
+  margin: 0;
+  font-size: var(--fs-h1);
+  line-height: 1.1;
+}
+.viewer__summary {
+  font-size: var(--fs-small);
+  color: var(--ink-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.viewer__zoom {
+  margin-right: 380px;
+}
+.viewer__panel {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  padding: calc(var(--sat) + 6px) calc(var(--sar) + 8px) calc(var(--sab) + 6px) 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1px;
+  background: linear-gradient(90deg, rgba(23, 18, 27, 0) 0%, rgba(23, 18, 27, 0.82) 9%, rgba(23, 18, 27, 0.92) 100%);
+}
+.vw-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 47px;
+}
+.vw-row__label {
+  flex: none;
+  width: 52px;
+  font-size: 13px;
+  color: var(--ink-dim);
+  text-align: right;
+}
+.vw-row__picks {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 3px 2px;
+  min-width: 0;
+}
+.vw-row__picks::-webkit-scrollbar {
+  display: none;
+}
+.vw-pick {
+  flex: none;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 10px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+.vw-row__picks .vw-swatch,
+.vw-row__picks .vw-pick {
+  margin: 0;
+}
+.vw-swatch {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 0, 0, 0.5);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.12);
+  cursor: pointer;
+}
+.vw-swatch--on {
+  border-color: var(--ember);
+  box-shadow:
+    0 0 0 2px #120f14,
+    0 0 0 4px var(--ember);
+}
+.viewer__note {
+  font-size: 13px;
+  color: var(--ink-dim);
+  white-space: normal;
+}
+
+/* The new hero's Look step: the preview on the left, the pickers on the right. */
+.nh-look {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(200px, 42%) 1fr;
+  gap: 12px;
+}
+.nh-look__preview {
+  position: relative;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  overflow: hidden;
+  min-height: 0;
+  background: #17121b;
+}
+.nh-look__preview .char-canvas {
+  position: absolute;
+  inset: 0;
+}
+.nh-look__hint {
+  position: absolute;
+  left: 8px;
+  bottom: 6px;
+  font-size: 12px;
+  color: var(--ink-dim);
+  pointer-events: none;
+  text-shadow: 0 1px 2px #000;
+}
+.nh-look__picks {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  overflow-y: auto;
+}
+
+/* The acceptance matrix (#viewer=matrix): 36 heroes on one camera, labelled by species (rows) and class (columns). */
+.matrix {
+  background: #17121b;
+}
+.matrix__host {
+  position: absolute;
+  inset: 0;
+}
+.matrix__top {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  right: 0;
+  top: 0;
+  pointer-events: none;
+}
+.matrix__back {
+  position: absolute;
+  left: 4px;
+  top: 2px;
+  pointer-events: auto;
+  transform: scale(0.8);
+  transform-origin: top left;
+}
+.matrix__title {
+  position: absolute;
+  left: 52px;
+  top: 2px;
+  font-size: 11px;
+  color: var(--ink-dim);
+  white-space: nowrap;
+}
+.matrix__col {
+  position: absolute;
+  bottom: 2px;
+  transform: translateX(-50%);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.matrix__row {
+  position: absolute;
+  left: 0;
+  z-index: 2;
+  transform: translateY(-50%);
+  padding-left: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+}

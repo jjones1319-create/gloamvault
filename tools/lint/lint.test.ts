@@ -32,6 +32,7 @@ const ENCOUNTER = 'content/encounters/rat-pack.json'
 const PET = 'content/pets/cellar-hound.json'
 const TUNING = 'content/tuning.json'
 const HERO = 'content/saves/hero-7f3a9c.json'
+const WAYFARER = 'content/wayfarers/bruni-hearthward.json'
 
 const tempRoots: string[] = []
 afterAll(() => {
@@ -510,6 +511,33 @@ const cases: Case[] = [
       })
     },
     check: (r) => expectRule(r, HERO, 30, 'level 9 but battleXp 80 reaches level 2'),
+  },
+  {
+    name: 'a wayfarer look with a skin tone the species does not have (rule 34)',
+    setup: (root) =>
+      edit(root, WAYFARER, (j) => {
+        j.look = { frame: 'broad', skin: 7, face: 0, hair: 2 }
+      }),
+    check: (r) => expectRule(r, WAYFARER, 34, 'look.skin 7'),
+  },
+  {
+    name: 'a hero look with a face preset the species does not have (rule 29, saves)',
+    saves: true,
+    setup: (root) => {
+      place(root, 'skill.example.json', SKILL)
+      place(root, 'hero.example.json', HERO, (j) => {
+        j.look = { frame: 'slight', skin: 0, face: 5, hair: 0 }
+      })
+    },
+    check: (r) => expectRule(r, HERO, 29, 'look.face 5'),
+  },
+  {
+    name: 'a look with an unknown frame (schema)',
+    setup: (root) =>
+      edit(root, WAYFARER, (j) => {
+        j.look = { frame: 'towering', skin: 0, face: 0, hair: 0 }
+      }),
+    check: (r) => expectSchemaFail(r, WAYFARER, '/look/frame'),
   },
 ]
 

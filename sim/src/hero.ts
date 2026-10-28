@@ -2,12 +2,13 @@ import type { Content } from './content.ts'
 import type { Actor, EquippedItem, FightRow, HeroActorData, HeroEquipment } from './fight-types.ts'
 import { installHook } from './hooks.ts'
 import { canHoldOffHand, createItemInstance, effectiveItemStats } from './items.ts'
+import { clampLook, defaultLook } from './look.ts'
 import type { Rng } from './rng.ts'
 import { linesAtRank, rankEffectPercent } from './skill-lines.ts'
 import { battleXpForLevel, heroLevelForXp } from './xp.ts'
 import { ALL_TENS, deriveStats, roundHalfUp, type ArmorPieceLoad, type AttributeValues, type SpeciesStatRules, type StatBonuses, type StatInputs } from './stats.ts'
 import type { Tuning } from './tuning.ts'
-import type { ClassDef, Effect, Equipment, HeroRecord, ItemDef, ItemInstance, Loadout, PetInstance, SpeciesDef, SpeciesRule } from './types/content.ts'
+import type { ClassDef, Effect, Equipment, HeroLook, HeroRecord, ItemDef, ItemInstance, Loadout, PetInstance, SpeciesDef, SpeciesRule } from './types/content.ts'
 import { ATTRIBUTES, FIELD_SKILLS, type Attribute, type DerivedStat, type FieldSkill, type Slot } from './types/enums.ts'
 
 /**
@@ -15,7 +16,8 @@ import { ATTRIBUTES, FIELD_SKILLS, type Attribute, type DerivedStat, type FieldS
  * the three starter skills; and the hero record → fight actor step, which reads every worn item through the item
  * module so wear, +N and affixes all count.
  */
-export const SAVE_VERSION = 1
+/** The hero record's schema version: 2 adds `look` (Phase 5). The profile's version is town.ts's PROFILE_VERSION. */
+export const SAVE_VERSION = 2
 
 /** Every trait's typed knobs folded into one: numbers add, multipliers multiply, maps merge, flags OR. */
 export function speciesRules(species: SpeciesDef): SpeciesRule {
@@ -52,6 +54,8 @@ export interface CreateHeroInput {
   eggPetId?: string | null
   petName?: string
   aiRule?: string
+  /** How the hero looks (Phase 5); clamped to the species, or a look from a hash of the id when omitted. */
+  look?: HeroLook
 }
 
 function requireClass(content: Content, id: string): ClassDef {
@@ -166,6 +170,7 @@ export function createHero(content: Content, t: Tuning, rng: Rng, input: CreateH
     titles: [],
     hardcore: false,
     stats: { kills: 0, delves: 0, deaths: 0 },
+    look: input.look ? clampLook(input.look, species, input.id) : defaultLook(input.id, species),
   }
 }
 

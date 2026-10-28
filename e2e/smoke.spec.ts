@@ -86,6 +86,9 @@ test('the first thirty minutes: a hero, the Cellars, home, a chest (03 §13)', a
   await page.getByTestId('nh-species-dwarf').click()
   await page.getByTestId('nh-next').click()
   await page.getByTestId('nh-class-warden').click()
+  await page.getByTestId('nh-next').click() // the look (Phase 5): a 3D preview, every pick has a default
+  await expect(page.getByTestId('nh-look')).toBeVisible()
+  await page.getByTestId('nh-look-frame-slight').click()
   await page.getByTestId('nh-next').click() // skills (preselected)
   await page.getByTestId('nh-next').click() // egg
   await page.getByTestId('nh-egg-cellar-hound').click()
@@ -123,5 +126,22 @@ test('the first thirty minutes: a hero, the Cellars, home, a chest (03 §13)', a
   await ready(page)
   await expect(page.getByTestId('continue')).toContainText(/Orrin|choose a new hero/)
   await expect(page.getByTestId('continue')).toContainText('Mortal')
+  expect(errors).toEqual([])
+})
+
+test('the character viewer: a hero on the plinth, the pickers, back to the title (Phase 5)', async ({ page }) => {
+  const errors = watchErrors(page)
+  await page.goto('#viewer=dwarf,warden,S')
+  await ready(page)
+  await expect(page.getByTestId('viewer-summary')).toContainText('Dwarf Warden')
+  await expect(page.getByTestId('viewer-canvas')).toBeVisible()
+  await page.getByTestId('vw-species-elf').click()
+  await page.getByTestId('vw-class-ranger').click()
+  await page.getByTestId('vw-frame-slight').click()
+  await expect(page.getByTestId('viewer-summary')).toContainText('Elf Ranger · Slight · tier S')
+  await page.getByTestId('viewer-zoom').click()
+  await noSideScroll(page)
+  await page.getByTestId('back').click()
+  await expect(page).toHaveURL(/#title$/)
   expect(errors).toEqual([])
 })

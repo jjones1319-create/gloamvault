@@ -29,7 +29,8 @@
       "description": "Their own AI rule (the grammar of sim/src/ai.ts); null for the class's default rule.",
       "anyOf": [{ "type": "string", "minLength": 1, "maxLength": 400 }, { "type": "null" }]
     },
-    "bio": { "type": "string", "minLength": 1, "maxLength": 160, "description": "One line: who they are." }
+    "bio": { "type": "string", "minLength": 1, "maxLength": 160, "description": "One line: who they are." },
+    "look": { "$ref": "common.schema.json#/$defs/heroLook", "description": "How they look, fitted to the bio (Phase 5); a look from a hash of the hero id when absent." }
   },
   "required": ["id", "name", "speciesId", "classId", "grade", "freePoints", "starterSkillIds", "aiRule", "bio"],
   "additionalProperties": false

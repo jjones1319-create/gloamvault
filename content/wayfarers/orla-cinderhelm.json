@@ -15,5 +15,11 @@
     "arcanist-kindling"
   ],
   "aiRule": "IF self HP < 30% THEN item small hp potion on self; IF enemies count > 2 THEN spark on weakest enemy; ELSE ember lance on weakest enemy",
-  "bio": "Learned fire at the forge before learning it from books, and still prefers the forge."
+  "bio": "Learned fire at the forge before learning it from books, and still prefers the forge.",
+  "look": {
+    "frame": "slight",
+    "skin": 1,
+    "face": 1,
+    "hair": 3
+  }
 }

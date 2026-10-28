@@ -1,11 +1,12 @@
 {
-  "saveVersion": 1,
+  "saveVersion": 2,
   "id": "hero-7f3a9c",
   "name": "Brynna Ironfoot",
   "speciesId": "dwarf",
   "classId": "warden",
   "level": 2,
   "battleXp": 80,
+  "look": { "frame": "slight", "skin": 1, "face": 2, "hair": 3 },
   "attributes": {
     "strength": 15,
     "agility": 8,

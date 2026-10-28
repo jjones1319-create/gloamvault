@@ -16,5 +16,11 @@
     "mender-mend"
   ],
   "aiRule": "IF self HP < 30% THEN item small hp potion on self; IF ally HP < 50% THEN mend on lowest ally; IF enemies count > 2 THEN radiance; ELSE smite front enemy",
-  "bio": "Traded the war-drum for the prayer-bell, and hits just as hard with either."
+  "bio": "Traded the war-drum for the prayer-bell, and hits just as hard with either.",
+  "look": {
+    "frame": "slight",
+    "skin": 1,
+    "face": 2,
+    "hair": 4
+  }
 }

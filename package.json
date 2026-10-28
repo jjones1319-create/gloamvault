@@ -1,7 +1,7 @@
 {
   "name": "gloamvault",
   "private": true,
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "Gloamvault: an original 1-4 player co-op party dungeon crawler for Android phones, installed from GitHub Pages.",
   "type": "module",
   "license": "MIT",
@@ -20,6 +20,7 @@
     "verify": "npm run typecheck && npm test && npm run lint && npm run build && npm run check:build",
     "shots": "node tools/shots/run.ts",
     "icons": "node tools/icons/make-icons.ts",
+    "model-index": "node tools/build/model-index.ts",
     "e2e": "playwright test",
     "sim": "node tools/sim/run.ts",
     "balance": "node tools/balance/run.ts"

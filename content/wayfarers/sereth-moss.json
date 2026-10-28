@@ -15,5 +15,11 @@
     "ranger-steady-draw"
   ],
   "aiRule": "IF self HP < 30% THEN item small hp potion on self; IF self HP < 60% THEN snare on front enemy; ELSE aimed shot on weakest enemy",
-  "bio": "Reads tracks the way scholars read books, and trusts them more."
+  "bio": "Reads tracks the way scholars read books, and trusts them more.",
+  "look": {
+    "frame": "broad",
+    "skin": 2,
+    "face": 1,
+    "hair": 1
+  }
 }

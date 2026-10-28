@@ -438,6 +438,10 @@ export function lightBandIndex(band: LightBand): number {
 export const DEATH_RULES = ['mortal', 'sheltered', 'nightmare'] as const
 export type DeathRule = (typeof DEATH_RULES)[number]
 
+/** A hero's body frame (Phase 5, tools/blender/README.md): one topology built twice, broad and slight. */
+export const BODY_FRAMES = ['broad', 'slight'] as const
+export type BodyFrame = (typeof BODY_FRAMES)[number]
+
 /** wayfarer.schema.json `grade` (D-091): the Segment 1 cast is graded D to A. */
 export const WAYFARER_GRADES = ['D', 'C', 'B', 'A'] as const
 export type WayfarerGrade = (typeof WAYFARER_GRADES)[number]

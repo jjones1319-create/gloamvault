@@ -1,4 +1,7 @@
 import { useEffect } from 'preact/hooks'
+import type { Content } from '../../../../sim/src/content.ts'
+import { clampLook } from '../../../../sim/src/look.ts'
+import type { HeroRecord } from '../../../../sim/src/types/content.ts'
 import { content, profile } from '../../game/session.ts'
 import { Empty, Meter, Page, Tabs } from '../kit/kit.tsx'
 import { navigate, type Route } from '../router.ts'
@@ -27,6 +30,22 @@ function isTab(s: string | undefined): s is TabId {
  * four tabs: status with the Final Fantasy-style XP line (D-082), gear with the eleven slots and Auto-equip best,
  * skills with the three school columns, the loadout and the AI rule, and the pet with its stance, stables and eggs.
  */
+/** The viewer link for this hero: species, class, their look, and the S meshes once any worn piece is grade B or better. */
+function viewerLink(c: Content, hero: HeroRecord): Record<string, string> {
+  const look = clampLook(hero.look, c.species.get(hero.speciesId), hero.id)
+  const e = hero.equipment
+  const worn = [e.mainHand, e.offHand, e.helmet, e.chest, e.legs, e.boots, e.gloves].filter((i) => i !== null)
+  const fine = worn.some((i) => ['B', 'A', 'S', 'SS', 'God'].includes(c.items.get(i!.itemId)?.grade ?? 'F'))
+  return {
+    viewer: `${hero.speciesId},${hero.classId},${fine ? 'S' : 'F'}`,
+    frame: look.frame,
+    preset: String(look.face + 1),
+    skin: String(look.skin + 1),
+    hair: String(look.hair + 1),
+    from: `hero:${hero.id}`,
+  }
+}
+
 export function HeroScreen({ route }: { route: Route }) {
   const c = content.value
   const p = profile.value
@@ -61,6 +80,9 @@ export function HeroScreen({ route }: { route: Route }) {
           <span class="hr-id__xp">{lv.atCap ? 'top level' : `${lv.into}/${lv.need} XP`}</span>
         </div>
         <Tabs tabs={TABS} value={tab} onChange={(id) => navigate('hero', { ...route.params, hero: hero.id, tab: id })} />
+        <button class="btn hr-view3d" data-testid="hero-view3d" onClick={() => navigate('viewer', viewerLink(c, hero))}>
+          View in 3D
+        </button>
       </div>
       <div class={`hr-panel hr-panel--${tab}`} data-tab={tab}>
         {tab === 'status' && <StatusTab c={c} hero={hero} cls={cls} />}

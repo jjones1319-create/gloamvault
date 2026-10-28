@@ -55,7 +55,7 @@ export function FightHud() {
   const live = d?.fight ?? null
   if (live) held.fight = live
   const fight = live ?? (fightFinale.value ? held.fight : null)
-  const pb = usePlayback(fight, { speed: fightSpeed.value, reduceMotion: settings.value.reduceMotion, statuses: c?.statuses })
+  const pb = usePlayback(fight, { speed: fightSpeed.value, reduceMotion: settings.value.reduceMotion, statuses: c?.statuses, content: c })
 
   // A new delve starts with Auto off; Auto otherwise stays on from fight to fight until it is switched off.
   useEffect(() => {

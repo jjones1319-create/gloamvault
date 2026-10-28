@@ -1,0 +1,164 @@
+{
+  "fps": 30,
+  "hipsHeight": 0.8851,
+  "clips": [
+    {
+      "name": "Idle",
+      "seconds": 4.0,
+      "loop": true,
+      "events": {}
+    },
+    {
+      "name": "Walk",
+      "seconds": 1.0,
+      "loop": true,
+      "events": {
+        "footL": 0.0,
+        "footR": 0.5
+      },
+      "speed": 1.067
+    },
+    {
+      "name": "Run",
+      "seconds": 0.6667,
+      "loop": true,
+      "events": {
+        "footL": 0.0,
+        "footR": 0.3333
+      },
+      "speed": 2.5
+    },
+    {
+      "name": "Attack_Light",
+      "seconds": 0.6,
+      "loop": false,
+      "events": {
+        "hit": 0.2667
+      }
+    },
+    {
+      "name": "Attack_Heavy",
+      "seconds": 1.0,
+      "loop": false,
+      "events": {
+        "hit": 0.5667
+      }
+    },
+    {
+      "name": "Attack_Dual",
+      "seconds": 0.8,
+      "loop": false,
+      "events": {
+        "hit": 0.2333,
+        "hit2": 0.4667
+      }
+    },
+    {
+      "name": "Shoot",
+      "seconds": 0.9,
+      "loop": false,
+      "events": {
+        "release": 0.5
+      }
+    },
+    {
+      "name": "Cast",
+      "seconds": 1.2,
+      "loop": false,
+      "events": {
+        "charge": 0.4,
+        "release": 0.8
+      }
+    },
+    {
+      "name": "Guard",
+      "seconds": 1.0,
+      "loop": false,
+      "events": {
+        "brace": 0.1333
+      }
+    },
+    {
+      "name": "Hit",
+      "seconds": 0.5,
+      "loop": false,
+      "events": {}
+    },
+    {
+      "name": "Dodge",
+      "seconds": 0.6,
+      "loop": false,
+      "events": {}
+    },
+    {
+      "name": "Downed",
+      "seconds": 1.3,
+      "loop": false,
+      "events": {
+        "down": 0.8
+      }
+    },
+    {
+      "name": "Revive",
+      "seconds": 1.6667,
+      "loop": false,
+      "events": {
+        "up": 1.4
+      }
+    },
+    {
+      "name": "Victory",
+      "seconds": 2.0,
+      "loop": false,
+      "events": {}
+    },
+    {
+      "name": "Defeat",
+      "seconds": 1.8,
+      "loop": false,
+      "events": {
+        "down": 1.0667
+      }
+    },
+    {
+      "name": "Interact",
+      "seconds": 1.2,
+      "loop": false,
+      "events": {
+        "grab": 0.4667
+      }
+    },
+    {
+      "name": "SitRest",
+      "seconds": 4.1,
+      "loop": true,
+      "events": {},
+      "loopStart": 1.3
+    },
+    {
+      "name": "Breath",
+      "seconds": 1.6,
+      "loop": false,
+      "events": {
+        "release": 0.5333,
+        "stop": 1.1
+      }
+    },
+    {
+      "name": "Roar",
+      "seconds": 1.5,
+      "loop": false,
+      "events": {
+        "release": 0.5333
+      }
+    },
+    {
+      "name": "Guard_Shield",
+      "seconds": 1.0,
+      "loop": false,
+      "events": {
+        "brace": 0.1333
+      }
+    }
+  ]
+}

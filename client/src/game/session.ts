@@ -343,6 +343,8 @@ export interface DeepDelve {
   floor: number
   seed: number
   classes: string[]
+  /** `&species=dwarf,elf`: each hero's species in party order (Human when missing or unknown). */
+  species?: string[]
   level: number
   auto: boolean
   /** `&death=sheltered` (D-088); Mortal by default, like a new save. */
@@ -363,10 +365,11 @@ export async function startDeepDelve(d: DeepDelve): Promise<void> {
   const dungeonId = c.dungeons.has(d.dungeonId) ? d.dungeonId : (c.dungeons.has(`${d.dungeonId}-keep`) ? `${d.dungeonId}-keep` : [...c.dungeons.keys()][0]!)
   let p = newProfile(d.seed, d.deathRule ?? 'mortal')
   const egg = [...c.pets.values()].find((x) => x.creationChoice)
-  for (const cls of d.classes.slice(0, 4)) {
-    if (!c.classes.has(cls)) continue
-    p = addHero(c, p, { name: cls[0]!.toUpperCase() + cls.slice(1), speciesId: 'human', classId: cls, eggPetId: egg?.id ?? null }).profile
-  }
+  d.classes.slice(0, 4).forEach((cls, i) => {
+    if (!c.classes.has(cls)) return
+    const speciesId = d.species?.[i] && c.species.has(d.species[i]!) ? d.species[i]! : 'human'
+    p = addHero(c, p, { name: cls[0]!.toUpperCase() + cls.slice(1), speciesId, classId: cls, eggPetId: egg?.id ?? null }).profile
+  })
   if (p.heroes.length === 0) p = addHero(c, p, { name: 'Warden', speciesId: 'human', classId: 'warden', eggPetId: egg?.id ?? null }).profile
   if (d.level > 1) p = { ...p, heroes: p.heroes.map((h) => heroAtLevel(c, c.tuning, h, d.level)) }
   if (d.learn?.length) {

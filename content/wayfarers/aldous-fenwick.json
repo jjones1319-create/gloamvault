@@ -15,5 +15,11 @@
     "arcanist-shatter"
   ],
   "aiRule": "IF self HP < 30% THEN item small hp potion on self; IF enemies count > 2 THEN frost floor; ELSE frostbolt on strongest enemy",
-  "bio": "A failed tutor with three unpaid debts and one very good frost spell."
+  "bio": "A failed tutor with three unpaid debts and one very good frost spell.",
+  "look": {
+    "frame": "broad",
+    "skin": 0,
+    "face": 1,
+    "hair": 5
+  }
 }

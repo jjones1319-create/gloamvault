@@ -15,5 +15,11 @@
     "blade-headsmans-eye"
   ],
   "aiRule": "IF self HP < 30% THEN item small hp potion on self; IF enemies count > 2 THEN quickstep; ELSE twin cut on weakest enemy",
-  "bio": "Moves like a falling leaf and cuts like the wind that drops it."
+  "bio": "Moves like a falling leaf and cuts like the wind that drops it.",
+  "look": {
+    "frame": "slight",
+    "skin": 1,
+    "face": 0,
+    "hair": 4
+  }
 }
