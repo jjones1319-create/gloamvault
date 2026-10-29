@@ -115,7 +115,7 @@ Monster techniques guaranteed by the 10th witnessed use (`09` §4; tuning + `ins
 - 2026-10-27 — Checkpoint 1: James's answers logged and built (Nightmare, party-average XP, Dread), every open question answered; v0.4.1. Commit `2e60fe9`.
 - 2026-10-28 — Phase 5: the heroes in Blender and on screen (frames, rig, species, gear, weapons, clips, the assembler, the viewer, looks in the save); v0.5.0. Commit `a38daf5`.
 - 2026-10-28 — Phase 6: the dungeon in 3D and the monsters (four kits, 30 room templates, fourteen monster bases, effects in code, the gallery, the soak); v0.6.0. Commit `bf06e3c`, deployed.
-- 2026-10-29 — Phase 8: polish and juice — sound and music, the lesson floor, stat tips, growth lines, the codex, accessibility, the performance fix, the icon and splash, the Segment 2 balance pass; v0.8.0. Segment 2 review written.
+- 2026-10-29 — Phase 8: polish and juice — sound and music, the lesson floor, stat tips, growth lines, the codex, accessibility, the performance fix, the icon and splash, the Segment 2 balance pass; v0.8.0. Segment 2 review written. Commits `40bb451` and `e822a15` (a flaky test made robust), deployed.
 - 2026-10-28 — Phase 7: Gravehollow complete (8 floors, the Crypts and the Vault, four boss arenas) and the systems (Tiers IV–V, techniques, Tomes, items to S, sets, relics, Pacts, Hard/Dread, contracts, pet growth, arrows), the balance pass; v0.7.0. Commit `f43da95`, deployed.
 
 ## Decisions logged this segment
