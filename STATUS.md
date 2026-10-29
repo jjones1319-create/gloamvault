@@ -16,7 +16,7 @@
 
 - **Segment:** 2 (Phases 5–8) — **in progress**, started 2026-10-27 when James pasted the Segment 2 prompt with his checkpoint 1 answers.
 - **Checkpoint 1:** **done 2026-10-27.** James's answers are logged (`docs/13-DECISIONS.md` §A4, D-095–D-099) and built: **Nightmare**, the third death rule (the chosen hero leads every delve; their death ends the save; the Hall of Nightmares keeps a line); **battle XP split through the party and scaled by the level gap to the party's average** (×0.25 at 5 below, ×2 at 5 above); each level costs more (as built); every Proposed line of Segment 1 Accepted (C1); 107 open questions in the docs answered; the Nightmare difficulty preset renamed **Dread**. v0.4.1.
-- **Phase:** 7 — Gravehollow complete, systems complete — **done 2026-10-28** (v0.7.0; verify green — 1039 tests, lint ALL GOOD, app code 482 KB gzipped of 600 and the content data 149 KB of 300 (D-129); 82 screenshots, the Phase 7 set read incl. the three zones and three bosses at 60 fps on desktop; the e2e smoke passes). Next: Phase 8 — polish and juice.
+- **Phase:** 8 — polish and juice — **in progress** (Phase 7 done 2026-10-28, commit `f43da95`, deployed; v0.7.0).
 - **Last commit:** see `git log` (the checkpoint commit is `P4: checkpoint 1 …`).
 - **Tools checked 2026-10-26:** Node 24.18.0 ✓ · npm 11.16.0 ✓ · git 2.51 ✓ · gh 2.102 signed in as `jjones1319-create` ✓ · Blender 5.2.2 LTS ✓ · Google Chrome ✓. The CC0 Human Base Meshes bundle is on this machine (`../ProjectAscend/art/ref/human-base-meshes/`, copied to `art/ref/` git-ignored); its stylized male and female bodies share one topology (12,502 vertices, 12,500 quads, UVs), so one landmark table fits the rig to both.
 
@@ -75,6 +75,18 @@ Seven passes run in parallel, each owning its files (the briefs name them; share
 
 **Done when** (`12`): a solo hero and a 4-hero party can clear floors 1–8 on Normal, a delve through all three zones renders at a sustained 60 fps with every monster present, the runner's judgement lines are inside targets, and every content kind has a lint rule.
 
+## Phase 8 task list (the plan) — polish and juice
+
+Four passes in parallel (file ownership in their briefs), then the lead: the e2e suite, the balance check, the phone checklist and `docs/feedback/SEGMENT-2-REVIEW.md`.
+
+1. [ ] **Audio** (pass A): Wildsong Ranch's Web Audio engine ported (`client/src/audio/`: the sequencer, sampler, voices, transport, the director); original music for Emberfall and the three zones from `07`'s musical-words briefs, written in ABC for this game; fight stingers, boss themes, UI sounds; CC0 samples (VCSL, VSCO 2 CE, Kenney — `CREDITS.md`), runtime-cached so the precache stays under 8 MB; audio starts on a user gesture; music and effects volumes in Settings; haptics kept.
+2. [ ] **Onboarding and information** (pass B): the fixed three-room tutorial floor (D-038); a tooltip for every stat ("Speed 120: you act 1.2× as often"); the status screen's growth lines; the codex (monsters seen, materials found); backup reminders (about every 7 days of play); the update toast's rules (never mid-fight, only in town).
+3. [ ] **Accessibility, performance, assets** (pass C): text size, colour-blind-safe palettes, a Reduce motion audit; the performance pass (the Crypts' mist and the Vault's water dip the soak to 47–56 fps), the battery mode, kits unloaded on room transitions, memory; the app icon and splash; Phase 7's client leftovers (the Hollow King's framing, the lineup labels, the Waystone under the HUD, Naesa's chant label, pets' Attack2).
+4. [ ] **Systems polish and balance** (pass D): boss fights at 10–15 rounds (HP traded for attack), pairs against the Barrow Warden, fours' gold per delve, champion HP by zone, a Dread reference party; Cartography training by use, passives in the hero card's Detection, set bonuses in auto-equip, class AI rules that use relics; the balance report re-run.
+5. [ ] **Lead**: the e2e suite grown to Phase 7–8 (the Pacts menu, the Quest Board, a boss fight, the tutorial), integration, verify / shots / e2e, the P8 commit and deploy, the phone checklist, `docs/feedback/SEGMENT-2-REVIEW.md` — then stop for checkpoint 2.
+
+**Done when** (`12`): the e2e suite, the balance report and the phone checklist all pass; `SEGMENT-2-REVIEW.md` is written.
+
 ## Phase 8 notes (left by Phase 7)
 
 The Crypts' mist and the Vault's water dip the desktop soak to 47–56 fps (the GPU; the CPU stays under 6 ms) — the performance pass · the Hollow King reads at about 65 px on his throne (the fight framing, `FIGHT_INSETS` in `Delve.tsx`) · the viewer's Vault lineup overlaps its labels · in a very deep entry room the Waystone's top sits under the HUD · Naesa's "Chant rising" floats over her card's name · pets always play Attack1 (their Attack2 never plays) · a Brine Pool piece for the Vault kit · the Warden's secret doors are not animated · Cartography does not train by use and the hero card's Detection leaves passives out · auto-equip ignores set bonuses · class AI rules never use relics · Tier V's engine joints wait for Segment 3.
@@ -101,7 +113,7 @@ Monster techniques guaranteed by the 10th witnessed use (`09` §4; tuning + `ins
 - 2026-10-27 — Checkpoint 1: James's answers logged and built (Nightmare, party-average XP, Dread), every open question answered; v0.4.1. Commit `2e60fe9`.
 - 2026-10-28 — Phase 5: the heroes in Blender and on screen (frames, rig, species, gear, weapons, clips, the assembler, the viewer, looks in the save); v0.5.0. Commit `a38daf5`.
 - 2026-10-28 — Phase 6: the dungeon in 3D and the monsters (four kits, 30 room templates, fourteen monster bases, effects in code, the gallery, the soak); v0.6.0. Commit `bf06e3c`, deployed.
-- 2026-10-28 — Phase 7: Gravehollow complete (8 floors, the Crypts and the Vault, four boss arenas) and the systems (Tiers IV–V, techniques, Tomes, items to S, sets, relics, Pacts, Hard/Dread, contracts, pet growth, arrows), the balance pass; v0.7.0.
+- 2026-10-28 — Phase 7: Gravehollow complete (8 floors, the Crypts and the Vault, four boss arenas) and the systems (Tiers IV–V, techniques, Tomes, items to S, sets, relics, Pacts, Hard/Dread, contracts, pet growth, arrows), the balance pass; v0.7.0. Commit `f43da95`, deployed.
 
 ## Decisions logged this segment
 
