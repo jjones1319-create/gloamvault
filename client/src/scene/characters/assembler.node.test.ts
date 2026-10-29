@@ -219,8 +219,12 @@ describe.skipIf(!haveModels)('the hero assembler on the real files', () => {
     const m = build(s)
     const spine = m.bones.get('Spine')!
     const q0 = spine.quaternion.clone()
-    m.update(400)
-    expect(spine.quaternion.angleTo(q0)).toBeGreaterThan(0)
+    // The idle starts at a random point of its breath, so one sample can land where the curve crosses zero: take three.
+    const angles = [250, 370, 410].map((dt) => {
+      m.update(dt)
+      return spine.quaternion.angleTo(q0)
+    })
+    expect(Math.max(...angles)).toBeGreaterThan(0)
     m.dispose()
   })
 })
