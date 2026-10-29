@@ -1,6 +1,6 @@
 import { Fragment } from 'preact'
 import type { Content } from '../../../../../sim/src/content.ts'
-import { heroStats } from '../../../../../sim/src/hero.ts'
+import { heroCardStats } from '../../../../../sim/src/hero.ts'
 import type { AttributeMods, ClassDef, PetDef, SkillDef, SpeciesDef } from '../../../../../sim/src/types/content.ts'
 import { ATTRIBUTES, type Attribute, type DerivedStat } from '../../../../../sim/src/types/enums.ts'
 import { Btn, Chip, Stat, Tile } from '../../kit/kit.tsx'
@@ -333,7 +333,7 @@ export function PointsStep({
   const points: FreePoints = draft.points
   const left = t.attributes.creation.freePoints - pointsSpent(points)
   const hero = provisionalHero(c, draft)
-  const stats = hero ? heroStats(c, t, hero) : null
+  const stats = hero ? heroCardStats(c, t, hero) : null
   const offence: DerivedStat = cls?.pool === 'mana' ? 'attackSpell' : 'attackPhys'
   const pool: DerivedStat = cls?.pool === 'mana' ? 'mana' : 'stamina'
   return (
@@ -428,7 +428,7 @@ export function ReviewStep({ c, draft }: { c: Content; draft: Draft }) {
   const pet = draft.eggPetId ? c.pets.get(draft.eggPetId) : undefined
   const hero = provisionalHero(c, draft)
   if (!species || !cls || !pet || !hero) return <p class="nh-hint nh-hint--bad">Something is missing: go back a step.</p>
-  const stats = heroStats(c, c.tuning, hero)
+  const stats = heroCardStats(c, c.tuning, hero)
   const pool = cls.pool === 'mana' ? 'mana' : 'stamina'
   const offence = cls.pool === 'mana' ? 'attackSpell' : 'attackPhys'
   const petName = draft.petName.trim() || pet.name

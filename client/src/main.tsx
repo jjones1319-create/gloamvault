@@ -6,12 +6,15 @@ import { bootSession, startDeepDelve, startDemoTown } from './game/session.ts'
 import { installRouter, route } from './ui/router.ts'
 import { bootSettings, installSettingsEffects } from './ui/store/settings.ts'
 import { installUpdates } from './ui/store/updates.ts'
+import { installAudio } from './audio/index.ts'
 
 installRouter(window)
 installOrientationWatch(window)
 installPromptCapture(window)
 installSettingsEffects(document)
 installUpdates(document)
+// Phase 8: the sound starts on the first tap; until then nothing loads (audio/index.ts).
+installAudio(document)
 void bootSettings()
 
 // The game: a deep link with a seed plays an ephemeral delve (shots, e2e, a debug link); `&demo=1` on any screen an
@@ -38,6 +41,8 @@ void bootSettings()
       pacts: (p.pacts ?? '').split(',').filter(Boolean),
       // 07 §8.3 links 2 and 7: `&room=boss` stands the party at the boss's door, the floor cleared (with `auto=1` it walks in).
       ...(p.room === 'boss' ? { room: 'boss' as const } : {}),
+      // Phase 8 (pass B): `&tutorial=1` opens the first delve's lesson floor with its coach marks.
+      ...(p.tutorial === '1' ? { tutorial: true } : {}),
     })
   } else if (r.screen === 'autoplay') {
     // Phase 6: the soak (10 §4) — a party that plays delve after delve by itself, logging the frame rate each minute.

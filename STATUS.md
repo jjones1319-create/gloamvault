@@ -14,9 +14,9 @@
 
 ## Where we are
 
-- **Segment:** 2 (Phases 5–8) — **in progress**, started 2026-10-27 when James pasted the Segment 2 prompt with his checkpoint 1 answers.
+- **Segment:** 2 (Phases 5–8) — **done 2026-10-29; waiting for James at checkpoint 2**, started 2026-10-27 when James pasted the Segment 2 prompt with his checkpoint 1 answers.
 - **Checkpoint 1:** **done 2026-10-27.** James's answers are logged (`docs/13-DECISIONS.md` §A4, D-095–D-099) and built: **Nightmare**, the third death rule (the chosen hero leads every delve; their death ends the save; the Hall of Nightmares keeps a line); **battle XP split through the party and scaled by the level gap to the party's average** (×0.25 at 5 below, ×2 at 5 above); each level costs more (as built); every Proposed line of Segment 1 Accepted (C1); 107 open questions in the docs answered; the Nightmare difficulty preset renamed **Dread**. v0.4.1.
-- **Phase:** 8 — polish and juice — **in progress** (Phase 7 done 2026-10-28, commit `f43da95`, deployed; v0.7.0).
+- **Phase:** 8 — polish and juice — **done 2026-10-29** (v0.8.0; verify green — 1227 tests, lint ALL GOOD, app code 548 KB gzipped of 600 and the content data 150 KB of 300; 88 screenshots, the Phase 8 set read; the e2e smoke passes). **Segment 2 is done — stopped for checkpoint 2** (`docs/feedback/SEGMENT-2-REVIEW.md`).
 - **Last commit:** see `git log` (the checkpoint commit is `P4: checkpoint 1 …`).
 - **Tools checked 2026-10-26:** Node 24.18.0 ✓ · npm 11.16.0 ✓ · git 2.51 ✓ · gh 2.102 signed in as `jjones1319-create` ✓ · Blender 5.2.2 LTS ✓ · Google Chrome ✓. The CC0 Human Base Meshes bundle is on this machine (`../ProjectAscend/art/ref/human-base-meshes/`, copied to `art/ref/` git-ignored); its stylized male and female bodies share one topology (12,502 vertices, 12,500 quads, UVs), so one landmark table fits the rig to both.
 
@@ -79,13 +79,15 @@ Seven passes run in parallel, each owning its files (the briefs name them; share
 
 Four passes in parallel (file ownership in their briefs), then the lead: the e2e suite, the balance check, the phone checklist and `docs/feedback/SEGMENT-2-REVIEW.md`.
 
-1. [ ] **Audio** (pass A): Wildsong Ranch's Web Audio engine ported (`client/src/audio/`: the sequencer, sampler, voices, transport, the director); original music for Emberfall and the three zones from `07`'s musical-words briefs, written in ABC for this game; fight stingers, boss themes, UI sounds; CC0 samples (VCSL, VSCO 2 CE, Kenney — `CREDITS.md`), runtime-cached so the precache stays under 8 MB; audio starts on a user gesture; music and effects volumes in Settings; haptics kept.
-2. [ ] **Onboarding and information** (pass B): the fixed three-room tutorial floor (D-038); a tooltip for every stat ("Speed 120: you act 1.2× as often"); the status screen's growth lines; the codex (monsters seen, materials found); backup reminders (about every 7 days of play); the update toast's rules (never mid-fight, only in town).
-3. [ ] **Accessibility, performance, assets** (pass C): text size, colour-blind-safe palettes, a Reduce motion audit; the performance pass (the Crypts' mist and the Vault's water dip the soak to 47–56 fps), the battery mode, kits unloaded on room transitions, memory; the app icon and splash; Phase 7's client leftovers (the Hollow King's framing, the lineup labels, the Waystone under the HUD, Naesa's chant label, pets' Attack2).
-4. [ ] **Systems polish and balance** (pass D): boss fights at 10–15 rounds (HP traded for attack), pairs against the Barrow Warden, fours' gold per delve, champion HP by zone, a Dread reference party; Cartography training by use, passives in the hero card's Detection, set bonuses in auto-equip, class AI rules that use relics; the balance report re-run.
-5. [ ] **Lead**: the e2e suite grown to Phase 7–8 (the Pacts menu, the Quest Board, a boss fight, the tutorial), integration, verify / shots / e2e, the P8 commit and deploy, the phone checklist, `docs/feedback/SEGMENT-2-REVIEW.md` — then stop for checkpoint 2.
+1. [x] **Audio** (pass A): Wildsong Ranch's Web Audio engine ported (`client/src/audio/`: the sequencer, sampler, voices, transport, the director); original music for Emberfall and the three zones from `07`'s musical-words briefs, written in ABC for this game; fight stingers, boss themes, UI sounds; CC0 samples (VCSL, VSCO 2 CE, Kenney — `CREDITS.md`), runtime-cached so the precache stays under 8 MB; audio starts on a user gesture; music and effects volumes in Settings; haptics kept.
+2. [x] **Onboarding and information** (pass B): the fixed three-room tutorial floor (D-038); a tooltip for every stat ("Speed 120: you act 1.2× as often"); the status screen's growth lines; the codex (monsters seen, materials found); backup reminders (about every 7 days of play); the update toast's rules (never mid-fight, only in town).
+3. [x] **Accessibility, performance, assets** (pass C): text size, colour-blind-safe palettes, a Reduce motion audit; the performance pass (the Crypts' mist and the Vault's water dip the soak to 47–56 fps), the battery mode, kits unloaded on room transitions, memory; the app icon and splash; Phase 7's client leftovers (the Hollow King's framing, the lineup labels, the Waystone under the HUD, Naesa's chant label, pets' Attack2).
+4. [x] **Systems polish and balance** (pass D): boss fights at 10–15 rounds (HP traded for attack), pairs against the Barrow Warden, fours' gold per delve, champion HP by zone, a Dread reference party; Cartography training by use, passives in the hero card's Detection, set bonuses in auto-equip, class AI rules that use relics; the balance report re-run.
+5. [x] **Lead**: the e2e suite grown to Phase 7–8 (the Pacts menu, the Quest Board, a boss fight, the tutorial), integration, verify / shots / e2e, the P8 commit and deploy, the phone checklist, `docs/feedback/SEGMENT-2-REVIEW.md` — then stop for checkpoint 2.
 
 **Done when** (`12`): the e2e suite, the balance report and the phone checklist all pass; `SEGMENT-2-REVIEW.md` is written.
+
+**Phase 8 result (2026-10-29).** Sound: Wildsong Ranch's engine ported, eleven original pieces (Emberfall, the three zones and their fights, the four bosses), six stingers, about 76 effects and an ambience bed per zone, Settings → Sound (D-130). Onboarding and information: the first floor is a guided lesson with skippable coach marks, a tip on every number a hero shows, growth lines, the codex, a weekly backup reminder, and updates that never reload mid-fight (D-131). Accessibility and performance: text up to 130%, two colour-blind palettes, Reduce motion everywhere; the fight stalls were shader compiles, now done ahead (the longest frame 149–420 ms → 75–136 ms); a new emblem, icons and splash; bosses framed closer (D-132). Balance: 96 of 96 clear-rate lines inside target, gold inside on every line, boss fights at about 10–16 rounds, field skills that finally rank up (D-133). Bugs: 3D models were never cached for offline play (fixed), and three more (D-134). Decisions D-130–D-134.
 
 ## Phase 8 notes (left by Phase 7)
 
@@ -113,16 +115,20 @@ Monster techniques guaranteed by the 10th witnessed use (`09` §4; tuning + `ins
 - 2026-10-27 — Checkpoint 1: James's answers logged and built (Nightmare, party-average XP, Dread), every open question answered; v0.4.1. Commit `2e60fe9`.
 - 2026-10-28 — Phase 5: the heroes in Blender and on screen (frames, rig, species, gear, weapons, clips, the assembler, the viewer, looks in the save); v0.5.0. Commit `a38daf5`.
 - 2026-10-28 — Phase 6: the dungeon in 3D and the monsters (four kits, 30 room templates, fourteen monster bases, effects in code, the gallery, the soak); v0.6.0. Commit `bf06e3c`, deployed.
+- 2026-10-29 — Phase 8: polish and juice — sound and music, the lesson floor, stat tips, growth lines, the codex, accessibility, the performance fix, the icon and splash, the Segment 2 balance pass; v0.8.0. Segment 2 review written.
 - 2026-10-28 — Phase 7: Gravehollow complete (8 floors, the Crypts and the Vault, four boss arenas) and the systems (Tiers IV–V, techniques, Tomes, items to S, sets, relics, Pacts, Hard/Dread, contracts, pet growth, arrows), the balance pass; v0.7.0. Commit `f43da95`, deployed.
 
 ## Decisions logged this segment
 
+- Phase 8: D-130 sound · D-131 onboarding and information · D-132 accessibility, performance, assets · D-133 the Segment 2 balance pass · D-134 the bugs found (models never cached offline).
 - Phase 7: D-118 the rule fixes · D-119 skills as built · D-120 items as built (the Skysteel milestone) · D-121 floors 4–8 · D-122 the bosses and arenas · D-123 Pacts, contracts, pets, arrows · D-124 the runner and the careful player · D-125 the Vault pets · D-126 save version 4 · D-127 control, rounds and the wipe · D-128 the balance pass (the boss party-size row).
 - Phase 6: D-110 kits with baked AO, not lightmaps · D-111 fourteen monster bases, variants as data · D-112 effects generated in code · D-113 the three-zone delve check moves to Phase 7 · D-114 the room kits as built · D-115 the monsters as built (the Charnel Hulk at 2.0) · D-116 how the client draws rooms and fights, the gallery · D-117 pet models with their dungeons.
 - Phase 5: D-100 two body frames · D-101 the palette and one-draw-call heroes · D-102 the rig fitted by cuts, the sockets · D-103 gear built from the body, tiers F/S · D-104 Gravehollow at 8 floors in the docs (Phase 7 prep) · D-105 a hero's look in the save · D-106 how the client dresses a hero · D-107 fight clips · D-108 content-hashed model URLs · D-109 review renders curated.
 - Checkpoint 1: D-095 Nightmare (**Accepted**, James) · D-096 battle XP split, scaled by the level gap to the party's average (**Accepted**, James) · D-097 each level costs more (**Accepted**, James) · D-098 the twelve answers; every Segment 1 Proposed line Accepted (C1) · D-099 the docs' open questions.
 
 ## Open for James (collected for the Segment 2 review)
+
+- All of it is in `docs/feedback/SEGMENT-2-REVIEW.md` §6. New in Phase 8: a dedicated camera for the Hollow King's throne fight (he reads about 45 px on his throne); `08` §11's boss-gold rows sit above what the fights now pay; does any tune remind you of something you know?
 
 - From Phase 7's balance pass (D-128; the runner's report §13): pairs against the Barrow Warden (a ready pair clears the Crypts 46% against 55–100); the Hollow King at ×5 HP with the throne rule, or more HP and a softer throne (`07` Q22); boss fights in the Crypts and on the throne run 6–8 rounds against the 10–15 target; fours find about 1.4× a solo's gold per delve; a Dread reference party.
 - The docs' new open questions: `07` Q11–Q23 (Pacts, traps, arenas), `08` Q9–Q12 (items).
@@ -131,16 +137,16 @@ Monster techniques guaranteed by the 10th witnessed use (`09` §4; tuning + `ins
 - Nightmare's details (D-095): the chosen hero must lead every delve; the save's backups go too; the Hall keeps a line. A fresh party of four loses its chosen Warden in about a third of first trips under Nightmare.
 - The Beast Tamer keeps whip and short spear (its sheet owns its weapons), not `08`'s wider list.
 
-## Phone checklist (Phase 7 — Gravehollow complete)
+## Phone checklist (Phase 8 — polish and juice)
 
-Open **https://jjones1319-create.github.io/gloamvault/** or the installed app. If a small "Update ready" note appears on the title, tap it. The title should say **v0.7.0 · Phase 7**. Your save carries over.
+Open **https://jjones1319-create.github.io/gloamvault/** or the installed app. If a small "Update ready" note appears on the title, tap it. The title should say **v0.8.0 · Phase 8**. (The new app icon shows after you remove and re-add the app, or on its own after a while.)
 
-1. Continue your game. At the **Waystone** in Emberfall: *Normal plus the twelve Pacts* — tick one and watch the **Oath** and the rewards change (Hard and Dread open once the Hollow King falls).
-2. Go past floor 3: *the **Crypts** (floors 4–6) — skeletons, ghouls, wraiths, tomb spiders, the Sealed Sarcophagus and other curios — and the Barrow Warden on floor 6; then the **Drowned Vault**: Sister Naesa on floor 7 and the **Hollow King** on floor 8.* Tip: after a boss you can teleport out and start the next delve on the floor below.
-3. In a boss fight, watch the line under the banner (*light, tide, braziers*) and the **two-word warnings** ("Netter reloading") the turn before a big attack. When the light drops, use a **Torch** from **Item**; the **Arena** button (where Flee was) turns the sluice wheel or lights a brazier.
-4. **Quest Board**: *three dailies and a weekly with progress bars*; claim a finished one (gold, chest keys).
-5. **Curio Merchant**: a chest key opens a chest free (**Key** button); the **Grand Wayfarer Chest** calls a C-or-better wayfarer.
-6. A hero's **Skills**: *Tier IV and V rows (V locked)*; a **Tome** you find shows a **Read** button; a monster technique shows how many times you have seen it.
-7. A hero's **Gear**: *set pieces show "2 / 4" and their bonus; a bow shows its arrows*. The **Stables** show each pet's trait rank.
-8. **New hero**: a Warden or a Blade can pick the second starter kit (spear or greatsword).
-9. Settings → **Performance overlay** on, then a fight in the Crypts or the Vault: tell me the **fps** and **calls**.
+1. Tap anywhere on the title: *music starts — Emberfall's waltz.* Settings → **Sound**: try the sliders and **Mute**. Put the app in the background: *the music pauses.*
+2. Start a **New game**: *your first floor is a short lesson — a tip at each step (Got it / Skip the lesson).* Settings → **Help → Replay the tutorial** brings it back.
+3. Go into the Cellars, then a fight: *each place has its own music; a fight changes it; winning plays a short victory tune.* Later, the Crypts and the Drowned Vault sound different again, and each boss has its own theme.
+4. On a hero's **Status** tab, tap any number: *a tip explains it with that hero's own numbers.* Scroll to **How they grow**: *how close each stat and skill is to its next point.*
+5. Tap **Codex** (town or hero screen): *every monster you've met, a turning 3D model, its weaknesses and the attacks you've seen; the materials and where they come from.*
+6. Settings → **Text size: Largest**, then look at the town and a fight: *everything bigger, nothing cut off.* Try **Colours: Red–green safe** and **Reduce motion**.
+7. A boss fight (Vexa on floor 3): *the arena line sits beside the enemy list, and the boss stands closer.*
+8. Settings → **Performance overlay** on, then a fight in the Crypts or the Vault: tell me the **fps** — the stutter at the start of fights should be gone.
+9. Tell me: does any tune remind you of a song or game you know?

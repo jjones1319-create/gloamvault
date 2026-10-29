@@ -3,10 +3,13 @@ import { profile, sessionReady } from '../game/session.ts'
 import { PerfOverlay } from './components/PerfOverlay.tsx'
 import { RotateHint } from './components/RotateHint.tsx'
 import { stageReady } from './components/StageView.tsx'
+import { TipHost } from './components/StatTip.tsx'
+import { CoachHost } from './components/Coach.tsx'
 import { UpdateToast } from './components/UpdateToast.tsx'
 import { ToastHost } from './kit/kit.tsx'
 import { route } from './router.ts'
 import { DelveScreen } from './screens/Delve.tsx'
+import { CodexScreen } from './screens/Codex.tsx'
 import { HeroScreen } from './screens/Hero.tsx'
 import { NewHeroScreen } from './screens/NewHero.tsx'
 import { PhoneScreen } from './screens/Phone.tsx'
@@ -20,7 +23,7 @@ import { settingsLoaded } from './store/settings.ts'
 /** Screens that mount a three.js stage; `data-ready` on <html> waits for their first frame (tools/shots). */
 const HAS_STAGE = new Set(['title', 'delve', 'viewer', 'room', 'autoplay'])
 /** Screens that need a profile; without one they fall back to the title. */
-const NEEDS_PROFILE = new Set(['town', 'hero', 'delve'])
+const NEEDS_PROFILE = new Set(['town', 'hero', 'delve', 'codex'])
 
 export function App() {
   const r = route.value
@@ -45,6 +48,10 @@ export function App() {
         break
       case 'hero':
         screen = <HeroScreen route={r} />
+        break
+      case 'codex':
+        // Phase 8 (pass B): the codex — monsters met, materials found.
+        screen = <CodexScreen route={r} />
         break
       case 'delve':
         screen = <DelveScreen />
@@ -78,6 +85,8 @@ export function App() {
       <RotateHint />
       <UpdateToast />
       <PerfOverlay />
+      <CoachHost />
+      <TipHost />
     </>
   )
 }

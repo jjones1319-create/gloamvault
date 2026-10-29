@@ -83,7 +83,8 @@ const classRecord: Json = {
     { fieldSkill: 'haggling', rankBonus: 2 },
   ],
   monsterTechniqueIds: [],
-  aiRuleDefault: 'IF self HP < 30% THEN item small hp potion on self; IF self not status veil THEN veil; ELSE backstab on weakest enemy',
+  // Phase 8: the relics that suit the class, each where its trigger holds (08 §3; a relic not worn is skipped).
+  aiRuleDefault: 'IF self HP < 30% THEN item small hp potion on self; IF round = 1 THEN item hourglass shard; IF enemies count > 2 THEN item moth charm; IF self not status veil THEN veil; ELSE backstab on weakest enemy',
   visual: {
     gearSetId: 'shade-rawhide-leather',
     palette: ['#15151c', '#5b3b8a', '#8a8a8f', '#2e3036'],

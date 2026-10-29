@@ -81,7 +81,8 @@ const classRecord: Json = {
     { fieldSkill: 'haggling', rankBonus: 2 },
   ],
   monsterTechniqueIds: [],
-  aiRuleDefault: 'IF self HP < 30% THEN item small hp potion on self; IF ally HP < 50% THEN arcane ward on lowest ally; ELSE ember lance on weakest enemy',
+  // Phase 8: the relics that suit the class, each where its trigger holds (08 §3; a relic not worn is skipped).
+  aiRuleDefault: 'IF self HP < 30% THEN item small hp potion on self; IF light < 50 THEN item lantern of the deep; IF round = 1 THEN item hourglass shard; IF ally HP < 50% THEN arcane ward on lowest ally; ELSE ember lance on weakest enemy',
   visual: {
     gearSetId: 'arcanist-burlap-robes',
     palette: ['#2a2f6e', '#8a8a8f', '#e8742a', '#b5853a'],

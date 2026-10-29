@@ -611,7 +611,11 @@
       "bonusAt": [
         2,
         4
-      ]
+      ],
+      "autoEquipLineScore": {
+        "value": 12,
+        "note": "Auto-equip (03 §6.1, Phase 8): a set bonus line with no number to add up (a hook) is worth this many quarter points, about three Defense on a piece; stat lines count as a ring's do."
+      }
     },
     "durability": {
       "max": 100,
@@ -1092,18 +1096,22 @@
       "boss": {
         "hp": [
           0.4,
-          0.8,
-          1.2,
-          2
-        ],
-        "damage": [
           0.7,
           1.2,
-          1.3,
-          1.3
+          1.85
         ],
-        "note": "D-128 (Proposed): a boss and its arena's adds scale HP and damage on this row by party size 1–4; the count rule stays the fights' (06 §8.1)."
+        "damage": [
+          0.35,
+          0.6,
+          0.65,
+          0.75
+        ],
+        "note": "D-128 (Proposed): HP and damage by party size 1–4 for a boss and its arena's adds; the count rule stays the fights'. Phase 8: damage halved (Vexa's, Naesa's own Attack raised), the pair's HP 0.7, the four's 1.85 and 0.75."
       }
+    },
+    "championHpPercentByZone": {
+      "gravehollow-keep": [133, 100, 100],
+      "note": "Phase 8 (Proposed): a champion's HP (the elite affix's ×3, D-084) as a percent per zone — the Cellars ×4, so their elites last 03 §3.6's 6–8 rounds; the Crypts and the Vault ×3."
     },
     "encounterSize": {
       "min": 2,
@@ -1355,9 +1363,18 @@
       { "id": "vlt-run-three-ready", "zone": 3, "set": "vault-run", "name": "crypt-breakers, ready (L14, C gear), F7 to F8 in one delve", "classes": ["mender", "warden", "ranger"], "level": 14, "gear": "C", "petStance": null, "clearTarget": null },
       { "id": "vlt-run-pair-ready", "zone": 3, "set": "vault-run", "name": "the pair, ready (L14, C gear), F7 to F8 in one delve", "classes": ["blade", "mender"], "level": 14, "gear": "C", "petStance": null, "clearTarget": null },
       { "id": "dive-four-crypts", "zone": 2, "set": "dive", "name": "classic four, fresh, diving into the Crypts (L1)", "classes": ["warden", "blade", "mender", "arcanist"], "level": 1, "gear": null, "petStance": null, "clearTarget": null },
-      { "id": "dive-four-vault", "zone": 3, "set": "dive", "name": "classic four, from the Cellars, diving into the Vault (L5, E gear)", "classes": ["warden", "blade", "mender", "arcanist"], "level": 5, "gear": "E", "petStance": null, "clearTarget": null }
+      { "id": "dive-four-vault", "zone": 3, "set": "dive", "name": "classic four, from the Cellars, diving into the Vault (L5, E gear)", "classes": ["warden", "blade", "mender", "arcanist"], "level": 5, "gear": "E", "petStance": null, "clearTarget": null },
+      { "id": "dread-four-cellars", "zone": 1, "set": "dread", "name": "classic four, the Dread reference (L16, C gear), the Cellars", "classes": ["warden", "blade", "mender", "arcanist"], "level": 16, "gear": "C", "petStance": null, "clearTarget": null },
+      { "id": "dread-three-cellars", "zone": 1, "set": "dread", "name": "crypt-breakers, the Dread reference (L16, C gear), the Cellars", "classes": ["mender", "warden", "ranger"], "level": 16, "gear": "C", "petStance": null, "clearTarget": null },
+      { "id": "dread-four-crypts", "zone": 2, "set": "dread", "name": "classic four, the Dread reference (L16, C gear), the Crypts", "classes": ["warden", "blade", "mender", "arcanist"], "level": 16, "gear": "C", "petStance": null, "clearTarget": null },
+      { "id": "dread-three-crypts", "zone": 2, "set": "dread", "name": "crypt-breakers, the Dread reference (L16, C gear), the Crypts", "classes": ["mender", "warden", "ranger"], "level": 16, "gear": "C", "petStance": null, "clearTarget": null },
+      { "id": "dread-four-vault7", "zone": 3, "set": "dread", "floors": [7, 7], "name": "classic four, the Dread reference (L16, C gear), the Vault F7", "classes": ["warden", "blade", "mender", "arcanist"], "level": 16, "gear": "C", "petStance": null, "clearTarget": null },
+      { "id": "dread-three-vault7", "zone": 3, "set": "dread", "floors": [7, 7], "name": "crypt-breakers, the Dread reference (L16, C gear), the Vault F7", "classes": ["mender", "warden", "ranger"], "level": 16, "gear": "C", "petStance": null, "clearTarget": null },
+      { "id": "dread-four-vault8", "zone": 3, "set": "dread", "floors": [8, 8], "name": "classic four, the Dread reference (L16, C gear), a start on F8", "classes": ["warden", "blade", "mender", "arcanist"], "level": 16, "gear": "C", "petStance": null, "clearTarget": null },
+      { "id": "dread-three-vault8", "zone": 3, "set": "dread", "floors": [8, 8], "name": "crypt-breakers, the Dread reference (L16, C gear), a start on F8", "classes": ["mender", "warden", "ranger"], "level": 16, "gear": "C", "petStance": null, "clearTarget": null }
     ],
     "recipesNote": "Cellars: D-084's eight (levelled 55–100). Crypts and Vault mirror them (07 §1.2 levels, Proposed); the Vault is judged as F7 and a start on F8 at the level F7 leaves (D-083); vault-run plays F7–F8 in one delve, unjudged.",
+    "dreadNote": "dread: the Dread reference party (L16, C gear: the F8 ready levels plus two) on Dread, reported until James sets Dread targets (Phase 8, Proposed).",
     "bossKills": "repeat",
     "bossKillsNote": "Proposed (Phase 7): runner delves meet bosses that have died before (08 §11's repeat rows), the steady state R measures; --kills first pays the first-kill lines.",
     "plans": {
@@ -1366,9 +1383,10 @@
         { "name": "careful", "sets": ["main"], "death": ["mortal"], "difficulty": ["normal"], "policy": ["careful"], "seeds": 100 },
         { "name": "spot", "sets": ["main"], "death": ["mortal"], "difficulty": ["hard", "dread"], "policy": ["textbook"], "seeds": 40 },
         { "name": "dive", "sets": ["dive"], "death": ["mortal"], "difficulty": ["normal"], "policy": ["textbook", "careful"], "seeds": 100 },
-        { "name": "vault-run", "sets": ["vault-run"], "death": ["mortal"], "difficulty": ["normal"], "policy": ["textbook"], "seeds": 100 }
+        { "name": "vault-run", "sets": ["vault-run"], "death": ["mortal"], "difficulty": ["normal"], "policy": ["textbook"], "seeds": 100 },
+        { "name": "dread", "sets": ["dread"], "death": ["mortal"], "difficulty": ["dread"], "policy": ["textbook"], "seeds": 100 }
       ],
-      "note": "12 Phase 7's balance pass: 8 floors × party sizes 1–4 × three death rules on Normal, the careful player, Hard and Dread spot checks, the dive set."
+      "note": "12 Phase 7's balance pass: 8 floors × party sizes 1–4 × three death rules on Normal, the careful player, Hard and Dread spot checks, the dive set; Phase 8 adds the Dread reference party on Dread."
     }
   },
   "arena": {
@@ -1564,6 +1582,13 @@
     "keyOpensKindsNote": {
       "value": "any",
       "note": "07 §7: a Standard Key opens one Standard chest free, a Grand Key one Grand chest; read as any chest of that tier (Phase 7, Proposed)"
+    }
+  },
+  "onboarding": {
+    "source": "03 §13, 10 §6 (pass B, Phase 8)",
+    "backupReminderPlayDays": {
+      "value": 7,
+      "note": "10 §6: a backup reminder about every 7 days of play; a day of play is a local day the town was opened (Proposed)"
     }
   }
 }

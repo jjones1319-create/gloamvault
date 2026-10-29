@@ -3146,6 +3146,16 @@
       "finalBossExtraShards": 1
     }
   },
+  "tutorial": {
+    "floor": 1,
+    "encounterId": "rat-pack",
+    "trapIds": [
+      "loose-flagstone"
+    ],
+    "chest": "small",
+    "hunter": false,
+    "surprise": false
+  },
   "secrets": [
     {
       "zoneId": "the-cellars",

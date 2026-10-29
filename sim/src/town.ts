@@ -2,6 +2,7 @@ import { quiverRefill, withQuiver } from './ammo.ts'
 import { EMPTY_PITY, chestKeyItemId, chestOnSale, keyOpens, openTownChest, type ChestPityState, type ChestResult, type TomeBagState } from './chests.ts'
 import type { Content } from './content.ts'
 import { boardSlot, contractPayout, delveContractProgress, markClaimed, playerBand, syncBoard, type BoardContext, type ContractBoard, type ContractPayout } from './contracts.ts'
+import { codexFromLog, mergeCodex, type CodexRecord } from './codex.ts'
 import { createDelve } from './delve.ts'
 import type { DelveCommand, DelveOptions, DelveState } from './delve-types.ts'
 import { chestBandGrade, chestPriceR, goldFor, rForFloor, sellPrice, skillHallPriceR, type ChestFamily } from './economy.ts'
@@ -172,6 +173,32 @@ export interface Profile {
   lastDelve: DelveSummaryRecord | null
   /** The Quest Board (07 §7; sim/src/contracts.ts): today's dailies, the week's weekly, progress, claims, the key caps. Optional (Phase 7). */
   contracts?: ContractBoard
+  /** The codex (Phase 8, pass B; sim/src/codex.ts): the monsters met and the materials found, folded in at settlement. Optional; absent = none yet. */
+  codex?: CodexRecord
+  /** The lesson's coach marks (D-038; Phase 8, pass B — the client shows them, the sim never reads this). Optional; absent = none seen. */
+  tutorial?: TutorialProgress
+  /** The backup reminder (10 §6; Phase 8, pass B — the client counts days by its own clock). Optional; absent = no day counted yet. */
+  backup?: BackupReminder
+}
+
+/** Which of the lesson's coach marks the player has seen (D-038; Phase 8). Shown once per profile; Settings can replay them. */
+export interface TutorialProgress {
+  /** Coach mark ids shown and dismissed. */
+  seen: string[]
+  /** "Skip the lesson": no coach mark shows until a replay. */
+  skipped?: boolean
+  /** Settings → Replay the tutorial: the next delve that starts on the lesson floor is the lesson again. */
+  replay?: boolean
+}
+
+/** About every 7 days of play the town offers a backup (10 §6). The client stamps the days; the sim never reads a clock. */
+export interface BackupReminder {
+  /** Days with play since the last backup or the last reminder put aside. */
+  playDays: number
+  /** The last local day counted ("2026-10-28"), so a day counts once. */
+  lastPlayDay: string | null
+  /** When the save was last downloaded or shared (ISO), or null. */
+  lastBackupAt: string | null
 }
 
 export class TownError extends Error {}
@@ -613,6 +640,8 @@ export function settleDelve(content: Content, profile: Profile, state: DelveStat
     lastDelve: summary,
     // 07 §7: what the delve did toward the Quest Board's contracts (sim/src/contracts.ts).
     ...(profile.contracts ? { contracts: delveContractProgress(content, profile.contracts, state) } : {}),
+    // The codex (Phase 8, pass B): the delve's fights and the materials it brought home (sim/src/codex.ts).
+    codex: mergeCodex(profile.codex, codexFromLog(state.log), state.materials),
   }
   // 06 §3, D-037: a boss's first-kill title and +1 Luck reach the heroes who stood at the kill (pass C2).
   next = payBossTownRewards(next, state)

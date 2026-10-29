@@ -143,6 +143,14 @@ const SHOTS: Shot[] = [
   { name: 'boss-warden-perf', hash: '#delve=gravehollow-keep&floor=6&seed=5&party=warden,blade,mender,arcanist&level=9&room=boss&auto=1&species=human,dwarf,elf,halfling', settings: PERF },
   { name: 'boss-naesa-perf', hash: '#delve=gravehollow-keep&floor=7&seed=5&party=warden,blade,mender,arcanist&level=12&room=boss&auto=1&species=human,dwarf,elf,halfling', settings: PERF },
   { name: 'boss-king-perf', hash: '#delve=gravehollow-keep&floor=8&seed=5&party=warden,blade,mender,arcanist&level=14&room=boss&auto=1&species=human,dwarf,elf,halfling', settings: PERF },
+  // Phase 8 — the lesson floor (D-131), the codex, a hero's growth lines, and the accessibility settings (D-132):
+  // the largest text size on Settings and in a fight, and the red-green-safe palette in a fight.
+  { name: 'lesson-floor', hash: '#delve=gravehollow-keep&floor=1&seed=17&party=warden&tutorial=1' },
+  { name: 'codex', hash: '#codex&demo=1&sample=1' },
+  { name: 'hero-status-growth', hash: '#hero=hero-1&tab=status&demo=1' },
+  { name: 'settings-largest', hash: '#settings', settings: { textSize: 'largest', installCardDismissed: true } },
+  { name: 'delve-fight-largest', hash: '#delve=gravehollow&zone=1&seed=3&party=warden,blade,mender,arcanist&level=5&auto=1&species=human,dwarf,elf,halfling', settings: { textSize: 'largest', installCardDismissed: true } },
+  { name: 'delve-fight-redgreen', hash: '#delve=gravehollow&zone=1&seed=3&party=warden,blade,mender,arcanist&level=5&auto=1&species=human,dwarf,elf,halfling', settings: { palette: 'redGreen', installCardDismissed: true } },
 ]
 
 const args = process.argv.slice(2)

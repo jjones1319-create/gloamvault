@@ -72,15 +72,30 @@ export default defineConfig({
       workbox: {
         // The app shell and content JSON are precached; 3D models are runtime-cached (10 §2) so the install stays small.
         globPatterns: ['**/*.{js,css,html,svg,png,webp,woff2,json}'],
-        globIgnores: ['**/models/**'],
+        // Phase 8: the audio (manifest and samples) is runtime-cached too, fetched per place on first use (10 §2).
+        globIgnores: ['**/models/**', '**/audio/**'],
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
         navigateFallback: `${BASE}index.html`,
         cleanupOutdatedCaches: true,
         runtimeCaching: [
           {
-            urlPattern: ({ url }) => url.pathname.startsWith(`${BASE}models/`),
+            // a RegExp, not a function: workbox copies a function into sw.js as text, where BASE does not exist
+            urlPattern: new RegExp(`${BASE}models/`),
             handler: 'CacheFirst',
             options: { cacheName: 'gloamvault-models', expiration: { maxEntries: 300, maxAgeSeconds: 60 * 60 * 24 * 90 } },
+          },
+          {
+            // Phase 8: the audio manifest stays fresh (a stale copy plays while the new one arrives); the samples carry a
+            // content hash (`?v=`), so they are cache-first. RegExps, not closures: a function is copied into sw.js as
+            // text, where `BASE` does not exist.
+            urlPattern: new RegExp(`${BASE}audio/manifest\\.json`),
+            handler: 'StaleWhileRevalidate',
+            options: { cacheName: 'gloamvault-audio-manifest' },
+          },
+          {
+            urlPattern: new RegExp(`${BASE}audio/.+\\.ogg`),
+            handler: 'CacheFirst',
+            options: { cacheName: 'gloamvault-audio', expiration: { maxEntries: 400, maxAgeSeconds: 60 * 60 * 24 * 90 } },
           },
         ],
       },

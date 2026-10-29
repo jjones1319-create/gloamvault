@@ -176,6 +176,8 @@ function fakeRoom(template: TemplateLike, cells: { x: number; y: number }[], wat
     sockets: { chestSmall: [], chestLarge: [], gold: [], trapPlates: [], cask: [], nest: [], cage: [] },
     taken: [],
     framePoints: [],
+    landmarks: [],
+    doorPanels: [],
     holes: [],
     obstacles: [],
     kit: { group, geometries: new Set(), triangles: 0, drawCalls: 0, dispose() {} },

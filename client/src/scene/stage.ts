@@ -17,6 +17,28 @@ export interface StageOptions {
 export const RENDER_SCALE = 0.75
 export const MAX_PIXEL_RATIO = 2
 const PERF_SAMPLE_MS = 500
+/**
+ * Phase 8: shader programs kept for the life of the stage, so a monster met again (or its death fade) never compiles
+ * twice — three.js frees a program the moment its last material goes, and the soak's dips were those recompiles
+ * (230–420 ms each on an integrated GPU). A program is a few hundred KB of driver memory at most; the cap bounds it.
+ */
+export const MAX_PINNED_PROGRAMS = 128
+/** The longest a model or room waits for its shaders before it shows anyway (the render then finishes the compile). */
+export const WARM_CAP_MS = 1500
+
+export interface WarmOptions {
+  /** Materials that fade later (the characters' palette and outline): their see-through variant compiles too. */
+  fades?: (material: THREE.Material) => boolean
+}
+
+function materialsOf(object: THREE.Object3D): THREE.Material[] {
+  const out = new Set<THREE.Material>()
+  object.traverse((o) => {
+    const m = (o as THREE.Mesh).material as THREE.Material | THREE.Material[] | undefined
+    for (const x of Array.isArray(m) ? m : m ? [m] : []) out.add(x)
+  })
+  return [...out]
+}
 
 export function pixelRatioFor(devicePixelRatio: number): number {
   return Math.min(devicePixelRatio, MAX_PIXEL_RATIO) * RENDER_SCALE
@@ -41,6 +63,9 @@ export class Stage {
   private sampleStart = 0
   private firstFrameDone = false
   private running = false
+  private disposed = false
+  /** The programs this stage keeps (MAX_PINNED_PROGRAMS). */
+  private readonly pinned = new Set<THREE.WebGLProgram>()
 
   constructor(canvas: HTMLCanvasElement, opts: StageOptions) {
     this.canvas = canvas
@@ -55,6 +80,8 @@ export class Stage {
     this.fit()
     this.resizeObserver = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => this.fit()) : null
     this.resizeObserver?.observe(canvas.parentElement ?? canvas)
+    // Dev only (dropped from the build): the newest stage, for measuring the GPU's frame time by timer query.
+    if (import.meta.env.DEV) (globalThis as { __gvStage?: Stage }).__gvStage = this
   }
 
   setFrameMode(mode: FrameMode): void {
@@ -73,6 +100,47 @@ export class Stage {
   /** Register something to free on dispose (geometries, materials, lights). */
   own(dispose: () => void): void {
     this.disposers.push(dispose)
+  }
+
+  /**
+   * Compiles an object's shaders before it is shown (Phase 8): with KHR_parallel_shader_compile the driver compiles off
+   * the main thread and this resolves when the programs are ready, so the frame that first draws the object does not
+   * stall on a compile. With `fades`, the see-through variant of those materials is compiled as well (a monster's death
+   * fade). Never rejects; resolves after WARM_CAP_MS at the latest. The object should not be in the scene yet.
+   */
+  async warm(object: THREE.Object3D, opts: WarmOptions = {}): Promise<void> {
+    if (this.disposed) return
+    const capped = (p: Promise<unknown>) => Promise.race([p, new Promise((res) => setTimeout(res, WARM_CAP_MS))])
+    try {
+      const fades = opts.fades ? materialsOf(object).filter((m) => !m.transparent && opts.fades!(m)) : []
+      if (fades.length > 0) {
+        for (const m of fades) m.transparent = true
+        try {
+          await capped(this.renderer.compileAsync(object, this.camera, this.scene))
+        } finally {
+          for (const m of fades) {
+            m.transparent = false
+            m.needsUpdate = true
+          }
+        }
+      }
+      if (this.disposed) return
+      await capped(this.renderer.compileAsync(object, this.camera, this.scene))
+    } catch (e) {
+      console.warn('shader warm-up failed', e)
+    }
+    this.pinPrograms()
+  }
+
+  /** Keeps every program compiled so far (up to the cap) for the life of the stage. */
+  pinPrograms(): void {
+    if (this.disposed) return
+    for (const p of this.renderer.info.programs ?? []) {
+      if (this.pinned.size >= MAX_PINNED_PROGRAMS) return
+      if (this.pinned.has(p)) continue
+      this.pinned.add(p)
+      p.usedTimes++
+    }
   }
 
   private fit(): void {
@@ -115,6 +183,7 @@ export class Stage {
     const elapsed = now - this.sampleStart
     const info = this.renderer.info
     const size = this.renderer.getDrawingBufferSize(new THREE.Vector2())
+    this.pinPrograms()
     perf.value = {
       fps: Math.round((this.frames * 1000) / elapsed),
       frameMs: this.frames ? this.cpuMs / this.frames : 0,
@@ -139,7 +208,12 @@ export class Stage {
     this.resizeObserver?.disconnect()
     for (const d of this.disposers.splice(0)) d()
     this.scene.clear()
+    // The kept programs go with the stage (their materials are gone by now).
+    for (const p of this.pinned) if (--p.usedTimes <= 0) p.destroy()
+    this.pinned.clear()
+    this.disposed = true
     this.renderer.dispose()
     perf.value = null
+    if (import.meta.env.DEV && (globalThis as { __gvStage?: Stage }).__gvStage === this) delete (globalThis as { __gvStage?: Stage }).__gvStage
   }
 }

@@ -23,6 +23,7 @@ import {
 } from '../../../../game/fightView.ts'
 import { beatAnims } from '../../../../game/fightAnims.ts'
 import { beatFx } from '../../../../game/fightFx.ts'
+import { audioFightBeat } from '../../../../audio/index.ts'
 import { cue as sceneCue, type SceneCue } from '../../../../scene/sceneBus.ts'
 
 /**
@@ -163,6 +164,8 @@ export class FightPlayback {
   private play(beat: Beat, cues: boolean, floaters: boolean): void {
     const book = this.book
     if (!book) return
+    // Phase 8: the beat's sounds (a paced beat plays them; flushed beats make one short summary).
+    audioFightBeat(beat, this.fight, this.content, this.speed, floaters)
     if (cues) {
       if (this.content && this.fight) for (const c of beatAnims(beat, this.fight, this.content, this.speed)) this.host.cue(c)
       // Each hit or heal carries the HP the beat leaves (the HUD's meters' own reckoning), so the scene's bar lands there.

@@ -5,7 +5,7 @@ import { signal } from '@preact/signals'
  * link is a query in the hash whose first known key names the screen: `#delve=gravehollow&zone=1&seed=17` (07 §8.3).
  * The pure parts take strings so they can be tested.
  */
-export const SCREENS = ['title', 'settings', 'phone', 'town', 'new-hero', 'hero', 'delve', 'viewer', 'room', 'gen', 'replay', 'autoplay'] as const
+export const SCREENS = ['title', 'settings', 'phone', 'town', 'new-hero', 'hero', 'delve', 'viewer', 'room', 'gen', 'replay', 'autoplay', 'codex'] as const
 export type Screen = (typeof SCREENS)[number]
 
 export interface Route {

@@ -29,7 +29,8 @@
     "runner": { "$ref": "#/$defs/section", "description": "The balance runner's own numbers (12 Phase 7, 07 §8.2): its targets, recipes, seeds and the scripted players' knobs. Optional: the game never reads it." },
     "arena": { "$ref": "#/$defs/section", "description": "07 §2.8, 06 §8.10: the boss-arena engine's own numbers — the tell's wind-up, what breaks it, re-entering adds, the returning hunters, the scripted heroes' arena habits (pass C2, Phase 7)." },
     "items": { "$ref": "#/$defs/section", "description": "08 §1–§7: the item rules the content files do not carry — the armor percent step from B, the loot-table band rows the linter checks, uniques and sets in a roll, relic actions (pass B, Phase 7)." },
-    "chests": { "$ref": "#/$defs/section", "description": "08 §10, 07 §7: the Curio Merchant — the Grand chests' pity advance, crate sizes, the Tome tier odds, the Divine Shard line and chest keys (pass B, Phase 7)." }
+    "chests": { "$ref": "#/$defs/section", "description": "08 §10, 07 §7: the Curio Merchant — the Grand chests' pity advance, crate sizes, the Tome tier odds, the Divine Shard line and chest keys (pass B, Phase 7)." },
+    "onboarding": { "$ref": "#/$defs/section", "description": "03 §13, 10 §6: the client's onboarding numbers — the backup reminder's days of play (pass B, Phase 8). Optional: the sim never reads it." }
   },
   "required": ["version", "source", "attributes", "derived", "combat", "exploration", "xp", "equipment", "skills", "economy", "pets", "coop", "dungeon", "death"],
   "additionalProperties": false,

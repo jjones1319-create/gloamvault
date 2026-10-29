@@ -930,7 +930,8 @@ export const warden: ClassSheet = {
     { fieldSkill: 'fieldRepair', rankBonus: 2 },
     { fieldSkill: 'firstAid', rankBonus: 2 },
   ],
-  aiRuleDefault: 'IF self HP < 30% THEN item small hp potion on self; IF allies count > 1 AND ally HP < 40% THEN provoke; IF self HP < 60% AND self not status fortify THEN brace; ELSE shield slam front enemy',
+  // Phase 8: the relics that suit the class, each where its trigger holds (08 §3; a relic not worn is skipped).
+  aiRuleDefault: 'IF self HP < 30% THEN item small hp potion on self; IF allies count > 1 AND ally HP < 50% THEN item the barrow bell; IF allies count > 1 AND ally HP < 40% THEN provoke; IF self HP < 60% AND self not status fortify THEN brace; IF enemies count > 2 THEN item the grinning mask; ELSE shield slam front enemy',
   visual: {
     gearSetId: 'warden-copper-plate',
     palette: ['#4a6a8c', '#9e1c2c', '#1f2937', '#5d636b'],

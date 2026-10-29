@@ -38,6 +38,17 @@ interface Slot {
   box: THREE.Box3
 }
 
+/** How far a label reaches below the feet (CSS px at 100% text; viewer.css: 2 px down, two lines; a lowered one 26). */
+const LABEL_PX = 28
+const LABEL_LOW_PX = 52
+
+/** Settings → Text size, as the CSS reads it (--ts on <html>; 1 outside a page). */
+function textScale(): number {
+  if (typeof document === 'undefined' || typeof getComputedStyle !== 'function') return 1
+  const k = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--ts'))
+  return Number.isFinite(k) && k > 0 ? k : 1
+}
+
 /** About half a label's width on screen (CSS px): bold 11 px, a little under 7 px a letter. */
 function labelHalf(name: string): number {
   return name.length * 3.4 + 8
@@ -140,8 +151,11 @@ export class MonsterLineupScene {
     // reach over its neighbours' but not the next one's on its line). How many metres a name needs depends on the
     // camera, which depends on the row: settled in a few rounds.
     let widths = bodies
-    for (let round = 0; round < 4; round++) {
-      const spots = lineupSpots(widths, 0.8, PER_ROW, Math.max(ROW_M, depth + 1))
+    // Phase 8: rows stand far enough apart that a back row's names clear the front row's heads on screen (the Vault's
+    // two rows of eight put the back row's names over the front row's monsters).
+    let rowGap = Math.max(ROW_M, depth + 1)
+    for (let round = 0; round < 6; round++) {
+      const spots = lineupSpots(widths, 0.8, PER_ROW, rowGap)
       this.slots.forEach((s, i) => {
         const at = spots[i]!
         const b = boxes[i]!
@@ -156,9 +170,35 @@ export class MonsterLineupScene {
       this.place()
       const perM = this.pxPerMetre()
       const next = this.slots.map((s, i) => Math.max(bodies[i]!, (labelHalf(s.entry.name) * 2 * 0.55) / Math.max(1e-3, perM(s))))
-      if (next.every((w, i) => Math.abs(w - widths[i]!) < 0.05)) break
+      const gap = this.rowGapFor(rowGap)
+      if (next.every((w, i) => Math.abs(w - widths[i]!) < 0.05) && Math.abs(gap - rowGap) < 0.05) break
       widths = next
+      rowGap = gap
     }
+  }
+
+  /**
+   * The gap between rows (metres) at which every back row's names (two lines under its feet, every other one a line
+   * lower) end above the highest head of the row in front, on screen with the camera as placed.
+   */
+  private rowGapFor(gap: number): number {
+    if (this.rows < 2) return gap
+    const cam = this.stage.camera
+    const h = Math.max(1, this.stage.renderer.domElement.clientHeight)
+    const y = (v: THREE.Vector3) => ((1 - v.project(cam).y) / 2) * h
+    const pxPerDepthM = Math.abs(y(new THREE.Vector3(0, 0, 0)) - y(new THREE.Vector3(0, 0, -1)))
+    if (pxPerDepthM < 1e-3) return gap
+    const ts = textScale()
+    const v = new THREE.Vector3()
+    let need = 0
+    for (let r = 0; r + 1 < this.rows; r++) {
+      let headTop = Infinity
+      for (const s of this.slots) if (s.row === r) headTop = Math.min(headTop, y(v.set((s.box.min.x + s.box.max.x) / 2, s.box.max.y, (s.box.min.z + s.box.max.z) / 2)))
+      let labelBottom = -Infinity
+      for (const s of this.slots) if (s.row === r + 1) labelBottom = Math.max(labelBottom, y(this.feet(s, v)) + (s.col % 2 === 1 ? LABEL_LOW_PX : LABEL_PX) * ts)
+      need = Math.max(need, labelBottom + 6 - headTop)
+    }
+    return need > 0.5 ? gap + need / pxPerDepthM : gap
   }
 
   /** How many CSS px a metre across is, at a monster's feet, with the camera as placed. */

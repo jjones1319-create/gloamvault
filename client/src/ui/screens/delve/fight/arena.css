@@ -20,14 +20,14 @@
   background: var(--fx-panel);
   color: var(--ink);
   font: inherit;
-  font-size: 12px;
+  font-size: calc(12px * var(--ts));
   line-height: 1;
   cursor: pointer;
   white-space: nowrap;
 }
 .fx-arena__label {
   color: var(--ink-dim);
-  font-size: 11px;
+  font-size: calc(11px * var(--ts));
   letter-spacing: 0.02em;
 }
 .fx-arena__value {
@@ -95,7 +95,7 @@
   background: linear-gradient(180deg, rgba(234, 138, 53, 0.95), rgba(194, 65, 12, 0.95));
   color: #fff6e6;
   font: inherit;
-  font-size: 12px;
+  font-size: calc(12px * var(--ts));
   font-weight: 800;
   line-height: 1;
   cursor: pointer;
@@ -113,7 +113,7 @@
   border-radius: 50%;
   background: #2a1408;
   color: #ffd59a;
-  font-size: 13px;
+  font-size: calc(13px * var(--ts));
 }
 .fx-sr {
   position: absolute;
@@ -143,4 +143,71 @@
   color: #fff6e6;
   background: #c2410c;
   border-color: #ffd59a;
+}
+
+/* Phase 8: the enemies' column holds the arena's chips and tells below the enemy cards (FightHud.tsx), so the middle
+   of the screen stays clear for a boss on his throne or dais. The cards scroll above them; the chips stack. */
+.fx-foes-area {
+  grid-area: foes;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  min-height: 0;
+}
+.fx-foes-area > .fx-foes {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+.fx-foes-area > .fx-arena {
+  flex: none;
+  justify-content: flex-start;
+}
+.fx-foes-area .fx-arena__chip,
+.fx-foes-area .fx-tell {
+  max-width: 100%;
+}
+/* In the enemies' column the chips are compact (the column is 178 px wide; the cards above keep the room). */
+.fx-foes-area > .fx-arena {
+  gap: 3px;
+}
+.fx-foes-area .fx-arena__chip,
+.fx-foes-area .fx-tell {
+  min-height: 22px;
+  padding-top: 1px;
+  padding-bottom: 1px;
+  font-size: calc(11px * var(--ts));
+}
+.fx-foes-area .fx-arena__label {
+  font-size: calc(10px * var(--ts));
+}
+/* Two to a row (Phase and Tide, Braziers and Candles …; their pips go, the count stays), the light's longer chip and the
+   tells across the column, last; and the boss's own card stays in view at the edge of the list however it scrolls. */
+.fx-foes-area > .fx-arena {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.fx-foes-area .fx-arena__chip {
+  min-width: 0;
+  justify-content: center;
+  overflow: hidden;
+}
+.fx-foes-area .fx-arena__pips {
+  display: none;
+}
+.fx-foes-area .fx-arena__chip[class*='fx-arena__chip--light'] {
+  order: 1;
+  grid-column: 1 / -1;
+}
+.fx-foes-area .fx-tell {
+  order: 2;
+  grid-column: 1 / -1;
+  justify-self: start;
+}
+.fx-foes-area .fx-card--boss {
+  position: sticky;
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+  background: rgba(16, 12, 20, 0.96);
 }

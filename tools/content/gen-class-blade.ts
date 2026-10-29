@@ -928,7 +928,8 @@ export const blade: ClassSheet = {
     { fieldSkill: 'fieldRepair', rankBonus: 2 },
     { fieldSkill: 'cooking', rankBonus: 2 },
   ],
-  aiRuleDefault: 'IF self HP < 30% THEN item small hp potion on self; IF enemy status bleed THEN twin cut on weakest enemy; ELSE open vein on front enemy',
+  // Phase 8: the relics that suit the class, each where its trigger holds (08 §3; a relic not worn is skipped).
+  aiRuleDefault: 'IF self HP < 30% THEN item small hp potion on self; IF round = 1 THEN item hourglass shard; IF enemies count > 2 THEN item the grinning mask; IF enemy status bleed THEN twin cut on weakest enemy; ELSE open vein on front enemy',
   visual: {
     gearSetId: 'blade-copper-mail',
     palette: ['#4b5563', '#a3262a', '#e7dfc8', '#71717a'],

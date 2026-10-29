@@ -444,6 +444,37 @@ export function fightSideFormation(frame: RoomFrame, camDir: { x: number; z: num
   return out
 }
 
+/**
+ * How far in front of a boss's arena mark the fight's middle stands once it has come to him (metres), and how much
+ * further for each metre his mark is raised (the dais in front of a raised throne: the King's 2 m keep the fight off
+ * the steps, where it stood before).
+ */
+export const BOSS_STANDOFF_M = 2.2
+export const BOSS_STANDOFF_PER_M = 2.5
+
+/**
+ * Phase 8: the fight comes to a boss who keeps an arena mark at the back of the room (Vexa's dais, Naesa's altar, the
+ * Hollow King's throne). Laid out in the room's middle, the fight put the boss 5–7 m behind it, and the framing — a
+ * band 166 px tall between the HUD's strip and its feed — showed him at 28–49 px. Every mark moves the same distance
+ * straight into the picture (the camera's depth axis; left and right stay as they were) until the formation's middle
+ * stands `standoff` in front of the boss; a formation already that close, or a boss in front of it, is left alone.
+ */
+export function advanceToward(marks: ReadonlyMap<string, Mark>, boss: { x: number; y?: number; z: number }, camDir: { x: number; z: number }, standoff = BOSS_STANDOFF_M + BOSS_STANDOFF_PER_M * Math.max(0, boss.y ?? 0)): Map<string, Mark> {
+  if (marks.size === 0) return new Map(marks)
+  const away = { x: -camDir.x, z: -camDir.z }
+  const len = Math.hypot(away.x, away.z) || 1
+  away.x /= len
+  away.z /= len
+  let depth = 0
+  for (const m of marks.values()) depth += m.x * away.x + m.z * away.z
+  depth /= marks.size
+  const shift = boss.x * away.x + boss.z * away.z - standoff - depth
+  if (!(shift > 0)) return new Map(marks)
+  const out = new Map<string, Mark>()
+  for (const [id, m] of marks) out.set(id, { ...m, x: m.x + away.x * shift, z: m.z + away.z * shift })
+  return out
+}
+
 /* ---------- the floor: which 2 m tiles a pit removes ---------- */
 
 export interface Rect {

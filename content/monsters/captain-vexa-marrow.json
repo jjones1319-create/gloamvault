@@ -16,12 +16,12 @@
   },
   "multipliers": {
     "hp": 10,
-    "attack": 1.15,
+    "attack": 2.8,
     "defense": 1.3
   },
   "speed": 110,
   "xpClass": 25,
-  "goldMultiplier": 10,
+  "goldMultiplier": 6,
   "ambushModifier": 0,
   "attacks": [
     {

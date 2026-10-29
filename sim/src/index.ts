@@ -55,8 +55,11 @@ export * from './town.ts'
 // James's direction during Phase 4 (D-088–D-092): the Wayfarer Chest's cast and the threat read.
 export * from './wayfarers.ts'
 export * from './threat.ts'
-export { buildHeroActor, createHero, heroLoad, heroStats } from './hero.ts'
+export { buildHeroActor, createHero, heroCardStats, heroDetection, heroLoad, heroStats } from './hero.ts'
 export { clampLook, defaultLook, LOOK_INDEX_MAX } from './look.ts'
 export type { CreateHeroInput } from './hero.ts'
 export { tierOpenAt } from './xp.ts'
 export { lightBand } from './light.ts'
+// Onboarding and the codex (Phase 8, pass B): the first delve's lesson floor and what the player has met and found.
+export * from './tutorial.ts'
+export * from './codex.ts'

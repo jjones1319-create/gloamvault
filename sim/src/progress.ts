@@ -12,8 +12,8 @@ import { monsterThreatLevel, partyLevelOf, threatMonsterOf } from './threat.ts'
 import { createTome, isObtainable, isTechnique } from './tomes.ts'
 import type { Tuning } from './tuning.ts'
 import type { Equipment, HeroRecord, ItemInstance, KnownSkill, MonsterDef, SkillDef } from './types/content.ts'
-import { TRAINABLE_ATTRIBUTES, type Attribute, type TrainableAttribute } from './types/enums.ts'
-import { attributeGainAboveCap, attributePointCost, attributeSoftCap, difficultyMultiplier, isGated, levelGapMultiplier, skillRankFor, useBudgetPercent, useXp } from './xp.ts'
+import { TRAINABLE_ATTRIBUTES, type Attribute, type FieldSkill, type TrainableAttribute } from './types/enums.ts'
+import { attributeGainAboveCap, attributePointCost, attributeSoftCap, difficultyMultiplier, isGated, levelGapMultiplier, skillRankFor, skillRankThreshold, useBudgetPercent, useXp } from './xp.ts'
 
 /**
  * What grows after a fight (03-GAME-DESIGN §5, §7.5): skill ranks, attributes (XP kept in hundredths so a 1 × D
@@ -330,6 +330,49 @@ export function rollTechniqueFor(content: Content, t: Tuning, rng: Rng, hero: He
     return { hero: { ...hero, skills: [...hero.skills, { skillId, rank: 1, xp: 0 }], techniqueWitness: rest }, learned: true }
   }
   return { hero: { ...hero, techniqueWitness: { ...(hero.techniqueWitness ?? {}), [skillId]: seen } }, learned: false }
+}
+
+/* ---------- field skills (03 §5.2, §7.6; 09 §5) ---------- */
+
+/**
+ * A field skill's XP after a use, and the rank it reaches (03 §5.2: field skills grow "by each successful use" on "the
+ * same rank curve" as skills — rank N at 100 × 1.5^(N−1) XP, rank 10 the top). A rank given at creation (a class's +2,
+ * a species trait) or by a Tome has no XP behind it, so the gain counts from that rank's threshold: the head start
+ * stays a head start. fix (Phase 8): the delve added field-skill XP but never turned it into rank, so no field skill
+ * ever grew by use. Returns the record and the ranks gained.
+ */
+export function gainFieldSkillXp(t: Tuning, hero: HeroRecord, skill: FieldSkill, amount: number): { hero: HeroRecord; ranks: number } {
+  const cur = hero.fieldSkills[skill]
+  if (!cur || amount <= 0) return { hero, ranks: 0 }
+  const xp = Math.max(cur.xp, skillRankThreshold(t, cur.rank)) + Math.floor(amount)
+  const rank = Math.min(t.xp.skill.maxRank, Math.max(cur.rank, skillRankFor(t, xp)))
+  return { hero: { ...hero, fieldSkills: { ...hero.fieldSkills, [skill]: { rank, xp } } }, ranks: rank - cur.rank }
+}
+
+/**
+ * Cartography's use (09 §5; 03 §5.2 "map"): entering a room of the floor for the first time maps it, and the hero whose
+ * Cartography draws the party's map — the best rank, `ranks` as the delve reads them (Wayfinder's +2 counts), the
+ * first in the party on a tie — earns XP for it as a skill use does (03 §5.1–§5.2): `xp.skill.xpPerUse` × D(the floor's
+ * monster level − the hero's level), within the gate and the per-delve use budget (its count under `field:cartography`
+ * in the hero's `skillUses`). Returns the hero's index, or −1 when nobody maps (no standing hero, or nothing gated).
+ */
+export function trainCartography(t: Tuning, state: DelveState, ranks: readonly number[], floorLevel: number): number {
+  let best = -1
+  for (let i = 0; i < state.heroes.length; i++) {
+    const h = state.heroes[i]
+    // The heroes whose rank the map reads (delve.ts cartographyReveal: the living).
+    if (!h || h.fallen) continue
+    if (best < 0 || (ranks[i] ?? 0) > (ranks[best] ?? 0)) best = i
+  }
+  const dh = best >= 0 ? state.heroes[best] : undefined
+  if (!dh) return -1
+  const key = 'field:cartography'
+  const uses = dh.skillUses[key] ?? 0
+  const gain = useXp(t, t.xp.skill.xpPerUse, floorLevel, dh.record.level, uses)
+  dh.skillUses[key] = uses + 1
+  if (gain <= 0) return -1
+  dh.record = gainFieldSkillXp(t, dh.record, 'cartography', gain).hero
+  return best
 }
 
 /* ---------- floor-limited passives (D-099) ---------- */

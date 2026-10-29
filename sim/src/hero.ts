@@ -460,6 +460,37 @@ export function heroStats(content: Content, t: Tuning, hero: HeroRecord): Record
   return deriveStats(t, heroLoad(content, t, hero).inputs)
 }
 
+/**
+ * A hero's Detection with the loadout passives' `buffStat detection` lines at their rank (Keen Eyes, Snare-Sense), as
+ * the fight applies them (applyPassives) and the delve counts them out of combat (delve.ts partyDetection): the flat
+ * lines on the derived stat, then the percent lines. `base` is the derived Detection (heroStats) when given.
+ */
+export function heroDetection(content: Content, t: Tuning, hero: HeroRecord, base = heroStats(content, t, hero).detection): number {
+  let flat = 0
+  let pct = 0
+  for (const id of hero.loadout.passives) {
+    const skill = id ? content.skills.get(id) : undefined
+    if (!skill || skill.type !== 'passive') continue
+    const rank = hero.skills.find((k) => k.skillId === skill.id)?.rank ?? 1
+    const scale = rankEffectPercent(skill, rank)
+    for (const line of linesAtRank(skill, rank)) {
+      if (line.kind !== 'buffStat' || line.stat !== 'detection') continue
+      flat += roundHalfUp(((line.amount ?? 0) * scale) / 100)
+      pct += roundHalfUp(((line.percent ?? 0) * scale) / 100)
+    }
+  }
+  return roundHalfUp(((base + flat) * (100 + pct)) / 100)
+}
+
+/**
+ * The hero card's numbers (03 §2.4): the derived stats, with Detection read as the delve reads it — the loadout
+ * passives counted (heroDetection) — so the card and the traps agree (Phase 8; the card used to leave passives out).
+ */
+export function heroCardStats(content: Content, t: Tuning, hero: HeroRecord): Record<DerivedStat, number> {
+  const stats = heroStats(content, t, hero)
+  return { ...stats, detection: heroDetection(content, t, hero, stats.detection) }
+}
+
 /** Total skill ranks → level (03 §2.2). */
 /**
  * Final Fantasy-style level-ups (D-082): reaching level L adds `attributePointsPerLevel` points to the class's bonus

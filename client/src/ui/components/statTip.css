@@ -1,0 +1,116 @@
+/* StatTip (Phase 8, pass B): a stat you can tap or hold for its plain-words line. 44 px tall; text from base.css. */
+.stip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 44px;
+  margin: 0;
+  padding: 0 6px;
+  border: 0;
+  border-bottom: 1px dashed #2c2632;
+  border-radius: 6px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: var(--fs-small);
+  line-height: 1.25;
+  text-align: left;
+  cursor: help;
+  -webkit-touch-callout: none;
+}
+.stip:focus-visible {
+  outline: 2px solid var(--ember);
+  outline-offset: -2px;
+}
+.stip--open {
+  background: rgba(255, 179, 71, 0.14);
+}
+.stip--off {
+  cursor: inherit;
+}
+/* A tip that sits inline in a header row (the hero screen's level and XP): no rule under it, the row's own text size. */
+.stip.stip--inline {
+  width: auto;
+  border-bottom: 0;
+  padding: 0 6px;
+  font-size: inherit;
+}
+.stip__label {
+  flex: 1;
+  min-width: 0;
+  color: var(--ink-dim);
+}
+.stip__value {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.stip-bubble {
+  position: fixed;
+  z-index: 70;
+  padding: 10px 12px;
+  border: 1px solid var(--ember);
+  border-radius: 12px;
+  background: #2a2330;
+  color: var(--ink);
+  font-size: var(--fs-small);
+  line-height: 1.4;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
+  pointer-events: auto;
+}
+
+/*
+ * The fight HUD's stats (the hero cards' HP bar and gauges): the cards keep their look; each stat is a tap zone a
+ * little taller than its bar, and fight.css's rules for a bare meter follow it inside (down, tight cards).
+ */
+.stip.fx-stat {
+  display: block;
+  width: auto;
+  min-height: 0;
+  margin: -4px 0;
+  padding: 4px 0;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  font-size: inherit;
+}
+.fx-card__bars > .stip.fx-stat {
+  flex: 1 1 0;
+  min-width: 0;
+  margin: -8px 0;
+  padding: 8px 0;
+}
+.fx-card--down > .stip.fx-stat--hp {
+  filter: grayscale(1);
+  opacity: 0.6;
+}
+.fx-party--tight .fx-card > .stip.fx-stat--hp > .meter:not(.meter--compact) {
+  height: 16px;
+}
+.fx-party--tight .fx-card > .stip.fx-stat--hp > .meter:not(.meter--compact) .meter__text {
+  font-size: calc(11px * var(--ts, 1));
+  line-height: calc(14px * var(--ts, 1));
+}
+
+/* An item card's stat lines (the gear dialog): pills that tap for their words. */
+.it-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+  margin: 2px 0;
+}
+.it-stats--broken {
+  color: var(--bad);
+  font-size: var(--fs-small);
+}
+.stip.it-stat {
+  width: auto;
+  min-height: 44px;
+  padding: 0 10px;
+  gap: 6px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.03);
+}

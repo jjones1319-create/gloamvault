@@ -24,7 +24,8 @@ import { buzz } from '../../lib/haptics.ts'
 import { route } from '../../router.ts'
 import { seedItemShowcase } from './demo.ts'
 import { ItemDetails } from './ItemDetails.tsx'
-import { SLOT_NAME, STAT_NAME, itemKindText, itemSummary, signed } from './labels.ts'
+import { ItemStatTips } from './ItemStatTips.tsx'
+import { SLOT_NAME, STAT_NAME, itemKindText, itemSummary, relicActiveText, signed } from './labels.ts'
 import { heroAmmo } from '../../../../../sim/src/ammo.ts'
 
 /** Gear (03 §6.1, §6.4): the eleven slots with grade, +N and wear pips; tap one to swap from the armory; Auto-equip best. */
@@ -212,8 +213,11 @@ function ItemRow({ c, cls, def, inst, hero, children }: { c: Content; cls: Class
           {def.name} <Grade grade={def.grade} /> <span class={`hr-plus ${inst.plusN > 0 ? 'hr-plus--on' : ''}`}>+{inst.plusN}</span> <WearPips durability={inst.durability} max={inst.maxDurability} />
         </span>
         <span class="list__sub">
-          {itemKindText(def)} · {itemSummary(c, def, s, cls.pool, 4)}
+          {itemKindText(def)}
+          {def.active && s.band !== 'broken' ? ` · ${relicActiveText(c, def)}` : ''}
         </span>
+        {/* Phase 8 (pass B): each stat line taps for its plain words. */}
+        <ItemStatTips c={c} def={def} inst={inst} hero={hero} pool={cls.pool} />
         <ItemDetails c={c} def={def} inst={inst} worn={wornBy(hero)} showActive={false} />
       </div>
       {children}
@@ -271,8 +275,10 @@ function CandidateRow({
           <Chip tone={verdict === 'better' ? 'good' : verdict === 'worse' ? 'bad' : 'plain'}>{verdict === 'better' ? '▲ better' : verdict === 'worse' ? '▼ worse' : '= same'}</Chip>
         </span>
         <span class="list__sub">
-          {itemKindText(cand.def)} · {itemSummary(c, cand.def, s, cls.pool, 4)}
+          {itemKindText(cand.def)}
+          {cand.def.active && s.band !== 'broken' ? ` · ${relicActiveText(c, cand.def)}` : ''}
         </span>
+        <ItemStatTips c={c} def={cand.def} inst={cand.inst} hero={hero} pool={cls.pool} />
         <ItemDetails c={c} def={cand.def} inst={cand.inst} worn={wornBy(hero)} showActive={false} />
         {moves.length > 0 && (
           <span class="hr-moves">

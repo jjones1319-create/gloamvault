@@ -95,6 +95,57 @@
       "items": {
         "$ref": "#/$defs/secret"
       }
+    },
+    "tutorial": {
+      "type": "object",
+      "description": "The fixed lesson floor of a profile's first delve (D-038, 03 §13; Phase 8, pass B). The generator lays it out as Entry · Fight · Trap room · Stairs; this block fixes what stands in it, so nothing on it is rolled. Optional: without it a first delve's lesson floor rolls its contents. Lint rule 70 checks the references.",
+      "properties": {
+        "floor": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "The floor the lesson replaces on a profile's first delve."
+        },
+        "encounterId": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The first fight: an encounter of this dungeon legal on that floor (03 §13: a rat is faster than you)."
+        },
+        "trapIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 3,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "The trap room's traps: traps of the floor's zone that a starting hero's Perception reveals in the room's light."
+        },
+        "chest": {
+          "enum": [
+            "small",
+            "large",
+            null
+          ],
+          "description": "The chest the trap room holds (unlocked, untrapped), or null."
+        },
+        "hunter": {
+          "type": "boolean",
+          "description": "Whether the zone's hunter stalks the lesson floor."
+        },
+        "surprise": {
+          "type": "boolean",
+          "description": "Whether the first fight may open with a surprise either way."
+        }
+      },
+      "required": [
+        "floor",
+        "encounterId",
+        "trapIds",
+        "chest",
+        "hunter",
+        "surprise"
+      ],
+      "additionalProperties": false
     }
   },
   "required": [

@@ -66,7 +66,7 @@
   "monsterTechniqueIds": [
     "mender-wraiths-lament"
   ],
-  "aiRuleDefault": "IF self HP < 30% THEN item small hp potion on self; IF ally HP < 50% THEN mend on lowest ally; ELSE smite front enemy",
+  "aiRuleDefault": "IF self HP < 30% THEN item small hp potion on self; IF ally HP < 35% THEN item the brine pearl on lowest ally; IF ally HP < 50% THEN mend on lowest ally; IF allies HP < 75% THEN item candle of the crypt; IF ally status curse THEN item the tidebound idol; ELSE smite front enemy",
   "visual": {
     "gearSetId": "mender-burlap-robes",
     "palette": [

@@ -74,7 +74,7 @@
   place-items: center;
   background: #2a2430;
   font-weight: 700;
-  font-size: 14px;
+  font-size: calc(14px * var(--ts));
 }
 .nh-steps__step--on {
   color: var(--ink);
@@ -173,7 +173,7 @@
 }
 .nh-detail__name {
   margin: 0;
-  font-size: 21px;
+  font-size: calc(21px * var(--ts));
   color: var(--ember);
 }
 .nh-detail__tag {
@@ -255,7 +255,7 @@
   background: var(--ember);
   color: #120f14;
   font-weight: 700;
-  font-size: 14px;
+  font-size: calc(14px * var(--ts));
 }
 .nh-skill__desc {
   font-size: var(--fs-small);
@@ -319,7 +319,7 @@
   background: #0b090d;
   color: var(--ink);
   font: inherit;
-  font-size: 16px;
+  font-size: calc(16px * var(--ts));
   user-select: text;
   -webkit-user-select: text;
 }
@@ -337,7 +337,7 @@
 .nh-reroll {
   width: 48px;
   padding: 0;
-  font-size: 20px;
+  font-size: calc(20px * var(--ts));
 }
 
 /* points: eight steppers in two columns, the totals and the name on the right */
@@ -386,17 +386,17 @@
   width: 44px;
   min-height: 44px;
   padding: 0;
-  font-size: 22px;
+  font-size: calc(22px * var(--ts));
 }
 .nh-attr__value {
   width: 50px;
   text-align: center;
-  font-size: 20px;
+  font-size: calc(20px * var(--ts));
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 .nh-attr__free {
-  font-size: 14px;
+  font-size: calc(14px * var(--ts));
   margin-left: 1px;
 }
 .nh-side {
@@ -412,7 +412,7 @@
   gap: 8px;
 }
 .nh-left b {
-  font-size: 24px;
+  font-size: calc(24px * var(--ts));
   color: var(--ember);
 }
 .nh-preview {
@@ -440,7 +440,7 @@
 }
 .nh-card__name {
   margin: 0 0 2px;
-  font-size: 24px;
+  font-size: calc(24px * var(--ts));
   color: var(--ember);
 }
 .nh-card__line {
@@ -475,7 +475,7 @@
   color: var(--ink-dim);
 }
 .nh-review__attr b {
-  font-size: 19px;
+  font-size: calc(19px * var(--ts));
   font-variant-numeric: tabular-nums;
 }
 /* The starting kit (D-099): two tiles under the class's pros and cons. */

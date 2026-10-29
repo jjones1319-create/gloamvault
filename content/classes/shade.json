@@ -66,7 +66,7 @@
     "shade-hags-hex",
     "shade-wraith-step"
   ],
-  "aiRuleDefault": "IF self HP < 30% THEN item small hp potion on self; IF self not status veil THEN veil; ELSE backstab on weakest enemy",
+  "aiRuleDefault": "IF self HP < 30% THEN item small hp potion on self; IF round = 1 THEN item hourglass shard; IF enemies count > 2 THEN item moth charm; IF self not status veil THEN veil; ELSE backstab on weakest enemy",
   "visual": {
     "gearSetId": "shade-rawhide-leather",
     "palette": [

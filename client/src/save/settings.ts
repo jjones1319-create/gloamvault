@@ -1,5 +1,6 @@
 import * as v from 'valibot'
 import { KEYS, safeGet, safeSet, type KeyValueStore } from './db.ts'
+import AUDIO from '../audio/tuning.json'
 
 /**
  * Player settings (not the game save): stored under `gloamvault/settings`, validated with valibot, never trusted.
@@ -8,14 +9,30 @@ import { KEYS, safeGet, safeSet, type KeyValueStore } from './db.ts'
  */
 export const SETTINGS_VERSION = 1
 
+export const TEXT_SIZES = ['normal', 'large', 'largest'] as const
+export type TextSize = (typeof TEXT_SIZES)[number]
+export const PALETTES = ['standard', 'redGreen', 'blueYellow'] as const
+export type Palette = (typeof PALETTES)[number]
+
+/** Phase 8 (audio): a 0–100 slider, clamped and rounded; a missing or broken value is the default. */
+const volume = (fallback: number) => v.optional(v.pipe(v.number(), v.finite(), v.transform((n) => Math.max(0, Math.min(100, Math.round(n))))), fallback)
+
 export const SettingsSchema = v.object({
   version: v.literal(SETTINGS_VERSION),
   perfOverlay: v.boolean(),
   frameMode: v.picklist(['smooth', 'battery']),
-  textSize: v.picklist(['normal', 'large']),
+  /** Phase 8: 100 / 115 / 130% (`largest` is new; a record from before reads as it was). */
+  textSize: v.picklist(TEXT_SIZES),
+  /** Phase 8: the colours that carry meaning, remapped for red–green or blue–yellow colour blindness (a11y.css). */
+  palette: v.optional(v.picklist(PALETTES), 'standard'),
   reduceMotion: v.boolean(),
   haptics: v.boolean(),
   installCardDismissed: v.boolean(),
+  /** Phase 8 (audio): master, music and effects volume (gain (v/100)²; the ambience rides the effects slider) and a mute. */
+  masterVolume: volume(AUDIO.defaultVolume.master),
+  musicVolume: volume(AUDIO.defaultVolume.music),
+  sfxVolume: volume(AUDIO.defaultVolume.sfx),
+  muted: v.optional(v.boolean(), false),
 })
 
 export type Settings = v.InferOutput<typeof SettingsSchema>
@@ -25,9 +42,14 @@ export const DEFAULT_SETTINGS: Settings = {
   perfOverlay: false,
   frameMode: 'smooth',
   textSize: 'normal',
+  palette: 'standard',
   reduceMotion: false,
   haptics: true,
   installCardDismissed: false,
+  masterVolume: AUDIO.defaultVolume.master,
+  musicVolume: AUDIO.defaultVolume.music,
+  sfxVolume: AUDIO.defaultVolume.sfx,
+  muted: false,
 }
 
 /**

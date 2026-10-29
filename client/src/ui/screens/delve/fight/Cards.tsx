@@ -2,6 +2,8 @@ import { Fragment, type JSX } from 'preact'
 import type { Content } from '../../../../../../sim/src/content.ts'
 import type { Actor, FightState } from '../../../../../../sim/src/fight-types.ts'
 import { onStage, shownHp, splitName, statusChips, type Presence, type StatusChipView } from '../../../../game/fightView.ts'
+import { StatTip } from '../../../components/StatTip.tsx'
+import { hpLine, momentumLine, poolLine, speedCompareLine } from '../../../components/statLines.ts'
 import { Meter } from '../../../kit/kit.tsx'
 import type { Floater } from './playback.ts'
 
@@ -191,9 +193,12 @@ function HeroCard({ hero, pet, x, tight }: { hero: Actor; pet: Actor | null; x: 
   const badges = stateBadges(hero, x, hp)
   const down = (hero.downed && hp <= 0) || hero.fallen
   const detail = () => {
-    const bits = [`${hero.name} — HP ${hp}/${hero.maxHp}`, `${poolName(hero)} ${hero.pool}/${hero.poolMax}`, `Momentum ${hero.momentum}/${ultCost}${ready ? ' (Ultimate ready)' : ''}`, `${hero.row} row`]
+    const bits = [`${hero.name} — HP ${hp}/${hero.maxHp}`, `${poolName(hero)} ${hero.pool}/${hero.poolMax}`, `Momentum ${hero.momentum}/${ultCost}${ready ? ' (Ultimate ready)' : ''}`, `${hero.row} row`, speedCompareLine(x.c.tuning, hero.base.speed)]
     return bits.join(' · ')
   }
+  // Phase 8 (pass B): the HP bar and the gauges say what they mean when tapped (not while a command picks its target).
+  const ultName = hero.hero?.ultimateId ? (x.c.skills.get(hero.hero.ultimateId)?.name ?? null) : null
+  const aiming = x.targets !== null
   return (
     <div class={cardClass('fx-card--hero', hero, x, down)} {...cardHandlers(hero, x, detail)}>
       <div class="fx-card__head">
@@ -203,14 +208,16 @@ function HeroCard({ hero, pet, x, tight }: { hero: Actor; pet: Actor | null; x: 
         </span>
         {badges}
       </div>
-      <Meter value={hp} max={hero.maxHp} tone="hp" label="HP" />
+      <StatTip class="fx-stat fx-stat--hp" testid={`fx-stat-hp-${hero.id}`} disabled={aiming} onShow={x.onTip} line={hpLine(hero.name, hp, hero.maxHp, x.mortal)}>
+        <Meter value={hp} max={hero.maxHp} tone="hp" label="HP" />
+      </StatTip>
       <div class="fx-card__bars">
-        <span class={`fx-gauge fx-gauge--${hero.poolKind ?? 'none'}`} title={`${poolName(hero)} ${hero.pool}/${hero.poolMax}`}>
+        <StatTip class={`fx-stat fx-gauge fx-gauge--${hero.poolKind ?? 'none'}`} testid={`fx-stat-pool-${hero.id}`} disabled={aiming} onShow={x.onTip} line={hero.poolKind === 'mana' || hero.poolKind === 'stamina' ? poolLine(x.c.tuning, hero.poolKind, hero.poolMax, hero.pool) : `${poolName(hero)} ${hero.pool}/${hero.poolMax}`}>
           <Meter compact value={hero.pool} max={hero.poolMax} tone="pool" label={poolName(hero)} />
-        </span>
-        <span class={`fx-gauge fx-gauge--momentum ${ready ? 'fx-gauge--ready' : ''}`} title={`Momentum ${hero.momentum}/${ultCost}`}>
+        </StatTip>
+        <StatTip class={`fx-stat fx-gauge fx-gauge--momentum ${ready ? 'fx-gauge--ready' : ''}`} testid={`fx-stat-momentum-${hero.id}`} disabled={aiming} onShow={x.onTip} line={momentumLine(x.c.tuning, hero.momentum, ultName)}>
           <Meter compact value={hero.momentum} max={ultCost} tone="momentum" label="Momentum" />
-        </span>
+        </StatTip>
         {tight && <StatusRow chips={chips} x={x} inline />}
       </div>
       {!tight && <StatusRow chips={chips} x={x} />}
@@ -252,6 +259,9 @@ function EnemyCard({ foe, x, tight }: { foe: Actor; x: CardContext; tight: boole
     if (m?.isBoss) bits.push('boss: no fleeing')
     if (m?.weak.length) bits.push(`weak to ${m.weak.join(', ')}`)
     if (m?.resist.length) bits.push(`resists ${m.resist.join(', ')}`)
+    // Phase 8 (pass B): its Speed against the hero whose turn it is (the timeline in a sentence).
+    const hero = x.fight.actors.find((a) => a.id === x.activeId) ?? x.fight.actors.find((a) => a.side === 'party' && a.kind === 'hero' && !a.fallen)
+    bits.push(speedCompareLine(x.c.tuning, foe.base.speed, hero ? { name: hero.name, speed: hero.base.speed } : undefined))
     return bits.join(' · ')
   }
   const name = splitName(foe.name)

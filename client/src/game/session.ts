@@ -27,6 +27,8 @@ import { idbStore, safeGet, type KeyValueStore } from '../save/db.ts'
 import { addToHall, readHall, type HallEntry } from '../save/hall.ts'
 import { endRun, eraseProfile, exportSave, freshProfile, importSave, readProfile, writeBackup, writeProfile } from '../save/profile.ts'
 import { navigate } from '../ui/router.ts'
+import { countPlayDay, localDay, markBackedUp } from './backup.ts'
+import { coachDemo } from './coach.ts'
 
 /**
  * The game session (Phase 4): the one place the screens go through. It holds the profile (town) and the delve in
@@ -323,6 +325,27 @@ export function finishDelve(): DelveSummaryRecord | null {
 
 /* ---------- backups ---------- */
 
+/**
+ * Phase 8 (pass B): counts today as a day of play for the backup reminder (10 §6: about every 7 days of play) — the
+ * client's clock, once a day, never for a demo or deep-link session.
+ */
+export function notePlayDay(now: Date = new Date()): void {
+  const p = profile.value
+  if (ephemeral.value || !p) return
+  const next = countPlayDay(p, localDay(now))
+  if (next === p) return
+  profile.value = next
+  void save()
+}
+
+/** Phase 8 (pass B): a download or a share of the save went through, so the reminder's count starts again. */
+export function noteBackup(now: Date = new Date()): void {
+  const p = profile.value
+  if (ephemeral.value || !p) return
+  profile.value = markBackedUp(p, now)
+  void save()
+}
+
 export function exportCurrentSave(): string | null {
   return profile.value ? exportSave(profile.value) : null
 }
@@ -390,6 +413,8 @@ export interface DeepDelve {
   pacts?: string[]
   /** `&room=boss` (07 §8.3 links 2 and 7): the party at the boss's door with the floor behind it cleared; `auto=1` walks in. */
   room?: 'boss'
+  /** `&tutorial=1` (Phase 8, pass B): the first delve's lesson floor, with its coach marks shown (screenshots). */
+  tutorial?: boolean
 }
 
 /**
@@ -429,7 +454,9 @@ export async function startDeepDelve(d: DeepDelve): Promise<void> {
   // 07 §8.3: a deep link may name the preset and the Pacts (`&difficulty=hard&pacts=candle,hungry-hunter`).
   const pacts = c.dungeons.get(dungeonId)?.pacts ?? []
   const pactIds = [...new Set((d.pacts ?? []).map((w) => pacts.find((x) => x.id === w)?.id ?? pacts.find((x) => x.id.startsWith(w))?.id).filter((id): id is string => id !== undefined))]
-  const state = createDelve(c, { dungeonId, floor, seed: d.seed, difficulty: d.difficulty ?? 'normal', pactIds, auto: false, policy: 'textbook', deathRule: p.deathRule, ...(p.deathRule === 'nightmare' && p.chosenId ? { leaderId: p.chosenId } : {}), bossKills: { ...p.progress.bossKills } }, p.heroes)
+  const state = createDelve(c, { dungeonId, floor, seed: d.seed, difficulty: d.difficulty ?? 'normal', pactIds, auto: false, policy: 'textbook', deathRule: p.deathRule, ...(p.deathRule === 'nightmare' && p.chosenId ? { leaderId: p.chosenId } : {}), bossKills: { ...p.progress.bossKills }, ...(d.tutorial ? { firstDelve: true } : {}) }, p.heroes)
+  // Phase 8 (pass B): `&tutorial=1` shows the lesson's coach marks in this ephemeral session.
+  coachDemo.value = d.tutorial === true
   if (d.room === 'boss') standAtBossDoor(state)
   if (d.room === 'boss' && d.auto) {
     // The party walks into the arena: the boss fight starts (pass C2's link for the arena's shots).

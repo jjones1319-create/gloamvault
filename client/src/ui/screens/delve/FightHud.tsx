@@ -368,7 +368,7 @@ function Hud({ c, fight, pb, version }: { c: Content; fight: FightState; pb: Fig
         // A boss arena (07 §2.8; pass C2) cannot be fled: its place goes to the room's interactables.
         fight.arena && arenaList.length > 0
           ? {
-              testid: 'fx-arena',
+              testid: 'fx-arena-action',
               label: 'Arena',
               sub: `${arenaList.filter((r) => r.enabled).length} ready`,
               enabled: true,
@@ -488,10 +488,14 @@ function Hud({ c, fight, pb, version }: { c: Content; fight: FightState; pb: Fig
       <div class="fx-mid">
         <Banner state={banner} onCancel={cancelAim} />
         {tip && <Tip key={tip.key} text={tip.text} onClose={() => setTip(null)} />}
-        <ArenaBar c={c} fight={fight} onTip={showTip} />
         <Feed lines={pb.feed} playing={pb.playing} onSkip={() => pb.skip()} />
       </div>
-      <EnemyColumn x={x} />
+      {/* Phase 8: the arena's chips and tells under the enemies they belong to, so a boss on his throne is framed in
+          the middle's full height (they stood over his head under the banner). */}
+      <div class="fx-foes-area">
+        <EnemyColumn x={x} />
+        <ArenaBar c={c} fight={fight} onTip={showTip} />
+      </div>
       <SideActions list={side} busy={busy} onBlocked={showTip} />
       <ActionBar attack={attack} skills={skills} ultimate={ultimate} free={free} busy={busy} onBlocked={showTip} />
       {sheet === 'items' && hero && <ItemSheet hero={hero.name} rows={itemRows} onClose={() => setSheet(null)} />}

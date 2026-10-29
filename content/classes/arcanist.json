@@ -66,7 +66,7 @@
     "arcanist-hags-cauldron",
     "arcanist-sentinel-pulse"
   ],
-  "aiRuleDefault": "IF self HP < 30% THEN item small hp potion on self; IF ally HP < 50% THEN arcane ward on lowest ally; ELSE ember lance on weakest enemy",
+  "aiRuleDefault": "IF self HP < 30% THEN item small hp potion on self; IF light < 50 THEN item lantern of the deep; IF round = 1 THEN item hourglass shard; IF ally HP < 50% THEN arcane ward on lowest ally; ELSE ember lance on weakest enemy",
   "visual": {
     "gearSetId": "arcanist-burlap-robes",
     "palette": [

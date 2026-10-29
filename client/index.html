@@ -14,9 +14,54 @@
     <link rel="icon" href="%BASE_URL%logo.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="%BASE_URL%apple-touch-icon-180.png" />
     <title>Gloamvault</title>
+    <!--
+      Phase 8: the splash. The title screen's dusk from the first paint (no white flash), and the emblem and the name
+      while the game's code arrives; it goes the moment the app draws anything (#app is no longer empty). The installed
+      app's own launch screen is the manifest's background_color (the same #120f14) with the icon (vite.config.ts).
+    -->
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: #120f14;
+      }
+      .gv-splash {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        background: radial-gradient(ellipse at 50% 46%, #2a1a12 0%, #120f14 62%);
+        font-family: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+      }
+      .gv-splash img {
+        width: min(30vh, 136px);
+        height: auto;
+      }
+      .gv-splash b {
+        color: #ffb347;
+        font-size: min(7vh, 30px);
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        text-shadow:
+          0 2px 0 #3a1e06,
+          0 0 24px rgba(255, 179, 71, 0.35);
+      }
+      #app:not(:empty) ~ .gv-splash {
+        display: none;
+      }
+    </style>
   </head>
   <body>
     <div id="app"></div>
+    <div class="gv-splash" aria-hidden="true">
+      <img src="%BASE_URL%logo.svg" alt="" width="136" height="136" />
+      <b>Gloamvault</b>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

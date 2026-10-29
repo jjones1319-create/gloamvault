@@ -9,7 +9,7 @@ import { deathRuleName } from './town/text.ts'
 import { Modal } from '../kit/kit.tsx'
 import { navigate, type Route } from '../router.ts'
 
-export const PHASE = 7
+export const PHASE = 8
 
 /** Which phase a deep-linked screen arrives in, for the "this link opens in Phase N" chip. */
 const ARRIVES: Partial<Record<Route['screen'], number>> = {

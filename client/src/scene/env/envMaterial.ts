@@ -39,6 +39,9 @@ export function createEnvMaterial(hexes: readonly string[], opts: { translucent?
     material.opacity = water ? 1 : 0.42
     material.depthWrite = false
     material.side = THREE.DoubleSide
+    // One pass, not three.js's back-then-front pair for see-through double-sided things (Phase 8): a mist plane, a pool
+    // or a falling sheet is one layer, so the second pass only cost a draw call and its fill.
+    material.forceSinglePass = true
   }
   material.onBeforeCompile = (shader) => {
     shader.uniforms.uEnvPalette = palette

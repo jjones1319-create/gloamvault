@@ -1,7 +1,7 @@
 {
   "name": "gloamvault",
   "private": true,
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "Gloamvault: an original 1-4 player co-op party dungeon crawler for Android phones, installed from GitHub Pages.",
   "type": "module",
   "license": "MIT",

@@ -1,0 +1,14 @@
+/* The backup reminder among the town hub's notices (Phase 8, pass B); the notice itself is town.css's tw-notice. */
+.backup-note {
+  flex-wrap: wrap;
+  border-color: var(--ember);
+}
+.backup-note__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.backup-note__actions .btn {
+  min-height: 44px;
+}

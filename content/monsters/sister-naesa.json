@@ -15,8 +15,8 @@
     "max": 11
   },
   "multipliers": {
-    "hp": 8,
-    "attack": 1.05,
+    "hp": 10,
+    "attack": 3,
     "defense": 1.4
   },
   "speed": 105,

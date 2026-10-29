@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'preact/hooks'
 import { content, delve, delveVersion } from '../../game/session.ts'
-import { NO_INSETS, type Insets } from '../../scene/room/fit.ts'
+import { NO_INSETS } from '../../scene/room/fit.ts'
+import { settings } from '../store/settings.ts'
 import { RoomStage } from '../components/RoomStage.tsx'
 import { stageReady } from '../components/StageView.tsx'
 import { Btn } from '../kit/kit.tsx'
@@ -10,6 +11,7 @@ import { CurioModal } from './delve/CurioModal.tsx'
 import { DelveMenu } from './delve/DelveMenu.tsx'
 import { FightHud, fightFinale } from './delve/FightHud.tsx'
 import { DelveHeader } from './delve/Header.tsx'
+import { fightInsets, roomInsets } from './delve/insets.ts'
 import { Icon } from './delve/icons.tsx'
 import { MapModal, Minimap } from './delve/Minimap.tsx'
 import { OverCard } from './delve/OverCard.tsx'
@@ -25,11 +27,6 @@ import './delve.css'
  * and the end of the delve come up over the same stage.
  */
 
-/** What the overlay covers, for the scene to frame the room (or the fight) in the rest (CSS px). */
-const ROOM_INSETS: Insets = { top: 44, right: 252, bottom: 60, left: 0 }
-/** The fight HUD: the party column, the enemies and side commands, the strip on top, the bar and feed below. */
-const FIGHT_INSETS: Insets = { top: 96, right: 256, bottom: 150, left: 208 }
-
 type Sheet = 'map' | 'menu' | 'items' | 'pets' | null
 
 export function DelveScreen() {
@@ -40,7 +37,7 @@ export function DelveScreen() {
   if (!d || !c) return <NoDelve />
   const phase = d.phase.kind
   const fightShown = phase === 'fight' || fightFinale.value
-  const insets = fightShown ? FIGHT_INSETS : phase === 'over' ? NO_INSETS : ROOM_INSETS
+  const insets = fightShown ? fightInsets(settings.value.textSize) : phase === 'over' ? NO_INSETS : roomInsets(settings.value.textSize)
   const close = () => setSheet(null)
   return (
     <main class="screen dv" data-screen="delve" data-phase={fightShown ? 'fight' : phase}>

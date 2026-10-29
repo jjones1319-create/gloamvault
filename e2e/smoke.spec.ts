@@ -53,7 +53,9 @@ async function playDelve(page: Page): Promise<number> {
     }
     const auto = page.getByTestId('fx-auto')
     if (await auto.isVisible()) {
-      if ((await auto.getAttribute('aria-pressed')) !== 'true') await auto.click()
+      // the fight can end between seeing Auto and reading it: a vanished button is no error, just the next step
+      const pressed = await auto.getAttribute('aria-pressed', { timeout: 1000 }).catch(() => null)
+      if (pressed !== null && pressed !== 'true') await auto.click({ timeout: 1000 }).catch(() => {})
       await page.waitForTimeout(250)
       continue
     }
@@ -98,12 +100,15 @@ test('the first thirty minutes: a hero, the Cellars, home, a chest (03 §13)', a
   await page.getByTestId('nh-create').click()
   await expect(page).toHaveURL(/#town/)
   await noSideScroll(page)
+  // Phase 8: the lesson's first coach mark rings the Waystone (D-038; shown once per profile)
+  await expect(page.getByTestId('coach-town-first')).toBeVisible()
 
   // The Waystone → the first delve (the tutorial floor, D-038).
   await page.getByTestId('town-place-waystone').click()
   await page.getByTestId('waystone-enter').click()
   await expect(page).toHaveURL(/#delve/)
   await ready(page)
+  await expect(page.getByTestId('coach-delve-move')).toBeVisible() // the lesson floor's entrance
   await noSideScroll(page)
   await playDelve(page)
   await page.getByTestId('dv-home').click()
@@ -184,5 +189,59 @@ test('the room viewer and the monster lineup (Phase 6)', async ({ page }) => {
   await noSideScroll(page)
   await page.getByTestId('back').click()
   await expect(page).toHaveURL(/#title$/)
+  expect(errors).toEqual([])
+})
+
+test('the Pacts, the Quest Board and a boss arena (Phase 7)', async ({ page }) => {
+  test.setTimeout(120_000)
+  const errors = watchErrors(page)
+  // The Waystone: Normal and the twelve Pacts; ticking one raises the Oath and shows its reward line.
+  await page.goto('#town&place=waystone&demo=1')
+  await ready(page)
+  await expect(page.getByTestId('waystone-difficulty-normal')).toBeVisible()
+  const pact = page.getByTestId('waystone-pact-candle-pact')
+  await expect(pact).toBeVisible()
+  const before = await page.getByTestId('waystone-oath').textContent()
+  await pact.click()
+  await expect(page.getByTestId('waystone-oath')).not.toHaveText(before ?? '')
+  await noSideScroll(page)
+  // The Quest Board: its dailies with progress bars, the turnover and the weekly key caps.
+  await page.goto('#town&place=board&demo=1')
+  await ready(page)
+  await expect(page.getByTestId('qb-turnover')).toBeVisible()
+  await expect(page.getByTestId('qb-keys')).toBeVisible()
+  await expect(page.locator('[data-testid^="qb-progress-"]').first()).toBeVisible()
+  await noSideScroll(page)
+  // A boss arena: Sister Naesa's chapel shows the arena line (phase, light, tide) under the banner.
+  // a delve link is read when the app boots, so reload after changing the hash
+  await page.goto('#delve=gravehollow-keep&floor=7&seed=5&party=warden,blade,mender,arcanist&level=12&room=boss&auto=1')
+  await page.reload()
+  await ready(page)
+  await expect(page.getByTestId('fx-arena')).toBeVisible({ timeout: 30_000 })
+  await noSideScroll(page)
+  expect(errors).toEqual([])
+})
+
+test('the stat tips, the codex and Settings (Phase 8)', async ({ page }) => {
+  const errors = watchErrors(page)
+  // A stat tip: tap Speed on a hero's Status and read the hero's own number back.
+  await page.goto('#hero=hero-1&tab=status&demo=1')
+  await ready(page)
+  await page.getByTestId('hr-stat-speed').click()
+  await expect(page.getByTestId('stat-tip')).toContainText('Speed')
+  await noSideScroll(page)
+  // The codex: a monster's page, then the materials.
+  await page.goto('#codex&demo=1&sample=1')
+  await ready(page)
+  await expect(page.getByTestId('cx-detail')).toBeVisible()
+  await page.getByTestId('tab-materials').click()
+  await expect(page.locator('[data-testid^="cx-material-"]').first()).toBeVisible()
+  await noSideScroll(page)
+  // Settings: Help (replay the lesson) and Sound.
+  await page.goto('#settings')
+  await ready(page)
+  await expect(page.getByTestId('settings-replay-tutorial')).toBeVisible()
+  await expect(page.getByTestId('settings-sound')).toBeVisible()
+  await noSideScroll(page)
   expect(errors).toEqual([])
 })

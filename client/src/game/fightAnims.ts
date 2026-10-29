@@ -67,6 +67,8 @@ export function skillInLine(content: Content, hero: Actor, text: string): SkillD
 
 /** A monster's or a pet's clip for its action line ("<actor> uses <attack>[ on <target>]"), or null. */
 export function creatureClip(content: Content, actor: Actor, text: string, speed: number): SceneCue | null {
+  // Phase 8: a pet's (or a summon's) plain attack swings its Attack1 — it played no clip at all.
+  if ((actor.pet || actor.kind === 'summon') && text.startsWith(`${actor.name} attacks `)) return { kind: 'anim', actorId: actor.id, clip: 'Attack1', speed }
   const prefix = `${actor.name} uses `
   if (!text.startsWith(prefix)) return null
   const rest = text.slice(prefix.length)
@@ -75,7 +77,15 @@ export function creatureClip(content: Content, actor: Actor, text: string, speed
     const { clip, alt } = attack ? monsterAttackClip(attack, content.tuning.combat.weights.normal) : { clip: 'Attack1', alt: [] as string[] }
     return { kind: 'anim', actorId: actor.id, clip, ...(alt.length ? { alt } : {}), speed }
   }
-  if (actor.pet || actor.kind === 'summon') return { kind: 'anim', actorId: actor.id, clip: 'Attack1', speed }
+  if (actor.pet || actor.kind === 'summon') {
+    // Phase 8: a pet's first active swings its Attack1, its second and third its Attack2 (the pets' models have both;
+    // the scene falls back to Attack1 for one that has not). It always swung Attack1.
+    const slot = (actor.pet?.actives ?? []).findIndex((id) => {
+      const s = content.skills.get(id)
+      return !!s && (rest === s.name || rest.startsWith(`${s.name} on `))
+    })
+    return { kind: 'anim', actorId: actor.id, clip: slot >= 1 ? 'Attack2' : 'Attack1', speed }
+  }
   return null
 }
 

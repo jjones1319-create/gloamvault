@@ -67,4 +67,15 @@ describe('a hero’s clip for each beat (Phase 5)', () => {
     if (heavy) expect(beatAnims(beatsOf([ev('action', 'giant-rat-1', `Giant Rat 1 uses ${heavy.name} on Warden`)], 0)[0]!, f, content)[0]!.clip).toBe('Attack2')
     expect(beatAnims(beatsOf([ev('action', 'pet-0', 'Pip uses Bite on Giant Rat 1')], 0)[0]!, f, content)[0]).toMatchObject({ actorId: 'pet-0', clip: 'Attack1' })
   })
+
+  it('Phase 8: a pet’s second active swings its Attack2, its first and its plain attack its Attack1', () => {
+    const actives = content.pets.get('cellar-hound')!.actives.map((a) => a.skillId)
+    const [first, second] = actives.map((id) => content.skills.get(id)!.name)
+    const pet = { id: 'pet-0', name: 'Pip', kind: 'pet', side: 'party', pet: { petId: 'cellar-hound', ownerId: 'hero-0', actives } } as unknown as Actor
+    const f = { actors: [...party, pet] } as unknown as FightState
+    const clip = (text: string) => beatAnims(beatsOf([ev('action', 'pet-0', text)], 0)[0]!, f, content)[0]?.clip
+    expect(clip(`Pip uses ${first} on Giant Rat 1`)).toBe('Attack1')
+    expect(clip(`Pip uses ${second}`)).toBe('Attack2')
+    expect(clip('Pip attacks Giant Rat 1: 9')).toBe('Attack1')
+  })
 })

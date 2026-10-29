@@ -11,6 +11,7 @@ import { slotOf } from '../characters/palette.ts'
 import type { FrameTemplate } from '../characters/template.ts'
 import { EMPTY_MANIFEST, HERO_CLIP_FOR, parseMonsterClips, parseMonsterManifest, partShown, resolveMonsterVariant, variantKey, variantPalette, type MonsterManifest, type MonsterVariant } from './manifest.ts'
 import { attachmentFor, attachTransform, readAttach, TELL_SHAPES, tellDelta, type TellShape } from './wear.ts'
+import { onItsOwnFrame } from '../turns.ts'
 
 /**
  * The monsters in 3D (Phase 6; tools/blender/README.md → *Monsters*): a base file per body plan, a variant per monster
@@ -181,14 +182,18 @@ export class MonsterLibrary {
       if (proto.heroRig) {
         const [tpl, clips] = await Promise.all([heroLibrary.frame('broad'), heroLibrary.clips()])
         if (!tpl) return null
-        const inner = assembleRigged(proto.meshes, tpl, clips, { palette: variantPalette(v), morphs: v.shapes, scale: v.scale, key: variantKey(body), boneScales: v.boneScales })
-        const m = MonsterModel.fromCharacter(v, inner, v.throne?.raised ? [] : proto.props)
-        const tell = TELL_SHAPES[v.id]
-        if (tell) m.setTellShape(this.tellOf(body, proto, tpl, tell))
+        // Phase 8: the assembly on a frame of its own (turns.ts); what it wears is built after, on turns of their own.
+        const m = await onItsOwnFrame(() => {
+          const inner = assembleRigged(proto.meshes, tpl, clips, { palette: variantPalette(v), morphs: v.shapes, scale: v.scale, key: variantKey(body), boneScales: v.boneScales })
+          const model = MonsterModel.fromCharacter(v, inner, v.throne?.raised ? [] : proto.props)
+          const tell = TELL_SHAPES[v.id]
+          if (tell) model.setTellShape(this.tellOf(body, proto, tpl, tell))
+          return model
+        })
         if (worn) m.wear(await Promise.all(worn.spec.sockets.map(() => this.build(worn.variant))), worn.spec.sockets)
         return m
       }
-      return MonsterModel.fromProto(v, proto, copies)
+      return await onItsOwnFrame(() => MonsterModel.fromProto(v, proto, copies))
     } catch (e) {
       console.warn('monster assembly failed', e)
       return null

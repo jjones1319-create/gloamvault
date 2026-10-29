@@ -71,6 +71,7 @@ export function RoomStage({ insets }: { insets: Insets }) {
       stage?.setFrameMode(s.frameMode)
       stage?.setReduceMotion(s.reduceMotion)
       room?.setReduceMotion(s.reduceMotion)
+      room?.setPalette(s.palette)
     })
     const stopDelve = effect(() => {
       void delveVersion.value

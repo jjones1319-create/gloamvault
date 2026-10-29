@@ -1,0 +1,204 @@
+/*
+ * Accessibility (Phase 8, Settings → Display): the colour-blind palettes and the text-size layout fixes.
+ *
+ * Palettes (html[data-palette]): every colour that carries meaning is remapped — friend and foe (the timeline, the
+ * cards, the 3D bars), good and bad (status chips, floaters, the header's chips), health and the pools, the threat
+ * pill, grades, the map's locked doors. Nothing relies on colour alone (statuses, threat and grades also have words,
+ * letters or icons); the palettes make the colours agree with the words for everyone. Values were checked with a
+ * protanopia / deuteranopia / tritanopia simulation (Machado 2009): every pair that must read apart is at least 20
+ * CIE76 units apart for the vision it serves (11-ART-PIPELINE §13).
+ *   redGreen — protanopia and deuteranopia (most colour blindness): the blue–orange axis; foes violet, friends amber.
+ *   blueYellow — tritanopia: the red–cyan axis; good is teal, bad stays red, grades lose their yellow–pink clashes.
+ */
+
+/* ---------- red–green safe ---------- */
+html[data-palette='redGreen'] {
+  --good: #5cb8ff;
+  --bad: #ff8a1f;
+  --hp: #ff6b78;
+  --pool-stamina: #f2dc5a;
+  --pool-mana: #4f9dff;
+  --grade-e: #5ad7e6;
+  --grade-d: #3f6fff;
+  --grade-c: #f0a0ff;
+  --grade-b: #ffc04a;
+  --grade-a: #d9530f;
+  --grade-s: #fff7b0;
+  --grade-ss: #ff3f7f;
+  --dv-easy: #6cc8ff;
+  --dv-dangerous: #ffc04a;
+  --dv-deadly: #ff5fb0;
+}
+html[data-palette='redGreen'] .fx-hud {
+  --fx-hero: #ffc04a;
+  --fx-pet: #f2dc5a;
+  --fx-foe: #9d8cff;
+  --fx-stamina: #f2dc5a;
+  --fx-mana: #4f9dff;
+}
+html[data-palette='redGreen'] .fx-strip__chip--enemy {
+  background: #2e2870;
+  color: #e4e0ff;
+}
+html[data-palette='redGreen'] .fx-card--enemy.fx-card--valid {
+  border-color: #b3a6ff;
+  box-shadow: 0 0 0 2px rgba(157, 140, 255, 0.9), 0 0 18px rgba(120, 100, 255, 0.5);
+}
+html[data-palette='redGreen'] .meter--enemy .meter__fill {
+  background: #8a7dff;
+}
+html[data-palette='redGreen'] .fx-badge--down {
+  background: #ff8a1f;
+}
+html[data-palette='redGreen'] .fx-chip--good {
+  --tint: #5cb8ff;
+}
+html[data-palette='redGreen'] .fx-chip--bad {
+  --tint: #ff8a1f;
+}
+html[data-palette='redGreen'] .fx-float--damage {
+  color: #ff8a2a;
+}
+html[data-palette='redGreen'] .fx-float--crit {
+  color: #fff06a;
+}
+html[data-palette='redGreen'] .fx-float--heal {
+  color: #6cc8ff;
+}
+html[data-palette='redGreen'] .fx-threat--easy {
+  color: #6cc8ff;
+}
+html[data-palette='redGreen'] .fx-threat--dangerous {
+  color: #ffc04a;
+}
+html[data-palette='redGreen'] .fx-threat--deadly {
+  color: #ff5fb0;
+  background: rgba(70, 0, 50, 0.6);
+}
+html[data-palette='redGreen'] .fx-cost--mana {
+  color: #8cc0ff;
+}
+html[data-palette='redGreen'] .fx-weight--light {
+  color: #8fd6ff;
+}
+html[data-palette='redGreen'] .fx-weight--heavy {
+  color: #ffb05a;
+}
+html[data-palette='redGreen'] .fx-act__sub--reason {
+  color: #ffb05a;
+}
+html[data-palette='redGreen'] .dv-mdoor--locked {
+  background: #ff5fb0;
+}
+html[data-palette='redGreen'] .dv-mroom--hunter::before {
+  box-shadow: inset 0 0 0 2px #ff5fb0;
+}
+
+/* ---------- blue–yellow safe ---------- */
+html[data-palette='blueYellow'] {
+  --good: #4fe0c8;
+  --bad: #ff5a6e;
+  --hp: #ff5a6e;
+  --grade-e: #4fe0c8;
+  --grade-d: #3f6fff;
+  --grade-b: #ff9e40;
+  --grade-a: #ff4d4d;
+  --grade-s: #ffe0f0;
+  --grade-ss: #ff5ec8;
+  --dv-easy: #4fe0c8;
+  --dv-dangerous: #ff9e40;
+  --dv-deadly: #ff3355;
+}
+html[data-palette='blueYellow'] .fx-hud {
+  --fx-hero: #ff9e40;
+  --fx-foe: #e0478a;
+}
+html[data-palette='blueYellow'] .fx-strip__chip--enemy {
+  background: #5e1238;
+  color: #ffe0ee;
+}
+html[data-palette='blueYellow'] .fx-chip--good {
+  --tint: #4fe0c8;
+}
+html[data-palette='blueYellow'] .fx-chip--bad {
+  --tint: #ff5a6e;
+}
+html[data-palette='blueYellow'] .fx-float--damage {
+  color: #ff5a6e;
+}
+html[data-palette='blueYellow'] .fx-float--crit {
+  color: #ffffff;
+}
+html[data-palette='blueYellow'] .fx-float--heal {
+  color: #4fe8d0;
+}
+html[data-palette='blueYellow'] .fx-threat--easy {
+  color: #4fe0c8;
+}
+html[data-palette='blueYellow'] .fx-threat--dangerous {
+  color: #ff9e40;
+}
+html[data-palette='blueYellow'] .fx-threat--deadly {
+  color: #ff3355;
+}
+html[data-palette='blueYellow'] .fx-weight--light {
+  color: #6ff0d8;
+}
+
+/* ---------- reduce motion ---------- */
+/*
+ * Every CSS animation and transition, now and later, is skipped under Settings → Reduce motion: it jumps to its end
+ * (an element that animates in is simply there; one that animates out is simply gone) instead of being removed, which
+ * would leave an exit animation's element on screen. Screens that set `animation: none` for their own (the fight HUD,
+ * the map, the town's chest) keep theirs. The 3D stage runs no per-frame updaters at all (scene/stage.ts).
+ */
+html[data-reduce-motion='1'] *,
+html[data-reduce-motion='1'] *::before,
+html[data-reduce-motion='1'] *::after {
+  animation-duration: 0.001ms !important;
+  animation-delay: 0s !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  transition-delay: 0s !important;
+  scroll-behavior: auto !important;
+}
+
+/* ---------- text size: layout fixes ---------- */
+/*
+ * Larger text (Settings → Text size) needs room where a screen was sized to the 892 × 412 viewport at 100%: these
+ * keep every word inside its box at 115% and 130% and leave the normal layout as it was.
+ */
+/* New hero: the species and class tiles keep their words' height (their 64 px minimum let the rows shrink and the
+   text spill over the next tile); the list scrolls instead. */
+html[data-text-size='large'] .nh-pick__grid,
+html[data-text-size='largest'] .nh-pick__grid {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  align-content: start;
+  grid-auto-rows: max-content;
+}
+html[data-text-size='large'] .nh-pick__grid .tile,
+html[data-text-size='largest'] .nh-pick__grid .tile {
+  min-height: min-content;
+}
+/* New hero: a species' or class's trait chips sit side by side with no space to break at; they wrap instead. */
+html[data-text-size='large'] .nh-chiprow,
+html[data-text-size='largest'] .nh-chiprow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+html[data-text-size='large'] .nh-chiprow .chip,
+html[data-text-size='largest'] .nh-chiprow .chip {
+  margin-right: 0;
+}
+/* New hero: the eggs and the points take their words' height and the step scrolls (they filled the step's height
+   and the egg cards' lines ran into the pet's name). */
+html[data-text-size='large'] .nh-eggs,
+html[data-text-size='largest'] .nh-eggs,
+html[data-text-size='large'] .nh-points,
+html[data-text-size='largest'] .nh-points {
+  flex: none;
+  min-height: auto;
+}

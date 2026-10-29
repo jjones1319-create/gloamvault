@@ -187,7 +187,7 @@
 }
 .tw-places .tile__icon {
   grid-row: 1 / span 2;
-  font-size: 24px;
+  font-size: calc(24px * var(--ts));
   text-align: center;
   filter: drop-shadow(0 0 6px rgba(255, 170, 70, 0.35));
 }
@@ -595,7 +595,7 @@ html[data-reduce-motion='1'] .tw-scene__window--flicker {
 }
 .tw-school__name {
   margin: 0;
-  font-size: 17px;
+  font-size: calc(17px * var(--ts));
   color: var(--ember);
 }
 .tw-school__how {
@@ -693,7 +693,7 @@ html[data-reduce-motion='1'] .tw-scene__window--flicker {
   gap: 8px;
 }
 .tw-chest__icon {
-  font-size: 22px;
+  font-size: calc(22px * var(--ts));
   line-height: 1;
 }
 .tw-chest__what {
@@ -858,7 +858,7 @@ html[data-reduce-motion='1'] .tw-scene__window--flicker {
   justify-content: center;
   flex-wrap: wrap;
   gap: 8px;
-  font-size: 20px;
+  font-size: calc(20px * var(--ts));
   font-weight: 700;
 }
 .tw-reveal__sub {
@@ -988,7 +988,7 @@ html[data-reduce-motion='1'] .tw-reveal * {
   background: #0f0c12;
   color: var(--ink);
   font: inherit;
-  font-size: 16px;
+  font-size: calc(16px * var(--ts));
   user-select: text;
 }
 .tw-input:focus {
@@ -1013,14 +1013,14 @@ html[data-reduce-motion='1'] .tw-reveal * {
 }
 .tw-vault__title {
   margin: 0;
-  font-size: 15px;
+  font-size: calc(15px * var(--ts));
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--ink-dim);
 }
 .tw-vault__sum {
   margin: 0;
-  font-size: 30px;
+  font-size: calc(30px * var(--ts));
 }
 .tw-vault__sum .gold__coin {
   width: 22px;
@@ -1101,7 +1101,7 @@ html[data-reduce-motion='1'] .tw-reveal * {
 }
 .tw-contract__name {
   margin: 0;
-  font-size: 18px;
+  font-size: calc(18px * var(--ts));
 }
 .tw-contract__task {
   flex: 1;
@@ -1161,11 +1161,11 @@ html[data-reduce-motion='1'] .tw-reveal * {
 .btn.tw-up {
   width: 48px;
   padding: 0;
-  font-size: 20px;
+  font-size: calc(20px * var(--ts));
 }
 .tw-slots {
   margin: 0;
-  font-size: 24px;
+  font-size: calc(24px * var(--ts));
 }
 
 /* ================= round 2: death, wayfarers, threat (D-088–D-092) ================= */
@@ -1249,7 +1249,7 @@ html[data-reduce-motion='1'] .tw-reveal * {
   color: var(--ink-dim);
 }
 .tw-check--dead {
-  font-size: 20px;
+  font-size: calc(20px * var(--ts));
   cursor: default;
 }
 
@@ -1314,7 +1314,7 @@ html[data-reduce-motion='1'] .tw-reveal * {
   background: linear-gradient(90deg, #17222c, var(--bg-raised) 70%);
 }
 .tw-chest__icon--big {
-  font-size: 34px;
+  font-size: calc(34px * var(--ts));
   line-height: 1;
   flex: none;
 }
@@ -1353,7 +1353,7 @@ html[data-reduce-motion='1'] .tw-reveal * {
 /* the wayfarer odds and the arrival */
 .tw-odds__head {
   margin: 8px 0 4px;
-  font-size: 15px;
+  font-size: calc(15px * var(--ts));
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--ink-dim);
@@ -1414,7 +1414,7 @@ html[data-reduce-motion='1'] .tw-reveal * {
 
 .tw-lock {
   margin-left: 6px;
-  font-size: 12px;
+  font-size: calc(12px * var(--ts));
   font-weight: 600;
   color: var(--ink-dim);
 }
@@ -1458,7 +1458,7 @@ html[data-reduce-motion='1'] .tw-reveal * {
 }
 .tw-pact__weight {
   color: var(--ember);
-  font-size: 12px;
+  font-size: calc(12px * var(--ts));
   letter-spacing: 1px;
 }
 .tw-pact__effect {
@@ -1467,7 +1467,7 @@ html[data-reduce-motion='1'] .tw-reveal * {
   line-height: 1.25;
 }
 .tw-pact__reward {
-  font-size: 12px;
+  font-size: calc(12px * var(--ts));
   font-weight: 600;
   color: var(--good);
 }

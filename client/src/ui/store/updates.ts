@@ -3,11 +3,15 @@ import { registerSW } from 'virtual:pwa-register'
 
 /**
  * Updates (10 §2, CLAUDE.md gotchas): the service worker is registered once here with `registerType: 'prompt'`;
- * nothing reloads on its own. The toast shows only on quiet screens (title, settings, town), never mid-fight; the
- * player taps Restart.
+ * nothing reloads on its own. The toast shows only on the title and in town while no delve is in progress
+ * (updateRules.ts; Phase 8, pass B), never in a delve or a fight; the player taps Restart. A new worker can also take
+ * over because another window of the game applied it: `onNeedReload` then only asks for a reload (`reloadWanted`), and
+ * the toast reloads once the screen is quiet — never mid-fight.
  */
 export const needRefresh = signal(false)
 export const offlineReady = signal(false)
+/** A new build controls the page and the page should reload at the next quiet moment (UpdateToast does it). */
+export const reloadWanted = signal(false)
 /** The last manual check from Settings: null until one ran. */
 export const lastCheck = signal<'checking' | 'upToDate' | 'updateFound' | 'failed' | null>(null)
 
@@ -24,6 +28,11 @@ export function installUpdates(doc: Document): void {
   try {
     update = registerSW({
       immediate: true,
+      // Without this the plugin reloads at once when the new worker takes control — even mid-fight, when another window
+      // applied the update. The toast reloads when the screen is quiet instead (UpdateToast.tsx).
+      onNeedReload() {
+        reloadWanted.value = true
+      },
       onNeedRefresh() {
         needRefresh.value = true
         if (lastCheck.value === 'checking') lastCheck.value = 'updateFound'

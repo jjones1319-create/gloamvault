@@ -1,5 +1,5 @@
 import { useRef, useState } from 'preact/hooks'
-import { content, exportCurrentSave, importSaveText, toast } from '../../../game/session.ts'
+import { content, exportCurrentSave, importSaveText, noteBackup, toast } from '../../../game/session.ts'
 import { Btn } from '../../kit/kit.tsx'
 import { saveFileName } from './text.ts'
 
@@ -26,9 +26,45 @@ export function downloadSave(): boolean {
     a.remove()
     setTimeout(() => URL.revokeObjectURL(url), 2000)
     toast('Backup downloaded: look in Downloads.', 'good')
+    // Phase 8 (pass B): the backup reminder's count starts again (10 §6).
+    noteBackup()
     return true
   } catch {
     toast('The download did not start.', 'bad')
+    return false
+  }
+}
+
+/**
+ * The save as a file to share (Phase 8, pass B; 10 §6 "Share save…"): the phone's share sheet sends it to a chat, a mail
+ * or a drive. Android Chrome shares only some file types and JSON is not one of them, so the shared copy is plain text
+ * named `.txt` (Import reads it all the same); where files cannot be shared, it downloads instead.
+ */
+export async function shareSave(): Promise<boolean> {
+  const text = exportCurrentSave()
+  if (!text) {
+    toast('There is no save to share yet.', 'bad')
+    return false
+  }
+  const file = new File([text], saveFileName(new Date()).replace(/\.json$/, '.txt'), { type: 'text/plain' })
+  if (!canShareFiles(file)) return downloadSave()
+  try {
+    await navigator.share({ files: [file], title: 'Gloamvault save' })
+    toast('Save shared.', 'good')
+    noteBackup()
+    return true
+  } catch (e) {
+    // Closing the share sheet is not a failure; anything else falls back to the download.
+    if (e instanceof DOMException && e.name === 'AbortError') return false
+    return downloadSave()
+  }
+}
+
+/** Whether this browser can share a file (the Web Share API with files). */
+export function canShareFiles(file: File = new File(['{}'], 'gloamvault-save.txt', { type: 'text/plain' })): boolean {
+  try {
+    return typeof navigator !== 'undefined' && typeof navigator.share === 'function' && typeof navigator.canShare === 'function' && navigator.canShare({ files: [file] })
+  } catch {
     return false
   }
 }

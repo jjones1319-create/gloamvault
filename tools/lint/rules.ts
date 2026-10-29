@@ -22,6 +22,8 @@ import { RULES_D } from './rules-d.ts'
 import { RULES_C2 } from './rules-c2.ts'
 import { RULES_C1 } from './rules-c1.ts'
 import { RULES_A } from './rules-a.ts'
+import { RULES_B } from './rules-b.ts'
+import { RULES_P8D } from './rules-p8d.ts'
 
 export type Failure = { file: string; rule: number; message: string }
 
@@ -2060,6 +2062,8 @@ export const RULES: ReadonlyArray<{ n: number; run: (ctx: Ctx) => Failure[] }> =
   ...RULES_C2,
   ...RULES_C1,
   ...RULES_A,
+  ...RULES_B,
+  ...RULES_P8D,
 ]
 
 /** Runs every rule over the corpus. A rule that throws becomes a failure, never a silent pass. */

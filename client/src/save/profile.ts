@@ -1,4 +1,5 @@
 import * as v from 'valibot'
+import { CODEX_LIMITS } from '../../../sim/src/codex.ts'
 import type { Content } from '../../../sim/src/content.ts'
 import { SAVE_VERSION as HERO_RECORD_VERSION } from '../../../sim/src/hero.ts'
 import { clampLook, defaultLook, LOOK_INDEX_MAX } from '../../../sim/src/look.ts'
@@ -76,6 +77,38 @@ const record = <T extends v.GenericSchema>(item: T) => v.fallback(v.record(v.str
  * board posts a fresh one); slots of contracts the content no longer has are dropped in validateProfile.
  */
 const ContractSlotSchema = v.object({ contractId: v.string(), band: int(1), progress: int(), goal: int(1), claimed: v.fallback(v.boolean(), false) })
+
+/**
+ * Phase 8 (pass B), all optional. The codex (sim/src/codex.ts): counts are whole numbers ≥ 0 capped at CODEX_LIMITS.count,
+ * lists are strings without repeats, cut to their caps; one entry that does not read becomes an empty one, never the
+ * whole codex. The lesson's coach marks: ids without repeats. The backup reminder: a day count, the last day counted
+ * (YYYY-MM-DD) and the last backup's time.
+ */
+const codexCount = v.fallback(v.pipe(v.number(), v.integer(), v.minValue(0), v.transform((n: number) => Math.min(CODEX_LIMITS.count, n))), 0)
+const uniqueStrings = (cap: number, length = 80) =>
+  v.fallback(
+    v.pipe(
+      v.array(v.string()),
+      v.transform((list: string[]) => [...new Set(list.map((s) => s.slice(0, length)))].slice(0, cap)),
+    ),
+    [],
+  )
+const CodexMonsterSchema = v.fallback(
+  v.object({ seen: codexCount, killed: codexCount, attacks: uniqueStrings(CODEX_LIMITS.attacksPerMonster), tells: uniqueStrings(CODEX_LIMITS.tellsPerMonster, CODEX_LIMITS.tellLength) }),
+  { seen: 0, killed: 0, attacks: [], tells: [] },
+)
+const CodexSchema = v.object({ monsters: v.fallback(v.record(v.string(), CodexMonsterSchema), {}), materials: v.fallback(v.record(v.string(), codexCount), {}) })
+const TutorialSchema = v.object({
+  seen: uniqueStrings(64, 40),
+  skipped: v.fallback(v.optional(v.boolean()), undefined),
+  replay: v.fallback(v.optional(v.boolean()), undefined),
+})
+const BackupSchema = v.object({
+  playDays: v.fallback(v.pipe(v.number(), v.integer(), v.minValue(0), v.transform((n: number) => Math.min(999, n))), 0),
+  lastPlayDay: v.fallback(v.nullable(v.pipe(v.string(), v.regex(/^\d{4}-\d{2}-\d{2}$/))), null),
+  lastBackupAt: v.fallback(v.nullable(v.pipe(v.string(), v.maxLength(40))), null),
+})
+
 const ContractBoardSchema = v.object({
   day: v.pipe(v.number(), v.integer()),
   week: v.pipe(v.number(), v.integer()),
@@ -142,6 +175,10 @@ const ProfileSchema = v.object({
   activeDelve: v.fallback(v.nullable(v.looseObject({ options: v.looseObject({ dungeonId: v.string() }), party: v.array(v.looseObject({ id: v.string() })), commands: v.array(v.looseObject({ kind: v.string() })) })), null),
   lastDelve: v.fallback(v.nullable(v.looseObject({ outcome: v.string() })), null),
   contracts: v.fallback(v.optional(ContractBoardSchema), undefined),
+  // Phase 8 (pass B), optional: a block that does not read is dropped whole (no codex yet, no mark seen, no day counted).
+  codex: v.fallback(v.optional(CodexSchema), undefined),
+  tutorial: v.fallback(v.optional(TutorialSchema), undefined),
+  backup: v.fallback(v.optional(BackupSchema), undefined),
 })
 
 /** A pet's trait growth (03 §9; Phase 7, optional): uses a whole number ≥ 0, the rank inside the tuning's ranks. */
@@ -319,6 +356,13 @@ export function validateProfile(content: Content, raw: unknown): LoadReport {
       ...(contracts ? { contracts } : {}),
     }
     if (!contracts) delete (profile as { contracts?: unknown }).contracts
+    // Phase 8 (pass B): an optional block that is missing stays missing (no `undefined` keys in the save).
+    for (const key of ['codex', 'tutorial', 'backup'] as const) if (profile[key] === undefined) delete profile[key]
+    if (profile.tutorial) {
+      const t = profile.tutorial
+      if (t.skipped === undefined) delete t.skipped
+      if (t.replay === undefined) delete t.replay
+    }
     return { profile, notes }
   } catch {
     return { profile: null, notes: ['The save could not be read.'] }

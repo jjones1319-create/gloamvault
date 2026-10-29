@@ -2,6 +2,7 @@ import { fightAmmoFor, stowAmmo } from './ammo.ts'
 import type { Content } from './content.ts'
 import type { DelveCommand, DelveHero, DelveOptions, DelveState, FloorRun, HunterState, LegalDelveAction, RoomState } from './delve-types.ts'
 import { detection, disarmChance, heroAmbushChance, monsterAmbushChance, rollScout, scoutChance, trapRevealed } from './detection.ts'
+import { codexEventData } from './codex.ts'
 import { corridorChoices, roomEntryTicks, useCorridorSkill } from './corridor.ts'
 import { goldFor, retreatToll, rForFloor, sellPrice } from './economy.ts'
 import { buyOffer, dressRoom, drawChampionAffixes, encountersFor, farthestRoom, floorDef, hopsFrom, isBeforeFinalBoss, isMonsterEncounter, isWaystoneFloor, meetsRoleMix, merchantStock, pickEncounter, spawnBossFight, spawnEncounter, spawnPack, spawnSingle, stepToward, templateHasBrazier, zoneByIndex, zoneOf } from './explore.ts'
@@ -11,7 +12,7 @@ import { arenaSummary, type ArenaSetup } from './arena.ts'
 import type { Actor, FightState } from './fight-types.ts'
 import { generateFloor, type FloorGraph } from './generator.ts'
 import { hashState } from './hash.ts'
-import { buildHeroActor, heroStats, loseLevels, speciesRules } from './hero.ts'
+import { buildHeroActor, heroDetection, heroStats, loseLevels, speciesRules } from './hero.ts'
 import { installHook } from './hooks.ts'
 import { applyWearBp, createItemInstance, effectiveItemStats, fieldRepair, repairItemPoints, repairKit, setBonusLoad } from './items.ts'
 import { addLight, lightAfterRoom, lightAtEntry, lightBand } from './light.ts'
@@ -21,13 +22,14 @@ import { applyPetTraitAuras, buildPetActor, growPetTraitFromFight, partyPetTrait
 import { chestShiftFor, combineKnobs, lockForPact, oathOf, shiftedCentre } from './pacts.ts'
 import { choosePolicyCommand } from './policies.ts'
 import { hollowCoinActions, rerollFightDrop } from './relics.ts'
-import { applyFightProgress, carryHeroState, floorUsesFor } from './progress.ts'
+import { applyFightProgress, carryHeroState, floorUsesFor, gainFieldSkillXp, trainCartography } from './progress.ts'
 import { Rng, seedFor } from './rng.ts'
-import { linesAtRank, rankEffectPercent } from './skill-lines.ts'
+import { linesAtRank } from './skill-lines.ts'
 import { clamp, roundHalfUp } from './stats.ts'
 import { secretDoorKnown } from './secret-doors.ts'
 import { roomThreat } from './threat.ts'
 import { createTome, tomeCandidates, tomeSkillsAtTier } from './tomes.ts'
+import { dressTutorialRoom, isTutorialFloor, tutorialFor } from './tutorial.ts'
 import { applyStatus } from './statuses.ts'
 import type { Tuning } from './tuning.ts'
 import type { CurioDef, DungeonDef, Effect, HeroRecord, ItemInstance, Requirement, Reward, SecretDef, TrapDef } from './types/content.ts'
@@ -147,29 +149,11 @@ export function partyDetection(content: Content, t: Tuning, state: DelveState): 
     const rules = species ? speciesRules(species) : {}
     const stats = heroStats(content, t, h.record)
     const pet = h.record.petInstance && h.record.petInstance.stance === 'forage' ? 2 : 0
-    // fix: the loadout passives' Detection lines count out of combat too (Keen Eyes, Snare-Sense); heroStats leaves them out.
-    best = Math.max(best, detection(t, passiveDetection(content, h, stats.detection), state.light, rules.lightBandShift ?? 0, pet))
+    // fix: the loadout passives' Detection lines count out of combat too (Keen Eyes, Snare-Sense): hero.ts heroDetection, the card's number.
+    best = Math.max(best, detection(t, heroDetection(content, t, h.record, stats.detection), state.light, rules.lightBandShift ?? 0, pet))
   }
   // A Spiderling's or a Wisp's +5 Detection on the party's best (06 §9).
   return best + partyPetTraitBonus(content, partyPets(state), 'detection')
-}
-
-/** fix: a hero's Detection with the loadout passives' `buffStat detection` lines at their rank, as the fight applies them (hero.ts applyPassives). */
-function passiveDetection(content: Content, h: DelveHero, base: number): number {
-  let flat = 0
-  let pct = 0
-  for (const id of h.record.loadout.passives) {
-    const skill = id ? content.skills.get(id) : undefined
-    if (!skill || skill.type !== 'passive') continue
-    const rank = h.record.skills.find((k) => k.skillId === skill.id)?.rank ?? 1
-    const scale = rankEffectPercent(skill, rank)
-    for (const line of linesAtRank(skill, rank)) {
-      if (line.kind !== 'buffStat' || line.stat !== 'detection') continue
-      flat += roundHalfUp(((line.amount ?? 0) * scale) / 100)
-      pct += roundHalfUp(((line.percent ?? 0) * scale) / 100)
-    }
-  }
-  return roundHalfUp(((base + flat) * (100 + pct)) / 100)
 }
 
 /** A hero's field-skill rank for a check, with its passive rank lines (Tier IV: Wayfinder's Cartography +2). */
@@ -181,9 +165,10 @@ function fieldRankOf(content: Content, t: Tuning, h: DelveHero, skill: keyof Her
  * fix: Cartography (09 §5, 03 §7.6), never built before: entering a room, the map shows the rooms within one ring per
  * `ringPerRanks` (3) ranks of the party's best Cartography (Tier IV: Wayfinder's +2 counts) — scouted, as Scout Ahead
  * leaves them; a secret door stays hidden — and at `stairsAtRank` (10) the floor's first room marks the stairs. Blind Map
- * turns it off (07 §6.2).
+ * turns it off (07 §6.2). fix (Phase 8): a room entered for the first time is mapped, and the hero whose rank draws the
+ * map trains Cartography by it (progress.ts `trainCartography`; `firstVisitLevel` is the floor's monster level then).
  */
-function cartographyReveal(content: Content, t: Tuning, state: DelveState, roomId: string): void {
+function cartographyReveal(content: Content, t: Tuning, state: DelveState, roomId: string, firstVisitLevel: number | null = null): void {
   const c = t.skills.fieldSkills.cartography
   if (state.ruleFlags.includes('no-cartography')) return
   const rank = activeHeroes(state).reduce((best, h) => Math.max(best, fieldRankOf(content, t, h, 'cartography')), 0)
@@ -191,6 +176,7 @@ function cartographyReveal(content: Content, t: Tuning, state: DelveState, roomI
   if (rings > 0) for (const [id, v] of hopsFrom(state.floor.graph, roomId)) if (v.hops > 0 && v.hops <= rings && state.floor.rooms[id]) state.floor.rooms[id]!.scouted = true
   const exit = state.floor.rooms[state.floor.graph.exitId]
   if (rank >= c.stairsAtRank && roomId === state.floor.graph.entryId && exit) exit.scouted = true
+  if (firstVisitLevel !== null) trainCartography(t, state, state.heroes.map((h) => (h.fallen ? -1 : fieldRankOf(content, t, h, 'cartography'))), firstVisitLevel)
 }
 
 /** Tier IV: Wayfinder — the hunter comes at 50 ticks, not the standard 40 (Mastery 60): the difference is added to the floor's own clock, so a preset's earlier hunter stays earlier. */
@@ -303,7 +289,9 @@ function beginFloor(content: Content, state: DelveState, floorNumber: number, rn
   const zone = zoneOf(dungeon, floorNumber)
   const bossDef = fd.bossId ? content.monsters.get(fd.bossId) : undefined
   const isLastOfDungeon = floorNumber === Math.max(...dungeon.floors.map((f) => f.floor))
-  const kind = state.options.firstDelve && floorNumber === 1 ? 'tutorial' : bossDef ? (isLastOfDungeon && (bossDef.boss?.phases.length ?? 0) >= 3 ? 'throne' : 'zoneBoss') : 'normal'
+  // D-038 (Phase 8, pass B): a first delve's lesson floor, its contents fixed by the dungeon's `tutorial` block (tutorial.ts).
+  const lesson = tutorialFor(dungeon, state.options, floorNumber)
+  const kind = isTutorialFloor(dungeon, state.options, floorNumber) ? 'tutorial' : bossDef ? (isLastOfDungeon && (bossDef.boss?.phases.length ?? 0) >= 3 ? 'throne' : 'zoneBoss') : 'normal'
   const floorSeed = seedFor(state.seed[0], state.seed[1], dungeon.id, floorNumber)
   const encRng = rng.fork(`encounters-${floorNumber}`)
   let monsterRooms = 0
@@ -319,6 +307,7 @@ function beginFloor(content: Content, state: DelveState, floorNumber: number, rn
     // Tier IV: Wayfinder — secret rooms +10% (secretChanceFor).
     overrides: { eliteRoomWeight: state.knobs.eliteRoomWeight, everyDoorLocked: state.ruleFlags.includes('every-door-locked'), secretChance: secretChanceFor(content, state, fd.secretChance) },
     pickEncounter: (ctx) => {
+      if (lesson) return lesson.encounterId
       const e = pickEncounter(content, ctx.rng ?? encRng, fd, dungeon.id, ctx.previousEncounterId, monsterRooms, false)
       if (e && isMonsterEncounter(content, e)) monsterRooms++
       return e?.id ?? null
@@ -329,7 +318,7 @@ function beginFloor(content: Content, state: DelveState, floorNumber: number, rn
   const used = { curios: new Set<string>(), traps: [] as string[] }
   const trapBonus = state.knobs.trapDifficultyBonus ?? 0
   for (const room of graph.rooms) {
-    const rs = dressRoom(content, rng, dungeon, zone, fd, room, used, trapBonus)
+    const rs = lesson ? dressTutorialRoom(dungeon, room, lesson) : dressRoom(content, rng, dungeon, zone, fd, room, used, trapBonus)
     if (room.kind === 'elite') {
       const e = rs.encounterId ? content.encounters.get(rs.encounterId) : undefined
       const picked = e && e.eliteAllowed && !isMonsterEncounter(content, e) ? e : pickEncounter(content, rng, fd, dungeon.id, null, 99, true)
@@ -342,7 +331,8 @@ function beginFloor(content: Content, state: DelveState, floorNumber: number, rn
     }
     rooms[room.id] = rs
   }
-  const hunter: HunterState | null = zone.hunterId && fd.hunterClock !== null ? { monsterId: zone.hunterId, entered: false, roomId: null, moveProgress: 0, killed: false } : null
+  // The lesson floor keeps the hunter away when its block says so (D-038; tutorial.ts).
+  const hunter: HunterState | null = zone.hunterId && fd.hunterClock !== null && lesson?.hunter !== false ? { monsterId: zone.hunterId, entered: false, roomId: null, moveProgress: 0, killed: false } : null
   // The secret room's record (07 §2.6): one of the dungeon's secrets for this zone, drawn when the floor has one.
   const secrets = (dungeon.secrets ?? []).filter((s) => s.zoneId === null || s.zoneId === zone.id)
   const secretId = graph.secretId !== null && secrets.length > 0 ? rng.pick(secrets).id : null
@@ -536,8 +526,8 @@ function enterRoom(content: Content, state: DelveState, roomId: string, rng: Rng
       if (scout === 'critical') for (const d2 of graphRoom(state, d.to).doors) if (!d2.secret && state.floor.rooms[d2.to]) state.floor.rooms[d2.to]!.scouted = true
     }
   }
-  // fix: Cartography's reveal (09 §5); Tier IV: Wayfinder's +2 counts.
-  cartographyReveal(content, t, state, roomId)
+  // fix: Cartography's reveal (09 §5); Tier IV: Wayfinder's +2 counts. A first visit trains it (Phase 8).
+  cartographyReveal(content, t, state, roomId, firstVisit ? fd.monsterLevel : null)
   // Unrevealed traps that fire on entering (07 §2.5: 'enter', and 'time' on the light — the Drowning Bell).
   springTraps(content, state, rng, rs, 'enter')
   if (state.phase.kind !== 'room') return
@@ -899,7 +889,8 @@ function paySecret(content: Content, state: DelveState, rng: Rng, secret: Secret
   if (secret.fieldSkillXp) {
     // Reading: 07 §2.6's "rank XP ×5" is five uses' worth (a disarm or a revive pays 10) to every active hero.
     const skill = secret.fieldSkillXp
-    for (const h of activeHeroes(state)) h.record = { ...h.record, fieldSkills: { ...h.record.fieldSkills, [skill]: { ...h.record.fieldSkills[skill], xp: h.record.fieldSkills[skill].xp + 50 } } }
+    // fix (Phase 8): the XP reaches rank (progress.ts gainFieldSkillXp).
+    for (const h of activeHeroes(state)) h.record = gainFieldSkillXp(t, h.record, skill, 50).hero
     bits.push(`${skill} XP`)
   }
   logEvent(state, 'secret', `${secret.name}: ${bits.join(', ') || 'nothing but dust'}`, { secret: secret.id })
@@ -1410,13 +1401,15 @@ function startFight(content: Content, state: DelveState, rng: Rng, kind: FightKi
   // 03 §9, 06 §9: the pets' party-wide trait lines at their ranks (a Bone Pup's +5% Resistance; sim/src/pets.ts).
   applyPetTraitAuras(content, t, [...heroes, ...pets], state.heroes.flatMap((h) => (!h.fallen && h.record.petInstance ? [{ inst: h.record.petInstance }] : [])))
   // Surprise (03 §4.4): not for bosses and hunters (07 §2.8–§2.9); a curio's or trap's "ambush" is certain (07 §2.4).
+  // The lesson's first fight opens even when its block says so (D-038; tutorial.ts): no roll either way.
+  const calmLesson = kind === 'fight' && tutorialFor(dungeon, state.options, state.floor.number)?.surprise === false
   let surprised: 'party' | 'enemy' | null = null
   if (ambush?.surprise) {
     surprised = 'party'
     state.stats.ambushedParty += 1
     state.ruleFlags = state.ruleFlags.filter((f) => f !== 'next-fight-ambush')
     state.floor.ambushPercent = 0
-  } else if (kind !== 'boss' && kind !== 'hunter') {
+  } else if (kind !== 'boss' && kind !== 'hunter' && !calmLesson) {
     const flagged = state.ruleFlags.includes('next-fight-ambush')
     // Pact: Loud Boots — the party is ambushed `ambushBonusPercent` more often (07 §6.2); Trailblaze's corridor shift (D-099).
     // fix: the heroes' passives (Ambush Sense) shift the roll as the pets' traits do; Tier IV: Dawn Vigil brightens the band it reads.
@@ -1546,6 +1539,8 @@ function finishFight(content: Content, state: DelveState, rng: Rng): void {
   const fight = state.fight
   const ctxF = state.fightContext
   if (!fight || !ctxF || !fight.over) return
+  // The codex (Phase 8, pass B; codex.ts): who stood on the enemy side, who fell, their attacks and tells. The log is not hashed.
+  logEvent(state, 'codex', 'codex', codexEventData(fight))
   const rs = state.floor.rooms[ctxF.roomId]!
   state.floor.clock += fight.round * t.exploration.floorClock.tickPerFightRound
   ;(state.stats.roundsByKind[ctxF.kind] ??= []).push(fight.round)
@@ -1600,7 +1595,8 @@ function finishFight(content: Content, state: DelveState, rng: Rng): void {
     // Gold found: the preset knob × the pacts × (a paid Toll Shrine's floor bonus + the party's "of Greed" lines) (07 §2.4, 08 §5).
     const foundPct = 100 + state.floor.goldPercentBonus + partyAffixPercent(content, t, state, 'gold-found-percent') + partyPetTraitBonus(content, partyPets(state), 'goldPercent')
     const goldPercent = roundHalfUp(((state.knobs.goldPercent ?? 100) * (1 + state.pactReward.goldPercent / 100) * foundPct) / 100)
-    const loot = rollFightLoot(content, t, rng, { dungeonId: dungeon.id, floor: state.floor.number, monsters: killed, lightBand: lightBand(t, state.light).id as 'radiant', luck: partyLuck(content, t, state), knobs: { goldPercent }, isMonsterRoom: ctxF.isMonsterRoom })
+    // Phase 8 (Proposed): the pack's party-size count scale is undone in its gold (loot.ts fightGold) — the size it was spawned for.
+    const loot = rollFightLoot(content, t, rng, { dungeonId: dungeon.id, floor: state.floor.number, monsters: killed, lightBand: lightBand(t, state.light).id as 'radiant', luck: partyLuck(content, t, state), knobs: { goldPercent }, isMonsterRoom: ctxF.isMonsterRoom, partySize: state.heroes.length })
     state.gold += loot.gold
     state.stats.goldFound += loot.gold
     giveItems(state, loot.items)
@@ -2002,7 +1998,8 @@ export function stepDelve(content: Content, state: DelveState, command: DelveCom
             state.stats.goldFound += r.amount ?? 0
           } else if ((r.kind === 'material' || r.kind === 'item') && r.id) state.materials[r.id] = (state.materials[r.id] ?? 0) + (r.amount ?? 1)
         }
-        h.record = { ...h.record, fieldSkills: { ...h.record.fieldSkills, trapDisarm: { ...h.record.fieldSkills.trapDisarm, xp: h.record.fieldSkills.trapDisarm.xp + 10 } } }
+        // fix (Phase 8): the XP reaches rank (progress.ts gainFieldSkillXp).
+        h.record = gainFieldSkillXp(t, h.record, 'trapDisarm', 10).hero
         logEvent(state, 'disarm', `${h.record.name} disarms ${def.name} (${chance}%)`, { trap: def.id })
       } else {
         logEvent(state, 'disarmFail', `${h.record.name} fumbles ${def.name} (${chance}%)`, { trap: def.id })
@@ -2190,7 +2187,8 @@ export function stepDelve(content: Content, state: DelveState, command: DelveCom
       target.fallen = false
       target.downed = false
       target.hpPercent = 20 + 2 * h.record.fieldSkills.firstAid.rank
-      h.record = { ...h.record, fieldSkills: { ...h.record.fieldSkills, firstAid: { ...h.record.fieldSkills.firstAid, xp: h.record.fieldSkills.firstAid.xp + 10 } } }
+      // fix (Phase 8): the XP reaches rank (progress.ts gainFieldSkillXp).
+      h.record = gainFieldSkillXp(t, h.record, 'firstAid', 10).hero
       logEvent(state, 'firstAid', `${h.record.name} revives ${target.record.name}`)
       break
     }

@@ -137,6 +137,17 @@ export function drawChampionAffixes(content: Content, rng: Rng, monster: Monster
   return chosen
 }
 
+/**
+ * A champion's HP as a percent of its own (the elite affix's ×3, D-084) in a dungeon's zone (0-based): tuning.json →
+ * `dungeon.championHpPercentByZone[dungeonId][zone]`, 100 when the table or the zone is missing (Phase 8, Proposed: the
+ * Cellars' elites fought 3–5 rounds against 03 §3.6's 6–8).
+ */
+export function championHpPercent(t: Tuning, dungeonId: string, zone: number): number {
+  const table = (t.dungeon as { championHpPercentByZone?: Record<string, unknown> }).championHpPercentByZone?.[dungeonId]
+  const v = Array.isArray(table) ? table[zone] : undefined
+  return typeof v === 'number' && v > 0 ? v : 100
+}
+
 export interface SpawnOptions {
   level: number
   partySize: number
@@ -153,6 +164,11 @@ export interface SpawnOptions {
  */
 export function spawnEncounter(content: Content, t: Tuning, rng: Rng, encounter: EncounterDef, opts: SpawnOptions): Actor[] {
   const scale = partyScale(t, opts.partySize)
+  const dungeon = content.dungeons.get(encounter.dungeonId)
+  const zoneAt = dungeon?.zones.findIndex((z) => encounter.floorBand.min >= z.floors.from && encounter.floorBand.min <= z.floors.to) ?? -1
+  const zone = zoneAt >= 0 ? dungeon?.zones[zoneAt] : undefined
+  // Phase 8 (Proposed): a champion's HP by its zone (championHpPercent: the Cellars' elites ran short, round 2 §13.4).
+  const championHp = championHpPercent(t, encounter.dungeonId, zoneAt)
   const actors: Actor[] = []
   let championGiven = false
   const slots = [...encounter.composition]
@@ -175,7 +191,7 @@ export function spawnEncounter(content: Content, t: Tuning, rng: Rng, encounter:
           id: `${def.id}-${actors.length}`,
           level: monsterLevelOnFloor(def, opts.level),
           row: slot.row,
-          hpPercent: scale.hpPercent,
+          hpPercent: champion ? roundHalfUp((scale.hpPercent * championHp) / 100) : scale.hpPercent,
           enemyHpPercent: opts.enemyHpPercent,
           champion: champion ? { affixIds: [...(opts.championAffixIds ?? [])] } : null,
           nameSuffix: champion ? ' (champion)' : count > 1 ? ` ${i + 1}` : '',
@@ -183,8 +199,6 @@ export function spawnEncounter(content: Content, t: Tuning, rng: Rng, encounter:
       )
     }
   }
-  const dungeon = content.dungeons.get(encounter.dungeonId)
-  const zone = dungeon?.zones.find((z) => encounter.floorBand.min >= z.floors.from && encounter.floorBand.min <= z.floors.to)
   for (const j of zone?.joiners ?? []) {
     const def = content.monsters.get(j.monsterId)
     if (!def || !rng.pct(j.chancePercent)) continue

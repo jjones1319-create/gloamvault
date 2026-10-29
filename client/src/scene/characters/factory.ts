@@ -2,6 +2,7 @@ import type * as THREE from 'three'
 import type { Content } from '../../../../sim/src/content.ts'
 import { assembleCharacter, type CharacterModel } from './assembler.ts'
 import { heroLibrary, type HeroLibrary } from './assets.ts'
+import { onItsOwnFrame } from '../turns.ts'
 import type { CharacterSpec } from './outfit.ts'
 
 /**
@@ -32,7 +33,8 @@ export async function buildCharacter(content: Content, spec: CharacterSpec, libr
       const m = gearMaps[i]
       if (m) gear.set(s, m)
     })
-    return assembleCharacter(content, spec, { template, gear, weapons, manifest, clips })
+    // Phase 8: one assembly a frame (turns.ts), so four heroes arriving together do not freeze the screen.
+    return await onItsOwnFrame(() => assembleCharacter(content, spec, { template, gear, weapons, manifest, clips }))
   } catch (e) {
     console.warn('character assembly failed', e)
     return null

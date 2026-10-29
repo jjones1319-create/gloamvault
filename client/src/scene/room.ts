@@ -16,11 +16,11 @@ import { envLibrary, type EnvSet } from './env/envKit.ts'
 import { createEnvMaterial, type EnvMaterial } from './env/envMaterial.ts'
 import { resolveMonsterVariant, resolvePetVariant, variantKey, type VisualLike } from './monsters/manifest.ts'
 import { monsterLibrary } from './monsters/model.ts'
-import { ActorLayer, type ActorInput, type ActorLook, type ActorShape, type ActorState } from './room/actors.ts'
+import { ActorLayer, type ActorInput, type ActorLook, type ActorShape, type ActorState, type BarPalette } from './room/actors.ts'
 import { buildDynamic, buildStaticRoom, type ChestLid, type DoorState, type DynamicDressing, type DynamicInput, type LightPoint, type RoomEnv, type StaticRoom, type TemplateLike } from './room/dress.ts'
 import { fitView, lerpFit, NO_INSETS, type Fit, type Insets } from './room/fit.ts'
 import { createKit, PALETTE, type Kit } from './room/kit.ts'
-import { approachFor, cameraRight, doorway, fightSideFormation, nudgeFormation, previousRoomId, roomFormation, roomFrame, type Approach, type DoorLike, type FormationActor, type Mark, type RoomLike, type Side } from './room/layout.ts'
+import { advanceToward, approachFor, cameraRight, doorway, fightSideFormation, nudgeFormation, previousRoomId, roomFormation, roomFrame, type Approach, type DoorLike, type FormationActor, type Mark, type RoomLike, type Side } from './room/layout.ts'
 import { lightLook, type LightLook } from './room/look.ts'
 import { ArenaDressing, viewMark } from './room/arena.ts'
 import { VfxLayer } from './vfx/layer.ts'
@@ -59,6 +59,9 @@ const SPECIES_RADIUS: Readonly<Record<string, number>> = { dwarf: 0.34, orc: 0.3
 const LID_OPEN = -1.9
 /** The room viewer's party, in order (`&heroes=N`). */
 const VIEW_PARTY = ['warden', 'mender', 'ranger', 'arcanist']
+
+/** The materials an actor fades with (characters/material.ts): their see-through variant is compiled with the model. */
+const fadesWithActor = (m: THREE.Material): boolean => m.name === 'gv-palette' || m.name === 'gv-outline'
 
 /** Floor points round a centre: the room view keeps this much of the room in frame round the party. */
 function ringAround(c: THREE.Vector3, r: number): THREE.Vector3[] {
@@ -168,6 +171,12 @@ export class RoomScene {
   private reduceMotion: boolean
   private size = { w: 1, h: 1 }
   private disposed = false
+  /** The room stays hidden while its kit is on its way (at most 1.5 s) and while its shaders compile (Phase 8). */
+  private kitVeil = false
+  private compiling = false
+  private warmToken = 0
+  /** The kit's shader variants compiled at the start (warmKit), kept for the scene's life. */
+  private kitWarm: { group: THREE.Group; geometry: THREE.BufferGeometry; materials: EnvMaterial[] } | null = null
   /** Called after the room was rebuilt (the screen fades the new room in). */
   onRoomBuilt: (() => void) | null = null
 
@@ -203,6 +212,11 @@ export class RoomScene {
       }, 160)
     }
     scene.add(this.layer.group)
+    // Phase 8: a model's shaders (and its death fade's) compile before it replaces its capsule.
+    this.layer.warm = (root) => stage.warm(root, { fades: fadesWithActor })
+    this.warmKit()
+    // The layer's turn ring, target arrow, bars and shadows and the effects layer are hidden until a fight: compiled now.
+    void stage.warm(scene)
     this.removeUpdater = stage.addUpdater((t, dt) => this.frame(t, dt))
     const host = stage.renderer.domElement.parentElement ?? stage.renderer.domElement
     this.measure()
@@ -215,8 +229,46 @@ export class RoomScene {
         : null
     this.resizeObserver?.observe(host)
     stage.own(() => this.dispose())
+    // Dev only (dropped from the build): the scene, for measuring the framing from a test page.
+    if (import.meta.env.DEV) (globalThis as { __gvRoom?: RoomScene }).__gvRoom = this
     // The monsters' variant table: asked for at once, the actors re-dressed when it lands.
     if (monsterLibrary.any() && !monsterLibrary.peekManifest()) this.track(monsterLibrary.manifest().then(() => this.resync()))
+  }
+
+  /**
+   * The room kit's shader variants — solid, see-through (mist, webs) and water, each plain and instanced — compiled at
+   * the start, so the first Crypts or Vault room does not stall on them (Phase 8). Every zone's kit shares these
+   * programs (envMaterial.ts); the stand-ins keep them alive, since three.js frees a program with its last material.
+   */
+  private warmKit(): void {
+    const grey = Array.from({ length: 16 }, () => '#808080')
+    const materials = [createEnvMaterial(grey), createEnvMaterial(grey, { translucent: true }), createEnvMaterial(grey, { water: true })]
+    const geometry = new THREE.BufferGeometry()
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute([0, 0, 0, 1, 0, 0, 0, 0, 1], 3))
+    geometry.setAttribute('normal', new THREE.Float32BufferAttribute([0, 1, 0, 0, 1, 0, 0, 1, 0], 3))
+    const group = new THREE.Group()
+    for (const m of materials) group.add(new THREE.Mesh(geometry, m.material), new THREE.InstancedMesh(geometry, m.material, 1))
+    this.kitWarm = { group, geometry, materials }
+    void this.stage.warm(group)
+  }
+
+  /** Compiles the room's shaders while it stays hidden (at once when they are known, which is every room but the first). */
+  private warmRoom(): void {
+    const token = ++this.warmToken
+    this.compiling = true
+    this.applyVeil()
+    // The screen's ready flag waits for it too (actorsReady), so nothing is shot or shown with the room still hidden.
+    this.track(
+      this.stage.warm(this.root).then(() => {
+        if (this.disposed || token !== this.warmToken) return
+        this.compiling = false
+        this.applyVeil()
+      }),
+    )
+  }
+
+  private applyVeil(): void {
+    this.root.visible = !this.kitVeil && !this.compiling
   }
 
   private track(p: Promise<unknown>): void {
@@ -246,6 +298,11 @@ export class RoomScene {
       this.applyFit(this.fit)
       this.settleLids()
     }
+  }
+
+  /** Settings → Colours (Phase 8): the actors' HP bars in the chosen palette. */
+  setPalette(p: BarPalette): void {
+    this.layer.setPalette(p)
   }
 
   setInsets(insets: Insets): void {
@@ -307,11 +364,13 @@ export class RoomScene {
     if (this.veilTimer !== null) clearTimeout(this.veilTimer)
     this.veilTimer = null
     const waiting = !env && envLibrary.available(input.zone) && envLibrary.peek(input.zone) === undefined
-    this.root.visible = !waiting
+    this.kitVeil = waiting
+    this.applyVeil()
     if (waiting)
       this.veilTimer = setTimeout(() => {
         this.veilTimer = null
-        this.root.visible = true
+        this.kitVeil = false
+        this.applyVeil()
       }, 1500)
     const next = buildStaticRoom(this.kit, { room: input.room, kind: input.kind, template: input.template, templateId: input.templateId, openDoors: input.openDoors, isEntry: input.isEntry, ...(input.waystone !== undefined ? { waystone: input.waystone } : {}), variation: input.variation, env, ...(input.skipParts ? { skipParts: input.skipParts } : {}) })
     const old = this.room
@@ -417,7 +476,10 @@ export class RoomScene {
     // that zooms as foes fall is noise).
     if (rebuilt || wasMode !== this.mode || arena.marks) this.refit(rebuilt)
     else this.publishAnchors()
-    if (rebuilt) this.onRoomBuilt?.()
+    if (rebuilt) {
+      this.warmRoom()
+      this.onRoomBuilt?.()
+    }
   }
 
   private dress(dyn: DynamicInput): void {
@@ -488,7 +550,8 @@ export class RoomScene {
     // or an Elite room's first monster on the elite's (the Crypts chapel's altar step).
     const seated = viewMark(t.id, opts.monsters, kind)
     const key = `view:${t.id}:${kind}:${kitState}:${seated ? 'boss' : ''}`
-    if (key !== this.roomKey || !this.room) {
+    const rebuilt = key !== this.roomKey || !this.room
+    if (rebuilt) {
       this.buildRoom({ room, kind, template: t, templateId: t.id, zone, openDoors, isEntry: kind === 'entry', variation: 1, ...(seated ? { skipParts: seated.skipParts } : {}) })
       this.roomKey = key
     }
@@ -536,6 +599,7 @@ export class RoomScene {
     this.placeLights()
     this.applyLook()
     this.refit(true)
+    if (rebuilt) this.warmRoom()
   }
 
   cue(c: SceneCue): void {
@@ -693,8 +757,11 @@ export class RoomScene {
     // rest stand in their lines without them.
     const pins = this.arena.pins(fight)
     const formation = entries.map((e) => this.formationOf(e.look, e.line)).filter((f) => !pins.has(f.id))
-    // Phase 5: seen from the side — the party on the camera's left, the enemies on its right (layout.ts).
-    const marks = this.clearOfFurniture(fightSideFormation(room.frame, room.camDir, formation), formation, room, FIGHT_STEPS, cameraRight(room.camDir))
+    // Phase 5: seen from the side — the party on the camera's left, the enemies on its right (layout.ts). Phase 8: when
+    // the boss keeps an arena mark at the back of the room, the fight comes to him, so he reads at phone size.
+    const bossPin = fight.arena?.bossActorId ? pins.get(fight.arena.bossActorId) : undefined
+    const side = fightSideFormation(room.frame, room.camDir, formation)
+    const marks = this.clearOfFurniture(bossPin ? advanceToward(side, bossPin, room.camDir) : side, formation, room, FIGHT_STEPS, cameraRight(room.camDir))
     for (const [id, m] of pins) marks.set(id, m)
     const bossId = fight.arena?.bossActorId
     const boss = bossId ? entries.find((e) => e.look.id === bossId && !e.state.gone) : undefined
@@ -816,7 +883,7 @@ export class RoomScene {
     let pts = actors
     if (this.mode === 'room') {
       const party = this.layer.partyCentre()
-      pts = party ? [...actors, ...ringAround(party, ROOM_CONTEXT_M)] : [...room.framePoints, ...actors]
+      pts = party ? [...actors, ...ringAround(party, ROOM_CONTEXT_M), ...room.landmarks] : [...room.framePoints, ...actors]
     }
     const b = { x0: Infinity, x1: -Infinity, y0: Infinity, y1: -Infinity }
     const v = new THREE.Vector3()
@@ -928,6 +995,12 @@ export class RoomScene {
     this.kit.dispose()
     for (const m of this.materials.values()) this.disposeMaterials(m)
     this.materials.clear()
+    if (this.kitWarm) {
+      this.kitWarm.group.clear()
+      this.kitWarm.geometry.dispose()
+      for (const m of this.kitWarm.materials) m.dispose()
+      this.kitWarm = null
+    }
     this.root.clear()
     this.stage.scene.fog = null
     roomAnchors.value = {}

@@ -1,0 +1,22 @@
+/* Settings → Sound (Phase 8, pass A): volume rows with a 48-px slider. */
+.snd-row {
+  cursor: pointer;
+}
+.snd-row__value {
+  color: var(--ember);
+  font-weight: 600;
+  margin-left: 6px;
+}
+.snd-row__slider {
+  flex: 0 1 46%;
+  min-width: 140px;
+  height: var(--tap);
+  accent-color: var(--ember-deep);
+  cursor: pointer;
+}
+.snd-row--off {
+  opacity: 0.5;
+}
+.snd-row--off .snd-row__slider {
+  cursor: default;
+}

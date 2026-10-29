@@ -72,7 +72,7 @@
     "ranger-deep-tentacles-drag",
     "ranger-grave-bats-screech"
   ],
-  "aiRuleDefault": "IF self HP < 30% THEN item small hp potion on self; IF enemy status mark THEN aimed shot on marked enemy; ELSE hunters mark on strongest enemy",
+  "aiRuleDefault": "IF self HP < 30% THEN item small hp potion on self; IF light < 50 THEN item lantern of the deep; IF enemies count > 2 THEN item moth charm; IF enemy status mark THEN aimed shot on marked enemy; ELSE hunters mark on strongest enemy",
   "visual": {
     "gearSetId": "ranger-rawhide-leather",
     "palette": [

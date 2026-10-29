@@ -74,7 +74,8 @@
 /* meters */
 .meter {
   position: relative;
-  height: 20px;
+  /* Phase 8: as tall as its text at every text size. */
+  height: calc(20px * var(--ts));
   border-radius: 6px;
   background: #0b090d;
   border: 1px solid var(--line);
@@ -113,8 +114,8 @@ html[data-reduce-motion='1'] .meter__fill {
 .meter__text {
   position: relative;
   display: block;
-  font-size: 14px;
-  line-height: 18px;
+  font-size: calc(14px * var(--ts));
+  line-height: calc(18px * var(--ts));
   padding: 0 6px;
   font-variant-numeric: tabular-nums;
   text-shadow: 0 1px 1px #000;
@@ -153,8 +154,8 @@ html[data-reduce-motion='1'] .meter__fill {
   border-radius: 5px;
   text-align: center;
   font-weight: 700;
-  font-size: 14px;
-  line-height: 20px;
+  font-size: calc(14px * var(--ts));
+  line-height: calc(20px * var(--ts));
   color: #120f14;
   background: var(--grade-f);
 }
@@ -268,7 +269,7 @@ html[data-reduce-motion='1'] .meter__fill {
   box-shadow: 0 0 0 1px var(--ember) inset;
 }
 .tile__icon {
-  font-size: 22px;
+  font-size: calc(22px * var(--ts));
   line-height: 1;
 }
 .tile__title {
@@ -296,7 +297,7 @@ html[data-reduce-motion='1'] .meter__fill {
 }
 .section__title {
   margin: 0;
-  font-size: 15px;
+  font-size: calc(15px * var(--ts));
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--ink-dim);

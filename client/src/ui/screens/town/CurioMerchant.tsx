@@ -7,6 +7,7 @@ import type { ChestDef, HeroRecord } from '../../../../../sim/src/types/content.
 import { CHEST_SUBTYPES, GRADES, gradeIndex, MATERIAL_LADDERS, WAYFARER_GRADES, type ChestSubtype, type Grade as GradeId, type MaterialLadder } from '../../../../../sim/src/types/enums.ts'
 import { wayfarerOddsTable, wayfarerPool } from '../../../../../sim/src/wayfarers.ts'
 import { act, actWith, content, ephemeral, profile } from '../../../game/session.ts'
+import { audioChestReveal } from '../../../audio/index.ts'
 import { Btn, Gold, Grade, Modal, Section } from '../../kit/kit.tsx'
 import { buzz } from '../../lib/haptics.ts'
 import { navigate, route } from '../../router.ts'
@@ -166,6 +167,7 @@ export function CurioMerchant() {
     const result = actWith<ChestResult>((cc, pp) => (withKey ? openChestWithKey(cc, pp, chestId, heroId, options) : buyChest(cc, pp, chestId, heroId, options)))
     setOddsFor(null)
     if (result) setReveal({ chestId, hero: wayfarer ? null : hero, result, n: (reveal?.n ?? 0) + 1 })
+    if (result) audioChestReveal(result)
   }
 
   /** Why a chest's Buy (or, with a key, its Open) is off, or null. */

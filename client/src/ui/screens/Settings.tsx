@@ -2,6 +2,8 @@ import { useState } from 'preact/hooks'
 import { lowerDeathRule, lowerRulesFor } from '../../../../sim/src/town.ts'
 import type { DeathRule } from '../../../../sim/src/types/enums.ts'
 import { act, eraseSave, ephemeral, profile, toast } from '../../game/session.ts'
+import { HelpGroup } from '../components/HelpGroup.tsx'
+import { SoundGroup } from '../../audio/SoundSettings.tsx'
 import { Choice, Toggle } from '../components/Toggle.tsx'
 import { TopBar } from '../components/TopBar.tsx'
 import { Btn, Modal } from '../kit/kit.tsx'
@@ -16,7 +18,7 @@ import { deathRuleLine, deathRuleName } from './town/text.ts'
 const CHECK_TEXT = {
   checking: 'Checking…',
   upToDate: 'You have the latest build.',
-  updateFound: 'Update found. Restart from the toast.',
+  updateFound: 'Update found: restart from its note on the title or in town, between delves.',
   failed: 'Could not check (offline, or not installed).',
 } as const
 
@@ -47,16 +49,37 @@ export function SettingsScreen() {
           />
           <Choice
             label="Text size"
+            hint="All the words in the game: 100, 115 or 130%"
             value={s.textSize}
             options={[
               { value: 'normal', label: 'Normal' },
               { value: 'large', label: 'Large' },
+              { value: 'largest', label: 'Largest' },
             ]}
             onChange={(textSize) => updateSettings({ textSize })}
           />
-          <Toggle label="Reduce motion" hint="Still scenery, no sway" on={s.reduceMotion} onChange={(on) => updateSettings({ reduceMotion: on })} />
+          <Choice
+            label="Colours"
+            hint="Colour-blind safe: friend and foe, good and bad, health and grades in colours you can tell apart"
+            value={s.palette}
+            options={[
+              { value: 'standard', label: 'Standard' },
+              { value: 'redGreen', label: 'Red–green safe' },
+              { value: 'blueYellow', label: 'Blue–yellow safe' },
+            ]}
+            onChange={(palette) => updateSettings({ palette })}
+          />
+          <Toggle
+            label="Reduce motion"
+            hint="No camera glides, sway, flicker or effects; numbers and cards appear without moving"
+            on={s.reduceMotion}
+            onChange={(on) => updateSettings({ reduceMotion: on })}
+            testId="toggle-reduce-motion"
+          />
           <Toggle label="Haptics" hint="A short buzz on taps" on={s.haptics} onChange={(on) => updateSettings({ haptics: on })} />
         </section>
+
+        <SoundGroup />
 
         <section class="group">
           <h2 class="group__title">Phone</h2>
@@ -116,6 +139,8 @@ export function SettingsScreen() {
         </section>
 
         <SaveGroup />
+
+        <HelpGroup />
 
         <section class="group">
           <h2 class="group__title">About</h2>

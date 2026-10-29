@@ -1,0 +1,222 @@
+/* The codex (Phase 8, pass B): monsters met and materials found. Landscape 892 × 412; 44 px rows. */
+.page__body.cx-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow: hidden;
+  padding-top: 6px;
+}
+.cx-head {
+  flex: 0 0 auto;
+}
+.cx-empty {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  max-width: 560px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.cx-split {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.5fr);
+  gap: 14px;
+}
+.cx-list {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.cx-zone + .cx-zone {
+  margin-top: 8px;
+}
+.cx-zone__title {
+  margin: 4px 0;
+  color: var(--ink-dim);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.cx-zone__title small {
+  margin-left: 6px;
+  letter-spacing: 0;
+}
+.cx-zone__more {
+  margin: 4px 0 0;
+  color: var(--ink-dim);
+  font-size: var(--fs-small);
+}
+.cx-row {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1px;
+  width: 100%;
+  min-height: 48px;
+  margin: 0 0 4px;
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg-raised);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.cx-row--on {
+  border-color: var(--ember);
+  background: rgba(255, 179, 71, 0.12);
+}
+.cx-row__name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+.cx-row__sub {
+  color: var(--ink-dim);
+  font-size: var(--fs-small);
+}
+.cx-tag {
+  padding: 0 6px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--ink-dim);
+  font-size: calc(12px * var(--ts, 1));
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.cx-tag--boss {
+  border-color: var(--ember-deep);
+  color: var(--ember);
+}
+.cx-tag--hunter {
+  border-color: var(--bad);
+  color: var(--bad);
+}
+
+.cx-detail {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: grid;
+  grid-template-columns: minmax(150px, 0.8fr) minmax(0, 1.4fr);
+  align-items: start;
+  gap: 12px;
+}
+.cx-card3d {
+  position: sticky;
+  top: 0;
+  height: min(250px, 58vh);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #17131c;
+}
+.cx-card3d .stage {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.cx-card3d__note {
+  position: absolute;
+  inset: auto 0 10px;
+  color: var(--ink-dim);
+  font-size: var(--fs-small);
+  text-align: center;
+}
+.cx-facts {
+  min-width: 0;
+}
+.cx-detail__name {
+  margin: 0;
+  font-size: var(--fs-h1);
+}
+.cx-detail__kind {
+  margin: 2px 0 4px;
+  color: var(--ink-dim);
+  font-size: var(--fs-small);
+}
+.cx-sub {
+  margin: 10px 0 2px;
+  color: var(--ink-dim);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.cx-line {
+  margin: 4px 0;
+  font-size: var(--fs-small);
+}
+.cx-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.cx-line .chip {
+  white-space: nowrap;
+}
+.cx-dim {
+  color: var(--ink-dim);
+}
+.cx-attacks,
+.cx-parts {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--fs-small);
+}
+.cx-attacks li,
+.cx-parts li {
+  padding: 3px 0;
+  border-bottom: 1px dashed #2c2632;
+}
+.cx-tell {
+  margin-left: 6px;
+  color: var(--ember);
+}
+.cx-found {
+  color: var(--good);
+}
+
+.cx-mats {
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: start;
+  gap: 6px 14px;
+}
+.cx-mat {
+  min-height: 48px;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg-raised);
+}
+.cx-mat__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+}
+.cx-mat__count {
+  margin-left: auto;
+  color: var(--ink-dim);
+  font-size: var(--fs-small);
+}
+.cx-mat__from {
+  margin: 2px 0 0;
+  color: var(--ink-dim);
+  font-size: var(--fs-small);
+}

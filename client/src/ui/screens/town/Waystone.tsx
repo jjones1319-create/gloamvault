@@ -5,7 +5,8 @@ import { floorThreat, partyLevelOf, type ThreatRead } from '../../../../../sim/s
 import { difficultyChoices, nightmareBlocker, partyHeroes, waystoneFloors, type Profile } from '../../../../../sim/src/town.ts'
 import type { DungeonDef, PactDef } from '../../../../../sim/src/types/content.ts'
 import type { Difficulty } from '../../../../../sim/src/types/enums.ts'
-import { content, enterDelve, profile } from '../../../game/session.ts'
+import { lessonPending, lessonStarted } from '../../../game/coach.ts'
+import { act, content, enterDelve, profile } from '../../../game/session.ts'
 import { Btn, Empty, Gold, Section } from '../../kit/kit.tsx'
 import { buzz } from '../../lib/haptics.ts'
 import { navigate } from '../../router.ts'
@@ -84,14 +85,17 @@ export function Waystone() {
   }
   const floors = waystoneFloors(c, p, dungeon.id)
   const deepest = floors[floors.length - 1] ?? 1
-  const floor = picked !== null && floors.includes(picked) ? picked : deepest
+  // A replayed lesson (Phase 8, pass B) starts the floor picker on the lesson's floor.
+  const lessonFloor = dungeon.tutorial?.floor ?? 1
+  const floor = picked !== null && floors.includes(picked) ? picked : lessonPending(p) && floors.includes(lessonFloor) ? lessonFloor : deepest
   const floorDef = dungeon.floors.find((f) => f.floor === floor)
   const zone = dungeon.zones.find((z) => floor >= z.floors.from && floor <= z.floors.to)
   const party = partyHeroes(p)
   const partyLevel = partyLevelOf(party.map((h) => h.level))
   const atFloor = floorThreat(c, dungeon.id, floor, partyLevel)
   const perilous = atFloor !== null && (isPerilous(atFloor.floor.band) || (atFloor.boss !== null && isPerilous(atFloor.boss.band)))
-  const firstDelve = p.progress.delves === 0
+  // D-038: the lesson floor on a profile's first delve, or again after Settings → Replay the tutorial (Phase 8, pass B).
+  const firstDelve = lessonPending(p)
   const resuming = p.activeDelve !== null
   // D-095: under Nightmare the chosen hero leads every delve.
   const nightmareBlock = nightmareBlocker(p)
@@ -176,7 +180,9 @@ export function Waystone() {
             <p class="tw-note">
               Threat for your party (level {partyLevel}).{' '}
               {firstDelve
-                ? 'Your first delve: floor 1 is a short lesson of three rooms.'
+                ? p.progress.delves === 0
+                  ? 'Your first delve: floor 1 is a short lesson of three rooms.'
+                  : 'The tutorial again: start on floor 1 for the three-room lesson.'
                 : deepest > 1
                   ? `The tower remembers: start on floor ${deepest}.`
                   : 'Finish floor 1 and the tower remembers: next time you can start on floor 2.'}
@@ -310,7 +316,10 @@ export function Waystone() {
               testid="waystone-enter"
               class="tw-enter"
               disabled={party.length === 0 || !floorDef || nightmareBlock !== null}
-              onClick={() => void enterDelve({ dungeonId: dungeon.id, floor, firstDelve, difficulty, pactIds })}
+              onClick={() => {
+                // A replayed lesson is used up once its floor begins (Phase 8, pass B).
+                if (enterDelve({ dungeonId: dungeon.id, floor, firstDelve, difficulty, pactIds }) && firstDelve && floor === lessonFloor) act((_c, q) => lessonStarted(q))
+              }}
             >
               Enter{' '}
               <small>

@@ -3,7 +3,7 @@
  * 10-TECH-PLAN §7 read from dist/:
  *   - app code (every dist/assets/*.js but the content chunk, gzipped) ≤ 600 KB, and the content data (the
  *     content-*.js chunk the game's JSON compiles to) ≤ 300 KB on its own budget (D-129: content grows with every dungeon)
- *   - the service-worker precache ≤ 8 MB, and no 3D model (models/) is precached
+ *   - the service-worker precache ≤ 8 MB, and no 3D model (models/) or audio sample (audio/) is precached
  *   - the manifest is landscape, fullscreen-capable, and its id / scope / start_url are the GitHub Pages base
  * Runs on Node 24 directly.
  */
@@ -60,6 +60,7 @@ else {
     const p = join(DIST, clean)
     if (existsSync(p)) total += statSync(p).size
     if (/(^|\/)models\//.test(clean)) fail(`a 3D model is precached: ${url} (models are runtime-cached, 10 §2)`)
+    if (/(^|\/)audio\/.+\.(ogg|opus)$/.test(clean)) fail(`an audio sample is precached: ${url} (audio is runtime-cached per piece, Phase 8)`)
   }
   console.log(`precache: ${urls.length} entries, ${kb(total)} (limit ${kb(PRECACHE_LIMIT)})`)
   if (total > PRECACHE_LIMIT) fail(`the precache is ${kb(total)}, over ${kb(PRECACHE_LIMIT)}`)

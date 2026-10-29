@@ -95,6 +95,22 @@ export interface StaticRoomInput {
   skipParts?: Readonly<Record<string, readonly string[]>>
 }
 
+/** A secret door's panel (Phase 8): shut at `rest`, open turned `open` radians about its own up axis (the jamb). */
+export interface DoorPanel {
+  object: THREE.Object3D
+  rest: THREE.Quaternion
+  open: number
+}
+
+/**
+ * The kit's secret-door panel swings 95° about its left jamb into the far room (crypts.json, cry_door_secret: "−95°"
+ * in Blender's frame, which turns it into this room in the game's; checked in the Vigil, Phase 8).
+ */
+const SECRET_PANEL_OPEN = (95 * Math.PI) / 180
+
+/** The grey-box Waystone's height (props.ts addWaystone: a 2.4 m stone on its rock). */
+const WAYSTONE_TOP_M = 2.45
+
 /** A fire in the room: the point lights go to the two nearest the party. */
 export interface LightPoint {
   x: number
@@ -123,6 +139,16 @@ export interface StaticRoom {
   taken: { x: number; z: number }[]
   /** Points to frame the room with (floor corners and wall tops). */
   framePoints: THREE.Vector3[]
+  /**
+   * Phase 8: what the room view keeps in frame besides the party — the Waystone, foot and top (in a deep entry room its
+   * top stood under the HUD).
+   */
+  landmarks: THREE.Vector3[]
+  /**
+   * Phase 8: doorway skins whose panel swings (the Vigil's secret doors): each panel its own mesh, shut, with its turn
+   * about the jamb to stand open (room/arena.ts opens them when the sim says `doorsOpen`).
+   */
+  doorPanels: DoorPanel[]
   /** Stair pits: nothing else is placed there. */
   holes: Rect[]
   /** Furniture footprints (the party and the fights keep clear of them). */
@@ -375,6 +401,8 @@ export function buildStaticRoom(kit: Kit, input: StaticRoomInput): StaticRoom {
   // shows the stairs the party came down; on the far side, facing the camera. Without the flag (the gallery), the
   // entrance without stairs holds the Waystone, as in Phase 4.
   const stoneHere = input.isEntry && (input.waystone === true || (input.waystone === undefined && !arrival))
+  const landmarks: THREE.Vector3[] = []
+  const doorPanels: DoorPanel[] = []
   const stairsHere = input.isEntry && input.waystone === false && !arrival
   if (stoneHere || stairsHere) {
     const far = { x: -camDir.x, z: -camDir.z }
@@ -391,13 +419,16 @@ export function buildStaticRoom(kit: Kit, input: StaticRoomInput): StaticRoom {
     const at = freeSpot(cands, taken)
     const m = trs(at.x, 0, at.z, Math.atan2(camDir.x, camDir.z))
     const id = stoneHere ? 'shr_waystone' : 'shr_stairs_up'
+    let top = WAYSTONE_TOP_M
     if (kb?.has(id)) {
       const before = kb.flames.length
-      kb.add(id, m)
+      const piece = kb.add(id, m)
+      if (piece && !piece.bounds.isEmpty()) top = piece.bounds.max.y
       lights.push(...flameLights(kb.flames.slice(before)))
       kitPieces++
     } else if (stoneHere) P.addWaystone(pieces, m)
     else P.addStairsUp(pieces, m)
+    if (stoneHere) landmarks.push(new THREE.Vector3(at.x, 0, at.z), new THREE.Vector3(at.x, top, at.z))
     taken.push(at)
     obstacles.push({ x: at.x, z: at.z, r: stoneHere ? 0.6 : 1.4 })
     arrival = at
@@ -487,7 +518,20 @@ export function buildStaticRoom(kit: Kit, input: StaticRoomInput): StaticRoom {
       } else if (s.role === 'doorway') {
         const skin = s.low ? undefined : skinFor(s.side)
         if (s.low && doorwayCutId) kb!.add(doorwayCutId, trs(s.x, 0, s.z, s.yaw), { lights: false })
-        else if (skin) kb!.add(skin, trs(s.x, 0, s.z, s.yaw), skinOptions(skin))
+        else if (skin && /door_secret/.test(skin) && env) {
+          // Phase 8: the frame with the room, the panel on its own so the Vigil's second phase can swing it open.
+          const m = trs(s.x, 0, s.z, s.yaw)
+          const panel = kb!.piece(skin)?.parts.find((p) => p.name === 'panel' || p.name.endsWith('.panel'))
+          kb!.add(skin, m, panel ? { skipParts: [panel.name] } : skinOptions(skin))
+          if (panel) {
+            const mesh = new THREE.Mesh(panel.geometry, env.materials.solid)
+            mesh.name = `${skin}.panel`
+            mesh.frustumCulled = false
+            m.clone().multiply(panel.rest).decompose(mesh.position, mesh.quaternion, mesh.scale)
+            group.add(mesh)
+            doorPanels.push({ object: mesh, rest: mesh.quaternion.clone(), open: SECRET_PANEL_OPEN })
+          }
+        } else if (skin) kb!.add(skin, trs(s.x, 0, s.z, s.yaw), skinOptions(skin))
         else if (!s.low && doorwayId) kb!.add(doorwayId, trs(s.x, 0, s.z, s.yaw))
       } else if (s.role === 'corner') {
         if (s.low && cornerCutId) kb!.add(cornerCutId, trs(s.x, 0, s.z, s.yaw), { lights: false })
@@ -548,6 +592,8 @@ export function buildStaticRoom(kit: Kit, input: StaticRoomInput): StaticRoom {
     sockets,
     taken,
     framePoints,
+    landmarks,
+    doorPanels,
     holes,
     obstacles,
     kit: kitBuild,

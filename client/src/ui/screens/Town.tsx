@@ -5,6 +5,9 @@ import type { Content } from '../../../../sim/src/content.ts'
 import { canChooseHero, chestPrice, partyHeroes, pendingChosenLegacy, repairAllQuote, skillHallOffers, waystoneFloors, type Profile } from '../../../../sim/src/town.ts'
 import type { HeroRecord } from '../../../../sim/src/types/content.ts'
 import { content, loadNotes, profile } from '../../game/session.ts'
+import { BackupNote } from '../components/BackupNote.tsx'
+import { CoachInline } from '../components/Coach.tsx'
+import { CodexButton } from '../components/CodexButton.tsx'
 import { Btn, Empty, Page, Tile } from '../kit/kit.tsx'
 import { buzz } from '../lib/haptics.ts'
 import { navigate, type Route } from '../router.ts'
@@ -127,7 +130,7 @@ function Hub({ c, p }: { c: Content; p: Profile }) {
   )
 
   return (
-    <Page name="town" title="Emberfall" back="title" bodyClass="tw-hub">
+    <Page name="town" title="Emberfall" back="title" bodyClass="tw-hub" right={<CodexButton from="town" />}>
       <div class="tw-hub__wrap">
         <Scene />
         <div class="tw-hub__top" aria-label="Your party and what needs you">
@@ -178,6 +181,9 @@ function Hub({ c, p }: { c: Content; p: Profile }) {
             </div>
           )}
           {last && <LastDelve p={p} last={last} />}
+          {/* Phase 8 (pass B): the lesson's town notes (D-038) and the backup reminder (10 §6). */}
+          <CoachInline />
+          <BackupNote />
         </div>
         <nav class="tw-places" aria-label="Places in Emberfall">
           {PLACES.map((pl) => (

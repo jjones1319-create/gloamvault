@@ -1,5 +1,5 @@
 import type { Content } from './content.ts'
-import { canHoldOffHand, effectiveItemStats, itemValueOf } from './items.ts'
+import { canHoldOffHand, effectiveItemStats, itemValueOf, setProgressOf, type SetBonusKey } from './items.ts'
 import { requirementMet } from './requirements.ts'
 import { equip, heroOf, unequip, type Profile } from './town.ts'
 import type { ClassDef, HeroRecord, ItemDef, ItemInstance, SkillDef } from './types/content.ts'
@@ -22,6 +22,11 @@ import type { DerivedStat } from './types/enums.ts'
  * the hero's loadout skills usable wins first (a Ranger keeps a bow for Aimed Shot, a Warden a shield for Shield
  * Slam), then the best total, where an off-hand item the class's own weapon list does not name (a Blade's buckler)
  * counts a quarter; then the pair that keeps what is worn.
+ *
+ * Sets (08 §6; Phase 8): after every slot has its best piece, auto-equip weighs the worn sets' bonuses too — a bonus is
+ * worth its stat lines by the ring rule and `equipment.sets.autoEquipLineScore` for each line with no number to add up
+ * (a hook: the Vigil's Guard that Taunts) — and swaps in the pieces that switch a bonus on when the bonus outweighs the
+ * score the swap gives up (setBonusScore, withSets).
  */
 
 /** The eleven gear slots in screen order (03 §6.1); the two rings are separate slots here. */
@@ -215,6 +220,113 @@ export function bestHands(content: Content, profile: Profile, hero: HeroRecord):
   return best ? { main: best.main, off: best.off } : { main: wornMain, off: wornOff }
 }
 
+/* ---------- sets (08 §6) ---------- */
+
+/** The slots a set piece can fill: the armor and the trinkets (the hands are chosen as a pair, for the loadout's skills). */
+export const SET_SLOTS = ['helmet', 'chest', 'legs', 'boots', 'gloves', 'ring0', 'ring1', 'talisman', 'relic'] as const
+type SetSlot = (typeof SET_SLOTS)[number]
+
+/**
+ * A set bonus's worth to a hero, in quarter points: its stat lines by the ring rule (4 × each flat or percent line, the
+ * other class family's pool line left out, a debuff line negative) and `equipment.sets.autoEquipLineScore` for every
+ * line with no number to add up — a hook such as the Vigil's "Guard also Taunts" (Phase 8 reading of 03 §6.1).
+ */
+export function setBonusScore(content: Content, hero: HeroRecord, setId: string, key: SetBonusKey): number {
+  const set = content.sets.get(setId)
+  if (!set) return 0
+  const otherPool = content.classes.get(hero.classId)?.pool === 'mana' ? 'stamina' : 'mana'
+  const lineScore = content.tuning.equipment.sets.autoEquipLineScore.value
+  let sum = 0
+  for (const line of set.bonuses[key] ?? []) {
+    if ((line.kind === 'buffStat' || line.kind === 'debuffStat') && line.stat !== undefined) {
+      if (line.stat === otherPool) continue
+      const sign = line.kind === 'debuffStat' ? -1 : 1
+      sum += sign * 4 * ((line.amount ?? 0) + (line.percent ?? 0))
+    } else sum += lineScore
+  }
+  return sum
+}
+
+/** What a worn list's sets are worth together: every bonus it switches on (items.ts setProgressOf: distinct pieces, Broken ones left out). */
+export function setsWorth(content: Content, hero: HeroRecord, worn: readonly (ItemInstance | null)[]): number {
+  let sum = 0
+  for (const p of setProgressOf(content, content.tuning, worn)) for (const key of p.active) sum += setBonusScore(content, hero, p.setId, key)
+  return sum
+}
+
+/**
+ * The set pass of auto-equip: from the worn pieces (each already the best of its slot alone), try every set among the
+ * hero's candidates at each of its thresholds — that many of its pieces in the slots where they cost the least score —
+ * and keep a change only when the slots' scores plus the sets' bonuses come out strictly higher. A few rounds, so two
+ * sets can share the body (2 + 2). Deterministic: slots in screen order, ties keep what is worn.
+ */
+function withSets(content: Content, profile: Profile, heroId: string): Profile {
+  const hero = heroOf(profile, heroId)
+  const worn = Object.fromEntries(SET_SLOTS.map((slot) => [slot, wornCandidate(content, hero, slot)])) as Record<SetSlot, Candidate | null>
+  const pools = Object.fromEntries(SET_SLOTS.map((slot) => [slot, armoryCandidates(content, profile, hero, slot)])) as Record<SetSlot, Candidate[]>
+  const hands = [hero.equipment.mainHand, hero.equipment.offHand]
+  const value = (a: Record<SetSlot, Candidate | null>): number => SET_SLOTS.reduce((sum, slot) => sum + (a[slot]?.score ?? 0), 0) + setsWorth(content, hero, [...hands, ...SET_SLOTS.map((slot) => a[slot]?.inst ?? null)])
+  // The sets the hero could wear into: a set piece among the candidates, the set open to the class.
+  const setIds = new Set<string>()
+  for (const slot of SET_SLOTS) {
+    for (const c of [worn[slot], ...pools[slot]]) {
+      const set = c?.def.setId ? content.sets.get(c.def.setId) : undefined
+      if (set && (set.classIds.length === 0 || set.classIds.includes(hero.classId))) setIds.add(set.id)
+    }
+  }
+  if (setIds.size === 0) return profile
+  let best = { ...worn }
+  let bestValue = value(best)
+  const at: readonly number[] = content.tuning.equipment.sets.bonusAt
+  for (let round = 0; round < 3; round++) {
+    let improved = false
+    for (const setId of [...setIds].sort()) {
+      const set = content.sets.get(setId)
+      if (!set) continue
+      for (const n of at.filter((k) => set.bonuses[String(k) as SetBonusKey] !== undefined)) {
+        // Each slot's best piece of the set (worn there, or in the armory and not picked elsewhere), and its cost against the slot's current pick.
+        const inUse = new Set(SET_SLOTS.map((o) => best[o]?.inst.instanceId).filter((id): id is string => id !== undefined))
+        const options: { slot: SetSlot; pick: Candidate; loss: number }[] = []
+        for (const slot of SET_SLOTS) {
+          const current = best[slot]
+          if (current?.def.setId === setId) {
+            options.push({ slot, pick: current, loss: 0 })
+            continue
+          }
+          const pick = pools[slot].find((c) => c.def.setId === setId && !inUse.has(c.inst.instanceId))
+          if (pick) options.push({ slot, pick, loss: (current?.score ?? 0) - pick.score })
+        }
+        // The n cheapest; one instance never fills two slots (a ring set's rings).
+        const chosen: typeof options = []
+        const used = new Set<string>()
+        for (const o of [...options].sort((x, y) => x.loss - y.loss || SET_SLOTS.indexOf(x.slot) - SET_SLOTS.indexOf(y.slot))) {
+          if (chosen.length >= n) break
+          if (used.has(o.pick.inst.instanceId)) continue
+          used.add(o.pick.inst.instanceId)
+          chosen.push(o)
+        }
+        if (chosen.length < n || chosen.every((o) => best[o.slot] === o.pick)) continue
+        const trial = { ...best }
+        for (const o of chosen) trial[o.slot] = o.pick
+        const v = value(trial)
+        if (v > bestValue) {
+          best = trial
+          bestValue = v
+          improved = true
+        }
+      }
+    }
+    if (!improved) break
+  }
+  let p = profile
+  for (const slot of SET_SLOTS) {
+    const want = best[slot]
+    if (!want || want.worn) continue
+    p = equip(content, p, heroId, want.inst.instanceId, slot === 'ring1' ? 1 : 0)
+  }
+  return p
+}
+
 /* ---------- auto-equip ---------- */
 
 const SINGLE_GEAR = ['helmet', 'chest', 'legs', 'boots', 'gloves', 'talisman', 'relic'] as const
@@ -250,5 +362,6 @@ export function autoEquipBest(content: Content, profile: Profile, heroId: string
     const best = bestFor(wornCandidate(content, hero, slot), armoryCandidates(content, p, hero, slot))
     if (best && !best.worn) p = equip(content, p, heroId, best.inst.instanceId, index)
   }
-  return p
+  // Sets (08 §6): the pieces that switch a bonus on, when the bonus outweighs what the swap gives up.
+  return withSets(content, p, heroId)
 }

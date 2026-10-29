@@ -3,6 +3,9 @@ import type { Content } from '../../../../sim/src/content.ts'
 import { clampLook } from '../../../../sim/src/look.ts'
 import type { HeroRecord } from '../../../../sim/src/types/content.ts'
 import { content, profile } from '../../game/session.ts'
+import { CodexButton } from '../components/CodexButton.tsx'
+import { StatTip } from '../components/StatTip.tsx'
+import { levelLine } from '../components/statLines.ts'
 import { Empty, Meter, Page, Tabs } from '../kit/kit.tsx'
 import { navigate, type Route } from '../router.ts'
 import { seedSampleArmory, seedSampleTomes } from './hero/demo.ts'
@@ -71,9 +74,10 @@ export function HeroScreen({ route }: { route: Route }) {
   }
   const lv = levelProgress(c.tuning, hero)
   return (
-    <Page name="hero" title={hero.name} back="town" bodyClass="hr-body">
+    <Page name="hero" title={hero.name} back="town" bodyClass="hr-body" right={<CodexButton from={`hero:${hero.id}`} />}>
       <div class="hr-head">
-        <div class="hr-id" data-testid="hr-id">
+        {/* Phase 8 (pass B): the level and XP say what they mean when tapped. */}
+        <StatTip class="hr-id stip--inline" testid="hr-id" line={levelLine(lv.level, lv.into, lv.need, lv.atCap)}>
           <span class="hr-id__who">
             {species?.name ?? hero.speciesId} {cls.name}
           </span>
@@ -82,7 +86,7 @@ export function HeroScreen({ route }: { route: Route }) {
             <Meter compact tone="xp" value={lv.atCap ? 1 : lv.into} max={lv.atCap ? 1 : lv.need} label="XP" />
           </span>
           <span class="hr-id__xp">{lv.atCap ? 'top level' : `${lv.into}/${lv.need} XP`}</span>
-        </div>
+        </StatTip>
         <Tabs tabs={TABS} value={tab} onChange={(id) => navigate('hero', { ...route.params, hero: hero.id, tab: id })} />
         <button class="btn hr-view3d" data-testid="hero-view3d" onClick={() => navigate('viewer', viewerLink(c, hero))}>
           View in 3D

@@ -4,10 +4,15 @@ Gloamvault is an original game. Every name, monster, character, piece of art, li
 
 ## Assets
 - **Human Base Meshes** bundle, Blender Studio — CC0 1.0 (public domain). Its stylized male and female bodies (with their eyes) are the starting point of the two hero body frames, decimated, rigged and reshaped by `tools/blender/hero/build_body.py`. Source: the Blender demo-files page, "Human Base Meshes" asset bundle (v1.2.0, the OCF mirror; v1.4.1 is the current upstream). Not committed (48 MB); the build expects it at `art/ref/human-base-meshes/human_base_meshes_bundle.blend` (`tools/blender/README.md`).
-- *(Phase 8)* the CC0 instrument samples the audio engine plays (pinned in `tools/audio/sources.ts`).
+- **Sound (Phase 8).** The instrument samples and Foley recordings under `client/public/audio/` come from the four CC0 (public domain) libraries below. They were trimmed, level-matched, loop-baked and encoded to Opus by Wildsong Ranch's sample pipeline (James's own game, MIT) and copied from it by `tools/audio/copy-samples.ts`; `client/public/audio/manifest.json` records every file's source library and content hash. The sound effects and the ambience are built from these samples, filtered noise and plain sine and triangle tones; the snare, the bone rattle, the anvil, the wordless choir voice, the trumpet's brass and the waterphone are made in code.
+  - **Versilian Community Sample Library (VCSL)** by Versilian Studios and contributors, CC0 1.0. `https://github.com/sgossner/VCSL` at commit `c1ea7bcc3c7309650ab0da9d15c9cd1fbc4a4c7e`. Used: baroque alto recorder, folk harp, strumstick, tubular bells, wine glasses, Renaissance organ (8' stop), frame drum, darbuka, bongos, tambourine, shaker, claves, woodblock, timpani, bass drum, suspended cymbal (mallet swells).
+  - **Versilian Studios Chamber Orchestra 2 Community Edition (VSCO 2 CE)** by Versilian Studios and contributors, CC0 1.0. `https://github.com/sgossner/VSCO-2-CE` at commit `440300901dfe9275fd84e0b7763af1f8443ae62e`. Used: clarinet, F horn, violin, viola and cello sections, solo contrabass.
+  - **Kenney Impact Sounds** by Kenney (kenney.nl), CC0 1.0. `https://kenney.nl/media/pages/assets/impact-sounds/87b4ddecda-1677589768/kenney_impact-sounds.zip`, SHA-256 `029d734af1582474edf3a694d1b0cebc97c1c152f2f39fa34d4c2bafc5de77f8`. Used: footsteps on stone and wood; wood, soft, plank, mining and punch impacts.
+  - **Kenney RPG Audio** by Kenney (kenney.nl), CC0 1.0. `https://kenney.nl/media/pages/assets/rpg-audio/8e99002d76-1677590336/kenney_rpg-audio.zip`, SHA-256 `6dbeaf8544da958d8f2adcb4a4a4b76c1ade34a05f8ab9edccd327da7375f38b`. Used: cloth, a creak, coins.
 
 ## Tools
 - Blender 5.2 LTS (GPL; our scripts drive it headless), three.js (MIT), Preact (MIT), Vite (MIT), Vitest (MIT), Playwright (Apache-2.0), ajv (MIT), idb-keyval (Apache-2.0), valibot (MIT), vite-plugin-pwa (MIT), Trystero (MIT).
+- The music is composed for this game in ABC notation and played live by our own Web Audio sequencer, ported from Wildsong Ranch (James's own game, MIT); every melody, chord progression and rhythm is original.
 
 ## Research
 - The design draws on published mechanics of many games (see `docs/02-RESEARCH.md` and the Sources lists in `docs/research/`). Nothing from them is copied.

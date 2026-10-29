@@ -1,6 +1,6 @@
 # 11 — Art Pipeline (Blender → glTF → three.js)
 
-*Last updated 2026-10-28 · rev. 4 (Phase 6: the rooms, monsters and effects as built — §12; kits with baked AO replace §5's lightmaps, effects generated in code replace §6's flipbooks — D-110–D-117) · rev. 3 (Phase 5: the hero pipeline as built — §11; the palette replaces the mask textures of §2, D-100–D-109) · rev. 2 (checkpoint 1: open questions answered by delegation — D-099) · rev. 1 2026-10-26 (Claude). Decision D-019. The sister project's `prototype/blender/shade/` (ProjectAscend) is the proven ancestor of this pipeline: scripted, headless, re-runnable, reviewed by looking at renders; its `LOG.md` lists honestly what a script can and cannot reach. This document keeps what worked and fixes what didn't.*
+*Last updated 2026-10-29 · rev. 5 (Phase 8, pass C: the emblem and splash, shaders compiled before showing, bosses framed at phone size, the Vigil's doors, pets' Attack2 — §13) · rev. 4 (Phase 6: the rooms, monsters and effects as built — §12; kits with baked AO replace §5's lightmaps, effects generated in code replace §6's flipbooks — D-110–D-117) · rev. 3 (Phase 5: the hero pipeline as built — §11; the palette replaces the mask textures of §2, D-100–D-109) · rev. 2 (checkpoint 1: open questions answered by delegation — D-099) · rev. 1 2026-10-26 (Claude). Decision D-019. The sister project's `prototype/blender/shade/` (ProjectAscend) is the proven ancestor of this pipeline: scripted, headless, re-runnable, reviewed by looking at renders; its `LOG.md` lists honestly what a script can and cannot reach. This document keeps what worked and fixes what didn't.*
 
 ## 1. The look (style guide)
 
@@ -162,6 +162,51 @@ game, `tools/blender/README.md` → *Phase 6* the contract. What changed from §
   rigid on their bones; the Crypts' pointed arch reads round-headed at phone size; webs read as gauze fans; water is a
   translucent tint, not a water shader; the hunched poses and the Bursting Corpse's swell need the client's offsets;
   ten of the sixteen pets are still capsules (D-117).
+
+## 13. As built in Phase 8 (2026-10-29, pass C: accessibility, performance, assets)
+
+- **The emblem.** `client/public/logo.svg` is drawn for this game: a lantern hanging in the gate arch of a keep — four
+  merlons, a ring of arch stones with a keystone, the lantern's light pooling in the doorway — in the title's dusk
+  (#120f14), stone greys and ember amber. It reads at 48 and 32 px. `npm run icons` renders the PWA set from it (64,
+  192, 512, the maskable 512 on a full-bleed background at 80%, the 180 Apple icon, the 48 favicon). `index.html`
+  paints the title's colour from the first frame and shows the emblem and the wordmark while the code arrives; the
+  installed app's launch screen is the manifest's background (the same colour) with the icon.
+- **Shaders before showing.** The soak's dips were not the GPU drawing the mist (timer queries: a Crypts or Vault room
+  takes the Iris Xe 1–2.5 ms a frame; the mist 0.3 ms of it, the water 0.1 ms). They were render calls stalled on
+  shader compiles (90–420 ms each) whenever a new monster or a death fade met a program three.js had freed with the
+  last fight's models. Now a model is compiled in parallel (KHR_parallel_shader_compile) before it replaces its
+  capsule, its fade's see-through variant too; the room kit's six variants compile when the delve opens and a new
+  room's on its build; and the stage keeps every program it has compiled (up to 128) for its life (`scene/stage.ts`
+  `warm`, `pinPrograms`).
+- **Smaller stalls.** A skinned mesh takes its rest pose's bounds (three.js skinned every vertex on the CPU to sort it,
+  10–55 ms a monster); a monster's or hero's assembly runs on a frame of its own (`scene/turns.ts`), so four monsters
+  arriving together no longer freeze 120 ms; see-through double-sided materials (mist, webs, water) draw in one pass.
+- **Bosses read at phone size.** A boss on an arena mark at the back of the room (Vexa's dais, Naesa's altar) has the
+  fight come to him: the formation advances along the camera's depth until its middle stands 2.2 m in front of him
+  (2.5 m more per metre his mark is raised, so the King's dais keeps the party off its steps). The arena's chips and
+  tells moved from under the turn banner, where they covered the boss's head, to the enemies' column. A model's reach
+  (the Hollow King's raised blade, 1.2 m above his height) is measured when it arrives and framed. Measured at the
+  phone's viewport: Vexa 28 → 51 px, Sister Naesa 39 → 46 px, the Hollow King 49 px half hidden → 45 px (body; about
+  60 px with his blade) fully in view, the Barrow Warden 83 px as before.
+- **The Vigil's secret doors** swing open (95° about the left jamb, into the next room) when the sim opens them — the
+  Warden's phase 2 or the candles — the panel its own mesh beside the batched frame (`room/dress.ts` `doorPanels`,
+  `room/arena.ts`).
+- **Pets** swing Attack2 for their second active (and Attack1 for their first and their plain attack, which played no
+  clip at all); a model without Attack2 falls back to Attack1. The 0.12 s lead puts the clip's hit event just after the
+  number on every pet base (their clips carry hit or release events).
+- **Lineups**: rows stand far enough apart that a back row's names clear the front row's heads on screen (the Vault's
+  sixteen in two rows of eight).
+- **Colour-blind palettes** (Settings → Colours; `client/src/ui/styles/a11y.css`) remap friend and foe, good and bad,
+  health and the pools, the threat pill, grades and the map's locked doors, and reach the 3D HP bars (`BAR_COLOURS`:
+  amber friends and violet foes red–green safe, teal and red blue–yellow safe). Every value was chosen with a
+  protanopia, deuteranopia and tritanopia simulation (Machado et al. 2009); `ui/styles/palettes.node.test.ts` keeps
+  every pair that must read apart at least 20 CIE76 units apart for the vision its palette serves and for normal
+  vision. The standard palette's green and red read 12 apart to deuteranopia.
+- **What is left** (the honest list): the Hollow King stays the smallest boss — the fight HUD leaves a band 166 px tall
+  between its strip and its feed, his throne is far back and raised, and he is dark on dark (his boss lamp is dimmed
+  with the room's light, a rule of the arena); a camera made for the throne fight would do more than framing can. On
+  the desktop's Direct3D path a brand-new monster's first draw can still stall about 60 ms (ANGLE finishes a shader
+  for each vertex layout at its first draw); the phone's path differs, and its numbers come from James's checklist.
 
 **Open questions**
 1. ~~Base meshes from the CC0 bundle (recommended) vs. the procedural loft body for everything (faster, worse faces)?~~ *Checkpoint 1 (D-019): the CC0 base meshes, as recommended; the procedural loft body stays for silhouette tests only.*

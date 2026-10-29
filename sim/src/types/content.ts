@@ -1122,6 +1122,26 @@ export interface PactDef {
 /** The three launch presets as knob sets; Normal is the baseline. */
 export type PresetSet = Readonly<Record<Difficulty, DifficultyKnobs>>
 
+/**
+ * The fixed lesson floor of a profile's first delve (D-038, 03 §13; Phase 8, pass B): dungeon.schema.json `tutorial`.
+ * The generator lays the floor out as Entry · Fight · Trap room · Stairs; this block says what stands in it, so nothing
+ * on it is rolled: the first fight, the trap room's traps and chest, the hunter and the surprise roll.
+ */
+export interface TutorialDef {
+  /** The floor the lesson replaces on a profile's first delve (Gravehollow: 1). */
+  readonly floor: number
+  /** The first fight (03 §13: "a rat is faster than you"). */
+  readonly encounterId: ContentId
+  /** The trap room's traps, in order: ones a starting hero's Perception reveals. */
+  readonly trapIds: readonly ContentId[]
+  /** The chest in the trap room, or null. */
+  readonly chest: 'small' | 'large' | null
+  /** Whether the zone's hunter stalks the lesson floor. */
+  readonly hunter: boolean
+  /** Whether the first fight may open with a surprise either way. */
+  readonly surprise: boolean
+}
+
 /** A dungeon (03 §4, §11, §12; 07 §2, §6): content/dungeons/<id>/dungeon.json plus its templates/ files. */
 export interface DungeonDef {
   readonly id: ContentId
@@ -1140,6 +1160,8 @@ export interface DungeonDef {
   readonly templates: readonly TemplateDef[]
   readonly pacts: readonly PactDef[]
   readonly presets: PresetSet
+  /** The first delve's fixed lesson floor (D-038; Phase 8). Optional: without it a first delve's floor 1 keeps the lesson's layout with rolled contents (as built in Phase 4). */
+  readonly tutorial?: TutorialDef
 }
 
 // ---------------------------------------------------------------------------------------------------------------

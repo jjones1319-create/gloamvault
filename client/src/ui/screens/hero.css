@@ -96,7 +96,7 @@
 }
 .hr-xp__label b {
   color: var(--xp);
-  font-size: 19px;
+  font-size: calc(19px * var(--ts));
 }
 .hr-xp .meter {
   flex: 1;
@@ -135,7 +135,7 @@
 .hr-attr__now {
   width: 28px;
   text-align: right;
-  font-size: 16px;
+  font-size: calc(16px * var(--ts));
   line-height: 1.2;
   font-variant-numeric: tabular-nums;
 }
@@ -514,7 +514,7 @@
   border: 1px solid var(--line);
   background: #0b090d;
   color: var(--ink);
-  font-size: 14px;
+  font-size: calc(14px * var(--ts));
   line-height: 1.4;
   user-select: text;
   -webkit-user-select: text;
@@ -546,7 +546,7 @@
 }
 .hr-petcard__name {
   margin: 0;
-  font-size: 20px;
+  font-size: calc(20px * var(--ts));
   font-weight: 700;
   color: var(--ember);
 }

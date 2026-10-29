@@ -88,7 +88,8 @@ const classRecord: Json = {
     { fieldSkill: 'cooking', rankBonus: 2 },
   ],
   monsterTechniqueIds: [],
-  aiRuleDefault: 'IF self HP < 30% THEN item small hp potion on self; IF ally HP < 50% THEN mend on lowest ally; ELSE smite front enemy',
+  // Phase 8: the relics that suit the class, each where its trigger holds (08 §3; a relic not worn is skipped).
+  aiRuleDefault: 'IF self HP < 30% THEN item small hp potion on self; IF ally HP < 35% THEN item the brine pearl on lowest ally; IF ally HP < 50% THEN mend on lowest ally; IF allies HP < 75% THEN item candle of the crypt; IF ally status curse THEN item the tidebound idol; ELSE smite front enemy',
   visual: {
     gearSetId: 'mender-burlap-robes',
     palette: ['#f1ead8', '#6b1f24', '#e3c46a', '#b8bcc4'],

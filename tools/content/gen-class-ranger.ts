@@ -925,7 +925,8 @@ export const ranger: ClassSheet = {
     { fieldSkill: 'foraging', rankBonus: 2 },
     { fieldSkill: 'cartography', rankBonus: 1 },
   ],
-  aiRuleDefault: 'IF self HP < 30% THEN item small hp potion on self; IF enemy status mark THEN aimed shot on marked enemy; ELSE hunters mark on strongest enemy',
+  // Phase 8: the relics that suit the class, each where its trigger holds (08 §3; a relic not worn is skipped).
+  aiRuleDefault: 'IF self HP < 30% THEN item small hp potion on self; IF light < 50 THEN item lantern of the deep; IF enemies count > 2 THEN item moth charm; IF enemy status mark THEN aimed shot on marked enemy; ELSE hunters mark on strongest enemy',
   visual: {
     gearSetId: 'ranger-rawhide-leather',
     palette: ['#4f6b3a', '#5b4532', '#ece3cf', '#b08d3c'],

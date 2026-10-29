@@ -51,20 +51,20 @@ if (has('fixture') || content.dungeons.size === 0) {
 const t = content.tuning
 
 /**
- * What-if runs: `--set monster:hollow-king.multipliers.hp=22,tuning:dungeon.partyScaling.hp.3=1.4` changes the loaded
+ * What-if runs: `--set monster:hollow-king.multipliers.hp=22,tuning:dungeon.partyScaling.hp.3=1.4,loot-table:gravehollow-cellars.goldRange.max=16` changes the loaded
  * content in memory only (content/ is never written) and the report's header names every override.
  */
 const OVERRIDES = list('set')
 for (const o of OVERRIDES) {
-  const m = /^(monster|tuning|encounter|elite-affix|item):([^=]+)=(.+)$/.exec(o)
-  if (!m) throw new Error(`--set ${o}: expected <monster|tuning|encounter|elite-affix|item>:<path>=<value>`)
+  const m = /^(monster|tuning|encounter|elite-affix|item|loot-table):([^=]+)=(.+)$/.exec(o)
+  if (!m) throw new Error(`--set ${o}: expected <monster|tuning|encounter|elite-affix|item|loot-table>:<path>=<value>`)
   const [, kind, pathText, valueText] = m as unknown as [string, string, string, string]
   const parts = pathText.split('.')
   let target: unknown
   if (kind === 'tuning') target = content.tuning
   else {
     const id = parts.shift() ?? ''
-    const map = kind === 'monster' ? content.monsters : kind === 'encounter' ? content.encounters : kind === 'elite-affix' ? content.eliteAffixes : content.items
+    const map = kind === 'monster' ? content.monsters : kind === 'encounter' ? content.encounters : kind === 'elite-affix' ? content.eliteAffixes : kind === 'loot-table' ? content.lootTables : content.items
     target = (map as Map<string, unknown>).get(id)
     if (!target) throw new Error(`--set ${o}: no ${kind} '${id}'`)
   }
@@ -415,6 +415,8 @@ interface CellResult {
   dot: Map<number, { dot: number; taken: number }>
   /** Per boss: its fights, the enemies' damage, the back-row adds' share of it, and fights where the back row was never hit. */
   backRow: Map<string, { fights: number; enemyDamage: number; backDamage: number; untouched: number }>
+  /** Per boss: the enemy side's damage in its fights by who dealt it (the boss, or each add by monster id). */
+  bossDamage: Map<string, Map<string, number>>
 }
 
 function addFights(res: CellResult, fights: readonly FightRow[], size: number): void {
@@ -440,6 +442,9 @@ function addFights(res: CellResult, fights: readonly FightRow[], size: number): 
       b.backDamage += back.reduce((sum, e) => sum + e.damageDealt, 0)
       b.untouched += back.length > 0 && back.every((e) => e.damageTaken === 0) ? 1 : 0
       res.backRow.set(f.boss, b)
+      const by = res.bossDamage.get(f.boss) ?? new Map<string, number>()
+      for (const e of f.enemies) by.set(e.boss ? '(the boss)' : e.id, (by.get(e.boss ? '(the boss)' : e.id) ?? 0) + e.damageDealt)
+      res.bossDamage.set(f.boss, by)
     }
     const deaths = f.heroes.filter((h) => h.fallen).length
     const k = res.byKind.get(f.kind) ?? { fights: 0, deaths: 0, falls: 0, withDeath: 0 }
@@ -465,7 +470,7 @@ function addFights(res: CellResult, fights: readonly FightRow[], size: number): 
 const RESULTS: CellResult[] = []
 for (const cell of CELLS) {
   const cellStarted = Date.now()
-  const res: CellResult = { cell, delves: [], floors: [], classes: new Map(), bossFights: [], pieces: 0, upgraded: 0, errors: [], ms: 0, byKind: new Map(), killers: new Map(), dot: new Map(), backRow: new Map() }
+  const res: CellResult = { cell, delves: [], floors: [], classes: new Map(), bossFights: [], pieces: 0, upgraded: 0, errors: [], ms: 0, byKind: new Map(), killers: new Map(), dot: new Map(), backRow: new Map(), bossDamage: new Map() }
   for (let seed = SEED_START; seed < SEED_START + cell.seeds; seed++) {
     const party = partyFor(cell.recipe, seed)
     res.pieces += party.pieces
@@ -695,6 +700,25 @@ lines.push('## 4. Boss floors: rounds to kill and the arena (07 §8.2)', '', '*F
     lines.push('', "**The back row** (07 §2.8: behind Vexa's barricade and around the throne only bows, spells and reach weapons hit it): the back-row adds' share of the damage the enemy side dealt, and the fights in which nobody ever hit them.", '')
     table(['Boss', 'Fights', "Back-row adds' share of the enemies' damage", 'Fights with the back row never hit'], [...back.entries()].sort().map(([k, v]) => [content.monsters.get(k)?.name ?? k, String(v.fights), pc(pctOf(v.backDamage, v.enemyDamage)), pc(pctOf(v.untouched, v.fights))]))
   }
+  // Who deals a boss fight's damage (Phase 8): the boss itself against its adds and arena calls — the share a boss's own
+  // Attack can move. Pooled over the judged party's cells (Normal, the main player).
+  const dealt = new Map<string, Map<string, number>>()
+  for (const r of RESULTS) {
+    if (r.cell.difficulty !== 'normal' || r.cell.policy !== MAIN_POLICY) continue
+    for (const [boss, by] of r.bossDamage) {
+      const acc = dealt.get(boss) ?? new Map<string, number>()
+      for (const [k, v] of by) acc.set(k, (acc.get(k) ?? 0) + v)
+      dealt.set(boss, acc)
+    }
+  }
+  if (dealt.size) {
+    lines.push('', "**Who deals a boss fight's damage** (the enemy side's damage to the party, by who dealt it — the boss itself, then its adds and arena calls, largest first):", '')
+    table(['Boss', "The boss's own share", 'The adds (share of the damage)'], [...dealt.entries()].sort().map(([boss, by]) => {
+      const total = [...by.values()].reduce((a, b) => a + b, 0)
+      const adds = [...by.entries()].filter(([k]) => k !== '(the boss)').sort((a, b) => b[1] - a[1])
+      return [content.monsters.get(boss)?.name ?? boss, pc(pctOf(by.get('(the boss)') ?? 0, total)), adds.map(([k, v]) => `${content.monsters.get(k)?.name ?? k} ${pc(pctOf(v, total))}`).join(' · ') || '-']
+    }))
+  }
 }
 
 // 4b. What brings heroes down.
@@ -737,15 +761,21 @@ lines.push('', '## 4b. What brings heroes down', '', '*Judged cells only (the ' 
 }
 
 // 4. Fight length.
-lines.push('', '## 5. Fight length (rounds) by fight kind', '')
+lines.push('', '## 5. Fight length (rounds) by fight kind', '', "*A boss fight is judged on the fights the party won — its rounds to kill (§4): a lost boss fight runs on while the heroes fall one by one, which is not the length 03 §3.6's 10–15 describes (Phase 8). Every boss fight's mean stays beside it.*", '')
 {
   const rows: string[][] = []
   for (const r of RESULTS) {
     const by = (k: string) => r.delves.flatMap((d) => d.rounds[k] ?? [])
-    rows.push([label(r.cell), ...['fight', 'elite', 'boss', 'hunter'].map((k) => `${f1(mean(by(k)))} (n=${by(k).length})`), f1(mean([...by('trap'), ...by('curio')]))])
-    if (judged(r.cell)) for (const [k, [lo, hi]] of Object.entries(TARGETS.rounds)) if (by(k).length) judge(`${label(r.cell)}: ${k} rounds`, mean(by(k)), lo, hi)
+    const won = r.bossFights.filter((b) => b.outcome === 'victory').map((b) => b.rounds)
+    rows.push([label(r.cell), ...['fight', 'elite'].map((k) => `${f1(mean(by(k)))} (n=${by(k).length})`), `${f1(mean(won))} (n=${won.length}; every fight ${f1(mean(by('boss')))})`, `${f1(mean(by('hunter')))} (n=${by('hunter').length})`, f1(mean([...by('trap'), ...by('curio')]))])
+    if (judged(r.cell))
+      for (const [k, [lo, hi]] of Object.entries(TARGETS.rounds)) {
+        if (k === 'boss') {
+          if (won.length) judge(`${label(r.cell)}: boss rounds to kill`, mean(won), lo, hi)
+        } else if (by(k).length) judge(`${label(r.cell)}: ${k} rounds`, mean(by(k)), lo, hi)
+      }
   }
-  table(['Recipe', 'fight', 'elite', 'boss', 'hunter', 'trap/curio'], rows)
+  table(['Recipe', 'fight', 'elite', 'boss won (every boss fight)', 'hunter', 'trap/curio'], rows)
 }
 
 // 5. Economy and wear.

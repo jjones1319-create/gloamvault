@@ -25,7 +25,7 @@
   gap: 6px;
   padding: calc(var(--sat, 0px) + 6px) calc(var(--sar, 0px) + 8px) calc(var(--sab, 0px) + 6px) calc(var(--sal, 0px) + 8px);
   pointer-events: none;
-  font-size: 14px;
+  font-size: calc(14px * var(--ts));
   line-height: 1.25;
   color: var(--ink);
 }
@@ -61,7 +61,7 @@
   overflow: hidden;
 }
 .fx-strip__round {
-  font-size: 12px;
+  font-size: calc(12px * var(--ts));
   font-weight: 700;
   color: var(--ink-dim);
   white-space: nowrap;
@@ -76,7 +76,8 @@
   border-radius: 8px;
   display: grid;
   place-items: center;
-  font-size: 11px;
+  /* Phase 8: two or three letters in a fixed square (the names are on the cards): they grow at most 10%. */
+  font-size: calc(11px * min(var(--ts), 1.1));
   font-weight: 800;
   letter-spacing: -0.02em;
   border: 1px solid transparent;
@@ -121,7 +122,7 @@
 .fx-strip__chip--now {
   width: 36px;
   height: 36px;
-  font-size: 13px;
+  font-size: calc(13px * min(var(--ts), 1.1));
   border-radius: 10px;
   box-shadow: 0 0 0 2px #fff3dc, 0 0 12px rgba(255, 220, 160, 0.55);
   margin-right: 4px;
@@ -145,7 +146,7 @@
   border: 1px solid var(--fx-line);
   background: var(--fx-panel);
   color: var(--ink-dim);
-  font-size: 13px;
+  font-size: calc(13px * var(--ts));
   font-weight: 700;
   cursor: pointer;
   white-space: nowrap;
@@ -186,7 +187,7 @@
 }
 .fx-banner--turn {
   padding: 6px 22px;
-  font-size: 21px;
+  font-size: calc(21px * var(--ts));
   font-weight: 800;
   letter-spacing: 0.02em;
   color: #fff6e6;
@@ -201,7 +202,7 @@
 .fx-banner--aim {
   padding: 0 4px 0 16px;
   min-height: 46px;
-  font-size: 16px;
+  font-size: calc(16px * var(--ts));
   font-weight: 700;
   color: #ffe9c7;
   background: rgba(42, 30, 20, 0.92);
@@ -209,7 +210,7 @@
 }
 .fx-banner--acting {
   padding: 4px 16px;
-  font-size: 15px;
+  font-size: calc(15px * var(--ts));
   font-weight: 600;
   color: var(--ink-dim);
   background: var(--fx-panel);
@@ -223,7 +224,7 @@
   background: #3a2b1f;
   color: var(--ink);
   font-weight: 700;
-  font-size: 14px;
+  font-size: calc(14px * var(--ts));
   cursor: pointer;
 }
 .fx-tip {
@@ -233,7 +234,7 @@
   background: rgba(36, 29, 42, 0.95);
   border: 1px solid var(--fx-line);
   color: var(--ink);
-  font-size: 13px;
+  font-size: calc(13px * var(--ts));
   line-height: 1.3;
   text-align: center;
   cursor: pointer;
@@ -258,8 +259,8 @@
   border-color: rgba(255, 179, 71, 0.4);
 }
 .fx-feed__line {
-  font-size: 13px;
-  line-height: 18px;
+  font-size: calc(13px * var(--ts));
+  line-height: calc(18px * var(--ts));
   color: var(--ink-dim);
   white-space: nowrap;
   overflow: hidden;
@@ -268,7 +269,7 @@
 .fx-feed__line--new {
   color: var(--ink);
   font-weight: 700;
-  font-size: 14px;
+  font-size: calc(14px * var(--ts));
   white-space: normal;
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -286,8 +287,8 @@
   border-radius: 8px;
   background: #2a1e14;
   border: 1px solid rgba(255, 179, 71, 0.5);
-  line-height: 16px;
-  font-size: 10px;
+  line-height: calc(16px * var(--ts));
+  font-size: calc(10px * var(--ts));
   color: var(--fx-hero);
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -339,7 +340,7 @@
 }
 .fx-card__name {
   font-weight: 700;
-  font-size: 14px;
+  font-size: calc(14px * var(--ts));
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -349,23 +350,23 @@
 .fx-card__num {
   flex: none;
   font-weight: 800;
-  font-size: 14px;
+  font-size: calc(14px * var(--ts));
   color: #ffd27a;
 }
 .fx-foes__row {
   flex: none;
-  font-size: 10px;
+  font-size: calc(10px * var(--ts));
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--ink-dim);
   padding: 0 4px;
-  line-height: 13px;
+  line-height: calc(13px * var(--ts));
   text-shadow: 0 1px 2px #000;
 }
 .fx-card__row {
   flex: none;
-  font-size: 10px;
+  font-size: calc(10px * var(--ts));
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -373,7 +374,7 @@
   padding: 0 4px;
   border-radius: 4px;
   border: 1px solid var(--fx-line);
-  line-height: 14px;
+  line-height: calc(14px * var(--ts));
 }
 .fx-card--active {
   border-color: var(--fx-hero);
@@ -437,9 +438,9 @@
 /* states */
 .fx-badge {
   flex: none;
-  font-size: 10px;
+  font-size: calc(10px * var(--ts));
   font-weight: 800;
-  line-height: 15px;
+  line-height: calc(15px * var(--ts));
   padding: 0 5px;
   border-radius: 5px;
   text-transform: uppercase;
@@ -486,15 +487,15 @@
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  height: 18px;
+  height: calc(18px * var(--ts));
   padding: 0 5px;
   border-radius: 9px;
   border: 1px solid var(--tint);
   background: rgba(0, 0, 0, 0.5);
   color: #f1ebe0;
-  font-size: 11px;
+  font-size: calc(11px * var(--ts));
   font-weight: 600;
-  line-height: 16px;
+  line-height: calc(16px * var(--ts));
   white-space: nowrap;
   cursor: pointer;
 }
@@ -511,15 +512,15 @@
   --tint: #ff7a6e;
 }
 .fx-chip__stacks {
-  font-size: 10px;
+  font-size: calc(10px * var(--ts));
   color: #ffd27a;
 }
 .fx-chip__turns {
   font-style: normal;
-  font-size: 10px;
-  min-width: 13px;
-  height: 13px;
-  line-height: 13px;
+  font-size: calc(10px * var(--ts));
+  min-width: calc(13px * var(--ts));
+  height: calc(13px * var(--ts));
+  line-height: calc(13px * var(--ts));
   border-radius: 7px;
   text-align: center;
   background: rgba(255, 255, 255, 0.16);
@@ -533,9 +534,9 @@
   gap: 3px;
 }
 .fx-affix {
-  font-size: 10px;
+  font-size: calc(10px * var(--ts));
   font-weight: 700;
-  line-height: 15px;
+  line-height: calc(15px * var(--ts));
   padding: 0 5px;
   border-radius: 5px;
   color: #ffe9a8;
@@ -557,7 +558,7 @@
 .fx-pet__name {
   flex: 0 1 auto;
   min-width: 0;
-  font-size: 12px;
+  font-size: calc(12px * var(--ts));
   font-weight: 600;
   color: #ffe6a8;
   white-space: nowrap;
@@ -569,7 +570,7 @@
 }
 .fx-pet__stance {
   flex: none;
-  font-size: 10px;
+  font-size: calc(10px * var(--ts));
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--ink-dim);
@@ -583,12 +584,12 @@
 }
 .fx-party--tight .fx-card > .meter:not(.meter--compact),
 .fx-foes--tight .fx-card > .meter:not(.meter--compact) {
-  height: 16px;
+  height: calc(16px * var(--ts));
 }
 .fx-party--tight .fx-card > .meter:not(.meter--compact) .meter__text,
 .fx-foes--tight .fx-card > .meter:not(.meter--compact) .meter__text {
-  font-size: 11px;
-  line-height: 14px;
+  font-size: calc(11px * var(--ts));
+  line-height: calc(14px * var(--ts));
 }
 .fx-party--tight .fx-card--pet {
   min-height: 18px;
@@ -608,7 +609,7 @@
   justify-content: center;
 }
 .fx-float {
-  font-size: 19px;
+  font-size: calc(19px * var(--ts));
   font-weight: 900;
   line-height: 1;
   text-shadow:
@@ -624,7 +625,7 @@
 }
 .fx-float--crit {
   color: #ffd34d;
-  font-size: 22px;
+  font-size: calc(22px * var(--ts));
 }
 .fx-float--heal {
   color: #7bea8c;
@@ -632,15 +633,41 @@
 .fx-float--miss {
   color: #e8e2d6;
   font-style: italic;
-  font-size: 16px;
+  font-size: calc(16px * var(--ts));
 }
 .fx-float--status {
   color: #d8c4ff;
-  font-size: 13px;
+  font-size: calc(13px * var(--ts));
 }
 .fx-float--info {
   color: #a9cdff;
-  font-size: 13px;
+  font-size: calc(13px * var(--ts));
+}
+/* Phase 8: words (a status taken, a tell's hint, Guard) rise over the card's meter, below its name — a long one like
+   "Chant rising" crossed the name as it rose with the numbers. They show on a dark pill and climb only a little. */
+.fx-float--status,
+.fx-float--info {
+  padding: 1px 6px;
+  border-radius: 8px;
+  background: rgba(10, 8, 12, 0.78);
+  animation-name: fx-rise-word;
+}
+@keyframes fx-rise-word {
+  0% {
+    transform: translateY(14px);
+    opacity: 0;
+  }
+  15% {
+    transform: translateY(12px);
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(6px);
+    opacity: 0;
+  }
 }
 
 /* ---------- commands ---------- */
@@ -665,7 +692,7 @@
   border: 1px solid var(--fx-line);
   background: rgba(30, 25, 34, 0.94);
   color: var(--ink);
-  font-size: 14px;
+  font-size: calc(14px * var(--ts));
   font-weight: 700;
   line-height: 1.15;
   display: flex;
@@ -703,7 +730,7 @@
   display: flex;
   gap: 6px;
   max-width: 100%;
-  font-size: 11px;
+  font-size: calc(11px * var(--ts));
   font-weight: 600;
   color: var(--ink-dim);
   white-space: nowrap;
@@ -716,7 +743,7 @@
 }
 .fx-act--attack {
   flex: 0 0 104px;
-  font-size: 16px;
+  font-size: calc(16px * var(--ts));
   border-color: #8a5420;
   background: linear-gradient(180deg, #44301b, #24180e);
 }
@@ -726,7 +753,7 @@
   align-items: flex-start;
   text-align: left;
   padding: 4px 10px;
-  font-size: 15px;
+  font-size: calc(15px * var(--ts));
   border-top: 3px solid #6b6170;
 }
 .fx-act--skill:has(.fx-cost--stamina) {
@@ -768,7 +795,7 @@
 .fx-act--side {
   flex: 1 1 0;
   padding: 2px;
-  font-size: 13px;
+  font-size: calc(13px * var(--ts));
   border-radius: 10px;
 }
 .fx-act--side .fx-act__sub--reason {
@@ -810,19 +837,19 @@
   color: var(--ember);
 }
 .fx-sheet__desc {
-  font-size: 13px;
+  font-size: calc(13px * var(--ts));
   color: var(--ink-dim);
 }
 .fx-sheet__note,
 .fx-sheet__empty,
 .fx-sheet__text {
-  font-size: 13px;
+  font-size: calc(13px * var(--ts));
   color: var(--ink-dim);
   margin: 8px 0 0;
 }
 .fx-sheet__text {
   color: var(--ink);
-  font-size: 15px;
+  font-size: calc(15px * var(--ts));
 }
 
 /* The kit's modal card grows past a 412 px screen (its max-height: 100% does not bind in the auto grid row, and the
@@ -844,13 +871,13 @@
 .fx-rule__words,
 .fx-rule__note,
 .fx-rule__label {
-  font-size: 13px;
+  font-size: calc(13px * var(--ts));
   color: var(--ink-dim);
   margin: 4px 0 6px;
 }
 .fx-rule__help code {
   color: var(--ink);
-  font-size: 12px;
+  font-size: calc(12px * var(--ts));
 }
 .fx-rule__text {
   width: 100%;
@@ -861,33 +888,33 @@
   border: 1px solid var(--line);
   background: #120f14;
   color: var(--ink);
-  font: 14px/1.35 ui-monospace, Consolas, monospace;
+  font: calc(14px * var(--ts)) / 1.35 ui-monospace, Consolas, monospace;
   user-select: text;
 }
 .fx-rule__errors {
   margin: 6px 0;
   padding-left: 18px;
   color: #ff8f80;
-  font-size: 13px;
+  font-size: calc(13px * var(--ts));
 }
 .fx-rule__ok {
   margin: 6px 0;
   color: var(--good);
-  font-size: 13px;
+  font-size: calc(13px * var(--ts));
 }
 .fx-rule__warn {
   margin: 4px 0;
   color: #e6b54a;
-  font-size: 13px;
+  font-size: calc(13px * var(--ts));
 }
 .fx-rule__read {
   margin: 0 0 6px;
   padding-left: 20px;
-  font-size: 13px;
+  font-size: calc(13px * var(--ts));
 }
 .fx-rule__words summary {
   min-height: 32px;
-  line-height: 32px;
+  line-height: calc(32px * var(--ts));
   cursor: pointer;
   color: var(--ember);
 }
@@ -959,7 +986,7 @@ html[data-reduce-motion='1'] .fx-hud {
   flex: none;
   padding: 4px 10px;
   border-radius: 999px;
-  font-size: 14px;
+  font-size: calc(14px * var(--ts));
   font-weight: 700;
   letter-spacing: 0.02em;
   background: rgba(0, 0, 0, 0.45);

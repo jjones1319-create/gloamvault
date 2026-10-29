@@ -1,21 +1,55 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <title>Gloamvault</title>
+  <!-- Gloamvault's emblem (Phase 8, drawn for this game): a lantern hanging in the gate arch of a keep, its light pooling in the doorway. -->
   <defs>
-    <radialGradient id="glow" cx="50%" cy="42%" r="55%">
-      <stop offset="0%" stop-color="#ffb347" stop-opacity="0.95"/>
-      <stop offset="45%" stop-color="#c2410c" stop-opacity="0.55"/>
-      <stop offset="100%" stop-color="#120f14" stop-opacity="0"/>
-    </radialGradient>
     <linearGradient id="stone" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#4a4650"/>
-      <stop offset="100%" stop-color="#1f1b24"/>
+      <stop offset="0" stop-color="#686170"/>
+      <stop offset="0.55" stop-color="#48424f"/>
+      <stop offset="1" stop-color="#2b2632"/>
     </linearGradient>
+    <linearGradient id="arch" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8b8292"/>
+      <stop offset="1" stop-color="#57505e"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="256" cy="304" r="190" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffd27a" stop-opacity="0.95"/>
+      <stop offset="0.3" stop-color="#ff9a3c" stop-opacity="0.55"/>
+      <stop offset="0.75" stop-color="#7a2e08" stop-opacity="0.25"/>
+      <stop offset="1" stop-color="#0b090d" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff6dc"/>
+      <stop offset="0.5" stop-color="#ffcf73"/>
+      <stop offset="1" stop-color="#ff9a3c"/>
+    </linearGradient>
+    <clipPath id="doorway">
+      <path d="M166 470 V304 A90 90 0 0 1 346 304 V470 Z"/>
+    </clipPath>
   </defs>
   <rect width="512" height="512" rx="96" fill="#120f14"/>
-  <circle cx="256" cy="214" r="190" fill="url(#glow)"/>
-  <path d="M96 440 V250 a160 160 0 0 1 320 0 V440 Z" fill="url(#stone)" stroke="#0b090d" stroke-width="10" stroke-linejoin="round"/>
-  <path d="M140 440 V262 a116 116 0 0 1 232 0 V440 Z" fill="#0b090d"/>
-  <rect x="244" y="300" width="24" height="120" rx="8" fill="#6b4a2b" stroke="#0b090d" stroke-width="6"/>
-  <path d="M256 196 c-38 44 -44 74 -22 98 c6 -18 14 -28 22 -34 c8 6 16 16 22 34 c22 -24 16 -54 -22 -98 Z" fill="#ffb347"/>
-  <path d="M256 226 c-20 26 -22 44 -10 58 c3 -10 6 -16 10 -20 c4 4 7 10 10 20 c12 -14 10 -32 -10 -58 Z" fill="#fff1c7"/>
-  <path d="M232 92 h48 l10 36 h-68 Z" fill="#8a8f98" stroke="#0b090d" stroke-width="6" stroke-linejoin="round"/>
+  <!-- the keep: a gate tower with four merlons -->
+  <path fill="url(#stone)" stroke="#0b090d" stroke-width="10" stroke-linejoin="round"
+    d="M76 470 V112 H136 V152 H180 V112 H236 V152 H276 V112 H332 V152 H376 V112 H436 V470 Z"/>
+  <!-- two courses of the wall -->
+  <path fill="none" stroke="#0b090d" stroke-width="7" stroke-linecap="round" opacity="0.6" d="M76 198 H436 M76 392 H130 M382 392 H436"/>
+  <!-- the arch: a ring of stones round the doorway, a keystone at its crown -->
+  <path fill="url(#arch)" stroke="#0b090d" stroke-width="9" stroke-linejoin="round"
+    d="M130 470 V304 A126 126 0 0 1 382 304 V470 H346 V304 A90 90 0 0 0 166 304 V470 Z"/>
+  <path fill="none" stroke="#0b090d" stroke-width="7" stroke-linecap="round"
+    d="M130 304 H166 M346 304 H382 M130 392 H166 M346 392 H382 M150 238 L181 256 M362 238 L331 256 M192 196 L211 226 M320 196 L301 226"/>
+  <path d="M234 172 H278 L272 216 H240 Z" fill="#9c93a3" stroke="#0b090d" stroke-width="8" stroke-linejoin="round"/>
+  <!-- the doorway: dark, filled with the lantern's light -->
+  <path d="M166 470 V304 A90 90 0 0 1 346 304 V470 Z" fill="#0b090d"/>
+  <g clip-path="url(#doorway)">
+    <rect x="160" y="200" width="192" height="280" fill="url(#glow)"/>
+    <ellipse cx="256" cy="470" rx="88" ry="20" fill="#ffb347" opacity="0.5"/>
+  </g>
+  <!-- the lantern: chain, ring, cap, glowing body, base -->
+  <path d="M256 216 V236" stroke="#3a2a1e" stroke-width="9" stroke-linecap="round"/>
+  <circle cx="256" cy="242" r="9" fill="none" stroke="#c98a2e" stroke-width="6"/>
+  <path d="M228 270 L241 252 H271 L284 270 Z" fill="#c98a2e" stroke="#2a1a0c" stroke-width="6" stroke-linejoin="round"/>
+  <rect x="218" y="270" width="76" height="92" rx="13" fill="url(#glass)" stroke="#2a1a0c" stroke-width="8"/>
+  <path d="M256 274 V358 M220 316 H292" stroke="#8a5a22" stroke-width="7"/>
+  <ellipse cx="256" cy="316" rx="15" ry="21" fill="#fffaf0" opacity="0.9"/>
+  <path d="M224 362 H288 L278 378 H234 Z" fill="#c98a2e" stroke="#2a1a0c" stroke-width="6" stroke-linejoin="round"/>
 </svg>

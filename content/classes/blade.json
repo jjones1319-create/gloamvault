@@ -93,7 +93,7 @@
     "blade-bone-knights-cleave",
     "blade-ghouls-grasp"
   ],
-  "aiRuleDefault": "IF self HP < 30% THEN item small hp potion on self; IF enemy status bleed THEN twin cut on weakest enemy; ELSE open vein on front enemy",
+  "aiRuleDefault": "IF self HP < 30% THEN item small hp potion on self; IF round = 1 THEN item hourglass shard; IF enemies count > 2 THEN item the grinning mask; IF enemy status bleed THEN twin cut on weakest enemy; ELSE open vein on front enemy",
   "visual": {
     "gearSetId": "blade-copper-mail",
     "palette": [

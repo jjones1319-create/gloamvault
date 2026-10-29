@@ -2,6 +2,7 @@ import type { Content } from './content.ts'
 import { hiddenFindChance } from './detection.ts'
 import { buildGradeTable, rollGrade, type ShapeLine } from './grades.ts'
 import { createItemInstance, stoneFamilyFor, type StoneFamily } from './items.ts'
+import { partyScale, scaledCount } from './monsters.ts'
 import { shiftChestLines } from './pacts.ts'
 import type { Rng } from './rng.ts'
 import { roundHalfUp } from './stats.ts'
@@ -167,6 +168,12 @@ export interface FightLootInput {
   luck: number
   knobs?: { goldPercent?: number }
   isMonsterRoom?: boolean
+  /**
+   * The party size the fight's pack was scaled for (03 §11.2's count rule; the delve's heroes). Its count scale is undone
+   * on the roles the rule scales, so a pack pays what the 3-hero table it was drawn from pays (Phase 8, Proposed).
+   * Absent: no correction (the Phase 7 rule).
+   */
+  partySize?: number
 }
 
 export interface PartDrop {
@@ -194,15 +201,33 @@ function championGoldMultiplier(content: Content, m: FightMonster): number {
   return best > 0 ? best : LOOT_RULES.championGoldMultiplierDefault
 }
 
-/** Gold per fight (06 §8.5): Σ(baseline × gold×) × (1 + 0.1 per affix) × 1.25 in a Monster room × the preset's gold knob. */
+/** True when 03 §11.2's count rule scales a role (monsters.ts scaledCount: Fodder and Elites, never a Special, a Monster, a boss or a hunter). */
+function countRuleScales(role: string): boolean {
+  return scaledCount(10, 50, role) !== 10
+}
+
+/**
+ * Gold per fight (06 §8.5): Σ(baseline × gold×) × (1 + 0.1 per affix) × 1.25 in a Monster room × the preset's gold knob.
+ * The table's gold range is a 3-hero pack's (an ordinary pack is three, `encounterTypicalSize`). Phase 8 (Proposed, a
+ * formula change): the party-size count rule (03 §11.2: ×0.6 / 0.8 / 1.0 / 1.6 monsters for 1–4 heroes) is undone on the
+ * roles it scales — Fodder and Elites; a Special, a Monster, a boss and a hunter come at the table's count for any party —
+ * so a four's fight pays like a trio's and a solo's no less (06 §8.5: "a delve … lands on R", one R for every party;
+ * D-128's report §13.3.4: fours found about 1.4× a solo's gold). The preset's count knob is not undone: Hard's extra
+ * monsters pay.
+ */
 export function fightGold(content: Content, rng: Rng, table: LootTableDef, input: FightLootInput): number {
   const fightRoll = rng.range(table.goldRange.min, table.goldRange.max)
-  let multiplierSum = 0
+  const countPct = input.partySize !== undefined ? Math.max(1, partyScale(content.tuning, input.partySize).countPercent) : 100
+  let fixedSum = 0
+  let scaledSum = 0
   let affixes = 0
   for (const m of input.monsters) {
-    multiplierSum += m.def.goldMultiplier * championGoldMultiplier(content, m)
+    const g = m.def.goldMultiplier * championGoldMultiplier(content, m)
+    if (countRuleScales(m.def.role)) scaledSum += g
+    else fixedSum += g
     affixes += m.eliteAffixIds.length
   }
+  const multiplierSum = fixedSum + (scaledSum * 100) / countPct
   const affixPct = 100 + LOOT_RULES.goldPercentPerAffix * affixes
   const roomPct = input.isMonsterRoom ? LOOT_RULES.monsterRoomGoldPercent : 100
   const knobPct = input.knobs?.goldPercent ?? 100

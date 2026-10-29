@@ -7,7 +7,7 @@ import { resolveMonsterVariant } from '../monsters/manifest.ts'
 import { monsterLibrary, type PropModel } from '../monsters/model.ts'
 import type { FlamePoint, MotePoint } from '../vfx/layer.ts'
 import { trs } from './builder.ts'
-import type { LightPoint, StaticRoom, TemplateLike } from './dress.ts'
+import type { DoorPanel, LightPoint, StaticRoom, TemplateLike } from './dress.ts'
 import { propYaw, rotatePoint, type Mark } from './layout.ts'
 
 /**
@@ -190,9 +190,14 @@ interface Memory {
   braziers: boolean[] | null
   /** The boss's monster id and phase (the King's throne follows it). */
   boss: { id: string; phase: number } | null
+  /** Phase 8: the Vigil's secret doors stand open (the sim's `doorsOpen`: the Warden's phase 2, or the candles). */
+  doors: boolean
 }
 
-const EMPTY_MEMORY: Memory = { candles: null, tide: null, braziers: null, boss: null }
+const EMPTY_MEMORY: Memory = { candles: null, tide: null, braziers: null, boss: null, doors: false }
+
+const UP_AXIS = new THREE.Vector3(0, 1, 0)
+const sPanelTurn = new THREE.Quaternion()
 
 /** What changed for the room scene: the flames (and lights and motes) to re-send, the marks to re-frame on. */
 export interface ArenaChange {
@@ -227,6 +232,9 @@ export class ArenaDressing {
   private kitWater: THREE.Object3D[] = []
   private water: { mesh: THREE.Mesh; geometry: THREE.BufferGeometry; north: number; shore0: number; wall: number } | null = null
   private tideShown = 0
+  /** Phase 8: the room's swinging door panels and how far open they stand (0 shut, 1 open). */
+  private panels: DoorPanel[] = []
+  private doorShown = 0
   private seat: THREE.Object3D | null = null
   private extra: KitBuild | null = null
   private throne: { model: PropModel | null } | null = null
@@ -240,7 +248,10 @@ export class ArenaDressing {
 
   setReduceMotion(on: boolean): void {
     this.reduceMotion = on
-    if (on) this.applyTide(this.tideTarget())
+    if (on) {
+      this.applyTide(this.tideTarget())
+      this.applyDoors(this.doorTarget())
+    }
   }
 
   /**
@@ -300,6 +311,7 @@ export class ArenaDressing {
       this.water = this.buildWater(env.materials.water, halfW, -halfD, shore0, halfD)
     }
     this.seat = room.kit?.group.getObjectByName('vlt_throne_hollow.seat') ?? null
+    this.panels = room.doorPanels ?? []
     // The tap room's dais and the Captain's chair (07 §2.2), while the template does not place them itself.
     if (this.templateId === 'cel-t-tap-room' && env && !placed.some((p) => p.meshId === 'cel_dais')) {
       const kb = new KitRoomBuilder(env.set, env.materials)
@@ -330,6 +342,7 @@ export class ArenaDressing {
         tide: arena.tide ? { level: arena.tide.level, max: arena.tide.max } : null,
         braziers: arena.props.some((p) => p.kind === 'brazier') ? braziersLit(arena.props) : null,
         boss: { id: arena.bossId, phase: (boss?.monster?.phaseIndex ?? arena.phase - 1) + 1 },
+        doors: arena.doorsOpen === true,
       }
     }
     const memoryKey = JSON.stringify(this.memory)
@@ -397,6 +410,9 @@ export class ArenaDressing {
 
   /** Eases the tide (an animation frame; never called with Reduce motion). */
   frame(dt: number): void {
+    // The Vigil's secret doors grind open over a second.
+    const doors = this.doorTarget()
+    if (this.panels.length && Math.abs(doors - this.doorShown) > 0.002) this.applyDoors(Math.abs(doors - this.doorShown) < 0.01 ? doors : this.doorShown + (doors - this.doorShown) * (1 - Math.exp(-dt / 300)))
     const target = this.tideTarget()
     if (Math.abs(target - this.tideShown) < 0.002) {
       if (this.tideShown !== target) this.applyTide(target)
@@ -444,8 +460,21 @@ export class ArenaDressing {
     const boss = this.memory.boss
     // The empty iron seat goes while the King's own throne is drawn (under him, or risen on the dais).
     if (this.seat) this.seat.visible = !(boss && this.templateId === 'vlt-t-throne')
-    if (instant || this.reduceMotion) this.applyTide(this.tideTarget())
+    if (instant || this.reduceMotion) {
+      this.applyTide(this.tideTarget())
+      this.applyDoors(this.doorTarget())
+    }
     this.syncThrone()
+  }
+
+  private doorTarget(): number {
+    return this.memory.doors ? 1 : 0
+  }
+
+  /** The secret doors' panels turned about their jambs, `k` of the way open. */
+  private applyDoors(k: number): void {
+    this.doorShown = k
+    for (const p of this.panels) p.object.quaternion.copy(p.rest).multiply(sPanelTurn.setFromAxisAngle(UP_AXIS, p.open * k))
   }
 
   /** The water sheet at a tide step (a fraction of the way to the top): hidden at 0, where the template's own shows. */
@@ -553,6 +582,8 @@ export class ArenaDressing {
     this.kitWater = []
     this.seat = null
     this.tideShown = 0
+    this.panels = []
+    this.doorShown = 0
     this.group.clear()
   }
 }

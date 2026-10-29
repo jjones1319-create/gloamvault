@@ -135,6 +135,8 @@ interface View {
   fleeing: boolean
   /** How far its tell shows (0–1), eased toward the state's `tell`. */
   tell: number
+  /** Phase 8: how high its model reaches above its mark as posed when it arrived (a seated king's raised blade). */
+  topM: number
 }
 
 const STATUS_TINT: Record<string, number> = {
@@ -204,8 +206,16 @@ function actorGeometry(kit: Kit, look: ActorLook): THREE.BufferGeometry {
 const MAX_BARS = 40
 const BAR_W = 0.9
 const BAR_H = 0.11
-const PARTY_BAR = new THREE.Color(0x5fc46a)
-const ENEMY_BAR = new THREE.Color(0xe0483a)
+/**
+ * The 3D HP bars' colours by palette (Settings → Colours, Phase 8; the HUD's are in ui/styles/a11y.css): friends and
+ * foes apart for every kind of colour vision.
+ */
+export const BAR_COLOURS = {
+  standard: { party: 0x5fc46a, enemy: 0xe0483a },
+  redGreen: { party: 0xffc04a, enemy: 0x8a7dff },
+  blueYellow: { party: 0x4fe0c8, enemy: 0xff5a6e },
+} as const
+export type BarPalette = keyof typeof BAR_COLOURS
 const DOWN_TINT = new THREE.Color(0.48, 0.5, 0.58)
 const DEAD_TINT = new THREE.Color(0.3, 0.3, 0.34)
 const WHITE = new THREE.Color(1, 1, 1)
@@ -234,6 +244,53 @@ const DEATH_REST_MS = 650
 const TELL_RISE_MS = 900
 const TELL_FALL_MS = 300
 
+/**
+ * Phase 8: a model's meshes are never frustum-culled (actors stand in the frame), and a skinned one takes its bind
+ * pose's bounds — three.js would otherwise skin every vertex on the CPU to find them the first time it sorts the mesh
+ * (10–55 ms a monster). The bounds only place the mesh in the draw order, so the rest pose is close enough.
+ */
+export function standInBounds(o: THREE.Object3D): void {
+  o.frustumCulled = false
+  const s = o as THREE.SkinnedMesh
+  if (!s.isSkinnedMesh) return
+  const g = s.geometry
+  if (s.boundingSphere === null) {
+    if (!g.boundingSphere) g.computeBoundingSphere()
+    if (g.boundingSphere) s.boundingSphere = g.boundingSphere.clone()
+  }
+  if (s.boundingBox === null) {
+    if (!g.boundingBox) g.computeBoundingBox()
+    if (g.boundingBox) s.boundingBox = g.boundingBox.clone()
+  }
+}
+
+const sReach = new THREE.Vector3()
+
+/**
+ * How high a model reaches above its stand (metres) as it is posed now: the highest of a sample of its skinned vertices
+ * (about 400 a mesh; once, when the model arrives). The framing keeps it in view — the Hollow King's blade, raised on
+ * his throne, stood 1.2 m above the height the fit allowed for him, under the HUD.
+ */
+export function reachAbove(model: THREE.Object3D, stand: THREE.Object3D): number {
+  stand.updateMatrixWorld(true)
+  const base = new THREE.Vector3().setFromMatrixPosition(stand.matrixWorld).y
+  let top = -Infinity
+  model.traverse((o) => {
+    const m = o as THREE.SkinnedMesh
+    if (!m.isMesh || !m.visible || /outline/.test(m.name)) return
+    const pos = m.geometry.getAttribute('position')
+    if (!pos) return
+    const step = Math.max(1, Math.floor(pos.count / 400))
+    for (let i = 0; i < pos.count; i += step) {
+      if (m.isSkinnedMesh) m.getVertexPosition(i, sReach)
+      else sReach.fromBufferAttribute(pos, i)
+      sReach.applyMatrix4(m.matrixWorld)
+      if (sReach.y > top) top = sReach.y
+    }
+  })
+  return Number.isFinite(top) ? Math.max(0, top - base) : 0
+}
+
 export class ActorLayer {
   readonly group = new THREE.Group()
   private readonly views = new Map<string, View>()
@@ -251,6 +308,8 @@ export class ActorLayer {
   private lastCueAt = -1e9
   private flushTimer: ReturnType<typeof setTimeout> | null = null
   private reduceMotion = false
+  private readonly partyBar = new THREE.Color(BAR_COLOURS.standard.party)
+  private readonly enemyBar = new THREE.Color(BAR_COLOURS.standard.enemy)
   private readonly centre = new THREE.Vector3()
   private centreKnown = false
   private readonly fx: FxSink | null
@@ -261,6 +320,11 @@ export class ActorLayer {
   onChange: (() => void) | null = null
   /** Called when a model arrives whose height differs from the stand-in's (the scene re-frames once they settle). */
   onModel: (() => void) | null = null
+  /**
+   * Compiles a model's shaders before it replaces its capsule (Phase 8: Stage.warm), so a fight's first frame does not
+   * stall on them; none in the node tests.
+   */
+  warm: ((root: THREE.Object3D) => Promise<void>) | null = null
 
   private readonly kit: Kit
   private readonly camera: THREE.Camera
@@ -278,7 +342,7 @@ export class ActorLayer {
     this.barFill.renderOrder = 21
     this.barBg.frustumCulled = false
     this.barFill.frustumCulled = false
-    this.barFill.setColorAt(0, PARTY_BAR)
+    this.barFill.setColorAt(0, this.partyBar)
     const shadowGeo = new THREE.PlaneGeometry(1, 1)
     shadowGeo.rotateX(-Math.PI / 2)
     const shadowMat = new THREE.MeshBasicMaterial({ color: 0x000000, map: kit.tex.blob, transparent: true, opacity: 0.55, depthWrite: false })
@@ -304,6 +368,14 @@ export class ActorLayer {
 
   setReduceMotion(on: boolean): void {
     this.reduceMotion = on
+  }
+
+  /** The bars' colours for a palette (Settings → Colours). */
+  setPalette(p: BarPalette): void {
+    const c = BAR_COLOURS[p] ?? BAR_COLOURS.standard
+    this.partyBar.setHex(c.party)
+    this.enemyBar.setHex(c.enemy)
+    this.apply()
   }
 
   private clearInstances(): void {
@@ -364,6 +436,7 @@ export class ActorLayer {
       dyingMs: 0,
       fleeing: false,
       tell: s.tell ? 1 : 0,
+      topM: 0,
     }
     if (s.gone) mat.transparent = true
     this.views.set(input.look.id, view)
@@ -378,10 +451,18 @@ export class ActorLayer {
     if (!build) return
     const token = ++this.builds
     view.modelToken = token
+    const stale = () => this.disposed || this.views.get(view.look.id) !== view || view.modelToken !== token
     const p: Promise<void> = build()
-      .then((model) => {
+      .then(async (model) => {
         if (!model) return
-        if (this.disposed || this.views.get(view.look.id) !== view || view.modelToken !== token) {
+        if (stale()) {
+          model.dispose()
+          return
+        }
+        // Actors stand in the frame (no culling), and a skinned mesh takes its bind pose's bounds (see standInBounds).
+        model.root.traverse(standInBounds)
+        if (this.warm) await this.warm(model.root)
+        if (stale()) {
           model.dispose()
           return
         }
@@ -394,8 +475,9 @@ export class ActorLayer {
         model.setTell?.(view.tell)
         model.update(0)
         this.pose(view)
+        view.topM = reachAbove(model.root, view.root)
         this.onChange?.()
-        if (Math.abs(this.heightOf(view) - view.look.height) > 0.25) this.onModel?.()
+        if (Math.abs(this.heightOf(view) - view.look.height) > 0.25 || view.topM > this.heightOf(view) + 0.25) this.onModel?.()
       })
       .catch((e: unknown) => console.warn('actor model failed', e))
       .finally(() => {
@@ -453,7 +535,9 @@ export class ActorLayer {
     const a = view.model?.animator
     // A monster's own clip for the move (a Web, a Howl) first; a shield bearer guards behind the shield.
     const own = a ? alt.find((n) => a.has(n)) : undefined
-    const clip = own ?? (wanted === 'Guard' && view.model?.hasShield && a?.has('Guard_Shield') ? 'Guard_Shield' : wanted)
+    // Phase 8: a model with one attack clip swings it for its second attack (a pet's second active, a heavy blow).
+    const swing = wanted === 'Attack2' && a && !a.has('Attack2') && a.has('Attack1') ? 'Attack1' : wanted
+    const clip = own ?? (swing === 'Guard' && view.model?.hasShield && a?.has('Guard_Shield') ? 'Guard_Shield' : swing)
     if (!a || view.modelDown || view.lieTarget >= 0.5 || view.dyingMs > 0 || view.fleeing || !a.has(clip)) return
     const k = Math.max(1, Math.min(3, speed))
     const strike = a.eventTime(clip, 'hit') ?? a.eventTime(clip, 'release')
@@ -937,7 +1021,7 @@ export class ActorLayer {
         sP2.copy(right).multiplyScalar(-((w - 0.05) - fw) / 2).add(p)
         m.compose(sP2, q, scale.set(Math.max(0.0001, fw), BAR_H * 0.62, 1))
         this.barFill.setMatrixAt(i, m)
-        this.barFill.setColorAt(i, look.side === 'party' ? PARTY_BAR : ENEMY_BAR)
+        this.barFill.setColorAt(i, look.side === 'party' ? this.partyBar : this.enemyBar)
       } else {
         this.barBg.setMatrixAt(i, ZERO)
         this.barFill.setMatrixAt(i, ZERO)
@@ -977,7 +1061,8 @@ export class ActorLayer {
       const r = Math.max(view.look.radius, 0.3)
       out.push(new THREE.Vector3(view.target.x - r, view.target.y, view.target.z - r))
       out.push(new THREE.Vector3(view.target.x + r, view.target.y, view.target.z + r))
-      out.push(new THREE.Vector3(view.target.x, view.target.y + this.heightOf(view) + (this.showBars ? 0.6 : 0.15), view.target.z))
+      // The top of its bar, or of what it holds up (its reach, measured when its model arrived), whichever is higher.
+      out.push(new THREE.Vector3(view.target.x, view.target.y + Math.max(this.heightOf(view) + (this.showBars ? 0.6 : 0.15), view.topM + 0.15), view.target.z))
     }
     return out
   }

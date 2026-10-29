@@ -1,0 +1,34 @@
+{
+  "note": "Phase 8 (pass A): which music, bed, reverb and sample pack each place uses. Zones by content id (content/dungeons/*/dungeon.json); an unknown zone falls back to 'default'.",
+  "zones": {
+    "the-cellars": { "explore": "cellars", "fight": "cellars-fight", "bed": "cellars", "reverb": "room", "pack": "cellars" },
+    "the-crypts": { "explore": "crypts", "fight": "crypts-fight", "bed": "crypts", "reverb": "cave", "pack": "crypts" },
+    "the-drowned-vault": { "explore": "vault", "fight": "vault-fight", "bed": "vault", "reverb": "underwater", "pack": "vault" },
+    "default": { "explore": "cellars", "fight": "cellars-fight", "bed": "cellars", "reverb": "room", "pack": "cellars" }
+  },
+  "bosses": {
+    "captain-vexa-marrow": "vexa",
+    "barrow-warden": "warden",
+    "sister-naesa": "naesa",
+    "hollow-king": "throne"
+  },
+  "hunterLayers": {
+    "note": "07 2.2: the Throne theme brings back the Company's trumpet, the Warden's reed organ and the cult's bell as each zone's hunter enters.",
+    "old-gnaw": "company",
+    "wardens-hound": "vigil",
+    "vault-leech": "cult"
+  },
+  "townStems": {
+    "hub": "square",
+    "waystone": "square",
+    "blacksmith": "forge",
+    "skills": "hall",
+    "curio": "stall",
+    "stables": "square",
+    "bank": "stall",
+    "board": "square",
+    "inn": "inn",
+    "shrine": "shrine"
+  },
+  "spiderFamilies": ["spider"]
+}

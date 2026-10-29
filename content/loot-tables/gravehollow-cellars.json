@@ -11,8 +11,8 @@
     "max": 4
   },
   "goldRange": {
-    "min": 10,
-    "max": 20
+    "min": 7,
+    "max": 14
   },
   "itemChance": 35,
   "gradeShape": {

@@ -1738,7 +1738,7 @@ function genUniques(): void {
 
 // ---------------------------------------------------------------------------------------------------------------
 // §11 Gravehollow's loot tables, one per floor band (08 §11 at 8 floors, D-104): the Cellars F1–3, the Crypts F4–6,
-// the Drowned Vault F7 and the Hollow King's floor F8. The Cellars' record is Phase 3's, unchanged.
+// the Drowned Vault F7 and the Hollow King's floor F8. The Cellars' record is Phase 3's but for its gold (Phase 8).
 // ---------------------------------------------------------------------------------------------------------------
 
 interface LootRow {
@@ -1761,7 +1761,9 @@ const LOOT: readonly LootRow[] = [
     name: 'Gravehollow Keep — the Cellars (F1–3)',
     floors: [1, 3],
     levels: [1, 4],
-    gold: [10, 20],
+    // The Phase 8 balance pass (pass D): 08 §11's 10–20 cut by about a third — with a fight's gold no longer growing with
+    // the party (loot.ts), every Cellars party found 1.3–1.6 R and F3 twice its 120 (docs/balance/2026-10-29-segment2.md).
+    gold: [7, 14],
     itemChance: 35,
     shape: { centreGrade: 'F', centre: 81, minus1: 0, plus1: 14, plus2: 4, plus3: 1 },
     consumable: { chance: 40, itemIds: ['small-hp-potion', 'torch', 'arrows', 'bandage'] },

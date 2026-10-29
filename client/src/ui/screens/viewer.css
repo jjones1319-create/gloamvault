@@ -73,7 +73,7 @@
 .vw-row__label {
   flex: none;
   width: 52px;
-  font-size: 13px;
+  font-size: calc(13px * var(--ts));
   color: var(--ink-dim);
   text-align: right;
 }
@@ -94,7 +94,7 @@
   min-height: 44px;
   min-width: 44px;
   padding: 0 10px;
-  font-size: 14px;
+  font-size: calc(14px * var(--ts));
   white-space: nowrap;
 }
 .vw-row__picks .vw-swatch,
@@ -117,7 +117,7 @@
     0 0 0 4px var(--ember);
 }
 .viewer__note {
-  font-size: 13px;
+  font-size: calc(13px * var(--ts));
   color: var(--ink-dim);
   white-space: normal;
 }
@@ -146,7 +146,7 @@
   position: absolute;
   left: 8px;
   bottom: 6px;
-  font-size: 12px;
+  font-size: calc(12px * var(--ts));
   color: var(--ink-dim);
   pointer-events: none;
   text-shadow: 0 1px 2px #000;
@@ -187,7 +187,7 @@
   position: absolute;
   left: 52px;
   top: 2px;
-  font-size: 11px;
+  font-size: calc(11px * var(--ts));
   color: var(--ink-dim);
   white-space: nowrap;
 }
@@ -195,7 +195,7 @@
   position: absolute;
   bottom: 2px;
   transform: translateX(-50%);
-  font-size: 13px;
+  font-size: calc(13px * var(--ts));
   font-weight: 700;
   color: var(--ink);
 }
@@ -205,7 +205,7 @@
   z-index: 2;
   transform: translateY(-50%);
   padding-left: 6px;
-  font-size: 13px;
+  font-size: calc(13px * var(--ts));
   font-weight: 700;
   color: var(--ink);
 }
@@ -215,7 +215,7 @@
   height: 52px;
 }
 .lineup__title {
-  font-size: 12px;
+  font-size: calc(12px * var(--ts));
 }
 .lineup__zones {
   position: absolute;
@@ -227,7 +227,7 @@
 }
 .lineup__zone {
   min-height: 44px;
-  font-size: 12px;
+  font-size: calc(12px * var(--ts));
   padding: 2px 10px;
 }
 .lineup__go {
@@ -242,7 +242,7 @@
   align-items: center;
   gap: 0;
   pointer-events: none;
-  font-size: 11px;
+  font-size: calc(11px * var(--ts));
   line-height: 1.15;
   color: var(--ink);
   text-shadow: 0 1px 2px #000, 0 0 6px #000;
@@ -254,10 +254,10 @@
 .lineup__label i {
   font-style: normal;
   color: var(--ink-dim);
-  font-size: 10px;
+  font-size: calc(10px * var(--ts));
 }
 .lineup__label--kit {
-  font-size: 9px;
+  font-size: calc(9px * var(--ts));
   color: var(--ink-dim);
 }
 .lineup__label--lower {
