@@ -1,0 +1,146 @@
+/*
+ * The boss arena on the fight HUD (Arena.tsx; 07 §2.8, D-099): the chips row under the turn banner and the tells'
+ * warning pills. Small and quiet, like the strip; a tell is the one loud thing in it.
+ */
+.fx-arena {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+  max-width: 100%;
+}
+.fx-arena__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 26px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--fx-line);
+  background: var(--fx-panel);
+  color: var(--ink);
+  font: inherit;
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.fx-arena__label {
+  color: var(--ink-dim);
+  font-size: 11px;
+  letter-spacing: 0.02em;
+}
+.fx-arena__value {
+  font-weight: 700;
+}
+.fx-arena__pips {
+  display: inline-flex;
+  gap: 2px;
+}
+.fx-arena__pips i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+  opacity: 0.45;
+}
+.fx-arena__pips i.on {
+  background: currentColor;
+  opacity: 1;
+}
+.fx-arena__chip--phase {
+  border-color: rgba(255, 216, 77, 0.45);
+}
+.fx-arena__chip--light-radiant {
+  color: #fff3c4;
+}
+.fx-arena__chip--light-dim {
+  color: #ffd99a;
+}
+.fx-arena__chip--light-shadowy {
+  color: #b9b4d6;
+}
+.fx-arena__chip--light-dark {
+  color: #8f87c9;
+  border-color: rgba(143, 135, 201, 0.5);
+}
+.fx-arena__chip--light-pitch {
+  color: #c9c3ff;
+  background: rgba(4, 3, 8, 0.92);
+  border-color: rgba(201, 195, 255, 0.5);
+}
+.fx-arena__chip--tide {
+  color: #8fd3ff;
+}
+.fx-arena__chip--fire {
+  color: #ffb05c;
+}
+.fx-arena__chip--warn {
+  color: #ffcf8a;
+  border-color: rgba(255, 179, 71, 0.4);
+}
+.fx-arena__chip--calm {
+  color: var(--ink-dim);
+}
+
+/* A tell (06 §8.10): an amber pill; its two words the first time, the mark alone after (a tap says it). */
+.fx-tell {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 26px;
+  padding: 2px 9px 2px 3px;
+  border-radius: 999px;
+  border: 1px solid #ffd59a;
+  background: linear-gradient(180deg, rgba(234, 138, 53, 0.95), rgba(194, 65, 12, 0.95));
+  color: #fff6e6;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 0 0 2px rgba(255, 179, 71, 0.2), 0 3px 12px rgba(255, 120, 30, 0.45);
+  animation: fx-tell-in 0.25s ease-out;
+}
+.fx-tell:not(.fx-tell--words) {
+  padding-right: 3px;
+}
+.fx-tell__mark {
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #2a1408;
+  color: #ffd59a;
+  font-size: 13px;
+}
+.fx-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+@keyframes fx-tell-in {
+  from {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fx-tell {
+    animation: none;
+  }
+}
+
+/* The strip and the cards mark whoever is winding a blow up. */
+.fx-strip__chip--tell {
+  box-shadow: 0 0 0 2px #ff9a3c;
+}
+.fx-badge--tell {
+  color: #fff6e6;
+  background: #c2410c;
+  border-color: #ffd59a;
+}

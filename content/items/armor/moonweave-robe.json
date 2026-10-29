@@ -1,0 +1,50 @@
+{
+  "id": "moonweave-robe",
+  "name": "Moonweave Robe",
+  "slot": "chest",
+  "kind": "armor",
+  "grade": "A",
+  "materialLadder": "cloth",
+  "materialRung": 5,
+  "weaponType": null,
+  "armorFamily": "robes",
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "defense": 9,
+    "hp": 18,
+    "mana": 18
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 8,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1.53,
+  "value": 1600,
+  "classLock": [
+    "arcanist",
+    "mender"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "armor-robes-chest-01",
+    "tintPrimary": "#c9d3e6",
+    "tintSecondary": "#3b3b3b",
+    "trimMetal": "skysteel"
+  }
+}

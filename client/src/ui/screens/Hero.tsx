@@ -5,7 +5,7 @@ import type { HeroRecord } from '../../../../sim/src/types/content.ts'
 import { content, profile } from '../../game/session.ts'
 import { Empty, Meter, Page, Tabs } from '../kit/kit.tsx'
 import { navigate, type Route } from '../router.ts'
-import { seedSampleArmory } from './hero/demo.ts'
+import { seedSampleArmory, seedSampleTomes } from './hero/demo.ts'
 import { GearTab } from './hero/GearTab.tsx'
 import { PetTab } from './hero/PetTab.tsx'
 import { SkillsTab } from './hero/SkillsTab.tsx'
@@ -58,6 +58,10 @@ export function HeroScreen({ route }: { route: Route }) {
   useEffect(() => {
     if (sample && hero) seedSampleArmory(hero.id)
   }, [sample])
+  const tomes = route.params.tomes === '1' && hero !== undefined
+  useEffect(() => {
+    if (tomes && hero) seedSampleTomes(hero.id)
+  }, [tomes])
   if (!c || !p || !hero || !cls) {
     return (
       <Page name="hero" title="Hero" back="town">

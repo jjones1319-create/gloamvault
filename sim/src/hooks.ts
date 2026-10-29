@@ -56,6 +56,20 @@ export function removeHook(actor: Actor, hook: HookInstance): void {
   actor.hooks = actor.hooks.filter((h) => h !== hook)
 }
 
+/**
+ * A monster's zero-weight, zero-multiplier attack is a passive trigger (06 §3: "fires when this rat dies, not as an
+ * action"): its custom lines sit on the monster as hooks from the start — at spawn (explore.ts) and when a hook puts
+ * a monster into the fight (HookFx.summon). The hook's source is the monster itself.
+ */
+export function armPassiveAttacks(actor: Actor): void {
+  const m = actor.monster
+  if (!m) return
+  for (const attack of m.attacks) {
+    if (attack.aiWeight !== 0 || attack.multiplier !== 0) continue
+    for (const line of attack.effects) if (line.kind === 'custom' && line.customId) installHook(actor, line, actor.id, { sourceSkillId: attack.id })
+  }
+}
+
 /** Removes every hook with the customId (from one source when given); returns how many went. */
 export function removeHooksById(actor: Actor, customId: string, sourceId?: string): number {
   const before = actor.hooks.length

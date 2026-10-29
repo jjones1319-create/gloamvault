@@ -1,0 +1,55 @@
+{
+  "id": "the-brine-pearl",
+  "name": "The Brine Pearl",
+  "slot": "relic",
+  "kind": "relic",
+  "grade": "C",
+  "materialLadder": null,
+  "materialRung": null,
+  "weaponType": null,
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {},
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 2,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 6,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1,
+  "value": 720,
+  "classLock": [],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": {
+    "effects": [
+      {
+        "kind": "shield",
+        "percent": 25,
+        "target": "allyLowest"
+      }
+    ],
+    "usesPerFight": 1,
+    "target": "allyLowest",
+    "text": "Shields the lowest ally for 25% of their max HP",
+    "instant": true
+  },
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "relic-brine-pearl-01",
+    "tintPrimary": "#dfe7ea",
+    "tintSecondary": "#0f766e",
+    "trimMetal": "steel"
+  }
+}

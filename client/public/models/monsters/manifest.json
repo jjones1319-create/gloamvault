@@ -2309,5 +2309,61 @@
         "clipSpeed": 1.2
       }
     }
+  },
+  "pet-brine-crab": {
+    "base": "crab",
+    "scale": 0.5,
+    "parts": [
+      "crab_pearl"
+    ],
+    "shapes": {},
+    "palette": [
+      "#3f6f7a",
+      "#8ab8c2",
+      "#f4efe6"
+    ],
+    "slots": {},
+    "clipSpeed": 1.25,
+    "pet": "brine-crab",
+    "clipMap": {
+      "Idle": "Idle",
+      "Move": "Move",
+      "Attack1": "Attack1",
+      "Attack2": "Attack2",
+      "Hit": "Hit",
+      "Death": "Death",
+      "Pinch": "Attack1",
+      "TideShell": "Attack2"
+    },
+    "name": "Brine Crab (pet)",
+    "tris": 3518
+  },
+  "pet-vault-imp": {
+    "base": "imp",
+    "scale": 0.6,
+    "parts": [
+      "imp_satchel"
+    ],
+    "shapes": {},
+    "palette": [
+      "#e9e4dc",
+      "#b8b0a4",
+      "#dfe8f0"
+    ],
+    "slots": {},
+    "clipSpeed": 1.2,
+    "pet": "vault-imp",
+    "clipMap": {
+      "Idle": "Idle",
+      "Move": "Move",
+      "Attack1": "Attack1",
+      "Attack2": "Attack2",
+      "Hit": "Hit",
+      "Death": "Death",
+      "Pilfer": "Attack1",
+      "Hex": "Attack2"
+    },
+    "name": "Vault Imp (pet)",
+    "tris": 3276
   }
 }

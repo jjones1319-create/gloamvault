@@ -4,7 +4,7 @@
   "school": "larceny",
   "tier": 3,
   "name": "Mug",
-  "description": "1.8× Pierce to a front-row enemy; steal gold equal to 15 × its level; against a boss, steal a guaranteed common part.",
+  "description": "2.45× Pierce to a front-row enemy; steal gold equal to 15 × its level; against a boss, steal a guaranteed common part.",
   "type": "active",
   "cost": 20,
   "weight": 800,
@@ -12,7 +12,7 @@
   "effects": [
     {
       "kind": "damage",
-      "multiplier": 1.8,
+      "multiplier": 2.45,
       "damageType": "pierce"
     },
     {

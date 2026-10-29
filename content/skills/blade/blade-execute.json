@@ -4,7 +4,7 @@
   "school": "executioner",
   "tier": 2,
   "name": "Execute",
-  "description": "1.7× Slash to a front-row enemy; against a target below 30% HP, 3.4×.",
+  "description": "1.45× Slash to a front-row enemy; against a target below 30% HP, 2.9×.",
   "type": "active",
   "cost": 16,
   "weight": 1400,
@@ -12,14 +12,14 @@
   "effects": [
     {
       "kind": "damage",
-      "multiplier": 1.7,
+      "multiplier": 1.45,
       "damageType": "slash",
       "scalesWith": "strength"
     },
     {
       "kind": "custom",
       "customId": "execute-multiplier-below-hp",
-      "multiplier": 3.4,
+      "multiplier": 2.9,
       "damageType": "slash",
       "percent": 30,
       "note": "the damage line uses multiplier instead when the target is under percent% HP"
@@ -44,7 +44,7 @@
       {
         "kind": "custom",
         "customId": "execute-multiplier-below-hp",
-        "multiplier": 3.4,
+        "multiplier": 2.9,
         "damageType": "slash",
         "percent": 35
       }

@@ -1,0 +1,60 @@
+{
+  "id": "ranger-nightwalker",
+  "classId": "ranger",
+  "school": "pathfinder",
+  "tier": 5,
+  "name": "Nightwalker",
+  "description": "Corridor: for the rest of the floor the party reads Light one band brighter and monsters get no Dark-band bonuses. Combat: Blind 2 turns on every enemy.",
+  "type": "active",
+  "cost": 40,
+  "weight": 1000,
+  "target": "allEnemies",
+  "effects": [
+    {
+      "kind": "applyStatus",
+      "status": "blind",
+      "duration": 2
+    },
+    {
+      "kind": "custom",
+      "customId": "corridor-light-band-shift",
+      "duration": 1,
+      "amount": 1,
+      "target": "room",
+      "note": "corridor use: Light reads amount band brighter for duration floor(s) (delve side)"
+    }
+  ],
+  "prerequisiteId": "ranger-wayfinder",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Lasts the whole delve.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "corridor-light-band-shift",
+        "duration": 99,
+        "amount": 1,
+        "target": "room",
+        "note": "99 floors: the whole delve"
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "debuff",
+    "light",
+    "scouting"
+  ],
+  "xpTags": [
+    "perception"
+  ],
+  "aiHints": {
+    "role": "debuff",
+    "priority": 55
+  }
+}

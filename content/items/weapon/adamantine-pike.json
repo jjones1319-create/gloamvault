@@ -1,0 +1,49 @@
+{
+  "id": "adamantine-pike",
+  "name": "Adamantine Pike",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "S",
+  "materialLadder": "metal",
+  "materialRung": 6,
+  "weaponType": "spear",
+  "armorFamily": null,
+  "hands": 2,
+  "damageType": "pierce",
+  "weight": 1000,
+  "baseStats": {
+    "attackPhys": 96,
+    "accuracy": 5,
+    "speed": -3
+  },
+  "requirements": {
+    "strength": 19,
+    "wisdom": 0
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 9,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 5.09,
+  "value": 3750,
+  "classLock": [
+    "warden"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-pike-01",
+    "tintPrimary": "#4f6f7f",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "adamantine"
+  }
+}

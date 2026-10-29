@@ -1,0 +1,25 @@
+{
+  "id": "tide-procession",
+  "tableId": "vault-a",
+  "dungeonId": "gravehollow-keep",
+  "floorBand": {
+    "min": 7,
+    "max": 7
+  },
+  "name": "Tide Procession",
+  "composition": [
+    {
+      "monsterId": "tidebound-blade",
+      "count": 2,
+      "row": "front"
+    },
+    {
+      "monsterId": "tidebound-acolyte",
+      "count": 2,
+      "row": "back"
+    }
+  ],
+  "weight": 20,
+  "ambushModifier": 5,
+  "eliteAllowed": true
+}

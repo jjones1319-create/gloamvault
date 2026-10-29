@@ -1,0 +1,177 @@
+{
+  "id": "crypt-sexton",
+  "name": "Crypt Sexton",
+  "familyId": "restless-dead",
+  "dungeonId": "gravehollow-keep",
+  "zoneId": "the-crypts",
+  "role": "elite",
+  "size": "medium",
+  "rows": [
+    "back"
+  ],
+  "levelBand": {
+    "min": 7,
+    "max": 8
+  },
+  "multipliers": {
+    "hp": 1.8,
+    "attack": 1.1,
+    "defense": 1
+  },
+  "speed": 100,
+  "xpClass": 3,
+  "goldMultiplier": 2.5,
+  "ambushModifier": -5,
+  "attacks": [
+    {
+      "id": "raise",
+      "name": "Raise",
+      "damageType": "shadow",
+      "weight": 1400,
+      "multiplier": 0,
+      "target": "self",
+      "effects": [
+        {
+          "kind": "summon",
+          "summonId": "skeleton-footman",
+          "target": "summon"
+        },
+        {
+          "kind": "custom",
+          "customId": "raise-bone-pile",
+          "summonId": "skeleton-footman",
+          "amount": 3,
+          "note": "from a bone pile only; max 3 raises per fight"
+        }
+      ],
+      "aiWeight": 40,
+      "tell": "His hand-bell rings over the bones.",
+      "hint": "Bell ringing"
+    },
+    {
+      "id": "bone-ward",
+      "name": "Bone Ward",
+      "damageType": "holy",
+      "weight": 1000,
+      "multiplier": 0,
+      "target": "allyLowest",
+      "effects": [
+        {
+          "kind": "shield",
+          "percent": 20,
+          "target": "allyLowest",
+          "note": "Shield 20% max HP on the undead ally with the lowest HP"
+        }
+      ],
+      "aiWeight": 30,
+      "tell": null
+    },
+    {
+      "id": "grave-chill",
+      "name": "Grave Chill",
+      "damageType": "shadow",
+      "weight": 1000,
+      "multiplier": 0.9,
+      "target": "enemy",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "weaken",
+          "duration": 2
+        }
+      ],
+      "aiWeight": 30,
+      "tell": null
+    }
+  ],
+  "resist": [
+    "shadow",
+    "pierce"
+  ],
+  "weak": [
+    "holy",
+    "fire"
+  ],
+  "immune": [],
+  "statusImmune": [
+    "poison",
+    "bleed",
+    "fear"
+  ],
+  "behavior": {
+    "rules": [
+      {
+        "if": "raises whenever a bone pile exists — otherwise wards the Bone Knight — never raises while Silenced",
+        "then": "raise"
+      }
+    ],
+    "fleesAtPercent": 0
+  },
+  "parts": {
+    "common": {
+      "materialId": "linen",
+      "chance": 35,
+      "quantity": {
+        "min": 2,
+        "max": 2
+      }
+    },
+    "rare": {
+      "itemId": "sextons-bell",
+      "chance": 4,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "breakLimb": {
+      "name": "bell",
+      "effect": {
+        "kind": "custom",
+        "customId": "lose-summon-attacks",
+        "summonId": "skeleton-footman",
+        "damageType": "blunt",
+        "note": "any Blunt hit on the prop: no Raise"
+      }
+    }
+  },
+  "monsterTechniqueSkillIds": [],
+  "elitePool": [
+    "shielded",
+    "vampiric",
+    "shackler",
+    "rabid",
+    "spiteful",
+    "warded",
+    "thorned",
+    "regenerating",
+    "mirrored",
+    "commander",
+    "leech",
+    "nullifier"
+  ],
+  "boss": null,
+  "hunter": null,
+  "visual": {
+    "baseMesh": "skeleton",
+    "scale": 1,
+    "variantOf": "skeleton-footman",
+    "palette": [
+      "#302d35",
+      "#d6cbb0",
+      "#7dff6a"
+    ],
+    "reads200px": true,
+    "animations": [
+      "Idle",
+      "Move",
+      "Attack1",
+      "Attack2",
+      "Hit",
+      "Death",
+      "Cast",
+      "Ring"
+    ],
+    "triBudget": 4500
+  }
+}

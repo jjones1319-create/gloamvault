@@ -4,7 +4,7 @@
   "school": "sanctity",
   "tier": 1,
   "name": "Smite",
-  "description": "1.4× Holy to one enemy in either row; applies the Smite mark (+20% damage taken, +40% if Undead or Shadow, 2 turns).",
+  "description": "1.2× Holy to one enemy in either row; applies the Smite mark (+20% damage taken, +40% if Undead or Shadow, 2 turns).",
   "type": "active",
   "cost": 10,
   "weight": 1000,
@@ -12,7 +12,7 @@
   "effects": [
     {
       "kind": "damage",
-      "multiplier": 1.4,
+      "multiplier": 1.2,
       "damageType": "holy"
     },
     {
@@ -28,11 +28,11 @@
     "costPerRank": -2
   },
   "mastery": {
-    "text": "1.6×.",
+    "text": "1.35×.",
     "effects": [
       {
         "kind": "damage",
-        "multiplier": 1.6,
+        "multiplier": 1.35,
         "damageType": "holy"
       }
     ]

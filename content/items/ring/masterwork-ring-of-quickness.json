@@ -1,0 +1,45 @@
+{
+  "id": "masterwork-ring-of-quickness",
+  "name": "Masterwork Ring of Quickness",
+  "slot": "ring",
+  "kind": "ring",
+  "grade": "B",
+  "materialLadder": null,
+  "materialRung": null,
+  "weaponType": null,
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "speed": 7
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 2,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 7,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1,
+  "value": 600,
+  "classLock": [],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "ring-quickness-01",
+    "tintPrimary": "#2f3136",
+    "tintSecondary": "#22c55e",
+    "trimMetal": "blacksteel"
+  }
+}

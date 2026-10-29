@@ -1,0 +1,57 @@
+{
+  "id": "mender-everflow",
+  "classId": "mender",
+  "school": "benediction",
+  "tier": 5,
+  "name": "Everflow",
+  "description": "Your heals also restore 5% of the target’s pool; Regen on an ally below 50% HP does not count down.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "heal-restores-pool",
+      "percent": 5,
+      "target": "self",
+      "note": "each heal the holder’s skill lands also restores percent% of the target’s pool (once per target per action)"
+    },
+    {
+      "kind": "custom",
+      "customId": "regen-holds-below-hp",
+      "percent": 50,
+      "target": "self",
+      "note": "while the holder stands, an ally’s Regen does not count down while the ally is below percent% HP"
+    }
+  ],
+  "prerequisiteId": "mender-verdant-pulse",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Restore 8% pool.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "heal-restores-pool",
+        "percent": 8,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "heal",
+    "buff"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "heal",
+    "priority": 0
+  }
+}

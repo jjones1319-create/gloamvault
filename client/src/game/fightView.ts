@@ -49,6 +49,10 @@ const BEAT_STARTERS: ReadonlySet<string> = new Set([
   'hot',
   'fortune',
   'end',
+  // Phase 7 (pass C2): a boss arena's moments and the telegraph cues are beats of their own (07 §2.8, 06 §8.10).
+  'arena',
+  'tell',
+  'tellBroken',
 ])
 
 /** Results that, logged by someone other than the beat's actor, are a moment of their own (a pet's mend, a riposte). */
@@ -244,6 +248,9 @@ export function beatLine(beat: Beat, book: NameBook): string | null {
       return `${book.actor(lead.actorId)} is held and cannot act`
     case 'guard':
       return `${book.actor(lead.actorId)} guards`
+    case 'tell':
+      // D-099: the two-word hint, said with whoever shows the tell (the room itself for an arena's).
+      return lead.actorId ? `${book.actor(lead.actorId)}: ${String(lead.data?.hint ?? lead.text)}` : String(lead.data?.hint ?? lead.text)
     default:
       return lead.text
   }
@@ -299,6 +306,18 @@ export function beatFloaters(beat: Beat, book: NameBook): FloaterSpec[] {
         break
       case 'interrupt':
         if (e.targetId) out.push({ actorId: e.targetId, text: 'Pushed back', tone: 'info' })
+        break
+      case 'tell':
+        // The telegraph rises over the one who shows it (06 §8.10).
+        if (e.actorId) out.push({ actorId: e.actorId, text: String(e.data?.hint ?? e.text), tone: 'info' })
+        break
+      case 'tellBroken':
+        if (e.actorId) out.push({ actorId: e.actorId, text: 'Broken off', tone: 'info' })
+        break
+      case 'arena':
+        // A boss's new phase and a broken part rise over the boss (07 §2.8).
+        if (e.data?.what === 'phase' && e.actorId && Number(e.data?.phase ?? 1) > 1) out.push({ actorId: e.actorId, text: `Phase ${String(e.data.phase)}`, tone: 'info' })
+        if (e.data?.what === 'partBreak' && e.targetId) out.push({ actorId: e.targetId, text: `${String(e.data?.name ?? 'part')} breaks`, tone: 'crit' })
         break
       default:
         break

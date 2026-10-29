@@ -116,6 +116,10 @@
   "combat": {
     "source": "03 §3.1–§3.6 (D-004, D-029 proposed)",
     "actAtEnergy": 1000,
+    "pushGuard": {
+      "value": true,
+      "note": "D-127 (Proposed): a Freeze, Stun, Daze or Petrify push lands once until the target has had a turn; a second still applies the status (03 §3.5: no chain-lock)."
+    },
     "weights": {
       "rowSwap": 400,
       "guard": 600,
@@ -861,7 +865,6 @@
       ],
       "wisdomPercentPerPoint": 1,
       "pityUses": 60,
-      "monsterTechniquePercentPerUse": 10,
       "duplicateTomeIsRankXp": true
     },
     "fieldSkills": {
@@ -873,7 +876,8 @@
         "sellPerRank": 0.5
       },
       "cartography": {
-        "ringPerRanks": 3
+        "ringPerRanks": 3,
+        "stairsAtRank": 10
       },
       "cooking": {
         "statPercent": 5
@@ -884,6 +888,38 @@
       },
       "lockpicking": {
         "skeletonKeyPriceR": 0.2
+      }
+    },
+    "obtainableTierMax": {
+      "value": 4,
+      "note": "D-099, 12 Phase 7: Tier V is designed in JSON but unobtainable until Segment 3’s endgame (no Insight, no Tome, no Hall)."
+    },
+    "tomes": {
+      "itemId": "skill-tome",
+      "duplicateRanks": {
+        "value": 1,
+        "note": "03 §7.5: a duplicate Tome is rank XP for that skill — one full rank, as the Tome of Practice (08 §10.2); Phase 7 reading."
+      },
+      "valueR": {
+        "1": 0.1,
+        "2": 0.3,
+        "3": 1,
+        "4": 3,
+        "5": 3
+      },
+      "insightDropsTome": true
+    },
+    "limits": {
+      "executeMaxMultiplier": 6,
+      "perFloor": {
+        "blade-undying-rage": 1,
+        "blade-deathless": 2
+      },
+      "perCast": {
+        "warden-oath-of-the-vault": 1
+      },
+      "ambushCutMaxPercent": {
+        "ranger-never-lost": 30
       }
     }
   },
@@ -979,7 +1015,32 @@
     "levelCap": "owner level",
     "statsPerLevelPercent": 2,
     "gradeStep": 1.35,
-    "importGradeCap": "A"
+    "importGradeCap": "A",
+    "traitGrowth": {
+      "usesForRank": [0, 30, 90, 200, 400],
+      "effectPercentPerRank": 10,
+      "sources": {
+        "perception": "finds",
+        "endurance": "hitsTaken",
+        "vitality": "hitsTaken",
+        "strength": "hitsLanded",
+        "agility": "actions",
+        "willpower": "actions",
+        "wisdom": "actions"
+      },
+      "weights": {
+        "finds": 3,
+        "hitsTaken": 1,
+        "hitsLanded": 1,
+        "actions": 1
+      },
+      "forageFindsMultiplier": 2,
+      "note": "03 §9: a trait grows by use — its growsBy tag names what counts (sources); rank N needs usesForRank[N-1] weighted uses; each rank above 1 adds effectPercentPerRank to the trait's numbers (pass D, Phase 7)."
+    },
+    "summonsPartyMax": {
+      "value": 3,
+      "note": "D-099: at most 3 summons in the whole party at once (the Beast Tamer's calls, Segment 3); a call past the cap fizzles."
+    }
   },
   "coop": {
     "source": "03 §10 (D-014, D-026)",
@@ -993,18 +1054,18 @@
     "partyNote": "D-091 (James): party members come only from the Wayfarer Chest; four places from the start (maxPlayers), up to rosterMax heroes at the Inn."
   },
   "dungeon": {
-    "source": "03 §11 (D-017, D-024)",
-    "floorsPerDungeon": 10,
+    "source": "03 §11 (D-017, D-024); Gravehollow at 8 floors (D-098, D-104)",
+    "floorsPerDungeon": 8,
     "zones": 3,
     "zoneBossFloors": [
       3,
       6,
-      9
+      7
     ],
-    "finalBossFloor": 10,
+    "finalBossFloor": 8,
     "monsterLevel": {
       "floor1": 1,
-      "floor10": 14,
+      "floor8": 13,
       "dungeon2Start": 12
     },
     "partyScaling": {
@@ -1017,7 +1078,7 @@
       ],
       "hp": [
         0.5,
-        1,
+        0.85,
         1,
         1.6
       ],
@@ -1027,7 +1088,22 @@
         1,
         1
       ],
-      "minCount": 1
+      "minCount": 1,
+      "boss": {
+        "hp": [
+          0.4,
+          0.8,
+          1.2,
+          2
+        ],
+        "damage": [
+          0.7,
+          1.2,
+          1.3,
+          1.3
+        ],
+        "note": "D-128 (Proposed): a boss and its arena's adds scale HP and damage on this row by party size 1–4; the count rule stays the fights' (06 §8.1)."
+      }
     },
     "encounterSize": {
       "min": 2,
@@ -1104,6 +1180,58 @@
       "note": "D-092: encounter level vs the party level (average of the living heroes, rounded down)."
     }
   },
+  "techniques": {
+    "source": "09 §4, 03 §7.5, 06 §8.8 (D-028; D-099: guaranteed by the 10th witnessed use)",
+    "percentPerWitnessedUse": 10,
+    "guaranteedByUse": 10,
+    "perClass": 2,
+    "needsPrerequisite": {
+      "value": true,
+      "note": "03 §7.5: an Insight is for a skill whose prerequisite you have; mender.md §8: no Lament roll without Censure (Phase 7 reading)."
+    },
+    "dropsTome": {
+      "value": false,
+      "note": "A technique is learned only by witnessing (09 §4), so its Insight drops no Tome copy for the party (Phase 7 reading)."
+    }
+  },
+  "pacts": {
+    "source": "07 §6 (Phase 7; D-044, D-099)",
+    "oathTiers": [
+      { "at": 6, "shiftPp": 10, "centreShift": 0 },
+      { "at": 12, "shiftPp": 0, "centreShift": 1 }
+    ],
+    "oathNote": "07 §6.2: the highest tier the Oath reaches applies — 6–11 shifts in-dungeon chests 10 pp toward +1 grade, 12+ moves their centre one grade up (the Hard and Dread shapes)."
+  },
+  "contracts": {
+    "source": "07 §7 (Phase 7; D-099)",
+    "dailies": 3,
+    "weeklies": 1,
+    "resetHour": 4,
+    "weekStartsOn": {
+      "value": 1,
+      "note": "07 §7: the weekly turns over on Monday (0 Sunday … 6 Saturday) at the reset hour."
+    },
+    "keyCapPerWeek": {
+      "standard": 3,
+      "grand": 1
+    }
+  },
+  "ammo": {
+    "source": "08 §4 (D-099: arrows stay a real cost; Phase 7)",
+    "byWeaponType": {
+      "bow": "arrows",
+      "shortbow": "arrows",
+      "longbow": "arrows",
+      "crossbow": "bolts"
+    },
+    "quiverMax": 100,
+    "carryMax": 200,
+    "lowAt": 20,
+    "emptyBash": {
+      "multiplier": 0.3,
+      "damageType": "blunt"
+    }
+  },
   "death": {
     "source": "03 §12 (D-015)",
     "reviveWindowTurns": 3,
@@ -1150,5 +1278,292 @@
       "note": "D-090: a hero lost for good leaves this share of their battle XP to an heir."
     },
     "bearersBringGear": true
+  },
+  "runner": {
+    "source": "12 Phase 7 (the balance pass) · 07 §8.2 (the per-floor rows) · D-084, D-098 (clear-rate targets) · 03 §3.6 (rounds) · 03 §8.1 (gold ≈ R) · 08 §9.4 (wear) · 03 §4.4 (ambush) · 07 §2.3 (gold per floor) · D-092 (the careful player). The balance runner's own numbers (tools/balance/run.ts); the game never reads them.",
+    "seeds": 100,
+    "commandCap": 3000,
+    "policy": "textbook",
+    "expectedFloors": {
+      "gravehollow-keep": 8,
+      "note": "07 §2.3 (D-098, D-104): the floors a dungeon's file should hold; the runner names the ones the content does not have yet."
+    },
+    "careful": {
+      "turnBackFrom": "deadly",
+      "bossCounts": true,
+      "note": "D-092: the careful player turns back from a floor whose chip reads this band or worse (its boss's chip too when bossCounts) and never opens a door to a room it knows reads it."
+    },
+    "targets": {
+      "rounds": {
+        "fight": [3, 6],
+        "elite": [6, 8],
+        "boss": [10, 15],
+        "hunter": [6, 8],
+        "note": "03 §3.6: ordinary packs 3–6 rounds, elites 6–8, bosses 10–15; hunters 6–8 (07 §2.9)."
+      },
+      "goldPerClearedDelveR": [0.7, 1.3],
+      "repairPercentOfR": [15, 35],
+      "mainHandWearPercent": [25, 35],
+      "ambushPercentOfFights": [10, 30],
+      "goldPerFloor": {
+        "gravehollow-keep": [80, 100, 120, 140, 160, 180, 370, 400],
+        "note": "07 §2.3: expected gold found per floor (R ≈ 300 at F1–3, ×1.6 per band; the Vault's two floors carry the D band's R ≈ 770)."
+      },
+      "goldPerFloorBand": [0.6, 1.4],
+      "classDamageSpreadMax": 1.5,
+      "note": "Every band is [low, high]; R comes from the sim (economy.ts rForFloor, the zone's first floor). goldPerFloorBand and classDamageSpreadMax are the runner's Proposed tolerances (Phase 7)."
+    },
+    "recipes": [
+      { "id": "cel-solo-fresh", "zone": 1, "name": "solo warden, fresh", "classes": ["warden"], "level": 1, "gear": null, "petStance": "mend", "clearTarget": [0, 10] },
+      { "id": "cel-solo-ground", "zone": 1, "name": "solo warden, ground (L12, D gear)", "classes": ["warden"], "level": 12, "gear": "D", "petStance": "mend", "clearTarget": [40, 85] },
+      { "id": "cel-four-fresh", "zone": 1, "name": "classic four, fresh: warden, blade, mender, arcanist", "classes": ["warden", "blade", "mender", "arcanist"], "level": 1, "gear": null, "petStance": null, "clearTarget": [40, 75] },
+      { "id": "cel-three-fresh", "zone": 1, "name": "crypt-breakers, fresh: mender, warden, ranger", "classes": ["mender", "warden", "ranger"], "level": 1, "gear": null, "petStance": null, "clearTarget": [15, 55] },
+      { "id": "cel-glass-fresh", "zone": 1, "name": "glass cannons, fresh: arcanist, shade, ranger", "classes": ["arcanist", "shade", "ranger"], "level": 1, "gear": null, "petStance": "guard", "clearTarget": [0, 40] },
+      { "id": "cel-pair-fresh", "zone": 1, "name": "the pair, fresh: blade, mender", "classes": ["blade", "mender"], "level": 1, "gear": null, "petStance": null, "clearTarget": [5, 40] },
+      { "id": "cel-three-levelled", "zone": 1, "name": "crypt-breakers, levelled (L5, E gear)", "classes": ["mender", "warden", "ranger"], "level": 5, "gear": "E", "petStance": null, "clearTarget": [55, 100] },
+      { "id": "cel-pair-levelled", "zone": 1, "name": "the pair, levelled (L5, E gear)", "classes": ["blade", "mender"], "level": 5, "gear": "E", "petStance": null, "clearTarget": [55, 100] },
+      { "id": "cry-solo-arriving", "zone": 2, "name": "solo warden, arriving (L5, E gear)", "classes": ["warden"], "level": 5, "gear": "E", "petStance": "mend", "clearTarget": [0, 10] },
+      { "id": "cry-solo-ground", "zone": 2, "name": "solo warden, ground (L16, C gear)", "classes": ["warden"], "level": 16, "gear": "C", "petStance": "mend", "clearTarget": [40, 85] },
+      { "id": "cry-four-arriving", "zone": 2, "name": "classic four, arriving (L5, E gear)", "classes": ["warden", "blade", "mender", "arcanist"], "level": 5, "gear": "E", "petStance": null, "clearTarget": [40, 75] },
+      { "id": "cry-three-arriving", "zone": 2, "name": "crypt-breakers, arriving (L5, E gear)", "classes": ["mender", "warden", "ranger"], "level": 5, "gear": "E", "petStance": null, "clearTarget": [15, 55] },
+      { "id": "cry-glass-arriving", "zone": 2, "name": "glass cannons, arriving (L5, E gear)", "classes": ["arcanist", "shade", "ranger"], "level": 5, "gear": "E", "petStance": "guard", "clearTarget": [0, 40] },
+      { "id": "cry-pair-arriving", "zone": 2, "name": "the pair, arriving (L5, E gear)", "classes": ["blade", "mender"], "level": 5, "gear": "E", "petStance": null, "clearTarget": [5, 40] },
+      { "id": "cry-three-ready", "zone": 2, "name": "crypt-breakers, ready (L9, D gear)", "classes": ["mender", "warden", "ranger"], "level": 9, "gear": "D", "petStance": null, "clearTarget": [55, 100] },
+      { "id": "cry-pair-ready", "zone": 2, "name": "the pair, ready (L9, D gear)", "classes": ["blade", "mender"], "level": 9, "gear": "D", "petStance": null, "clearTarget": [55, 100] },
+      { "id": "vlt7-solo-arriving", "zone": 3, "floors": [7, 7], "name": "solo warden, arriving (L11, D gear)", "classes": ["warden"], "level": 11, "gear": "D", "petStance": "mend", "clearTarget": [0, 10] },
+      { "id": "vlt7-solo-ground", "zone": 3, "floors": [7, 7], "name": "solo warden, ground (L21, B gear)", "classes": ["warden"], "level": 21, "gear": "B", "petStance": "mend", "clearTarget": [40, 85] },
+      { "id": "vlt7-four-arriving", "zone": 3, "floors": [7, 7], "name": "classic four, arriving (L11, D gear)", "classes": ["warden", "blade", "mender", "arcanist"], "level": 11, "gear": "D", "petStance": null, "clearTarget": [40, 75] },
+      { "id": "vlt7-three-arriving", "zone": 3, "floors": [7, 7], "name": "crypt-breakers, arriving (L11, D gear)", "classes": ["mender", "warden", "ranger"], "level": 11, "gear": "D", "petStance": null, "clearTarget": [15, 55] },
+      { "id": "vlt7-glass-arriving", "zone": 3, "floors": [7, 7], "name": "glass cannons, arriving (L11, D gear)", "classes": ["arcanist", "shade", "ranger"], "level": 11, "gear": "D", "petStance": "guard", "clearTarget": [0, 40] },
+      { "id": "vlt7-pair-arriving", "zone": 3, "floors": [7, 7], "name": "the pair, arriving (L11, D gear)", "classes": ["blade", "mender"], "level": 11, "gear": "D", "petStance": null, "clearTarget": [5, 40] },
+      { "id": "vlt7-three-ready", "zone": 3, "floors": [7, 7], "name": "crypt-breakers, ready (L14, C gear)", "classes": ["mender", "warden", "ranger"], "level": 14, "gear": "C", "petStance": null, "clearTarget": [55, 100] },
+      { "id": "vlt7-pair-ready", "zone": 3, "floors": [7, 7], "name": "the pair, ready (L14, C gear)", "classes": ["blade", "mender"], "level": 14, "gear": "C", "petStance": null, "clearTarget": [55, 100] },
+      { "id": "vlt8-solo-arriving", "zone": 3, "floors": [8, 8], "name": "solo warden, arriving (L13, D gear)", "classes": ["warden"], "level": 13, "gear": "D", "petStance": "mend", "clearTarget": [0, 10] },
+      { "id": "vlt8-solo-ground", "zone": 3, "floors": [8, 8], "name": "solo warden, ground (L21, B gear)", "classes": ["warden"], "level": 21, "gear": "B", "petStance": "mend", "clearTarget": [40, 85] },
+      { "id": "vlt8-four-arriving", "zone": 3, "floors": [8, 8], "name": "classic four, arriving (L13, D gear)", "classes": ["warden", "blade", "mender", "arcanist"], "level": 13, "gear": "D", "petStance": null, "clearTarget": [40, 75] },
+      { "id": "vlt8-three-arriving", "zone": 3, "floors": [8, 8], "name": "crypt-breakers, arriving (L13, D gear)", "classes": ["mender", "warden", "ranger"], "level": 13, "gear": "D", "petStance": null, "clearTarget": [15, 55] },
+      { "id": "vlt8-glass-arriving", "zone": 3, "floors": [8, 8], "name": "glass cannons, arriving (L13, D gear)", "classes": ["arcanist", "shade", "ranger"], "level": 13, "gear": "D", "petStance": "guard", "clearTarget": [0, 40] },
+      { "id": "vlt8-pair-arriving", "zone": 3, "floors": [8, 8], "name": "the pair, arriving (L13, D gear)", "classes": ["blade", "mender"], "level": 13, "gear": "D", "petStance": null, "clearTarget": [5, 40] },
+      { "id": "vlt8-three-ready", "zone": 3, "floors": [8, 8], "name": "crypt-breakers, ready (L14, C gear)", "classes": ["mender", "warden", "ranger"], "level": 14, "gear": "C", "petStance": null, "clearTarget": [55, 100] },
+      { "id": "vlt8-pair-ready", "zone": 3, "floors": [8, 8], "name": "the pair, ready (L15, C gear)", "classes": ["blade", "mender"], "level": 15, "gear": "C", "petStance": null, "clearTarget": [55, 100] },
+      { "id": "vlt-run-solo-arriving", "zone": 3, "set": "vault-run", "name": "solo warden, arriving (L11, D gear), F7 to F8 in one delve", "classes": ["warden"], "level": 11, "gear": "D", "petStance": "mend", "clearTarget": null },
+      { "id": "vlt-run-solo-ground", "zone": 3, "set": "vault-run", "name": "solo warden, ground (L21, B gear), F7 to F8 in one delve", "classes": ["warden"], "level": 21, "gear": "B", "petStance": "mend", "clearTarget": null },
+      { "id": "vlt-run-four-arriving", "zone": 3, "set": "vault-run", "name": "classic four, arriving (L11, D gear), F7 to F8 in one delve", "classes": ["warden", "blade", "mender", "arcanist"], "level": 11, "gear": "D", "petStance": null, "clearTarget": null },
+      { "id": "vlt-run-three-arriving", "zone": 3, "set": "vault-run", "name": "crypt-breakers, arriving (L11, D gear), F7 to F8 in one delve", "classes": ["mender", "warden", "ranger"], "level": 11, "gear": "D", "petStance": null, "clearTarget": null },
+      { "id": "vlt-run-glass-arriving", "zone": 3, "set": "vault-run", "name": "glass cannons, arriving (L11, D gear), F7 to F8 in one delve", "classes": ["arcanist", "shade", "ranger"], "level": 11, "gear": "D", "petStance": "guard", "clearTarget": null },
+      { "id": "vlt-run-pair-arriving", "zone": 3, "set": "vault-run", "name": "the pair, arriving (L11, D gear), F7 to F8 in one delve", "classes": ["blade", "mender"], "level": 11, "gear": "D", "petStance": null, "clearTarget": null },
+      { "id": "vlt-run-three-ready", "zone": 3, "set": "vault-run", "name": "crypt-breakers, ready (L14, C gear), F7 to F8 in one delve", "classes": ["mender", "warden", "ranger"], "level": 14, "gear": "C", "petStance": null, "clearTarget": null },
+      { "id": "vlt-run-pair-ready", "zone": 3, "set": "vault-run", "name": "the pair, ready (L14, C gear), F7 to F8 in one delve", "classes": ["blade", "mender"], "level": 14, "gear": "C", "petStance": null, "clearTarget": null },
+      { "id": "dive-four-crypts", "zone": 2, "set": "dive", "name": "classic four, fresh, diving into the Crypts (L1)", "classes": ["warden", "blade", "mender", "arcanist"], "level": 1, "gear": null, "petStance": null, "clearTarget": null },
+      { "id": "dive-four-vault", "zone": 3, "set": "dive", "name": "classic four, from the Cellars, diving into the Vault (L5, E gear)", "classes": ["warden", "blade", "mender", "arcanist"], "level": 5, "gear": "E", "petStance": null, "clearTarget": null }
+    ],
+    "recipesNote": "Cellars: D-084's eight (levelled 55–100). Crypts and Vault mirror them (07 §1.2 levels, Proposed); the Vault is judged as F7 and a start on F8 at the level F7 leaves (D-083); vault-run plays F7–F8 in one delve, unjudged.",
+    "bossKills": "repeat",
+    "bossKillsNote": "Proposed (Phase 7): runner delves meet bosses that have died before (08 §11's repeat rows), the steady state R measures; --kills first pays the first-kill lines.",
+    "plans": {
+      "gravehollow": [
+        { "name": "main", "sets": ["main"], "death": ["sheltered", "mortal", "nightmare"], "difficulty": ["normal"], "policy": ["textbook"], "seeds": 100 },
+        { "name": "careful", "sets": ["main"], "death": ["mortal"], "difficulty": ["normal"], "policy": ["careful"], "seeds": 100 },
+        { "name": "spot", "sets": ["main"], "death": ["mortal"], "difficulty": ["hard", "dread"], "policy": ["textbook"], "seeds": 40 },
+        { "name": "dive", "sets": ["dive"], "death": ["mortal"], "difficulty": ["normal"], "policy": ["textbook", "careful"], "seeds": 100 },
+        { "name": "vault-run", "sets": ["vault-run"], "death": ["mortal"], "difficulty": ["normal"], "policy": ["textbook"], "seeds": 100 }
+      ],
+      "note": "12 Phase 7's balance pass: 8 floors × party sizes 1–4 × three death rules on Normal, the careful player, Hard and Dread spot checks, the dive set."
+    }
+  },
+  "arena": {
+    "source": "07 §2.8 the boss arenas and 06 §8.10 the tells (D-099); pass C2, Phase 7. Each arena's own numbers (its light steps, clocks, counts) live in the boss's monster file; these are the engine's.",
+    "tell": {
+      "windupWeight": { "value": 1000, "note": "06 §8.10: a telegraphed blow lands on the monster's next turn; the tell costs that turn a normal weight (Proposed, Phase 7)." },
+      "breakers": ["daze", "silence", "stun", "freeze", "petrify"],
+      "breakersNote": "07 §2.8 'Silence or Daze him to skip it': one of these statuses logged on the monster after its tell breaks the blow off."
+    },
+    "adds": {
+      "reenterHpPercent": 100,
+      "note": "Adds that re-enter (Vexa's crew, Naesa's acolytes, the King's re-call) come back at this share of their party-scaled HP."
+    },
+    "hunters": {
+      "levelOffset": { "value": -2, "note": "The King's phase 3: the returning hunters stand 2 under the throne's level (07 §2.8 names none; the balance pass, pass F: at 0 no party beat phase 3)." },
+      "hpPercent": 40
+    },
+    "auto": {
+      "torchBelowLight": 51,
+      "brazierBelowLight": 76,
+      "sluiceFromTide": 2,
+      "swapOnPull": { "value": false, "note": "The textbook player takes the throne's pull rather than turn its rows inside out every 3 rounds; the swap stays the player's counter (Proposed)." },
+      "note": "The heroes' arena habits on auto (03 §3.6): a Torch below torchBelowLight (Vexa's lanterns), a brazier unless the throne is Radiant, the wheel from this tide step, a swap on the pull's tell, a pile burnt under the bell."
+    }
+  },
+  "floors": {
+    "source": "07 §2.3–§2.6, §2.10 (D-064, D-104; pass C1, Phase 7): the floors' numbers the dungeon file does not carry",
+    "trapChancePercent": {
+      "value": 25,
+      "note": "D-064: a room that is not Entry, Rest or Boss holds one trap of its zone at this chance (07 §2.5)"
+    },
+    "gauntletTraps": {
+      "min": 2,
+      "max": 3
+    },
+    "monsterRoomsPerFloor": {
+      "value": 1,
+      "note": "06 §8.2: at most one Monster room per floor"
+    },
+    "frontRowClasses": [
+      "warden",
+      "blade",
+      "shade",
+      "beast-tamer"
+    ],
+    "funeralUrns": {
+      "urns": 5,
+      "goldR": 0.04,
+      "goldChance": 60,
+      "blindChance": 25,
+      "blindDuration": 2,
+      "eggChance": 15
+    }
+  },
+  "merchant": {
+    "source": "07 §2.7, 08 §4 (D-099, D-104; pass C1, Phase 7): Dunmore Quist's cart; prices are town prices in R before his markup (economy.merchantMarkup) and Haggling",
+    "lightBonus": 15,
+    "stock": [
+      {
+        "itemId": "small-hp-potion",
+        "quantity": 4,
+        "priceR": 0.03
+      },
+      {
+        "itemId": "torch",
+        "quantity": 3,
+        "priceR": 0.02
+      },
+      {
+        "itemId": "repair-kit",
+        "quantity": 2,
+        "priceR": 0.08
+      },
+      {
+        "itemId": "skeleton-key",
+        "quantity": 1,
+        "priceR": 0.2
+      },
+      {
+        "itemId": "arrows",
+        "quantity": 2,
+        "priceR": 0.02
+      },
+      {
+        "itemId": "bolts",
+        "quantity": 1,
+        "priceR": 0.03
+      }
+    ],
+    "beforeFinalBoss": {
+      "itemId": "torch",
+      "quantity": 4,
+      "note": "D-099: the last merchant before a final boss stocks four Torches instead of the stock line’s three, one per brazier of the throne room (07 §2.7)"
+    },
+    "safeItems": {
+      "lines": 2,
+      "quantity": 2,
+      "priceR": 0.05,
+      "tag": "safe-item",
+      "zoneTagPrefix": "zone:"
+    },
+    "gear": {
+      "min": 2,
+      "max": 3
+    },
+    "stoneChancePercent": 10,
+    "stonePriceR": 0.04
+  },
+  "bands": {
+    "source": "08 R table (D-104; pass C1, Phase 7): global floors count Gravehollow's 8, then each later dungeon's 10",
+    "floors": [
+      {
+        "grade": "F",
+        "from": 1,
+        "to": 3,
+        "r": 300
+      },
+      {
+        "grade": "E",
+        "from": 4,
+        "to": 6,
+        "r": 480
+      },
+      {
+        "grade": "D",
+        "from": 7,
+        "to": 8,
+        "r": 770
+      },
+      {
+        "grade": "C",
+        "from": 9,
+        "to": 13,
+        "r": 1230
+      },
+      {
+        "grade": "B",
+        "from": 14,
+        "to": 20,
+        "r": 1970
+      },
+      {
+        "grade": "A",
+        "from": 21,
+        "to": 28,
+        "r": 3150
+      },
+      {
+        "grade": "S",
+        "from": 29,
+        "to": 32,
+        "r": 5040
+      },
+      {
+        "grade": "SS",
+        "from": 33,
+        "to": 38,
+        "r": 8060
+      }
+    ],
+    "chestBandCap": {
+      "value": "A",
+      "note": "08 §10: a chest band is the deepest floor cleared, capped at A, so SS is never a chest's centre"
+    }
+  },
+  "items": {
+    "source": "08 §1–§7, §11 (pass B, Phase 7)",
+    "armorPercentStep": {
+      "fromGrade": "B",
+      "pp": 1,
+      "note": "08 §2: percentage secondaries step +1 pp per grade from B upward (a God Jerkin +6% Dodge): B keeps the F line"
+    },
+    "lootItemChanceByCentre": {
+      "F": 35,
+      "E": 40,
+      "D": 45,
+      "C": 50
+    },
+    "namedUniquePercent": {
+      "value": 10,
+      "note": "08 §10.1: named uniques are 10% of any roll at B+ for a grade that has them"
+    }
+  },
+  "chests": {
+    "source": "07 §7, 08 §10 (pass B, Phase 7)",
+    "keyOpensKinds": [
+      "gear",
+      "petEgg",
+      "materialCrate",
+      "skillTome",
+      "wayfarer"
+    ],
+    "keyOpensKindsNote": {
+      "value": "any",
+      "note": "07 §7: a Standard Key opens one Standard chest free, a Grand Key one Grand chest; read as any chest of that tier (Phase 7, Proposed)"
+    }
   }
 }

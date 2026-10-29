@@ -1,0 +1,48 @@
+{
+  "id": "ebony-rod",
+  "name": "Ebony Rod",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "A",
+  "materialLadder": "wood",
+  "materialRung": 5,
+  "weaponType": "wand",
+  "armorFamily": null,
+  "hands": 1,
+  "damageType": "fire",
+  "weight": 1000,
+  "baseStats": {
+    "attackSpell": 49,
+    "mana": 22
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 15
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 8,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 4.07,
+  "value": 1600,
+  "classLock": [
+    "arcanist"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-rod-01",
+    "tintPrimary": "#2a211c",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "skysteel"
+  }
+}

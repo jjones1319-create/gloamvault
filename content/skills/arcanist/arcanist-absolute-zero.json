@@ -1,0 +1,55 @@
+{
+  "id": "arcanist-absolute-zero",
+  "classId": "arcanist",
+  "school": "rime",
+  "tier": 4,
+  "name": "Absolute Zero",
+  "description": "1.4× Frost to every enemy in both rows; every target already Chilled is Frozen 1 turn (Large and Huge foes and bosses take Chill instead, as the status rules say). Heavy cast.",
+  "type": "active",
+  "cost": 38,
+  "weight": 1400,
+  "target": "allEnemies",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1.4,
+      "damageType": "frost"
+    },
+    {
+      "kind": "custom",
+      "customId": "freeze-if-chilled",
+      "status": "freeze",
+      "duration": 1,
+      "note": "a target holding Chill gets `status` for `duration`; after the hit, so the cast does not shatter its own Freeze"
+    }
+  ],
+  "prerequisiteId": "arcanist-avalanche",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "1.6× each.",
+    "effects": [
+      {
+        "kind": "damage",
+        "multiplier": 1.6,
+        "damageType": "frost"
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "control"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 80
+  }
+}

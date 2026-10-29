@@ -1,0 +1,45 @@
+{
+  "id": "heroic-seekers-talisman",
+  "name": "Heroic Seeker's Talisman",
+  "slot": "talisman",
+  "kind": "talisman",
+  "grade": "A",
+  "materialLadder": null,
+  "materialRung": null,
+  "weaponType": null,
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "detection": 9
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 8,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1,
+  "value": 1280,
+  "classLock": [],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "talisman-seekers-01",
+    "tintPrimary": "#9ec5e0",
+    "tintSecondary": "#0ea5e9",
+    "trimMetal": "skysteel"
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "id": "arcanist-rewind",
+  "classId": "arcanist",
+  "school": "arcana",
+  "tier": 5,
+  "name": "Rewind",
+  "description": "One ally’s HP, pool and statuses return to what they were at the start of their previous turn. It cannot revive.",
+  "type": "active",
+  "cost": 45,
+  "weight": 1000,
+  "target": "ally",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "rewind-ally",
+      "note": "a stub until the fight keeps each actor’s turn-start snapshot (fight.ts takeTurn); Tier V is locked until Segment 3"
+    }
+  ],
+  "prerequisiteId": "arcanist-mass-haste",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Also restores Momentum.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "rewind-ally",
+        "amount": 1,
+        "note": "amount 1: Momentum returns too"
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "heal",
+    "utility"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "heal",
+    "priority": 60
+  }
+}

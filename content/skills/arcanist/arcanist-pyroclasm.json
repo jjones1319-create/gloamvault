@@ -1,0 +1,55 @@
+{
+  "id": "arcanist-pyroclasm",
+  "classId": "arcanist",
+  "school": "evocation",
+  "tier": 4,
+  "name": "Pyroclasm",
+  "description": "1.5× Fire to every enemy in both rows; every Burn on them is consumed and deals all its remaining ticks at once. Heavy cast.",
+  "type": "active",
+  "cost": 36,
+  "weight": 1400,
+  "target": "allEnemies",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1.5,
+      "damageType": "fire"
+    },
+    {
+      "kind": "custom",
+      "customId": "consume-dot-burst",
+      "status": "burn",
+      "multiplier": 1,
+      "note": "each target’s Burn is consumed: its remaining ticks × stacks land at once, as the DoT would (no miss, no crit)"
+    }
+  ],
+  "prerequisiteId": "arcanist-meteor",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "1.7× each.",
+    "effects": [
+      {
+        "kind": "damage",
+        "multiplier": 1.7,
+        "damageType": "fire"
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "dot"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 80
+  }
+}

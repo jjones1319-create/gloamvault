@@ -1,0 +1,59 @@
+{
+  "id": "skysteel-kris",
+  "name": "Skysteel Kris",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "A",
+  "materialLadder": "metal",
+  "materialRung": 5,
+  "weaponType": "dagger",
+  "armorFamily": null,
+  "hands": 1,
+  "damageType": "pierce",
+  "weight": 800,
+  "baseStats": {
+    "attackPhys": 36
+  },
+  "requirements": {
+    "strength": 12,
+    "wisdom": 0
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 8,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 4.07,
+  "value": 1600,
+  "classLock": [
+    "shade",
+    "blade"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": {
+    "text": "10% Bleed on hit",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "bleed",
+        "chance": 10,
+        "target": "enemy",
+        "note": "on hit"
+      }
+    ]
+  },
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-kris-01",
+    "tintPrimary": "#9ec5e0",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "skysteel"
+  }
+}

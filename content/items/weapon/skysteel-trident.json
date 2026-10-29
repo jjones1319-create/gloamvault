@@ -1,0 +1,58 @@
+{
+  "id": "skysteel-trident",
+  "name": "Skysteel Trident",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "A",
+  "materialLadder": "metal",
+  "materialRung": 5,
+  "weaponType": "spear",
+  "armorFamily": null,
+  "hands": 2,
+  "damageType": "pierce",
+  "weight": 1000,
+  "baseStats": {
+    "attackPhys": 67
+  },
+  "requirements": {
+    "strength": 17,
+    "wisdom": 0
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 8,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 4.07,
+  "value": 2400,
+  "classLock": [
+    "ranger"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": {
+    "text": "10% Bleed on hit",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "bleed",
+        "chance": 10,
+        "target": "enemy",
+        "note": "on hit"
+      }
+    ]
+  },
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-trident-01",
+    "tintPrimary": "#9ec5e0",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "skysteel"
+  }
+}

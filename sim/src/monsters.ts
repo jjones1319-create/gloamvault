@@ -166,14 +166,17 @@ export function monsterLevelOnFloor(def: MonsterDef, floorLevel: number): number
 }
 
 /** Party-size scaling (03 §11.2, 06 §8.1): count ×0.6/0.8/1.0/1.2 (min 1, specials and monsters never removed) and HP ×0.7/0.85/1.0/1.15. */
-export function partyScale(t: Tuning, partySize: number): { countPercent: number; hpPercent: number; damagePercent: number } {
+export function partyScale(t: Tuning, partySize: number, boss = false): { countPercent: number; hpPercent: number; damagePercent: number } {
   const i = Math.max(0, Math.min(3, partySize - 1))
   // 03 §11.2 scales count and HP; the damage line is D-080's (a solo hero takes every blow the scaled pack deals).
   const damage = (t.dungeon.partyScaling as { damage?: number[] }).damage
+  // D-128 (Proposed): a boss fight — the boss and every add of its arena — reads HP and damage from its own row,
+  // `partyScaling.boss`; the count rule stays the fights' (06 §8.1). No boss row: the fights' rows.
+  const row = boss ? (t.dungeon.partyScaling as { boss?: { hp?: number[]; damage?: number[] } }).boss : undefined
   return {
     countPercent: roundHalfUp((t.dungeon.partyScaling.count[i] ?? 1) * 100),
-    hpPercent: roundHalfUp((t.dungeon.partyScaling.hp[i] ?? 1) * 100),
-    damagePercent: roundHalfUp((damage?.[i] ?? 1) * 100),
+    hpPercent: roundHalfUp(((row?.hp ?? t.dungeon.partyScaling.hp)[i] ?? 1) * 100),
+    damagePercent: roundHalfUp(((row?.damage ?? damage)?.[i] ?? 1) * 100),
   }
 }
 

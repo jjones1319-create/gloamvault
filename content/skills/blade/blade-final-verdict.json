@@ -1,0 +1,63 @@
+{
+  "id": "blade-final-verdict",
+  "classId": "blade",
+  "school": "executioner",
+  "tier": 5,
+  "name": "Final Verdict",
+  "description": "4.0× Slash to a front-row enemy; if it kills, you gain Haste 2 turns and the next ally blow deals +30%.",
+  "type": "active",
+  "cost": 50,
+  "weight": 1400,
+  "target": "enemyFront",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 4,
+      "damageType": "slash",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "custom",
+      "customId": "on-kill-haste-ally-damage",
+      "duration": 2,
+      "percent": 30,
+      "note": "on a kill: Haste duration turns for you; the first ally action after it that deals damage deals +percent%"
+    }
+  ],
+  "prerequisiteId": "blade-guillotine",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "requirements": {
+    "weaponTypes": [
+      "greatsword",
+      "greataxe"
+    ]
+  },
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "4.5×.",
+    "effects": [
+      {
+        "kind": "damage",
+        "multiplier": 4.5,
+        "damageType": "slash",
+        "scalesWith": "strength"
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "buff"
+  ],
+  "xpTags": [
+    "strength",
+    "perception"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 75
+  }
+}

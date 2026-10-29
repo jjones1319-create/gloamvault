@@ -1,0 +1,63 @@
+{
+  "id": "blade-exsanguinate",
+  "classId": "blade",
+  "school": "bloodletter",
+  "tier": 4,
+  "name": "Exsanguinate",
+  "description": "2.4× Slash to a front-row enemy, +50% per turn of Bleed left on it (cap +150%); removes the Bleed.",
+  "type": "active",
+  "cost": 32,
+  "weight": 1000,
+  "target": "enemyFront",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "damage-bonus-per-status-turn",
+      "status": "bleed",
+      "amount": 150,
+      "percent": 50,
+      "note": "the skill's damage line deals +percent% per turn of the status left on the target (cap amount%)"
+    },
+    {
+      "kind": "damage",
+      "multiplier": 2.4,
+      "damageType": "slash",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "removeStatus",
+      "status": "bleed"
+    }
+  ],
+  "prerequisiteId": "blade-crimson-field",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Cap +200%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "damage-bonus-per-status-turn",
+        "status": "bleed",
+        "amount": 200,
+        "percent": 50
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "dot"
+  ],
+  "xpTags": [
+    "strength",
+    "agility"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 70
+  }
+}

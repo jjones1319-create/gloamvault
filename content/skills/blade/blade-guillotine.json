@@ -1,0 +1,70 @@
+{
+  "id": "blade-guillotine",
+  "classId": "blade",
+  "school": "executioner",
+  "tier": 4,
+  "name": "Guillotine",
+  "description": "2.6× Slash to a front-row enemy; against a target below 40% HP, 5.2×; it never misses a Marked target.",
+  "type": "active",
+  "cost": 35,
+  "weight": 1400,
+  "target": "enemyFront",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "sure-hit-vs-status",
+      "status": "mark",
+      "note": "this action cannot miss a target holding the status"
+    },
+    {
+      "kind": "damage",
+      "multiplier": 2.6,
+      "damageType": "slash",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "custom",
+      "customId": "execute-multiplier-below-hp",
+      "multiplier": 5.2,
+      "damageType": "slash",
+      "percent": 40,
+      "note": "the damage line uses multiplier instead when the target is under percent% HP (D-099: no execute above 6.0×)"
+    }
+  ],
+  "prerequisiteId": "blade-skull-splitter",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "requirements": {
+    "weaponTypes": [
+      "greatsword",
+      "greataxe"
+    ]
+  },
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Threshold 45%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "execute-multiplier-below-hp",
+        "multiplier": 5.2,
+        "damageType": "slash",
+        "percent": 45
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget"
+  ],
+  "xpTags": [
+    "strength",
+    "perception"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 70
+  }
+}

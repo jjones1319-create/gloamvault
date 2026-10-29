@@ -1,0 +1,55 @@
+{
+  "id": "blade-quicksilver",
+  "classId": "blade",
+  "school": "iron-dance",
+  "tier": 4,
+  "name": "Quicksilver",
+  "description": "Act again at once: 800 energy back on the timeline. Once per fight.",
+  "type": "active",
+  "cost": 28,
+  "weight": 800,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "timeline-refund-per-fight",
+      "amount": 1,
+      "energy": 800,
+      "target": "self",
+      "note": "energy back to your accumulator, at most amount times per fight"
+    }
+  ],
+  "prerequisiteId": "blade-momentum-surge",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "requirements": {
+    "dualWield": true
+  },
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Twice per fight.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "timeline-refund-per-fight",
+        "amount": 2,
+        "energy": 800,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "mobility",
+    "buff"
+  ],
+  "xpTags": [
+    "agility"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 35
+  }
+}

@@ -66,6 +66,12 @@ export interface FloorSpec {
   readonly merchant: boolean
   readonly bossId: string | null
   readonly hunterClock?: number | null
+  /**
+   * The boss's arena room (07 §2.8; the boss's `arena.room`): §2.10's "Boss templates are fixed" — the Boss node is
+   * laid out from this template alone when the zone has it (the Vault holds two boss rooms: Naesa's chapel on F7, the
+   * throne on F8). Absent or null: any of the zone's boss templates.
+   */
+  readonly bossTemplateId?: string | null
 }
 
 export interface TemplateDoorSpec {
@@ -468,10 +474,19 @@ function buildGraph(ctx: BuildContext, rng: Rng): Graph {
   }
 
   // G11: a Merchant exactly once when the floor says so (the last Spine Room before the Stairs if none rolled);
-  // none otherwise — the floor table (07 §2.3) owns which floors have one.
+  // none otherwise — the floor table (07 §2.3) owns which floors have one. On a boss floor it is the Spine Room just
+  // before the Anteroom (07 §2.7, §8.1 #4: F6's barrow, F7's raft), whatever rolled.
   let merchant: Node | null = null
   const rolledMerchants = inWalkOrder('merchant', null)
-  if (floor.merchant) {
+  if (floor.merchant && anteroom) {
+    for (const m of rolledMerchants) m.kind = 'fight'
+    const last = segs[segs.length - 1] ?? null
+    if (last) {
+      if (degree(last) > (ctx.capacity.get('merchant') ?? 0)) for (const c of last.children.slice()) detachSide(c)
+      last.kind = 'merchant'
+      merchant = last
+    }
+  } else if (floor.merchant) {
     if (rolledMerchants.length > 0) {
       merchant = rolledMerchants[0] ?? null
       for (const m of rolledMerchants.slice(1)) m.kind = 'fight'
@@ -600,7 +615,8 @@ function buildGraph(ctx: BuildContext, rng: Rng): Graph {
     if (!cutLastBranch() && !shortenKeyBranch() && !dropSeg()) break
   }
   while (roomCount() < floor.roomsMin) {
-    const tail = anteroom ?? exit
+    // A boss floor's Merchant stays the room just before the Anteroom (G11): a new Seg goes in before the Merchant.
+    const tail = anteroom && merchant && merchant.next === anteroom ? merchant : (anteroom ?? exit)
     const before = tail.parent
     if (!before) break
     const seg = newNode(ctx, rollRoom(ctx, rng, 2))
@@ -797,6 +813,14 @@ interface LayoutContext {
   /** Placements tried per child per level before the failure is handed back up. */
   readonly alternatives: number
   readonly relaxed: boolean
+  /** The pinned boss room (FloorSpec.bossTemplateId), when the zone has it. */
+  readonly bossTemplateId: string | null
+}
+
+/** A template may host a node: its kinds, and the pinned boss room for the Boss (07 §2.10 "Boss templates are fixed"). */
+function hostsNode(ctx: LayoutContext, t: TemplateSpec, node: Node): boolean {
+  if (!t.kinds.includes(node.kind)) return false
+  return node.kind !== 'boss' || ctx.bossTemplateId === null || t.id === ctx.bossTemplateId
 }
 
 function layoutFloor(ctx: LayoutContext, graph: Graph, rng: Rng): Map<Node, Placement> | null {
@@ -816,7 +840,7 @@ function layoutFloor(ctx: LayoutContext, graph: Graph, rng: Rng): Map<Node, Plac
     const deg = degree(node)
     let least = Infinity
     for (const t of ctx.zoneTemplates) {
-      if (t.kinds.includes(node.kind) && t.doors.length >= deg) least = Math.min(least, t.footprint.w * t.footprint.h)
+      if (hostsNode(ctx, t, node) && t.doors.length >= deg) least = Math.min(least, t.footprint.w * t.footprint.h)
     }
     minCells.set(node, Number.isFinite(least) ? Math.max(1, least) : 1)
   }
@@ -908,7 +932,7 @@ function layoutFloor(ctx: LayoutContext, graph: Graph, rng: Rng): Map<Node, Plac
     const deg = degree(node)
     const recent = placed.slice(-2).map((p) => p.shape.tpl.id)
     const pool = ctx.zoneTemplates.filter(
-      (t) => t.kinds.includes(node.kind) && t.doors.length >= deg && (ctx.relaxed || (useCount.get(t.id) ?? 0) < 2),
+      (t) => hostsNode(ctx, t, node) && t.doors.length >= deg && (ctx.relaxed || (useCount.get(t.id) ?? 0) < 2),
     )
     const out: TemplateSpec[] = []
     const left = pool.slice()
@@ -1163,6 +1187,7 @@ export function generateFloor(input: GeneratorInput): FloorGraph {
         budget: g.placementBudget,
         alternatives: Math.max(1, g.placementAlternatives),
         relaxed: retries >= g.relaxAfterRetries,
+        bossTemplateId: input.floor.bossTemplateId && zoneTemplates.some((t) => t.id === input.floor.bossTemplateId) ? input.floor.bossTemplateId : null,
       },
       graph,
       layoutRng,

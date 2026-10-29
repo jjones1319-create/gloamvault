@@ -94,10 +94,6 @@
       {
         "if": "a bandit ally attacked a hero last turn (target: that hero)",
         "then": "bite"
-      },
-      {
-        "if": "always",
-        "then": "bite"
       }
     ],
     "fleesAtPercent": 0

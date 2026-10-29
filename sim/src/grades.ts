@@ -102,19 +102,42 @@ export function rollGrade(rng: Rng, table: GradeTable): string {
   return GRADE_ORDER[table.centreIndex] as string
 }
 
-/** The floor's centre grade by global floor (08's band table): F 1–3 · E 4–6 · D 7–10 · C 11–15 · B 16–22 · A 23–30 · S 31–34 · SS 35+. */
-export const BAND_FLOORS: readonly { grade: string; from: number; to: number; r: number }[] = [
+/** One row of 08's R table: the global floors of a band, its centre grade and R. */
+export interface BandRow {
+  readonly grade: string
+  readonly from: number
+  readonly to: number
+  readonly r: number
+}
+
+/**
+ * The band table's home is tuning.json → `bands.floors` (08's R table, D-104: F 1–3 · E 4–6 · D 7–8 · C 9–13 ·
+ * B 14–20 · A 21–28 · S 29–32 · SS 33–38; global floors count Gravehollow's 8, then each later dungeon's). This copy
+ * serves only the callers that hold no tuning yet (town.ts `townR` and `chestBand`, which take a profile alone);
+ * sim/test/c1-floors.test.ts fails the day it and the file disagree. Everything that has the tuning passes it.
+ */
+export const SHIPPED_BANDS: readonly BandRow[] = [
   { grade: 'F', from: 1, to: 3, r: 300 },
   { grade: 'E', from: 4, to: 6, r: 480 },
-  { grade: 'D', from: 7, to: 10, r: 770 },
-  { grade: 'C', from: 11, to: 15, r: 1230 },
-  { grade: 'B', from: 16, to: 22, r: 1970 },
-  { grade: 'A', from: 23, to: 30, r: 3150 },
-  { grade: 'S', from: 31, to: 34, r: 5040 },
-  { grade: 'SS', from: 35, to: 99, r: 8060 },
+  { grade: 'D', from: 7, to: 8, r: 770 },
+  { grade: 'C', from: 9, to: 13, r: 1230 },
+  { grade: 'B', from: 14, to: 20, r: 1970 },
+  { grade: 'A', from: 21, to: 28, r: 3150 },
+  { grade: 'S', from: 29, to: 32, r: 5040 },
+  { grade: 'SS', from: 33, to: 38, r: 8060 },
 ]
 
-export function bandForFloor(globalFloor: number): { grade: string; r: number } {
-  for (const b of BAND_FLOORS) if (globalFloor >= b.from && globalFloor <= b.to) return b
-  return BAND_FLOORS[BAND_FLOORS.length - 1] as { grade: string; r: number }
+/** The pinned copy under its Phase 6 name, for the callers without the tuning (contracts.ts bandOfFloor and rForBand, pass D). */
+export const BAND_FLOORS: readonly BandRow[] = SHIPPED_BANDS
+
+/** The band rows: the tuning's when given (the source), else the pinned copy. */
+export function bandRows(t?: Tuning): readonly BandRow[] {
+  return t?.bands?.floors ?? SHIPPED_BANDS
+}
+
+/** The band of a global floor; past the last row, the last band (SS). */
+export function bandForFloor(globalFloor: number, t?: Tuning): BandRow {
+  const rows = bandRows(t)
+  for (const b of rows) if (globalFloor >= b.from && globalFloor <= b.to) return b
+  return rows[rows.length - 1] as BandRow
 }

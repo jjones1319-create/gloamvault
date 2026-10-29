@@ -9,7 +9,7 @@
     "name": { "type": "string", "minLength": 1, "maxLength": 24, "description": "Unique across the cast (rule 34)." },
     "speciesId": { "$ref": "common.schema.json#/$defs/id" },
     "classId": { "$ref": "common.schema.json#/$defs/id" },
-    "grade": { "type": "string", "enum": ["D", "C", "B", "A"], "description": "Sets the draw odds and the creation points: 6 + 1 per grade above D." },
+    "grade": { "type": "string", "enum": ["D", "C", "B", "A", "S"], "description": "Sets the draw odds and the creation points: 6 + 1 per grade above D. S (Phase 7) comes only from the Grand Wayfarer Chest, sold from band E (S-grade wayfarers for deeper bands)." },
     "freePoints": {
       "type": "object",
       "description": "Creation points by attribute, 1–3 each (03 §2.3); the total is 6 + 1 per grade above D (rule 34).",

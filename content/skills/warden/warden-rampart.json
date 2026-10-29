@@ -1,0 +1,60 @@
+{
+  "id": "warden-rampart",
+  "classId": "warden",
+  "school": "bulwark",
+  "tier": 4,
+  "name": "Rampart",
+  "description": "Every ally gains a Shield worth 20% of your max HP for 2 turns; you gain Regen 5% max HP for 2 turns.",
+  "type": "active",
+  "cost": 30,
+  "weight": 1000,
+  "target": "allAllies",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "shield-allies-percent-of-own-max-hp",
+      "duration": 2,
+      "percent": 20,
+      "target": "allAllies",
+      "note": "every ally, you too, gains Shield = 20% of the Warden's max HP"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "regen",
+      "duration": 2,
+      "percent": 5,
+      "target": "self"
+    }
+  ],
+  "prerequisiteId": "warden-bone-knights-stand",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "The Shields also grant Fortify.",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "fortify",
+        "duration": 2,
+        "target": "allAllies"
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "shield",
+    "heal",
+    "buff"
+  ],
+  "xpTags": [
+    "endurance"
+  ],
+  "aiHints": {
+    "role": "defend",
+    "priority": 60
+  }
+}

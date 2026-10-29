@@ -1,0 +1,59 @@
+{
+  "id": "shade-heist",
+  "classId": "shade",
+  "school": "larceny",
+  "tier": 4,
+  "name": "Heist",
+  "description": "2.4× Pierce to a front-row enemy; its next part roll is made at ×2 (as a part-break); against a bandit, steals its held item.",
+  "type": "active",
+  "cost": 30,
+  "weight": 1000,
+  "target": "enemyFront",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 2.4,
+      "damageType": "pierce"
+    },
+    {
+      "kind": "custom",
+      "customId": "part-break",
+      "multiplier": 2,
+      "note": "the target’s rare-part roll is multiplied by multiplier (03 §6.5)"
+    },
+    {
+      "kind": "custom",
+      "customId": "steal-bandit-item",
+      "note": "a bandit’s held item (a Small HP Potion), once per enemy"
+    }
+  ],
+  "prerequisiteId": "shade-mug",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Part roll ×3.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "part-break",
+        "multiplier": 3
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "utility"
+  ],
+  "xpTags": [
+    "agility",
+    "perception"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 55
+  }
+}

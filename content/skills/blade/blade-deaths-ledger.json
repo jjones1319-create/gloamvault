@@ -1,0 +1,52 @@
+{
+  "id": "blade-deaths-ledger",
+  "classId": "blade",
+  "school": "executioner",
+  "tier": 4,
+  "name": "Death's Ledger",
+  "description": "Every Executioner execute threshold is 10 points higher; a crit against a target below the threshold deals +50% Crit Damage.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "execute-threshold-bonus",
+      "amount": 10,
+      "percent": 50,
+      "target": "self",
+      "note": "Executioner execute thresholds +amount points; a crit under the threshold +percent Crit Damage"
+    }
+  ],
+  "prerequisiteId": "blade-grim-harvest",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Thresholds +15.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "execute-threshold-bonus",
+        "amount": 15,
+        "percent": 50,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff"
+  ],
+  "xpTags": [
+    "strength",
+    "perception"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 0
+  }
+}

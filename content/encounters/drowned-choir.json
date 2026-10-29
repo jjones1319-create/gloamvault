@@ -1,0 +1,25 @@
+{
+  "id": "drowned-choir",
+  "tableId": "vault-a",
+  "dungeonId": "gravehollow-keep",
+  "floorBand": {
+    "min": 7,
+    "max": 7
+  },
+  "name": "Drowned Choir",
+  "composition": [
+    {
+      "monsterId": "drowned-thrall",
+      "count": 3,
+      "row": "front"
+    },
+    {
+      "monsterId": "vault-lantern",
+      "count": 1,
+      "row": "back"
+    }
+  ],
+  "weight": 15,
+  "ambushModifier": 5,
+  "eliteAllowed": true
+}

@@ -1,0 +1,25 @@
+{
+  "id": "the-maw",
+  "tableId": "vault-e",
+  "dungeonId": "gravehollow-keep",
+  "floorBand": {
+    "min": 7,
+    "max": 7
+  },
+  "name": "The Maw",
+  "composition": [
+    {
+      "monsterId": "deep-maw",
+      "count": 1,
+      "row": "front"
+    },
+    {
+      "monsterId": "deep-tentacle",
+      "count": 1,
+      "row": "front"
+    }
+  ],
+  "weight": 8,
+  "ambushModifier": 5,
+  "eliteAllowed": false
+}

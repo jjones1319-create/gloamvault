@@ -3,7 +3,7 @@ import type { Content } from '../../../sim/src/content.ts'
 import { SAVE_VERSION as HERO_RECORD_VERSION } from '../../../sim/src/hero.ts'
 import { clampLook, defaultLook, LOOK_INDEX_MAX } from '../../../sim/src/look.ts'
 import { newProfile, PROFILE_VERSION, type Profile } from '../../../sim/src/town.ts'
-import type { HeroRecord, ItemInstance } from '../../../sim/src/types/content.ts'
+import type { HeroRecord, ItemInstance, PetInstance } from '../../../sim/src/types/content.ts'
 import { BODY_FRAMES, type DeathRule } from '../../../sim/src/types/enums.ts'
 import { KEY_PREFIX, KEYS, safeGet, safeSet, type KeyValueStore } from './db.ts'
 
@@ -39,6 +39,13 @@ const MIGRATIONS: Record<number, (raw: Record<string, unknown>, content: Content
     if (active && typeof active === 'object' && Array.isArray(active.party)) out.activeDelve = { ...active, party: active.party.map((h) => withLook(content, h)) }
     return out
   },
+  // 3 → 4 (Phase 7): every new field is optional and takes its default when it is missing, so a version-3 save needs
+  // nothing changed — the Quest Board (`contracts`, posted fresh on the next visit), kills by preset
+  // (`progress.bossKillsByDifficulty`, empty: Hard opens on the first final-boss kill), each hero's quiver (missing =
+  // full), techniques witnessed and the Insight pity (none yet), a pet's trait uses (rank 1), a Tome's `skillId` on an
+  // item, and on a delve in progress `options.bossKills` / `purseIn` (a delve begun before the update replays with no
+  // first-kill record and no purse carried in, as it was begun).
+  3: (raw) => raw,
 }
 
 export function migrate(raw: Record<string, unknown>, content: Content | null = null): Record<string, unknown> {
@@ -63,6 +70,21 @@ const LookSchema = v.fallback(v.optional(v.object({ frame: v.fallback(v.optional
 
 const int = (min = 0) => v.fallback(v.pipe(v.number(), v.integer(), v.minValue(min)), min)
 const record = <T extends v.GenericSchema>(item: T) => v.fallback(v.record(v.string(), item), {} as never)
+
+/**
+ * The Quest Board (07 §7; Phase 7, optional): a slot's numbers clamped, a board that does not parse dropped whole (the
+ * board posts a fresh one); slots of contracts the content no longer has are dropped in validateProfile.
+ */
+const ContractSlotSchema = v.object({ contractId: v.string(), band: int(1), progress: int(), goal: int(1), claimed: v.fallback(v.boolean(), false) })
+const ContractBoardSchema = v.object({
+  day: v.pipe(v.number(), v.integer()),
+  week: v.pipe(v.number(), v.integer()),
+  dailies: v.fallback(v.array(ContractSlotSchema), []),
+  weekly: v.fallback(v.nullable(ContractSlotSchema), null),
+  keysWeek: v.pipe(v.number(), v.integer()),
+  keysStandard: int(),
+  keysGrand: int(),
+})
 
 /** The envelope's shape: numbers clamped to their range, every list defaulted when missing. Heroes are checked below. */
 const ProfileSchema = v.object({
@@ -107,6 +129,8 @@ const ProfileSchema = v.object({
     v.object({
       deepest: record(v.pipe(v.number(), v.integer(), v.minValue(0))),
       bossKills: record(v.pipe(v.number(), v.integer(), v.minValue(0))),
+      // 07 §6.1 (Phase 7, optional): kills by preset — Hard and Dread open on them. Unknown presets are dropped below.
+      bossKillsByDifficulty: v.fallback(v.optional(v.record(v.string(), record(v.pipe(v.number(), v.integer(), v.minValue(0))))), undefined),
       delves: int(),
       clears: int(),
       wipes: int(),
@@ -117,7 +141,28 @@ const ProfileSchema = v.object({
   seedCounter: int(),
   activeDelve: v.fallback(v.nullable(v.looseObject({ options: v.looseObject({ dungeonId: v.string() }), party: v.array(v.looseObject({ id: v.string() })), commands: v.array(v.looseObject({ kind: v.string() })) })), null),
   lastDelve: v.fallback(v.nullable(v.looseObject({ outcome: v.string() })), null),
+  contracts: v.fallback(v.optional(ContractBoardSchema), undefined),
 })
+
+/** A pet's trait growth (03 §9; Phase 7, optional): uses a whole number ≥ 0, the rank inside the tuning's ranks. */
+function clampPet<P extends PetInstance>(content: Content, pet: P): P {
+  const maxRank = Math.max(1, content.tuning.pets.traitGrowth.usesForRank.length)
+  const traitRank = Math.min(maxRank, Math.max(1, Math.round(Number.isFinite(pet.traitRank) ? pet.traitRank : 1)))
+  const xp = typeof pet.traitXp === 'number' && Number.isFinite(pet.traitXp) ? Math.max(0, Math.round(pet.traitXp)) : undefined
+  const { traitXp: _drop, ...rest } = pet
+  return { ...rest, traitRank, ...(xp !== undefined ? { traitXp: xp } : {}) } as P
+}
+
+/** Arrows and bolts (08 §4, D-099; Phase 7, optional): ammo items the content knows, counts 0 … ammo.carryMax. */
+function clampQuiver(content: Content, quiver: unknown): Record<string, number> | undefined {
+  if (typeof quiver !== 'object' || quiver === null || Array.isArray(quiver)) return undefined
+  const out: Record<string, number> = {}
+  for (const [id, n] of Object.entries(quiver as Record<string, unknown>)) {
+    if (!content.items.get(id)?.ammo || typeof n !== 'number' || !Number.isFinite(n)) continue
+    out[id] = Math.min(content.tuning.ammo.carryMax, Math.max(0, Math.round(n)))
+  }
+  return Object.keys(out).length > 0 ? out : undefined
+}
 
 export interface LoadReport {
   profile: Profile | null
@@ -127,6 +172,13 @@ export interface LoadReport {
 
 function knownItem(content: Content, inst: ItemInstance | null, notes: string[], where: string): ItemInstance | null {
   if (!inst) return null
+  // Phase 7: a Skill Tome names its skill (skillId); a Tome of a skill the game no longer has is put away like an unknown item.
+  if (inst.skillId !== undefined) {
+    if (typeof inst.skillId !== 'string' || !content.skills.has(inst.skillId)) {
+      notes.push(`${where}: a Skill Tome of a skill the game no longer has was put away`)
+      return null
+    }
+  }
   if (content.items.has(inst.itemId)) {
     const durability = Math.max(0, Math.min(100, Math.round(inst.durability ?? 100)))
     const maxDurability = Math.max(0, Math.min(100, Math.round(inst.maxDurability ?? 100)))
@@ -134,6 +186,26 @@ function knownItem(content: Content, inst: ItemInstance | null, notes: string[],
   }
   notes.push(`${where}: an item the game no longer has (${inst.itemId}) was put away`)
   return null
+}
+
+/**
+ * Phase 7 (pass A), both optional: the witnessed uses of techniques not yet learned (a skill of the game's that the hero
+ * does not know → a whole number 0–999), and the Insight pity (0 … pityUses). Anything else is dropped.
+ */
+function clampWitness(content: Content, raw: unknown, known: ReadonlySet<string>): Record<string, number> | undefined {
+  if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) return undefined
+  const out: Record<string, number> = {}
+  for (const [id, n] of Object.entries(raw as Record<string, unknown>)) {
+    if (!content.skills.has(id) || known.has(id) || typeof n !== 'number' || !Number.isFinite(n)) continue
+    const v = Math.max(0, Math.min(999, Math.round(n)))
+    if (v > 0) out[id] = v
+  }
+  return out
+}
+
+function clampInsightPity(content: Content, raw: unknown): number | undefined {
+  if (typeof raw !== 'number' || !Number.isFinite(raw)) return undefined
+  return Math.max(0, Math.min(content.tuning.skills.insight.pityUses, Math.round(raw)))
 }
 
 /** A hero that still makes sense against the loaded content, or null with a note. */
@@ -162,9 +234,16 @@ function repairHero(content: Content, raw: HeroRecord, notes: string[]): HeroRec
   const keep = (id: string | null) => (id && known.has(id) ? id : null)
   const loadout = { ...raw.loadout, actives: raw.loadout.actives.map(keep) as never, passives: raw.loadout.passives.map(keep) as never }
   const bag = (raw.bag ?? []).map((i) => knownItem(content, i, notes, `${raw.name} (bag)`)).filter((i): i is ItemInstance => i !== null)
-  const petInstance = raw.petInstance && content.pets.has(raw.petInstance.petId) ? raw.petInstance : null
+  const petInstance = raw.petInstance && content.pets.has(raw.petInstance.petId) ? clampPet(content, raw.petInstance) : null
+  const quiver = clampQuiver(content, raw.quiver)
+  const techniqueWitness = clampWitness(content, raw.techniqueWitness, known)
+  const insightPity = clampInsightPity(content, raw.insightPity)
+  const { quiver: _quiver, techniqueWitness: _witness, insightPity: _pity, ...kept } = raw
   return {
-    ...raw,
+    ...kept,
+    ...(quiver ? { quiver } : {}),
+    ...(techniqueWitness ? { techniqueWitness } : {}),
+    ...(insightPity !== undefined ? { insightPity } : {}),
     // Phase 5: the look fits the species (a tone or preset the species no longer has falls back to the id's own).
     look: clampLook(raw.look, content.species.get(raw.speciesId), raw.id),
     level: Math.max(1, Math.round(raw.level ?? 1)),
@@ -195,7 +274,7 @@ export function validateProfile(content: Content, raw: unknown): LoadReport {
     const armory = p.armory.map((i) => knownItem(content, i as ItemInstance, notes, 'armory')).filter((i): i is ItemInstance => i !== null)
     const materials = Object.fromEntries(Object.entries(p.materials).filter(([id]) => content.items.has(id) || id === 'divine-shard'))
     const eggs = p.eggs.filter((e) => content.pets.has(e.petId))
-    const stables = p.stables.filter((s) => content.pets.has(s.petId))
+    const stables = p.stables.filter((s) => content.pets.has(s.petId)).map((s) => clampPet(content, s))
     let activeDelve = p.activeDelve
     if (activeDelve && (!content.dungeons.has(activeDelve.options.dungeonId) || activeDelve.party.some((h) => !ids.has(h.id)))) {
       notes.push('A delve in progress could not be resumed; the party is back in town as it went in.')
@@ -215,6 +294,12 @@ export function validateProfile(content: Content, raw: unknown): LoadReport {
     )
     const legacies = p.legacies.filter((l) => l.xp > 0)
     const living = heroes.filter((h) => !deadIds.has(h.id))
+    // 07 §6.1: kills by preset keep the three presets only.
+    const byDifficulty = p.progress.bossKillsByDifficulty
+    const progress = byDifficulty === undefined ? p.progress : { ...p.progress, bossKillsByDifficulty: Object.fromEntries(Object.entries(byDifficulty).filter(([d]) => d === 'normal' || d === 'hard' || d === 'dread')) }
+    // 07 §7: a board slot whose contract the content no longer has is dropped; progress never passes the goal.
+    const slot = (x: NonNullable<Profile['contracts']>['weekly']) => (x && content.contracts.has(x.contractId) ? { ...x, progress: Math.min(x.progress, x.goal) } : null)
+    const contracts = p.contracts ? { ...p.contracts, dailies: p.contracts.dailies.map(slot).filter((x): x is NonNullable<typeof x> => x !== null), weekly: slot(p.contracts.weekly) } : undefined
     const partyIds = p.partyIds.filter((id) => ids.has(id) && !deadIds.has(id)).slice(0, 4)
     const profile: Profile = {
       ...p,
@@ -230,7 +315,10 @@ export function validateProfile(content: Content, raw: unknown): LoadReport {
       eggs,
       stables,
       activeDelve,
+      progress,
+      ...(contracts ? { contracts } : {}),
     }
+    if (!contracts) delete (profile as { contracts?: unknown }).contracts
     return { profile, notes }
   } catch {
     return { profile: null, notes: ['The save could not be read.'] }

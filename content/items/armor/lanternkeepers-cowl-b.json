@@ -1,0 +1,49 @@
+{
+  "id": "lanternkeepers-cowl-b",
+  "name": "Lanternkeeper's Cowl",
+  "slot": "helmet",
+  "kind": "armor",
+  "grade": "B",
+  "materialLadder": "cloth",
+  "materialRung": 4,
+  "weaponType": null,
+  "armorFamily": "robes",
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "defense": 3,
+    "hp": 10,
+    "resistance": 2
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 2,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 7,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1.22,
+  "value": 700,
+  "classLock": [
+    "mender"
+  ],
+  "setId": "lanternkeepers-habit",
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "armor-robes-helm-01",
+    "tintPrimary": "#e8e0c8",
+    "tintSecondary": "#c9a227",
+    "trimMetal": "brass"
+  }
+}

@@ -7,17 +7,66 @@
  * sheet writes byte-identical files and removes nothing it did not write (it only deletes stale `<class>-*.json`
  * records in the class's own skill folder).
  *
- * Phase 3 writes Tiers I–III plus the Ultimate (content/README.md rule 4 as amended by D-070); Tiers IV–V follow in
- * Phase 7 together with the monsters that teach the techniques, which is why LINK_MONSTER_TECHNIQUES is off: until
- * `content/monsters/bone-knight.json` and friends exist, a `monsterTechniqueOf` would be a dangling reference
- * (rule 2) and the class's `monsterTechniqueIds` would fail rule 7.
+ * Phase 3 wrote Tiers I–III plus the Ultimate (content/README.md rule 4 as amended by D-070); Phase 7 adds Tiers IV–V
+ * (Tier V designed but unobtainable until Segment 3, D-099) and links the monster techniques. TECHNIQUES below is the
+ * one table of which monster teaches which sheet skill (06 §8.8 owns it) and which of its moves count as witnessing;
+ * every class generator — the three built on this module and the three that write their own records (Arcanist,
+ * Mender, Shade) — takes a skill's technique fields and the class's monsterTechniqueIds from it. LINK_MONSTER_TECHNIQUES
+ * waits for the Crypts' and the Vault's monster files (a link to a missing monster fails rule 2) and for the witness
+ * roll (sim/src/progress.ts), so a linked technique can always be learned.
  */
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-/** Flip to true in Phase 7, when the Crypts and Vault monsters exist; it fills monsterTechniqueOf and monsterTechniqueIds. */
-export const LINK_MONSTER_TECHNIQUES = false
+/** True once the Crypts and Vault monsters exist and the witness roll works; it fills monsterTechniqueOf and monsterTechniqueIds. */
+export const LINK_MONSTER_TECHNIQUES = true
+
+/** One technique: the monster (06's id) whose move teaches the skill and the moves (its attack ids) that count. */
+export interface TechniqueLink {
+  monsterId: string
+  /** The attack ids of the monster that are "the move"; omitted: any of its attacks counts (06 names no matching move). */
+  moveIds?: string[]
+  /** The monster's dungeon is not in the content yet (written as monsterTechniqueLater; the skill cannot be learned). */
+  later?: boolean
+}
+
+/**
+ * 06 §8.8 and §3's "Technique:" lines, read against the monsters' attacks (Phase 7, pass A): exactly two techniques per
+ * class (the Beast Tamer's come with its class in Phase 11). The move ids are 06's attack names in kebab case.
+ */
+export const TECHNIQUES: Readonly<Record<string, TechniqueLink>> = {
+  'warden-bone-knights-stand': { monsterId: 'bone-knight', moveIds: ['grave-guard'] },
+  'warden-sentinels-sweep': { monsterId: 'vault-sentinel', moveIds: ['halberd'] },
+  'blade-ghouls-grasp': { monsterId: 'ghoul', moveIds: ['ghouls-grasp'] },
+  'blade-bone-knights-cleave': { monsterId: 'bone-knight', moveIds: ['cleave'] },
+  'ranger-deep-tentacles-drag': { monsterId: 'deep-tentacle', moveIds: ['drag-under'] },
+  'ranger-grave-bats-screech': { monsterId: 'grave-bat', moveIds: ['shriek'] },
+  'shade-wraith-step': { monsterId: 'wraith', moveIds: ['drift'] },
+  'shade-hags-hex': { monsterId: 'brine-hag', moveIds: ['salt-curse', 'salt-hex'] },
+  'arcanist-hags-cauldron': { monsterId: 'brine-hag' },
+  'arcanist-sentinel-pulse': { monsterId: 'vault-sentinel', moveIds: ['core-pulse'] },
+  'mender-wraiths-lament': { monsterId: 'wraith', moveIds: ['wail'] },
+  'mender-trolls-regrowth': { monsterId: 'warren-troll', later: true },
+}
+
+/** A skill record's technique fields, in record order: monsterTechniqueOf, then the move ids or the "later" mark. */
+export function techniqueFields(skillId: string): Record<string, unknown> {
+  const link = TECHNIQUES[skillId]
+  if (!link) return { monsterTechniqueOf: null }
+  if (link.later) return { monsterTechniqueOf: null, monsterTechniqueLater: link.monsterId }
+  if (!LINK_MONSTER_TECHNIQUES) return { monsterTechniqueOf: null }
+  return { monsterTechniqueOf: link.monsterId, ...(link.moveIds ? { monsterTechniqueMoveIds: link.moveIds } : {}) }
+}
+
+/** The class record's monsterTechniqueIds: its linked techniques (a "later" one joins when its monster exists). */
+export function classTechniqueIds(classId: string): string[] {
+  if (!LINK_MONSTER_TECHNIQUES) return []
+  return Object.entries(TECHNIQUES)
+    .filter(([id, link]) => id.startsWith(`${classId}-`) && !link.later)
+    .map(([id]) => id)
+    .sort()
+}
 
 export const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..')
 
@@ -204,7 +253,7 @@ export interface SkillRow {
   name: string
   /** The school id (ClassSheet.schools[].id). */
   school: string
-  tier: 1 | 2 | 3
+  tier: 1 | 2 | 3 | 4 | 5
   type: 'active' | 'passive'
   /** Pool cost at rank 1 (0 for passives and the Ultimate). */
   cost: number
@@ -246,6 +295,10 @@ export interface ClassSheet {
   starterKit: string[]
   /** The three recommended Tier I picks, by name. */
   starterSkills: string[]
+  /** What New hero calls the default kit when the class offers others (D-099). */
+  starterKitName?: string
+  /** Other starter kits New hero offers (D-099: the Warden's spear kit, the Blade's greatsword kit; 08 §12). Picks by name. */
+  starterKitOptions?: { id: string; name: string; description: string; starterKit: string[]; starterSkills: string[] }[]
   fieldSkillAffinities: { fieldSkill: FieldSkill; rankBonus: number }[]
   aiRuleDefault: string
   visual: { gearSetId: string; palette: string[]; notes?: string }
@@ -360,7 +413,7 @@ export function buildSkillRecord(sheet: ClassSheet, row: SkillRow): Record<strin
     effects: row.effects.map(orderEffect),
     prerequisiteId,
     isUltimate: row.isUltimate === true,
-    monsterTechniqueOf: row.technique && LINK_MONSTER_TECHNIQUES ? row.technique.monsterId : null,
+    ...techniqueFields(id),
   }
   if (row.requirements) record.requirements = row.requirements
   record.rankScaling = { effectPerRank: 4, costPerRank: -2 }
@@ -372,7 +425,7 @@ export function buildSkillRecord(sheet: ClassSheet, row: SkillRow): Record<strin
 }
 
 export function buildClassRecord(sheet: ClassSheet): Record<string, unknown> {
-  const techniques = LINK_MONSTER_TECHNIQUES ? sheet.skills.filter((s) => s.technique).map((s) => skillId(sheet.id, s.name)) : []
+  const techniques = classTechniqueIds(sheet.id)
   return {
     id: sheet.id,
     name: sheet.name,
@@ -386,6 +439,10 @@ export function buildClassRecord(sheet: ClassSheet): Record<string, unknown> {
     ultimateSkillId: skillId(sheet.id, sheet.ultimate),
     starterKit: sheet.starterKit,
     starterSkillIds: sheet.starterSkills.map((n) => skillId(sheet.id, n)),
+    ...(sheet.starterKitName ? { starterKitName: sheet.starterKitName } : {}),
+    ...(sheet.starterKitOptions
+      ? { starterKitOptions: sheet.starterKitOptions.map((k) => ({ id: k.id, name: k.name, description: k.description, starterKit: k.starterKit, starterSkillIds: k.starterSkills.map((n) => skillId(sheet.id, n)) })) }
+      : {}),
     fieldSkillAffinities: sheet.fieldSkillAffinities,
     monsterTechniqueIds: techniques,
     aiRuleDefault: sheet.aiRuleDefault,
@@ -409,10 +466,17 @@ export function checkSheet(sheet: ClassSheet): string[] {
   const mods = Object.values(sheet.attributeMods).reduce((a, b) => a + b, 0)
   if (mods !== 4) problems.push(`attributeMods sum to ${mods}, expected +4`)
   if (!byName.has(sheet.ultimate)) problems.push(`ultimate "${sheet.ultimate}" is not a skill row`)
-  for (const n of sheet.starterSkills) {
+  for (const n of [...sheet.starterSkills, ...(sheet.starterKitOptions ?? []).flatMap((k) => k.starterSkills)]) {
     const s = byName.get(n)
     if (!s) problems.push(`starter skill "${n}" is not a skill row`)
     else if (s.tier !== 1) problems.push(`starter skill "${n}" is Tier ${s.tier}, expected I`)
+  }
+  for (const s of sheet.skills) {
+    const link = TECHNIQUES[skillId(sheet.id, s.name)]
+    if (s.technique && !link) problems.push(`"${s.name}" is marked a technique but TECHNIQUES has no row for it`)
+    if (link && !s.technique) problems.push(`TECHNIQUES lists "${s.name}" but its row has no technique mark`)
+    if (link && s.technique && link.monsterId !== s.technique.monsterId) problems.push(`"${s.name}": technique monster ${s.technique.monsterId} differs from TECHNIQUES ${link.monsterId}`)
+    if (s.technique && s.tier !== 3 && s.tier !== 4) problems.push(`technique "${s.name}" is Tier ${s.tier}, expected III or IV`)
   }
   for (const s of sheet.skills) {
     if (!schoolIds.has(s.school)) problems.push(`"${s.name}" names unknown school "${s.school}"`)
@@ -433,9 +497,10 @@ export function checkSheet(sheet: ClassSheet): string[] {
         problems.push(`"${s.name}": a stat line needs stat and amount or percent`)
     }
   }
-  // Rule 4 as amended (D-070): per present tier each school has exactly 3 non-Ultimate skills.
+  // Rule 4 (D-070; Phase 7 adds IV–V): Tiers I–III always, IV–V once written; per tier each school has exactly 3 non-Ultimate skills.
+  const tiersPresent = [1, 2, 3, ...[4, 5].filter((tier) => sheet.skills.some((s) => s.tier === tier))]
   for (const school of schoolIds) {
-    for (const tier of [1, 2, 3]) {
+    for (const tier of tiersPresent) {
       const n = sheet.skills.filter((s) => s.school === school && s.tier === tier && !s.isUltimate).length
       if (n !== 3) problems.push(`school ${school} Tier ${tier} has ${n} skills, expected 3`)
     }
@@ -453,6 +518,47 @@ function writeJson(file: string, record: unknown): 'written' | 'unchanged' {
   fs.mkdirSync(path.dirname(file), { recursive: true })
   fs.writeFileSync(file, text, 'utf8')
   return 'written'
+}
+
+/**
+ * For the generators that build their own records (Arcanist, Mender, Shade): writes the class record and the skill
+ * records under `<repoRoot>/content/`, puts each skill's technique fields (TECHNIQUES) in place of the
+ * `monsterTechniqueOf` the record carries and the class's `monsterTechniqueIds` in place of its own, and removes
+ * `<class>-*.json` files in the class's skill folder that this run did not write. Records keep their key order.
+ */
+export function writeClassRecords(classId: string, classRecord: Record<string, unknown>, skills: Record<string, unknown>[], repoRoot: string = REPO_ROOT): { written: number; unchanged: number; removed: string[] } {
+  let written = 0
+  let unchanged = 0
+  const withTechniques = (rec: Record<string, unknown>): Record<string, unknown> => {
+    const out: Record<string, unknown> = {}
+    for (const [k, v] of Object.entries(rec)) {
+      if (k === 'monsterTechniqueMoveIds' || k === 'monsterTechniqueLater') continue
+      if (k === 'monsterTechniqueOf') Object.assign(out, techniqueFields(String(rec.id)))
+      else out[k] = v
+    }
+    return out
+  }
+  const cls = { ...classRecord, monsterTechniqueIds: classTechniqueIds(classId) }
+  if (writeJson(path.join(repoRoot, 'content', 'classes', `${classId}.json`), cls) === 'written') written++
+  else unchanged++
+  const skillDir = path.join(repoRoot, 'content', 'skills', classId)
+  const keep = new Set<string>()
+  for (const rec of skills) {
+    const id = String(rec.id)
+    if (!id.startsWith(`${classId}-`)) throw new Error(`skill id ${id} is not prefixed with ${classId}-`)
+    if (keep.has(`${id}.json`)) throw new Error(`duplicate skill id ${id}`)
+    keep.add(`${id}.json`)
+    if (writeJson(path.join(skillDir, `${id}.json`), withTechniques(rec)) === 'written') written++
+    else unchanged++
+  }
+  const removed: string[] = []
+  for (const f of fs.readdirSync(skillDir)) {
+    if (f.endsWith('.json') && f.startsWith(`${classId}-`) && !keep.has(f)) {
+      fs.unlinkSync(path.join(skillDir, f))
+      removed.push(f)
+    }
+  }
+  return { written, unchanged, removed }
 }
 
 /** Writes the class and its skills under `<repoRoot>/content/`; returns the customIds used, for the hook list. */

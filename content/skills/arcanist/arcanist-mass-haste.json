@@ -1,0 +1,47 @@
+{
+  "id": "arcanist-mass-haste",
+  "classId": "arcanist",
+  "school": "arcana",
+  "tier": 4,
+  "name": "Mass Haste",
+  "description": "Every ally and pet gains Haste 2 turns.",
+  "type": "active",
+  "cost": 34,
+  "weight": 1000,
+  "target": "allAllies",
+  "effects": [
+    {
+      "kind": "applyStatus",
+      "status": "haste",
+      "duration": 2
+    }
+  ],
+  "prerequisiteId": "arcanist-time-slip",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Haste 3 turns.",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "haste",
+        "duration": 3
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "buff"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 65
+  }
+}

@@ -1,0 +1,171 @@
+{
+  "id": "bone-knight",
+  "name": "Bone Knight",
+  "familyId": "restless-dead",
+  "dungeonId": "gravehollow-keep",
+  "zoneId": "the-crypts",
+  "role": "elite",
+  "size": "large",
+  "rows": [
+    "front"
+  ],
+  "levelBand": {
+    "min": 7,
+    "max": 8
+  },
+  "multipliers": {
+    "hp": 2.4,
+    "attack": 1.3,
+    "defense": 1.8
+  },
+  "speed": 85,
+  "xpClass": 3,
+  "goldMultiplier": 2.5,
+  "ambushModifier": -5,
+  "attacks": [
+    {
+      "id": "greatsword",
+      "name": "Greatsword",
+      "damageType": "slash",
+      "weight": 1400,
+      "multiplier": 1.6,
+      "target": "enemyFront",
+      "effects": [],
+      "aiWeight": 45,
+      "tell": null
+    },
+    {
+      "id": "grave-guard",
+      "name": "Grave Guard",
+      "damageType": "blunt",
+      "weight": 1000,
+      "multiplier": 0,
+      "target": "self",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "fortify",
+          "duration": 3,
+          "target": "self"
+        },
+        {
+          "kind": "applyStatus",
+          "status": "taunt",
+          "duration": 2,
+          "target": "self"
+        }
+      ],
+      "aiWeight": 30,
+      "tell": null
+    },
+    {
+      "id": "cleave",
+      "name": "Cleave",
+      "damageType": "slash",
+      "weight": 1400,
+      "multiplier": 1,
+      "target": "partyFront",
+      "effects": [],
+      "aiWeight": 25,
+      "tell": null
+    }
+  ],
+  "resist": [
+    "slash",
+    "pierce",
+    "shadow"
+  ],
+  "weak": [
+    "blunt",
+    "holy"
+  ],
+  "immune": [],
+  "statusImmune": [
+    "poison",
+    "bleed",
+    "fear",
+    "grab"
+  ],
+  "behavior": {
+    "rules": [
+      {
+        "if": "ally hp < 50% and self not status fortify",
+        "then": "grave-guard"
+      },
+      {
+        "if": "otherwise targets whoever hit the Sexton",
+        "then": "greatsword"
+      }
+    ],
+    "fleesAtPercent": 0
+  },
+  "parts": {
+    "common": {
+      "materialId": "iron",
+      "chance": 35,
+      "quantity": {
+        "min": 2,
+        "max": 2
+      }
+    },
+    "rare": {
+      "itemId": "knights-gorget",
+      "chance": 4,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "breakLimb": {
+      "name": "helm",
+      "effect": {
+        "kind": "custom",
+        "customId": "bone-knight-helm",
+        "amount": -10,
+        "note": "loses its Slash resist, Accuracy −10"
+      }
+    }
+  },
+  "monsterTechniqueSkillIds": [
+    "warden-bone-knights-stand",
+    "blade-bone-knights-cleave"
+  ],
+  "elitePool": [
+    "shielded",
+    "vampiric",
+    "shackler",
+    "rabid",
+    "spiteful",
+    "warded",
+    "thorned",
+    "regenerating",
+    "mirrored",
+    "commander",
+    "leech",
+    "nullifier"
+  ],
+  "boss": null,
+  "hunter": null,
+  "visual": {
+    "baseMesh": "skeleton",
+    "scale": 1.25,
+    "variantOf": "skeleton-footman",
+    "palette": [
+      "#50555c",
+      "#d6cbb0",
+      "#5fb8ff"
+    ],
+    "reads200px": true,
+    "animations": [
+      "Idle",
+      "Move",
+      "Attack1",
+      "Attack2",
+      "Hit",
+      "Death",
+      "Guard",
+      "Cleave"
+    ],
+    "triBudget": 5500
+  }
+}

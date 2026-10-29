@@ -1,0 +1,59 @@
+{
+  "id": "mender-sanctified-weapon",
+  "classId": "mender",
+  "school": "sanctity",
+  "tier": 4,
+  "name": "Sanctified Weapon",
+  "description": "Every ally’s basic attack deals an extra 0.2× your spell Attack as Holy; your Holy skills ignore 20 Defense.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "party-basic-extra-holy",
+      "multiplier": 0.2,
+      "damageType": "holy",
+      "target": "self",
+      "note": "while the holder stands, every ally’s basic attack deals an extra multiplier × the holder’s spell Attack as damageType"
+    },
+    {
+      "kind": "custom",
+      "customId": "defense-ignore-flat",
+      "amount": 20,
+      "damageType": "holy",
+      "target": "self",
+      "note": "the holder’s damageType hits ignore `amount` of the target’s Defense"
+    }
+  ],
+  "prerequisiteId": "mender-judgement",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Extra 0.3×.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "party-basic-extra-holy",
+        "multiplier": 0.3,
+        "damageType": "holy",
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 0
+  }
+}

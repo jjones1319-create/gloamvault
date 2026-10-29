@@ -1,8 +1,10 @@
 import { useState } from 'preact/hooks'
 import type { Content } from '../../../../../sim/src/content.ts'
+import { oathOf, oathTier, pactChoices } from '../../../../../sim/src/pacts.ts'
 import { floorThreat, partyLevelOf, type ThreatRead } from '../../../../../sim/src/threat.ts'
-import { nightmareBlocker, partyHeroes, waystoneFloors, type Profile } from '../../../../../sim/src/town.ts'
-import type { DungeonDef } from '../../../../../sim/src/types/content.ts'
+import { difficultyChoices, nightmareBlocker, partyHeroes, waystoneFloors, type Profile } from '../../../../../sim/src/town.ts'
+import type { DungeonDef, PactDef } from '../../../../../sim/src/types/content.ts'
+import type { Difficulty } from '../../../../../sim/src/types/enums.ts'
 import { content, enterDelve, profile } from '../../../game/session.ts'
 import { Btn, Empty, Gold, Section } from '../../kit/kit.tsx'
 import { buzz } from '../../lib/haptics.ts'
@@ -12,9 +14,42 @@ import { THREAT_NAMES, bossName, isPerilous } from './text.ts'
 
 /**
  * The Waystone (07 §1, D-083, D-092): Gravehollow Keep, the floors the tower remembers with each one's threat for
- * the party going in, Normal difficulty, and Enter. The purse goes in with the party; the bank stays in town. Under
- * the Mortal rule a Dangerous or Deadly floor says what dying there means.
+ * the party going in, the difficulty (07 §6.1: Normal, then Hard and Dread once the dungeon's final boss is dead on the
+ * preset below) and the Pacts (07 §6.2: twelve toggles with their weight, effect and reward; the Oath is their weights
+ * summed; a hunter Pact is greyed out where no hunter stalks), and Enter. The purse goes in with the party; the bank
+ * stays in town. Under the Mortal rule a Dangerous or Deadly floor says what dying there means.
  */
+
+const DIFFICULTY_NAMES: Record<Difficulty, string> = { normal: 'Normal', hard: 'Hard', dread: 'Dread' }
+
+/** "+20% gold · +10% XP · chests +5" for a Pact (or a set of them). */
+export function pactRewardWords(r: { goldPercent: number; xpPercent: number; chestShiftPp: number }): string {
+  const bits: string[] = []
+  if (r.goldPercent) bits.push(`+${r.goldPercent}% gold`)
+  if (r.xpPercent) bits.push(`+${r.xpPercent}% XP`)
+  if (r.chestShiftPp) bits.push(`chests +${r.chestShiftPp}`)
+  return bits.join(' · ') || 'no reward'
+}
+
+/** What a preset changes, in a line (07 §6.1). */
+function presetLine(d: DungeonDef, diff: Difficulty): string {
+  const k = d.presets[diff] ?? {}
+  if (diff === 'normal') return 'The tower as it is.'
+  const revives = k.revivesPerFloor ?? 0
+  const bits = [`monsters ${k.enemyHpPercent ?? 100}% HP and ${k.enemyDamagePercent ?? 100}% damage`, `${revives} revive${revives === 1 ? '' : 's'} a floor`, `light starts at ${k.lightStart ?? 100}`]
+  const pays = [`gold ×${((k.goldPercent ?? 100) / 100).toFixed(2)}`, `XP ×${((k.xpPercent ?? 100) / 100).toFixed(2)}`]
+  if (k.chestCentreShift) pays.push('chests a grade better')
+  else if (k.chestShiftPp) pays.push(`chests +${k.chestShiftPp}`)
+  return `${bits.join(', ')}; ${pays.join(', ')}.`
+}
+
+/** The Oath's line under the Pacts: what the Pacts pay, the tier the Oath reaches and the next one. */
+function oathLine(reward: { goldPercent: number; xpPercent: number; chestShiftPp: number }, oath: number, tier: { at: number; shiftPp: number; centreShift: number } | null, next: { at: number; shiftPp: number; centreShift: number } | undefined): string {
+  if (oath === 0) return 'Take a Pact for more gold, XP and better chests; each costs something real. Their weights add up to your Oath.'
+  const now = tier ? (tier.centreShift > 0 ? ` Oath ${tier.at}+: chests in the tower are a grade better.` : ` Oath ${tier.at}+: chests in the tower lean ${tier.shiftPp} points toward a better grade.`) : ''
+  const later = next ? (next.centreShift > 0 ? ` At Oath ${next.at} they are a grade better.` : ` At Oath ${next.at} they lean ${next.shiftPp} points toward a better grade.`) : ''
+  return `${pactRewardWords(reward)}.${now}${later}`
+}
 
 /** A threat band as a chip: Easy · Even · Dangerous (amber) · Deadly (red). */
 function ThreatChip({ read, label }: { read: ThreatRead; label?: string }) {
@@ -37,6 +72,8 @@ export function Waystone() {
   const dungeons = openDungeons(c, p)
   const [dungeonId, setDungeonId] = useState(dungeons[0]?.id ?? '')
   const [picked, setPicked] = useState<number | null>(null)
+  const [wantDifficulty, setDifficulty] = useState<Difficulty>('normal')
+  const [wantPacts, setPacts] = useState<string[]>([])
   const dungeon = c.dungeons.get(dungeonId) ?? dungeons[0]
   if (!dungeon) {
     return (
@@ -58,6 +95,18 @@ export function Waystone() {
   const resuming = p.activeDelve !== null
   // D-095: under Nightmare the chosen hero leads every delve.
   const nightmareBlock = nightmareBlocker(p)
+  // 07 §6: the presets open in this dungeon, and the Pacts this zone can take.
+  const diffs = difficultyChoices(c, p, dungeon.id)
+  const difficulty: Difficulty = diffs.find((x) => x.difficulty === wantDifficulty)?.open ? wantDifficulty : 'normal'
+  const shut = diffs.find((x) => !x.open)
+  const pacts = pactChoices(dungeon, floor)
+  const pactIds = wantPacts.filter((id) => pacts.some((x) => x.pact.id === id && x.available))
+  const oath = oathOf(dungeon, pactIds)
+  const tier = oathTier(c.tuning, oath)
+  const nextTier = c.tuning.pacts.oathTiers.find((x) => x.at > oath)
+  const reward = pacts
+    .filter((x) => pactIds.includes(x.pact.id))
+    .reduce((r, { pact }: { pact: PactDef }) => ({ goldPercent: r.goldPercent + pact.reward.goldPercent, xpPercent: r.xpPercent + pact.reward.xpPercent, chestShiftPp: r.chestShiftPp + pact.reward.chestShiftPp }), { goldPercent: 0, xpPercent: 0, chestShiftPp: 0 })
 
   return (
     <PlacePage id="waystone">
@@ -133,14 +182,75 @@ export function Waystone() {
                   : 'Finish floor 1 and the tower remembers: next time you can start on floor 2.'}
             </p>
           </Section>
-          <div class="tw-difficulty" aria-label="Difficulty">
-            <span class="tw-dim tw-small">Difficulty</span>
-            <span class="tw-pill tw-pill--on" aria-current="true">
-              Normal
-            </span>
-            <span class="tw-pill tw-pill--off">Hard · later</span>
-            <span class="tw-pill tw-pill--off">Dread · later</span>
-          </div>
+          <Section title="Difficulty">
+            <div class="tw-row-buttons" role="radiogroup" aria-label="Difficulty">
+              {diffs.map((x) => (
+                <button
+                  key={x.difficulty}
+                  role="radio"
+                  aria-checked={x.difficulty === difficulty}
+                  aria-disabled={!x.open}
+                  class={`tw-seg ${x.difficulty === difficulty ? 'tw-seg--on' : ''} ${x.open ? '' : 'tw-seg--off'}`}
+                  data-testid={`waystone-difficulty-${x.difficulty}`}
+                  title={x.reason ?? undefined}
+                  onClick={() => {
+                    if (!x.open) return
+                    buzz()
+                    setDifficulty(x.difficulty)
+                  }}
+                >
+                  {DIFFICULTY_NAMES[x.difficulty]}
+                  {!x.open && <span class="tw-lock">locked</span>}
+                </button>
+              ))}
+            </div>
+            <p class="tw-note" data-testid="waystone-difficulty-line">
+              {presetLine(dungeon, difficulty)}
+              {shut?.reason ? ` ${shut.reason}.` : ''}
+            </p>
+          </Section>
+          <Section
+            title="Pacts"
+            right={
+              <span class={`tw-pill ${oath > 0 ? 'tw-pill--on' : ''}`} data-testid="waystone-oath">
+                Oath {oath}
+              </span>
+            }
+          >
+            <div class="tw-pacts" role="group" aria-label="Pacts">
+              {pacts.map(({ pact, available, reason }) => {
+                const on = pactIds.includes(pact.id)
+                return (
+                  <button
+                    key={pact.id}
+                    role="checkbox"
+                    aria-checked={on}
+                    aria-disabled={!available}
+                    class={`tw-pact ${on ? 'tw-pact--on' : ''} ${available ? '' : 'tw-pact--off'}`}
+                    data-testid={`waystone-pact-${pact.id}`}
+                    title={reason ?? pact.description}
+                    onClick={() => {
+                      if (!available) return
+                      buzz()
+                      setPacts(on ? wantPacts.filter((id) => id !== pact.id) : [...wantPacts.filter((id) => id !== pact.id), pact.id])
+                    }}
+                  >
+                    <span class="tw-pact__head">
+                      <span class="tw-pact__name">{pact.name}</span>
+                      <span class="tw-pact__weight" aria-label={`weight ${pact.weight}`}>
+                        {'◆'.repeat(pact.weight)}
+                      </span>
+                    </span>
+                    <span class="tw-pact__effect">{available ? pact.description : reason}</span>
+                    <span class="tw-pact__reward">{pactRewardWords(pact.reward)}</span>
+                  </button>
+                )
+              })}
+            </div>
+            <p class="tw-note" data-testid="waystone-pact-line">
+              {oathLine(reward, oath, tier, nextTier)}
+            </p>
+          </Section>
         </div>
 
         <div class="tw-waystone__go">
@@ -200,9 +310,14 @@ export function Waystone() {
               testid="waystone-enter"
               class="tw-enter"
               disabled={party.length === 0 || !floorDef || nightmareBlock !== null}
-              onClick={() => void enterDelve({ dungeonId: dungeon.id, floor, firstDelve })}
+              onClick={() => void enterDelve({ dungeonId: dungeon.id, floor, firstDelve, difficulty, pactIds })}
             >
-              Enter <small>floor {floor}</small>
+              Enter{' '}
+              <small>
+                floor {floor}
+                {difficulty !== 'normal' ? ` · ${DIFFICULTY_NAMES[difficulty]}` : ''}
+                {oath > 0 ? ` · Oath ${oath}` : ''}
+              </small>
             </Btn>
           )}
           <p class="tw-note">Leave from a floor's entrance or teleport out at its stairs.</p>

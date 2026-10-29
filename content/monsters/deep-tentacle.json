@@ -1,0 +1,187 @@
+{
+  "id": "deep-tentacle",
+  "name": "Deep Tentacle",
+  "familyId": "tidebound",
+  "dungeonId": "gravehollow-keep",
+  "zoneId": "the-drowned-vault",
+  "role": "special",
+  "size": "large",
+  "rows": [
+    "front",
+    "back"
+  ],
+  "levelBand": {
+    "min": 11,
+    "max": 13
+  },
+  "multipliers": {
+    "hp": 1.6,
+    "attack": 1.3,
+    "defense": 0.9
+  },
+  "speed": 90,
+  "xpClass": 2,
+  "goldMultiplier": 1.5,
+  "ambushModifier": 15,
+  "attacks": [
+    {
+      "id": "drag-under",
+      "name": "Drag Under",
+      "damageType": "blunt",
+      "weight": 1000,
+      "multiplier": 0.5,
+      "target": "enemyFront",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "grab",
+          "note": "until freed (06 §7)"
+        },
+        {
+          "kind": "custom",
+          "customId": "hold-rider",
+          "status": "chill",
+          "duration": 2,
+          "note": "the held hero takes Chill each of the tentacle's turns"
+        },
+        {
+          "kind": "custom",
+          "customId": "allies-focus-grabbed",
+          "target": "self"
+        }
+      ],
+      "aiWeight": 50,
+      "tell": "The tentacle coils back, suckers flexing.",
+      "hint": "Tentacle coiling"
+    },
+    {
+      "id": "slam",
+      "name": "Slam",
+      "damageType": "blunt",
+      "weight": 1400,
+      "multiplier": 1.6,
+      "target": "enemy",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "daze",
+          "chance": 25
+        }
+      ],
+      "aiWeight": 35,
+      "tell": null
+    },
+    {
+      "id": "submerge",
+      "name": "Submerge",
+      "damageType": "blunt",
+      "weight": 800,
+      "multiplier": 0,
+      "target": "self",
+      "effects": [
+        {
+          "kind": "custom",
+          "customId": "vanish-one-turn",
+          "target": "self",
+          "note": "cannot be targeted until its next turn; rises in the other row"
+        }
+      ],
+      "aiWeight": 15,
+      "tell": "Ripples spread under a row of heroes.",
+      "hint": "Ripples spreading"
+    }
+  ],
+  "resist": [
+    "frost",
+    "pierce"
+  ],
+  "weak": [
+    "slash",
+    "lightning"
+  ],
+  "immune": [],
+  "statusImmune": [
+    "fear",
+    "grab",
+    "web",
+    "root",
+    "petrify",
+    "blind"
+  ],
+  "behavior": {
+    "rules": [
+      {
+        "if": "rises in the row with the most heroes and drags the hero with the lowest Strength — releases at 10% of its HP (06 §7), Slash is quickest",
+        "then": "drag-under"
+      }
+    ],
+    "fleesAtPercent": 0
+  },
+  "parts": {
+    "common": {
+      "materialId": "deep-flesh",
+      "chance": 35,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "rare": {
+      "itemId": "brine-pearl",
+      "chance": 4,
+      "quantity": {
+        "min": 2,
+        "max": 2
+      }
+    },
+    "breakLimb": {
+      "name": "sucker pad",
+      "effect": {
+        "kind": "custom",
+        "customId": "short-hold",
+        "note": "Grab lasts 1 turn"
+      }
+    }
+  },
+  "monsterTechniqueSkillIds": [
+    "ranger-deep-tentacles-drag"
+  ],
+  "elitePool": [
+    "shielded",
+    "vampiric",
+    "shackler",
+    "rabid",
+    "spiteful",
+    "warded",
+    "thorned",
+    "regenerating",
+    "mirrored",
+    "commander",
+    "leech",
+    "nullifier"
+  ],
+  "boss": null,
+  "hunter": null,
+  "visual": {
+    "baseMesh": "tentacle",
+    "scale": 1,
+    "variantOf": null,
+    "palette": [
+      "#4b6e52",
+      "#e9e4d4",
+      "#16181b"
+    ],
+    "reads200px": true,
+    "animations": [
+      "Rise",
+      "Idle",
+      "Attack1",
+      "Attack2",
+      "Hit",
+      "Death",
+      "Submerge",
+      "Grab-hold"
+    ],
+    "triBudget": 3500
+  }
+}

@@ -4,7 +4,7 @@
   "school": "evocation",
   "tier": 1,
   "name": "Spark",
-  "description": "1.2× Lightning to one enemy in either row; Shock 2 turns. If the target was already Shocked, the bolt chains 0.5× to one adjacent enemy.",
+  "description": "0.95× Lightning to one enemy in either row; Shock 2 turns. If the target was already Shocked, the bolt chains 0.5× to one adjacent enemy.",
   "type": "active",
   "cost": 8,
   "weight": 800,
@@ -12,7 +12,7 @@
   "effects": [
     {
       "kind": "damage",
-      "multiplier": 1.2,
+      "multiplier": 0.95,
       "damageType": "lightning"
     },
     {

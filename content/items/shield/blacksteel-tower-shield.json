@@ -1,0 +1,49 @@
+{
+  "id": "blacksteel-tower-shield",
+  "name": "Blacksteel Tower Shield",
+  "slot": "offHand",
+  "kind": "shield",
+  "grade": "B",
+  "materialLadder": "metal",
+  "materialRung": 4,
+  "weaponType": "shieldTower",
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "block": 43,
+    "defense": 17,
+    "speed": -10
+  },
+  "requirements": {
+    "strength": 23,
+    "wisdom": 0
+  },
+  "affixSlots": 2,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 7,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 2.44,
+  "value": 800,
+  "classLock": [
+    "warden"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "shield-tower-shield-01",
+    "tintPrimary": "#2f3136",
+    "tintSecondary": "#5b4a2f",
+    "trimMetal": "blacksteel"
+  }
+}

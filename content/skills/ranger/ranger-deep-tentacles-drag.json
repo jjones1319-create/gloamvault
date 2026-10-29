@@ -4,7 +4,7 @@
   "school": "trapper",
   "tier": 3,
   "name": "Deep Tentacle's Drag",
-  "description": "Grab one back-row enemy for 1 turn and drag it into the enemy front row, swapping it with a front-row enemy; 1.2× Blunt. Monster technique: learned only while a Deep Tentacle uses the move.",
+  "description": "Grab one back-row enemy for 1 turn and drag it into the enemy front row, swapping it with a front-row enemy; 1.3× Blunt. Monster technique: learned only while a Deep Tentacle uses the move.",
   "type": "active",
   "cost": 24,
   "weight": 1000,
@@ -21,14 +21,17 @@
     },
     {
       "kind": "damage",
-      "multiplier": 1.2,
+      "multiplier": 1.3,
       "damageType": "blunt",
       "scalesWith": "strength"
     }
   ],
   "prerequisiteId": "ranger-hamstring",
   "isUltimate": false,
-  "monsterTechniqueOf": null,
+  "monsterTechniqueOf": "deep-tentacle",
+  "monsterTechniqueMoveIds": [
+    "drag-under"
+  ],
   "rankScaling": {
     "effectPerRank": 4,
     "costPerRank": -2

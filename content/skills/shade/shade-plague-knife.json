@@ -1,0 +1,60 @@
+{
+  "id": "shade-plague-knife",
+  "classId": "shade",
+  "school": "venom",
+  "tier": 4,
+  "name": "Plague Knife",
+  "description": "2.0× Pierce to one enemy in any row; Poison 4 turns; when a Poisoned target dies, its Poison spreads to every enemy in its row.",
+  "type": "active",
+  "cost": 30,
+  "weight": 800,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 2,
+      "damageType": "pierce"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "poison",
+      "duration": 4
+    },
+    {
+      "kind": "custom",
+      "customId": "poison-spreads-on-death",
+      "amount": 1,
+      "note": "when the target dies Poisoned, its Poison spreads to its row (`amount` 2: both rows)"
+    }
+  ],
+  "prerequisiteId": "shade-venom-burst",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Spreads to both rows.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "poison-spreads-on-death",
+        "amount": 2
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "reach",
+    "dot"
+  ],
+  "xpTags": [
+    "agility",
+    "perception"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 65
+  }
+}

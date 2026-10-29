@@ -1,0 +1,172 @@
+{
+  "id": "wraith",
+  "name": "Wraith",
+  "familyId": "restless-dead",
+  "dungeonId": "gravehollow-keep",
+  "zoneId": "the-crypts",
+  "role": "special",
+  "size": "medium",
+  "rows": [
+    "back"
+  ],
+  "levelBand": {
+    "min": 5,
+    "max": 8
+  },
+  "multipliers": {
+    "hp": 1,
+    "attack": 1.2,
+    "defense": 0.5
+  },
+  "speed": 110,
+  "xpClass": 2,
+  "goldMultiplier": 1.5,
+  "ambushModifier": 10,
+  "attacks": [
+    {
+      "id": "wail",
+      "name": "Wail",
+      "damageType": "shadow",
+      "weight": 1000,
+      "multiplier": 0.6,
+      "target": "partyBack",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "fear",
+          "duration": 2
+        }
+      ],
+      "aiWeight": 45,
+      "tell": "The wraith's eyes flare blue.",
+      "hint": "Wraith keening"
+    },
+    {
+      "id": "chill-touch",
+      "name": "Chill Touch",
+      "damageType": "shadow",
+      "weight": 800,
+      "multiplier": 1.1,
+      "target": "enemy",
+      "effects": [
+        {
+          "kind": "pool",
+          "percent": -10,
+          "note": "drains 10% of the target's pool"
+        }
+      ],
+      "aiWeight": 40,
+      "tell": null
+    },
+    {
+      "id": "drift",
+      "name": "Drift",
+      "damageType": "shadow",
+      "weight": 800,
+      "multiplier": 0,
+      "target": "self",
+      "effects": [
+        {
+          "kind": "custom",
+          "customId": "vanish-one-turn",
+          "target": "self",
+          "note": "swaps row and cannot be hit until its next turn"
+        }
+      ],
+      "aiWeight": 15,
+      "tell": null
+    }
+  ],
+  "resist": [
+    "slash",
+    "pierce",
+    "blunt",
+    "shadow"
+  ],
+  "weak": [
+    "holy",
+    "fire"
+  ],
+  "immune": [],
+  "statusImmune": [
+    "poison",
+    "bleed",
+    "fear",
+    "grab",
+    "web",
+    "root"
+  ],
+  "behavior": {
+    "rules": [
+      {
+        "if": "self status mark",
+        "then": "drift"
+      },
+      {
+        "if": "wails when 2 or more heroes stand in the back row — comes through walls (ambush +10)",
+        "then": "wail"
+      }
+    ],
+    "fleesAtPercent": 0
+  },
+  "parts": {
+    "common": {
+      "materialId": "wool",
+      "chance": 35,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "rare": {
+      "itemId": "wraith-ash",
+      "chance": 4,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "breakLimb": null
+  },
+  "monsterTechniqueSkillIds": [
+    "shade-wraith-step",
+    "mender-wraiths-lament"
+  ],
+  "elitePool": [
+    "shielded",
+    "vampiric",
+    "shackler",
+    "rabid",
+    "spiteful",
+    "warded",
+    "thorned",
+    "regenerating",
+    "mirrored",
+    "commander",
+    "leech",
+    "nullifier"
+  ],
+  "boss": null,
+  "hunter": null,
+  "visual": {
+    "baseMesh": "wraith",
+    "scale": 1,
+    "variantOf": null,
+    "palette": [
+      "#707a87",
+      "#0a0c16",
+      "#a3cff2"
+    ],
+    "reads200px": true,
+    "animations": [
+      "Idle",
+      "Move",
+      "Attack1",
+      "Attack2",
+      "Hit",
+      "Death",
+      "Drift"
+    ],
+    "triBudget": 2500
+  }
+}

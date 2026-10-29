@@ -1,0 +1,69 @@
+{
+  "id": "warden-aegis-of-the-keep",
+  "classId": "warden",
+  "school": "bulwark",
+  "tier": 5,
+  "name": "Aegis of the Keep",
+  "description": "For 3 turns, half of every enemy blow aimed at your allies is turned onto you; you take −30% damage for the duration.",
+  "type": "active",
+  "cost": 45,
+  "weight": 1400,
+  "target": "allAllies",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "redirect-ally-damage-percent",
+      "duration": 3,
+      "percent": 50,
+      "target": "allAllies",
+      "note": "percent% of each enemy blow on an ally (you aside) strikes you instead, through your own Defense"
+    },
+    {
+      "kind": "custom",
+      "customId": "damage-taken-percent-timed",
+      "duration": 3,
+      "percent": -30,
+      "target": "self",
+      "note": "you take percent% damage for duration turns"
+    }
+  ],
+  "prerequisiteId": "warden-rampart",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "4 turns.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "redirect-ally-damage-percent",
+        "duration": 4,
+        "percent": 50,
+        "target": "allAllies"
+      },
+      {
+        "kind": "custom",
+        "customId": "damage-taken-percent-timed",
+        "duration": 4,
+        "percent": -30,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "shield",
+    "buff"
+  ],
+  "xpTags": [
+    "endurance",
+    "vitality"
+  ],
+  "aiHints": {
+    "role": "defend",
+    "priority": 70
+  }
+}

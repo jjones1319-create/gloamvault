@@ -2,7 +2,9 @@
  * tools/content/gen-class-arcanist.ts — writes content/classes/arcanist.json and content/skills/arcanist/*.json
  * from docs/classes/arcanist.md (§2 numbers, §3 the Ultimate, §4.1–§4.3 the three school tables, §5 affinities).
  *
- * Phase 3 (12-ROADMAP): Tiers I–III of every school (27 skills) plus the Ultimate. Tiers IV–V are not written yet.
+ * Phase 3 (12-ROADMAP) wrote Tiers I–III of every school (27 skills) plus the Ultimate; Phase 7 adds Tiers IV–V (18 more;
+ * Tier V is designed here and locked until Segment 3's endgame, D-099). The technique fields (Hag's Cauldron, Sentinel
+ * Pulse) come from the library's TECHNIQUES table through writeClassRecords.
  * Every number is the sheet's; where a line cannot be said in the effect DSL it is a `custom` line whose `note`
  * states the hook's contract (content/README.md rule 31 wants a handler per customId in sim/src/skills/custom/).
  * Spells hit either row (03 §3.3), so every enemy-targeting spell carries the `reach` tag; a row-wide spell targets
@@ -10,11 +12,8 @@
  *
  * Re-runnable: the same tables write the same files. Run: node tools/content/gen-class-arcanist.ts
  */
-import fs from 'node:fs'
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { writeClassRecords } from './gen-class-lib.ts'
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..')
 const CLASS_ID = 'arcanist'
 const RANK_SCALING = { effectPerRank: 4, costPerRank: -2 }
 
@@ -24,7 +23,7 @@ type Effect = Json & { kind: string }
 interface SkillSpec {
   id: string
   school: 'evocation' | 'rime' | 'arcana'
-  tier: 1 | 2 | 3
+  tier: 1 | 2 | 3 | 4 | 5
   name: string
   description: string
   type?: 'active' | 'passive'
@@ -110,12 +109,12 @@ const evocation: SkillSpec[] = [
     school: 'evocation',
     tier: 1,
     name: 'Ember Lance',
-    description: '1.4× Fire to one enemy in either row; Burn 3 turns.',
+    description: '1.1× Fire to one enemy in either row; Burn 3 turns.',
     cost: 10,
     weight: 1000,
     target: 'enemy',
     effects: [
-      { kind: 'damage', multiplier: 1.4, damageType: 'fire' },
+      { kind: 'damage', multiplier: 1.1, damageType: 'fire' },
       { kind: 'applyStatus', status: 'burn', duration: 3 },
     ],
     prerequisiteId: null,
@@ -129,12 +128,12 @@ const evocation: SkillSpec[] = [
     school: 'evocation',
     tier: 1,
     name: 'Spark',
-    description: '1.2× Lightning to one enemy in either row; Shock 2 turns. If the target was already Shocked, the bolt chains 0.5× to one adjacent enemy.',
+    description: '0.95× Lightning to one enemy in either row; Shock 2 turns. If the target was already Shocked, the bolt chains 0.5× to one adjacent enemy.',
     cost: 8,
     weight: 800,
     target: 'enemy',
     effects: [
-      { kind: 'damage', multiplier: 1.2, damageType: 'lightning' },
+      { kind: 'damage', multiplier: 0.95, damageType: 'lightning' },
       { kind: 'applyStatus', status: 'shock', duration: 2 },
       { kind: 'custom', customId: 'chain-if-shocked', multiplier: 0.5, damageType: 'lightning', amount: 1, note: 'if the target held Shock before this hit, the hit chains multiplier× as damageType to `amount` adjacent enemies' },
     ],
@@ -297,6 +296,128 @@ const evocation: SkillSpec[] = [
     xpTags: ['wisdom', 'willpower'],
     ai: { role: 'attack', priority: 95 },
   },
+
+  // Tier IV–V (Phase 7): docs/classes/arcanist.md §4.1. Tier V is designed here and locked until Segment 3 (D-099).
+  {
+    id: 'arcanist-pyroclasm',
+    school: 'evocation',
+    tier: 4,
+    name: 'Pyroclasm',
+    description: '1.5× Fire to every enemy in both rows; every Burn on them is consumed and deals all its remaining ticks at once. Heavy cast.',
+    cost: 36,
+    weight: 1400,
+    target: 'allEnemies',
+    effects: [
+      { kind: 'damage', multiplier: 1.5, damageType: 'fire' },
+      { kind: 'custom', customId: 'consume-dot-burst', status: 'burn', multiplier: 1, note: 'each target’s Burn is consumed: its remaining ticks × stacks land at once, as the DoT would (no miss, no crit)' },
+    ],
+    prerequisiteId: 'arcanist-meteor',
+    mastery: { text: '1.7× each.', effects: [{ kind: 'damage', multiplier: 1.7, damageType: 'fire' }] },
+    tags: ['aoe', 'dot'],
+    xpTags: ['wisdom', 'willpower'],
+    ai: { role: 'attack', priority: 80 },
+  },
+  {
+    id: 'arcanist-stormcall',
+    school: 'evocation',
+    tier: 4,
+    name: 'Stormcall',
+    description: '1.3× Lightning to every enemy in both rows; every target already Shocked is pushed back 200 energy; you gain Haste 1 turn.',
+    cost: 32,
+    weight: 1000,
+    target: 'allEnemies',
+    effects: [
+      { kind: 'custom', customId: 'timeline-if-status', status: 'shock', energy: -200, note: 'a target holding `status` before this cast moves `energy` on the timeline (read before the hit)' },
+      { kind: 'damage', multiplier: 1.3, damageType: 'lightning' },
+      { kind: 'applyStatus', status: 'haste', duration: 1, target: 'self' },
+    ],
+    prerequisiteId: 'arcanist-thunderhead',
+    mastery: { text: 'Pushback 300.', effects: [{ kind: 'custom', customId: 'timeline-if-status', status: 'shock', energy: -300 }] },
+    tags: ['aoe', 'control', 'buff'],
+    xpTags: ['wisdom'],
+    ai: { role: 'attack', priority: 75 },
+  },
+  {
+    id: 'arcanist-hags-cauldron',
+    school: 'evocation',
+    tier: 4,
+    name: 'Hag’s Cauldron',
+    description: '2.6× Fire to one enemy in either row; Poison 3 turns (ignores armor); Weaken 2 turns. Heavy cast. Monster technique: learned only by witnessing a Brine Hag use it.',
+    cost: 30,
+    weight: 1400,
+    target: 'enemy',
+    effects: [
+      { kind: 'damage', multiplier: 2.6, damageType: 'fire' },
+      { kind: 'applyStatus', status: 'poison', duration: 3, note: 'Poison ignores Defense by its own record (03 §3.5)' },
+      { kind: 'applyStatus', status: 'weaken', duration: 2 },
+    ],
+    prerequisiteId: 'arcanist-overcharge',
+    mastery: { text: '3.0×.', effects: [{ kind: 'damage', multiplier: 3.0, damageType: 'fire' }] },
+    tags: ['singleTarget', 'dot', 'debuff', 'reach'],
+    xpTags: ['wisdom', 'willpower'],
+    ai: { role: 'attack', priority: 75 },
+  },
+  {
+    id: 'arcanist-sunflare',
+    school: 'evocation',
+    tier: 5,
+    name: 'Sunflare',
+    description: '2.0× Fire to every enemy in both rows; Burn 4 turns; Blind 2 turns; your next action weighs 800 whatever its own weight. Heavy cast.',
+    cost: 48,
+    weight: 1400,
+    target: 'allEnemies',
+    effects: [
+      { kind: 'damage', multiplier: 2.0, damageType: 'fire' },
+      { kind: 'applyStatus', status: 'burn', duration: 4 },
+      { kind: 'applyStatus', status: 'blind', duration: 2 },
+      { kind: 'custom', customId: 'next-action-weight', amount: 800, target: 'self', note: 'the caster’s next action weighs `amount`; a heavy Mana cast still charges first (fight.ts decides the charge by the skill’s own weight)' },
+    ],
+    prerequisiteId: 'arcanist-pyroclasm',
+    mastery: { text: 'Blind 3 turns.', effects: [{ kind: 'applyStatus', status: 'blind', duration: 3 }] },
+    tags: ['aoe', 'dot', 'debuff'],
+    xpTags: ['wisdom', 'willpower'],
+    ai: { role: 'attack', priority: 85 },
+  },
+  {
+    id: 'arcanist-vaultbreaker',
+    school: 'evocation',
+    tier: 5,
+    name: 'Vaultbreaker',
+    description: '3.8× Lightning to one enemy in either row; Stun 1 turn; the bolt then chains 1.2× to every other enemy that is Shocked. Heavy cast.',
+    cost: 45,
+    weight: 1400,
+    target: 'enemy',
+    effects: [
+      { kind: 'damage', multiplier: 3.8, damageType: 'lightning' },
+      { kind: 'applyStatus', status: 'stun', duration: 1 },
+      { kind: 'custom', customId: 'damage-others-with-status', multiplier: 1.2, damageType: 'lightning', status: 'shock', note: 'after the main hit, multiplier × spell Attack as damageType to every other enemy holding `status`' },
+    ],
+    prerequisiteId: 'arcanist-stormcall',
+    mastery: { text: '4.2×.', effects: [{ kind: 'damage', multiplier: 4.2, damageType: 'lightning' }] },
+    tags: ['singleTarget', 'aoe', 'control', 'reach'],
+    xpTags: ['wisdom', 'willpower'],
+    ai: { role: 'attack', priority: 85 },
+  },
+  {
+    id: 'arcanist-conflagration',
+    school: 'evocation',
+    tier: 5,
+    name: 'Conflagration',
+    description: 'Burn and Shock you apply last +1 turn. Burn already stacks on a target (up to three, each stack a full tick), which covers the stacking.',
+    type: 'passive',
+    effects: [
+      { kind: 'custom', customId: 'status-duration-bonus', status: 'burn', amount: 1, target: 'self', note: '`status` the holder applies lasts +amount turns (one line per status)' },
+      { kind: 'custom', customId: 'status-duration-bonus', status: 'shock', amount: 1, target: 'self' },
+    ],
+    prerequisiteId: 'arcanist-stormcall',
+    mastery: {
+      text: 'Stack three times: Burn’s own record already allows three stacks (03 §3.5), so the Mastery adds nothing further.',
+      effects: [],
+    },
+    tags: ['buff', 'dot'],
+    xpTags: ['wisdom'],
+    ai: { role: 'buff', priority: 0 },
+  },
 ]
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -308,12 +429,12 @@ const rime: SkillSpec[] = [
     school: 'rime',
     tier: 1,
     name: 'Frostbolt',
-    description: '1.3× Frost to one enemy in either row; Chill 2 turns.',
+    description: '1.05× Frost to one enemy in either row; Chill 2 turns.',
     cost: 10,
     weight: 1000,
     target: 'enemy',
     effects: [
-      { kind: 'damage', multiplier: 1.3, damageType: 'frost' },
+      { kind: 'damage', multiplier: 1.05, damageType: 'frost' },
       { kind: 'applyStatus', status: 'chill', duration: 2 },
     ],
     prerequisiteId: null,
@@ -466,6 +587,125 @@ const rime: SkillSpec[] = [
     mastery: { text: 'Both rows.', effects: [{ kind: 'custom', customId: 'fight-start-apply-status', status: 'chill', duration: 1, target: 'allEnemies' }] },
     tags: ['debuff', 'control'],
     xpTags: ['wisdom'],
+    ai: { role: 'buff', priority: 0 },
+  },
+
+  // Tier IV–V (Phase 7): docs/classes/arcanist.md §4.2.
+  {
+    id: 'arcanist-absolute-zero',
+    school: 'rime',
+    tier: 4,
+    name: 'Absolute Zero',
+    description: '1.4× Frost to every enemy in both rows; every target already Chilled is Frozen 1 turn (Large and Huge foes and bosses take Chill instead, as the status rules say). Heavy cast.',
+    cost: 38,
+    weight: 1400,
+    target: 'allEnemies',
+    effects: [
+      { kind: 'damage', multiplier: 1.4, damageType: 'frost' },
+      { kind: 'custom', customId: 'freeze-if-chilled', status: 'freeze', duration: 1, note: 'a target holding Chill gets `status` for `duration`; after the hit, so the cast does not shatter its own Freeze' },
+    ],
+    prerequisiteId: 'arcanist-avalanche',
+    mastery: { text: '1.6× each.', effects: [{ kind: 'damage', multiplier: 1.6, damageType: 'frost' }] },
+    tags: ['aoe', 'control'],
+    xpTags: ['wisdom', 'willpower'],
+    ai: { role: 'attack', priority: 80 },
+  },
+  {
+    id: 'arcanist-winters-breath',
+    school: 'rime',
+    tier: 4,
+    name: 'Winter’s Breath',
+    description: '1.3× Frost to every back-row enemy; Chill 2 turns; Slow 2 turns (the back row is where the casters stand).',
+    cost: 30,
+    weight: 1000,
+    target: 'enemyBack',
+    effects: [
+      { kind: 'damage', multiplier: 1.3, damageType: 'frost', target: 'enemyRow', note: 'the whole back row' },
+      { kind: 'applyStatus', status: 'chill', duration: 2, target: 'enemyRow' },
+      { kind: 'applyStatus', status: 'slow', duration: 2, target: 'enemyRow' },
+    ],
+    prerequisiteId: 'arcanist-frozen-tomb',
+    mastery: { text: 'Silence 1 turn as well.', effects: [{ kind: 'applyStatus', status: 'silence', duration: 1, target: 'enemyRow' }] },
+    tags: ['aoe', 'control', 'debuff', 'reach'],
+    xpTags: ['wisdom'],
+    ai: { role: 'control', priority: 65 },
+  },
+  {
+    id: 'arcanist-deep-cold',
+    school: 'rime',
+    tier: 4,
+    name: 'Deep Cold',
+    description: 'Every Freeze you cause lasts +1 turn; whenever an ally shatters a Frozen enemy, you restore 15% of max Mana.',
+    type: 'passive',
+    effects: [
+      { kind: 'custom', customId: 'freeze-duration-bonus', amount: 1, target: 'self', note: 'a Freeze the holder causes (a Freeze line, or a Chill that becomes one) lasts +amount turns' },
+      { kind: 'custom', customId: 'pool-on-party-shatter', percent: 15, target: 'self', note: 'whenever the holder or an ally shatters a Frozen enemy, the holder restores percent% of its max pool' },
+    ],
+    prerequisiteId: 'arcanist-hoarfrost',
+    mastery: { text: 'Restore 20%.', effects: [{ kind: 'custom', customId: 'pool-on-party-shatter', percent: 20, target: 'self' }] },
+    tags: ['buff', 'control'],
+    xpTags: ['wisdom'],
+    ai: { role: 'buff', priority: 0 },
+  },
+  {
+    id: 'arcanist-endless-winter',
+    school: 'rime',
+    tier: 5,
+    name: 'Endless Winter',
+    description: '1.8× Frost to every enemy in both rows; Chill 3 turns; for 3 turns every enemy that acts is Chilled 1 turn. Heavy cast.',
+    cost: 50,
+    weight: 1400,
+    target: 'allEnemies',
+    effects: [
+      { kind: 'damage', multiplier: 1.8, damageType: 'frost' },
+      { kind: 'applyStatus', status: 'chill', duration: 3 },
+      { kind: 'custom', customId: 'status-on-own-action', status: 'chill', amount: 1, duration: 3, note: 'for `duration` turns the target gets `status` for `amount` turn(s) whenever it acts' },
+    ],
+    prerequisiteId: 'arcanist-absolute-zero',
+    mastery: { text: '2.0× each.', effects: [{ kind: 'damage', multiplier: 2.0, damageType: 'frost' }] },
+    tags: ['aoe', 'control', 'debuff'],
+    xpTags: ['wisdom', 'willpower'],
+    ai: { role: 'attack', priority: 85 },
+  },
+  {
+    id: 'arcanist-glass-heart',
+    school: 'rime',
+    tier: 5,
+    name: 'Glass Heart',
+    description: '3.5× Frost to one enemy in either row; against a Frozen target it cannot miss and always crits; a kill gives the whole party +15 Momentum.',
+    cost: 40,
+    weight: 1000,
+    target: 'enemy',
+    effects: [
+      { kind: 'custom', customId: 'sure-hit-vs-status', status: 'freeze', note: 'this action cannot miss a target holding `status`' },
+      { kind: 'custom', customId: 'guaranteed-crit-vs-status', status: 'freeze', note: 'this action crits a target holding `status`' },
+      { kind: 'damage', multiplier: 3.5, damageType: 'frost' },
+      { kind: 'custom', customId: 'party-momentum-on-kill', amount: 15, target: 'self', note: 'if this action killed, every hero of the party gains +amount Momentum (read after the hit)' },
+    ],
+    prerequisiteId: 'arcanist-winters-breath',
+    mastery: { text: '+25 Momentum.', effects: [{ kind: 'custom', customId: 'party-momentum-on-kill', amount: 25, target: 'self' }] },
+    tags: ['singleTarget', 'momentum', 'reach'],
+    xpTags: ['wisdom', 'perception'],
+    ai: { role: 'attack', priority: 80 },
+  },
+  {
+    id: 'arcanist-rimeborn',
+    school: 'rime',
+    tier: 5,
+    name: 'Rimeborn',
+    description: 'You are immune to Chill, Freeze and Slow; a melee attacker that hits you is Chilled 1 turn; Rime skills cost −20%.',
+    type: 'passive',
+    effects: [
+      { kind: 'custom', customId: 'status-resist-bonus', status: 'chill', percent: 100, target: 'self', note: 'immune: a passive resist of 100% to `status` all fight (statuses.ts resistChance reads it); one line per status' },
+      { kind: 'custom', customId: 'status-resist-bonus', status: 'freeze', percent: 100, target: 'self' },
+      { kind: 'custom', customId: 'status-resist-bonus', status: 'slow', percent: 100, target: 'self' },
+      { kind: 'custom', customId: 'status-on-melee-attacker', status: 'chill', duration: 1, target: 'self', note: 'a melee attacker whose hit lands on the holder gets `status` for `duration`' },
+      { kind: 'custom', customId: 'school-cost-multiplier', percent: -20, target: 'self', note: 'Rime actives cost percent% (−20)' },
+    ],
+    prerequisiteId: 'arcanist-deep-cold',
+    mastery: { text: 'Cost −30%.', effects: [{ kind: 'custom', customId: 'school-cost-multiplier', percent: -30, target: 'self' }] },
+    tags: ['buff', 'control'],
+    xpTags: ['wisdom', 'willpower'],
     ai: { role: 'buff', priority: 0 },
   },
 ]
@@ -642,6 +882,112 @@ const arcana: SkillSpec[] = [
     xpTags: ['wisdom'],
     ai: { role: 'buff', priority: 40 },
   },
+
+  // Tier IV–V (Phase 7): docs/classes/arcanist.md §4.3.
+  {
+    id: 'arcanist-mass-haste',
+    school: 'arcana',
+    tier: 4,
+    name: 'Mass Haste',
+    description: 'Every ally and pet gains Haste 2 turns.',
+    cost: 34,
+    weight: 1000,
+    target: 'allAllies',
+    effects: [{ kind: 'applyStatus', status: 'haste', duration: 2 }],
+    prerequisiteId: 'arcanist-time-slip',
+    mastery: { text: 'Haste 3 turns.', effects: [{ kind: 'applyStatus', status: 'haste', duration: 3 }] },
+    tags: ['aoe', 'buff'],
+    xpTags: ['wisdom'],
+    ai: { role: 'buff', priority: 65 },
+  },
+  {
+    id: 'arcanist-sentinel-pulse',
+    school: 'arcana',
+    tier: 4,
+    name: 'Sentinel Pulse',
+    description: 'Every enemy loses every buff, then takes 1.2× Lightning; every ally gains a Shield of 10% of their max HP for 2 turns. Heavy cast. Monster technique: learned only by witnessing a Vault Sentinel use it.',
+    cost: 30,
+    weight: 1400,
+    target: 'allEnemies',
+    effects: [
+      { kind: 'dispel', note: 'on enemies: strips every buff (Fortify, Shield, Haste, Regen, Taunt) before the hit' },
+      { kind: 'damage', multiplier: 1.2, damageType: 'lightning' },
+      { kind: 'shield', percent: 10, duration: 2, target: 'allAllies', note: 'percent of each ally’s own max HP' },
+    ],
+    prerequisiteId: 'arcanist-dispel',
+    mastery: { text: '1.4× each.', effects: [{ kind: 'damage', multiplier: 1.4, damageType: 'lightning' }] },
+    tags: ['aoe', 'debuff', 'shield'],
+    xpTags: ['wisdom', 'willpower'],
+    ai: { role: 'attack', priority: 70 },
+  },
+  {
+    id: 'arcanist-font-of-mana',
+    school: 'arcana',
+    tier: 4,
+    name: 'Font of Mana',
+    description: 'Once per fight, when your Mana reaches 0 it refills to 50%; Fortune (the free-cast chance) +5 points.',
+    type: 'passive',
+    effects: [
+      { kind: 'custom', customId: 'pool-refill-at-zero', percent: 50, amount: 1, target: 'self', note: '`amount` time(s) per fight, when the holder’s pool reaches 0 it refills to percent% of max' },
+      { kind: 'buffStat', stat: 'fortune', amount: 50, note: 'Fortune is kept in tenths of a point (stats.ts): 50 = +5 points of free-cast chance' },
+    ],
+    prerequisiteId: 'arcanist-lantern-of-the-mind',
+    mastery: { text: 'Refill 70%.', effects: [{ kind: 'custom', customId: 'pool-refill-at-zero', percent: 70, amount: 1, target: 'self' }] },
+    tags: ['buff', 'utility'],
+    xpTags: ['wisdom'],
+    ai: { role: 'utility', priority: 0 },
+  },
+  {
+    id: 'arcanist-rewind',
+    school: 'arcana',
+    tier: 5,
+    name: 'Rewind',
+    description: 'One ally’s HP, pool and statuses return to what they were at the start of their previous turn. It cannot revive.',
+    cost: 45,
+    weight: 1000,
+    target: 'ally',
+    effects: [{ kind: 'custom', customId: 'rewind-ally', note: 'a stub until the fight keeps each actor’s turn-start snapshot (fight.ts takeTurn); Tier V is locked until Segment 3' }],
+    prerequisiteId: 'arcanist-mass-haste',
+    mastery: { text: 'Also restores Momentum.', effects: [{ kind: 'custom', customId: 'rewind-ally', amount: 1, note: 'amount 1: Momentum returns too' }] },
+    tags: ['singleTarget', 'heal', 'utility'],
+    xpTags: ['wisdom'],
+    ai: { role: 'heal', priority: 60 },
+  },
+  {
+    id: 'arcanist-nullfield',
+    school: 'arcana',
+    tier: 5,
+    name: 'Nullfield',
+    description: 'For 2 turns no enemy can use a skill: Silence 2 turns on every enemy (a boss holds it 1, as the status rules shorten its statuses); every Shield on an ally is doubled. Heavy cast.',
+    cost: 40,
+    weight: 1400,
+    target: 'allEnemies',
+    effects: [
+      { kind: 'applyStatus', status: 'silence', duration: 2, note: 'statuses.ts shortens a boss’s or hunter’s statuses by 1: they hold 1' },
+      { kind: 'custom', customId: 'double-ally-shields', percent: 100, target: 'self', note: 'every Shield on the caster’s side absorbs +percent% of what it has left' },
+    ],
+    prerequisiteId: 'arcanist-font-of-mana',
+    mastery: { text: 'Bosses 2 turns.', effects: [{ kind: 'custom', customId: 'apply-if-boss', status: 'silence', duration: 3, note: 'a boss or hunter gets `status` for `duration` (shortened by 1 as every boss status: 2)' }] },
+    tags: ['aoe', 'control', 'shield'],
+    xpTags: ['wisdom', 'willpower'],
+    ai: { role: 'control', priority: 75 },
+  },
+  {
+    id: 'arcanist-paradox',
+    school: 'arcana',
+    tier: 5,
+    name: 'Paradox',
+    description: 'Your heavy casts weigh 1,000 and cannot be interrupted.',
+    type: 'passive',
+    effects: [
+      { kind: 'custom', customId: 'heavy-casts-uninterrupted', amount: 1000, target: 'self', note: 'a stub until fight.ts lets a passive lift the charge (execute decides it by the skill’s own weight); Tier V is locked until Segment 3' },
+    ],
+    prerequisiteId: 'arcanist-mass-haste',
+    mastery: { text: 'Normal casts weigh 800.', effects: [{ kind: 'custom', customId: 'heavy-casts-uninterrupted', amount: 1000, percent: 80, target: 'self', note: 'percent 80: normal casts weigh 80% (800) too' }] },
+    tags: ['buff'],
+    xpTags: ['wisdom', 'willpower'],
+    ai: { role: 'buff', priority: 0 },
+  },
 ]
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -674,27 +1020,8 @@ function toRecord(s: SkillSpec): Json {
   return rec
 }
 
-function writeJson(file: string, value: Json): boolean {
-  const text = `${JSON.stringify(value, null, 2)}\n`
-  const before = fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : null
-  if (before === text) return false
-  fs.writeFileSync(file, text, 'utf8')
-  return true
-}
-
 const skills = [...evocation, ...rime, ...arcana]
-const skillDir = path.join(ROOT, 'content', 'skills', CLASS_ID)
-fs.mkdirSync(skillDir, { recursive: true })
-fs.mkdirSync(path.join(ROOT, 'content', 'classes'), { recursive: true })
-
-let changed = 0
-if (writeJson(path.join(ROOT, 'content', 'classes', `${CLASS_ID}.json`), classRecord)) changed++
-const written = new Set<string>()
-for (const s of skills) {
-  if (!s.id.startsWith(`${CLASS_ID}-`)) throw new Error(`skill id ${s.id} is not prefixed with ${CLASS_ID}-`)
-  if (written.has(s.id)) throw new Error(`duplicate skill id ${s.id}`)
-  written.add(s.id)
-  if (writeJson(path.join(skillDir, `${s.id}.json`), toRecord(s))) changed++
-}
-const stale = fs.readdirSync(skillDir).filter((f) => f.endsWith('.json') && !written.has(f.slice(0, -5)))
-process.stdout.write(`${CLASS_ID}: 1 class + ${skills.length} skills (${skills.filter((s) => s.isUltimate).length} Ultimate), ${changed} file(s) changed${stale.length ? `; stale files not written by this script: ${stale.join(', ')}` : ''}\n`)
+const r = writeClassRecords(CLASS_ID, classRecord, skills.map(toRecord))
+process.stdout.write(
+  `${CLASS_ID}: 1 class + ${skills.length} skills (${skills.filter((s) => s.isUltimate).length} Ultimate) — ${r.written} written, ${r.unchanged} unchanged${r.removed.length ? `, removed ${r.removed.join(', ')}` : ''}\n`,
+)

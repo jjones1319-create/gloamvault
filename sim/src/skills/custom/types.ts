@@ -61,6 +61,12 @@ export interface HookFx {
   applyLine(actor: Actor, line: Effect, baseTarget: Target, chosen: Actor | null, source?: Partial<LineSource>): { targets: string[]; dealt: number[]; applied: string[] }
   hasStatus(actor: Actor, status: Status): boolean
   removeStatus(actor: Actor, status: Status): boolean
+  /**
+   * Puts a monster on `actor`'s side mid-fight, built as a summon line's monster is (fight.ts spawnSummon), its passive
+   * attack hooks armed (06 §3.3: the Brine Ooze splits, the Deep Maw spawns a Tentacle). `hpPercent` sets its current
+   * HP as a share of its max; null when the monster is unknown. Hooks keep their own caps (the Ooze's max 4).
+   */
+  summon(actor: Actor, monsterId: string, opts?: { row?: 'front' | 'back'; hpPercent?: number }): Actor | null
 }
 
 export interface IncomingDamage {
@@ -147,6 +153,8 @@ export interface CustomHandler {
   modifyLine?(ctx: HookContext, line: Effect, source: LineSource, chosen: Actor | null): Effect | 'skip' | null
   /** The weight of the holder's action before it is spent (a first action at 600). */
   modifyWeight?(ctx: HookContext, weight: number): number
+  /** A pure query before a heavy Mana cast is declared: the weight it will weigh (Grace's 800 — no longer heavy, so it does not charge). Never consumes the hook; modifyWeight still spends it. */
+  chargeWeight?(ctx: HookContext, weight: number): number
   /** When a lost action should become a Guard instead (Fear). */
   lostActionBecomesGuard?(ctx: HookContext): boolean
   /** At the holder's turn start. */

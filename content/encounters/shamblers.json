@@ -1,0 +1,25 @@
+{
+  "id": "shamblers",
+  "tableId": "crypts-a",
+  "dungeonId": "gravehollow-keep",
+  "floorBand": {
+    "min": 4,
+    "max": 5
+  },
+  "name": "Shamblers",
+  "composition": [
+    {
+      "monsterId": "shambling-corpse",
+      "count": 3,
+      "row": "front"
+    },
+    {
+      "monsterId": "bursting-corpse",
+      "count": 1,
+      "row": "front"
+    }
+  ],
+  "weight": 18,
+  "ambushModifier": -5,
+  "eliteAllowed": true
+}

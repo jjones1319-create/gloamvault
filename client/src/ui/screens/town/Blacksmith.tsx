@@ -3,10 +3,12 @@ import type { Content } from '../../../../../sim/src/content.ts'
 import { sellPrice } from '../../../../../sim/src/economy.ts'
 import { canPromote, plusNUpgrade, salvage } from '../../../../../sim/src/items.ts'
 import { stoneItemFor } from '../../../../../sim/src/loot.ts'
-import { equippedItems, promoteItem, repairAll, repairAllQuote, salvageItem, sellItem, upgradePlusN, type Profile } from '../../../../../sim/src/town.ts'
+import { itemValue, tomeName, tomeSkill } from '../../../../../sim/src/tomes.ts'
+import { equippedItems, promoteItem, repairAll, repairAllQuote, salvageItem, sellItem, townR, upgradePlusN, type Profile } from '../../../../../sim/src/town.ts'
 import type { HeroRecord, ItemDef, ItemInstance } from '../../../../../sim/src/types/content.ts'
 import { act, content, profile } from '../../../game/session.ts'
 import { Btn, Empty, Gold, Grade, Modal, Section, WearPips } from '../../kit/kit.tsx'
+import { ItemDetails } from '../hero/ItemDetails.tsx'
 import { GRADE_NAMES, HeroPicker, PlacePage, SLOT_NAMES, canAfford, ladderMaterial, materialName, pickedHero } from './shared.tsx'
 
 /**
@@ -55,12 +57,17 @@ export function Blacksmith() {
   const p = profile.value!
   const hero = pickedHero(p)
   const [confirm, setConfirm] = useState<Confirm>(null)
-  const quote = hero ? repairAllQuote(c, p, hero.id) : { gold: 0, points: 0 }
+  const quote = hero ? repairAllQuote(c, p, hero.id) : { gold: 0, points: 0, ammo: null }
+  // D-099: Repair all refills the quiver too (the arrows or bolts the hand draws, at their own price).
+  const refill = quote.ammo
+  const toMend = quote.points > 0 || refill !== null
   const worn = hero ? equippedItems(hero) : []
   const haggle = haggling(hero)
-  const owned = Object.entries(p.materials).filter(([, n]) => n > 0)
+  // Chest keys are counted in the materials too (07 §7); they belong to the Curio Merchant, not the forge.
+  const owned = Object.entries(p.materials).filter(([id, n]) => n > 0 && c.items.get(id)?.kind !== 'key')
 
-  const sellFor = (def: ItemDef, inst: ItemInstance) => sellPrice(c.tuning, def.value, haggle) * Math.max(1, inst.quantity)
+  // A Skill Tome sells by its skill's tier (08 §4; tomes.ts itemValue), as the sim's sellItem does.
+  const sellFor = (def: ItemDef, inst: ItemInstance) => sellPrice(c.tuning, tomeSkill(c, inst) ? itemValue(c, inst, townR(p)) : def.value, haggle) * Math.max(1, inst.quantity)
   const salvageInto = (def: ItemDef, inst: ItemInstance) => {
     const r = salvage(c.tuning, def, inst)
     const mat = ladderMaterial(c, r.materialLadder, r.materialRung)
@@ -76,14 +83,18 @@ export function Blacksmith() {
             <Btn
               tone="primary"
               testid="bs-repair-all"
-              disabled={!hero || quote.points <= 0 || !canAfford(p, quote.gold)}
+              disabled={!hero || !toMend || !canAfford(p, quote.gold)}
               onClick={() => hero && act((cc, pp) => repairAll(cc, pp, hero.id), `${hero.name}'s gear is mended`)}
             >
               Repair all
-              {quote.points > 0 && <Gold amount={quote.gold} />}
+              {toMend && <Gold amount={quote.gold} />}
             </Btn>
-            <span class="tw-note">
-              {quote.points <= 0 ? 'Everything is in good repair.' : !canAfford(p, quote.gold) ? 'Not enough gold for the whole bill.' : `${quote.points} points of wear to mend.`}
+            <span class="tw-note" data-testid="bs-repair-note">
+              {!toMend
+                ? 'Everything is in good repair, and the quiver is full.'
+                : !canAfford(p, quote.gold)
+                  ? 'Not enough gold for the whole bill.'
+                  : [quote.points > 0 ? `${quote.points} points of wear to mend` : '', refill ? `${refill.missing} ${c.items.get(refill.itemId)?.name.toLowerCase() ?? 'arrows'} to refill` : ''].filter(Boolean).join('; ') + '.'}
             </span>
           </div>
           {worn.length === 0 ? (
@@ -107,6 +118,7 @@ export function Blacksmith() {
                       </span>
                       <span class="list__sub">{plus.text}</span>
                       <span class="list__sub">{promo.text}</span>
+                      <ItemDetails c={c} def={def} inst={inst} worn={worn} />
                     </div>
                     <div class="tw-item__actions">
                       <Btn
@@ -162,12 +174,14 @@ export function Blacksmith() {
                     <div key={inst.instanceId} class="list__row tw-item">
                       <div class="list__main">
                         <span class="tw-item__name">
-                          <Grade grade={def.grade} /> {def.name}
+                          {tomeSkill(c, inst) ? '📖' : <Grade grade={def.grade} />} {tomeSkill(c, inst) ? tomeName(c, inst) : def.name}
                           {inst.plusN > 0 && <b class="tw-plus"> +{inst.plusN}</b>}
                           {inst.quantity > 1 && <span class="tw-dim"> ×{inst.quantity}</span>}
                         </span>
                         <span class="list__sub">
-                          {GRADE_NAMES[def.grade]} {(SLOT_NAMES[def.slot ?? ''] ?? def.kind).toLowerCase()} · sells for {sellFor(def, inst)} · {into ? `salvages to ${into.units} ${into.mat.name}` : 'no salvage'}
+                          {tomeSkill(c, inst)
+                            ? `Tier ${['', 'I', 'II', 'III', 'IV', 'V'][tomeSkill(c, inst)!.tier] ?? tomeSkill(c, inst)!.tier} · a ${c.classes.get(tomeSkill(c, inst)!.classId)?.name ?? 'hero'} reads it on the Skills tab · sells for ${sellFor(def, inst)}`
+                            : `${GRADE_NAMES[def.grade]} ${(SLOT_NAMES[def.slot ?? ''] ?? def.kind).toLowerCase()} · sells for ${sellFor(def, inst)} · ${into ? `salvages to ${into.units} ${into.mat.name}` : 'no salvage'}`}
                         </span>
                       </div>
                       <div class="tw-item__actions">

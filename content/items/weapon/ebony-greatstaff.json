@@ -1,0 +1,49 @@
+{
+  "id": "ebony-greatstaff",
+  "name": "Ebony Greatstaff",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "A",
+  "materialLadder": "wood",
+  "materialRung": 5,
+  "weaponType": "staff",
+  "armorFamily": null,
+  "hands": 2,
+  "damageType": "fire",
+  "weight": 1400,
+  "baseStats": {
+    "attackSpell": 80,
+    "mana": 89,
+    "speed": -3
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 23
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 8,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 4.07,
+  "value": 2400,
+  "classLock": [
+    "arcanist"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-greatstaff-01",
+    "tintPrimary": "#2a211c",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "skysteel"
+  }
+}

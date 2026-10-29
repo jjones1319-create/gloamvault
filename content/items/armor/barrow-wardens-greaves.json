@@ -1,0 +1,48 @@
+{
+  "id": "barrow-wardens-greaves",
+  "name": "Barrow Warden's Greaves",
+  "slot": "legs",
+  "kind": "armor",
+  "grade": "D",
+  "materialLadder": "metal",
+  "materialRung": 2,
+  "weaponType": null,
+  "armorFamily": "plate",
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "defense": 9,
+    "hp": 7
+  },
+  "requirements": {
+    "strength": 15,
+    "wisdom": 0
+  },
+  "affixSlots": 1,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 5,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1.88,
+  "value": 266,
+  "classLock": [
+    "warden"
+  ],
+  "setId": "barrow-wardens-vigil",
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "armor-plate-legs-01",
+    "tintPrimary": "#4a5148",
+    "tintSecondary": "#2f5e4a",
+    "trimMetal": "iron"
+  }
+}

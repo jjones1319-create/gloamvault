@@ -29,7 +29,7 @@ export function LookStep({ c, draft, onLook }: { c: Content; draft: Draft; onLoo
   const hairs = hairChoices(manifest, speciesId)
   const presets = manifest?.species.get(speciesId)?.presets
   const faces = presets && presets.length ? presets.map((p) => p.name) : Array.from({ length: species?.body.facePresets ?? 3 }, (_, i) => `Face ${i + 1}`)
-  const spec = useMemo(() => starterSpec(c, { speciesId, classId, look }), [c, speciesId, classId, look.frame, look.skin, look.face, look.hair])
+  const spec = useMemo(() => starterSpec(c, { speciesId, classId, look, kitId: draft.kitId }), [c, speciesId, classId, draft.kitId, look.frame, look.skin, look.face, look.hair])
   const pick = (patch: Partial<HeroLook>) => {
     buzz()
     onLook({ ...look, ...patch })

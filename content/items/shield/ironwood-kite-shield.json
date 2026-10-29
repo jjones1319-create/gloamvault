@@ -1,0 +1,49 @@
+{
+  "id": "ironwood-kite-shield",
+  "name": "Ironwood Kite Shield",
+  "slot": "offHand",
+  "kind": "shield",
+  "grade": "B",
+  "materialLadder": "wood",
+  "materialRung": 4,
+  "weaponType": "shieldKite",
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "block": 33,
+    "defense": 10,
+    "speed": -5
+  },
+  "requirements": {
+    "strength": 15,
+    "wisdom": 0
+  },
+  "affixSlots": 2,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 7,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 2.44,
+  "value": 800,
+  "classLock": [
+    "warden"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "shield-kite-shield-01",
+    "tintPrimary": "#4a3b2f",
+    "tintSecondary": "#5b4a2f",
+    "trimMetal": "blacksteel"
+  }
+}

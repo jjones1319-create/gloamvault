@@ -1,0 +1,49 @@
+{
+  "id": "skysteel-tower-shield",
+  "name": "Skysteel Tower Shield",
+  "slot": "offHand",
+  "kind": "shield",
+  "grade": "A",
+  "materialLadder": "metal",
+  "materialRung": 5,
+  "weaponType": "shieldTower",
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "block": 45,
+    "defense": 22,
+    "speed": -10
+  },
+  "requirements": {
+    "strength": 25,
+    "wisdom": 0
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 8,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 3.05,
+  "value": 1280,
+  "classLock": [
+    "warden"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "shield-tower-shield-01",
+    "tintPrimary": "#9ec5e0",
+    "tintSecondary": "#5b4a2f",
+    "trimMetal": "skysteel"
+  }
+}

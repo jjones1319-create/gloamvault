@@ -1,0 +1,202 @@
+{
+  "id": "tidebound-flagellant",
+  "name": "Tidebound Flagellant",
+  "familyId": "tidebound",
+  "dungeonId": "gravehollow-keep",
+  "zoneId": "the-drowned-vault",
+  "role": "special",
+  "size": "medium",
+  "rows": [
+    "front"
+  ],
+  "levelBand": {
+    "min": 11,
+    "max": 11
+  },
+  "multipliers": {
+    "hp": 1.4,
+    "attack": 1.1,
+    "defense": 0.6
+  },
+  "speed": 105,
+  "xpClass": 2,
+  "goldMultiplier": 1.5,
+  "ambushModifier": 5,
+  "attacks": [
+    {
+      "id": "chain-of-penance",
+      "name": "Chain of Penance",
+      "damageType": "pierce",
+      "weight": 1000,
+      "multiplier": 0.8,
+      "target": "enemyBack",
+      "effects": [
+        {
+          "kind": "custom",
+          "customId": "pull-to-front",
+          "note": "pulls one back-row hero to the front"
+        },
+        {
+          "kind": "applyStatus",
+          "status": "root",
+          "duration": 2
+        }
+      ],
+      "aiWeight": 45,
+      "tell": "The Flagellant swings the hooked chain overhead.",
+      "hint": "Chain swinging"
+    },
+    {
+      "id": "scourge",
+      "name": "Scourge",
+      "damageType": "slash",
+      "weight": 1000,
+      "multiplier": 1.2,
+      "target": "enemyFront",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "bleed",
+          "duration": 2
+        },
+        {
+          "kind": "custom",
+          "customId": "damage-percent-max-hp",
+          "percent": 5,
+          "target": "self",
+          "note": "self-damage 5%"
+        }
+      ],
+      "aiWeight": 40,
+      "tell": null
+    },
+    {
+      "id": "ecstasy",
+      "name": "Ecstasy",
+      "damageType": "slash",
+      "weight": 800,
+      "multiplier": 0,
+      "target": "self",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "haste",
+          "duration": 2,
+          "target": "self"
+        },
+        {
+          "kind": "applyStatus",
+          "status": "weaken",
+          "duration": 2,
+          "target": "self"
+        }
+      ],
+      "aiWeight": 15,
+      "tell": null
+    },
+    {
+      "id": "penitent-fury",
+      "name": "Penitent Fury",
+      "damageType": "slash",
+      "weight": 1000,
+      "multiplier": 0,
+      "target": "self",
+      "effects": [
+        {
+          "kind": "custom",
+          "customId": "rage-per-missing-hp",
+          "percent": 10,
+          "note": "not an action: +10% Attack per 10% HP lost (the rising red bar)"
+        }
+      ],
+      "aiWeight": 0,
+      "tell": null
+    }
+  ],
+  "resist": [
+    "frost"
+  ],
+  "weak": [
+    "lightning"
+  ],
+  "immune": [],
+  "statusImmune": [
+    "fear",
+    "taunt"
+  ],
+  "behavior": {
+    "rules": [
+      {
+        "if": "pulls the hero with the highest ranged Attack — kill it fast or heal around it",
+        "then": "chain-of-penance"
+      }
+    ],
+    "fleesAtPercent": 0
+  },
+  "parts": {
+    "common": {
+      "materialId": "silk",
+      "chance": 35,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "rare": {
+      "itemId": "penance-chain",
+      "chance": 4,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "breakLimb": {
+      "name": "chain arm",
+      "effect": {
+        "kind": "custom",
+        "customId": "lose-status-attacks",
+        "status": "root",
+        "note": "no pull"
+      }
+    }
+  },
+  "monsterTechniqueSkillIds": [],
+  "elitePool": [
+    "shielded",
+    "vampiric",
+    "shackler",
+    "rabid",
+    "spiteful",
+    "warded",
+    "thorned",
+    "regenerating",
+    "mirrored",
+    "commander",
+    "leech",
+    "nullifier"
+  ],
+  "boss": null,
+  "hunter": null,
+  "visual": {
+    "baseMesh": "humanoid",
+    "scale": 1,
+    "variantOf": "grinning-cutpurse",
+    "palette": [
+      "#d9968a",
+      "#8b4a2b",
+      "#7d868a"
+    ],
+    "reads200px": true,
+    "animations": [
+      "Idle",
+      "Move",
+      "Attack1",
+      "Attack2",
+      "Hit",
+      "Death",
+      "Throw",
+      "Pull"
+    ],
+    "triBudget": 4000
+  }
+}

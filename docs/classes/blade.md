@@ -1,6 +1,6 @@
 # Blade — class sheet
 
-*Last updated 2026-10-27 · rev. 2 (checkpoint 1: open questions answered by delegation; the Nightmare preset renamed Dread — D-095, D-099) · rev. 1 2026-10-26 · numbers are tuning starting points*
+*Last updated 2026-10-28 · rev. 5 (Phase 7 joints: Undying Rage against damage over time; Quicksilver not offered once spent) · rev. 4 (Phase 7 class-damage pass: the tuned multipliers in §4 and "As tuned" under it) · rev. 3 (Phase 7: Tiers IV–V as built; the D-099 limits; the second starter kit; stale lines fixed) · rev. 2 2026-10-27 (checkpoint 1: open questions answered by delegation; the Nightmare preset renamed Dread — D-095, D-099) · rev. 1 2026-10-26 · numbers are tuning starting points*
 
 *Every number below (costs, multipliers, durations, the Cellars monster stats in §8) is a starting point for the simulator and the balance runner, not a commitment. Rules referenced are `03-GAME-DESIGN.md` (§2 stats, §3 timeline, §5 level-by-use, §6 gear, §7 skills). Status numbers quoted in skill lines (Bleed 25% of the applying hit per turn for 3 turns, ignores Defense · Poison 3% of max HP per turn, ignores Defense · Weaken −20% Attack · Fortify +20% Defense · Mark +20% damage taken · Slow ×0.67 Speed · Haste ×1.5 · Daze −500 energy · Petrify −1,000 energy) belong to `content/statuses/<id>.json` (`03` §3.5 is the table) and are repeated here only so the lines read on their own.*
 
@@ -29,9 +29,9 @@ The Blade is the party's damage, paid for in Defense. It is two classes in one b
 | Armor family | **Mail** (metal ladder Copper → Starmetal); speed penalty **−10**, relieved 1 point per Strength above the set's requirement (Crude Mail requires Str 10) |
 | Allowed weapons | Sword (1h · Slash · normal 1,000) · Axe (1h · Slash · normal 1,000 · +5% Crit Damage) · **Greatsword** (2h · Slash · heavy 1,400) · **Great Axe** (2h · Slash · heavy 1,400 · +10% Crit Damage) · **Dual** (any two 1h: basic attack is **light 800** and strikes twice at 0.5× each) |
 | Weapon handling (`08-ITEMS.md` §1 owns it) | Dual: weaponAttack = main + 0.5 × off; basic = 2 × 0.5× at 800. Two-hander: basic = **1.0×** at 1,400 — the weight is paid back by the higher Base Attack (Greatsword 20 vs Longsword 12) and **Cleave** (a basic also hits a second front-row enemy for 50%); a Crude Greatsword requires Str 14. Iron Dance skills require dual; Executioner skills require a two-hander; Bloodletter works with either |
-| Starter kit (F-grade, Crude; `08` §12) | Copper Longsword (Attack 12, req Str 10) · Copper Dagger (Attack 8, req Str 6; off hand adds 50%) · Copper Coif / Hauberk / Chausses / Treads / Mitts (Defense 2 / 6 / 4 / 2 / 1 = 15) · Ring of Might (+2 Attack) · 2 Small HP Potions · 2 Torches · 1 Repair Kit · 1 Bandage · one F-grade pet egg. A Crude Greatsword (Attack 20, req Str 14) is sold by Hesper for 0.05 R |
+| Starter kit (F-grade, Crude; `08` §12) | Copper Longsword (Attack 12, req Str 10) · Copper Dagger (Attack 8, req Str 6; off hand adds 50%) · Copper Coif / Hauberk / Chausses / Treads / Mitts (Defense 2 / 6 / 4 / 2 / 1 = 15) · Ring of Might (+2 Attack) · 2 Small HP Potions · 2 Torches · 1 Repair Kit · 1 Bandage · one F-grade pet egg. **Greatsword kit** (New hero's second choice, D-099; the town sells no weapons): a Copper Greatsword (Attack 20, req Str 14) in both hands instead of the Longsword and the Dagger; the rest the same |
 | Derived at creation (class modifiers only, all else 10) | HP 103 · Attack **46** dual (12 + 4 + 2 × 12 + 2 × 2 spare Str + 2 ring) or 46 greatsword (20 + 24 + 2; Str 12 is 2 under the Greatsword's requirement: −10 Speed until trained) · Defense 25 (15 + 10) · Speed **102** (100 + 10 − 10 + 2) · Stamina 60 · Crit 5% · Crit Damage 154% · Accuracy 90% · Dodge 1% · Carry 56 kg · Detection 10 |
-| Recommended Tier I starter picks | **Twin Cut** (Iron Dance) · **Open Vein** (Bloodletter) · **Flowing Guard** (Iron Dance) — hits, a DoT that keeps working while the Blade is Dazed, and the only Dodge it will see for a while. A greatsword starter takes **Cleaving Blow · Wind-up · Headsman's Eye** instead |
+| Recommended Tier I starter picks | **Twin Cut** (Iron Dance) · **Open Vein** (Bloodletter) · **Flowing Guard** (Iron Dance) — hits, a DoT that keeps working while the Blade is Dazed, and the only Dodge it will see for a while. The greatsword kit's picks are **Cleaving Blow · Wind-up · Headsman's Eye** |
 
 ---
 
@@ -52,7 +52,7 @@ The Blade's Ultimate is the only time it hits the back row. Iron Dance builds re
 
 ## 4. The three schools
 
-*Reading the tables.* Cost is Stamina. Weight is energy subtracted after the action (light 800 · normal 1,000 · heavy 1,400). Multipliers are of Attack; heavy 1,400-weight skills carry about ×1.3 on their multiplier to pay for the weight. "Front" = the enemy front row. Each Tier II–V skill names exactly one Tier N−1 skill of its own school as prerequisite. Rank 1–10 grows by use (+4% effect, −2% cost per rank); Mastery is the rank-10 line. Insight sweet spots by tier (enemy level ≈ tier × 6): Tier II at L9–15 (the Crypts, the Vault), Tier III at L15–21 (the Fungal Deep), Tier IV at L21–27 (Emberforge). **Monster techniques** only Insight while the named monster uses the move; proposed flat 10% per witnessed use, pity at 10 (see §10).
+*Reading the tables.* Cost is Stamina. Weight is energy subtracted after the action (light 800 · normal 1,000 · heavy 1,400). Multipliers are of Attack; heavy 1,400-weight skills carry about ×1.3 on their multiplier to pay for the weight. "Front" = the enemy front row. Each Tier II–V skill names exactly one Tier N−1 skill of its own school as prerequisite. Rank 1–10 grows by use (+4% effect, −2% cost per rank); Mastery is the rank-10 line. Insight sweet spots by tier (enemy level ≈ tier × 6): Tier II at L9–15 (the Crypts, the Vault), Tier III at L15–21 (the Fungal Deep), Tier IV at L21–27 (Emberforge). **Monster techniques** are learned only by witnessing, not on the S-curve: each time the named monster uses the move in a fight, a hero who knows the technique's prerequisite rolls a flat 10%, and the 10th witnessed use is certain (D-028, D-099). A technique is never sold and never comes in a Tome.
 
 ### 4.1 Iron Dance — dual-wield, light strikes, many hits, Momentum
 
@@ -60,13 +60,13 @@ The Blade's Ultimate is the only time it hits the back row. Iron Dance builds re
 
 | Tier | Skill | Type | Cost | Weight | Target | Effect | Prerequisite | Mastery (rank 10 bonus) |
 |---|---|---|---|---|---|---|---|---|
-| I | Twin Cut | Active | 9 | 800 | Single front | Two hits of 0.6× Slash (1.2×); +5 extra Momentum | — | A third hit at 0.4× |
+| I | Twin Cut | Active | 9 | 800 | Single front | Two hits of 0.5× Slash (1.0×); +5 extra Momentum | — | A third hit at 0.35× |
 | I | Quickstep | Active | 8 | 800 | Self | Your next action, whatever it is, has weight 800; +10 Momentum | — | Also +10% Dodge for 1 turn |
 | I | Flowing Guard | Passive | — | — | Passive | After each 800-weight action, +5% Dodge until your next turn (stacks to 15%) | — | +8% per stack (cap 24%) |
-| II | Flurry | Active | 14 | 800 | Single front | Three hits of 0.55× Slash (1.65×); each hit that lands +3 Momentum | Twin Cut | Four hits |
+| II | Flurry | Active | 14 | 800 | Single front | Three hits of 0.4× Slash (1.2×); each hit that lands +3 Momentum | Twin Cut | Four hits |
 | II | Blade Rhythm | Passive | — | — | Passive | Each consecutive Iron Dance skill +8% damage (max 3 stacks); a basic attack or a non-Iron-Dance action resets it | Quickstep | Max 5 stacks |
 | II | Mirror Step | Active | 12 | 800 | Self | Dodge +30% for 1 turn; the first attack you dodge is answered with a 1.0× riposte | Flowing Guard | Riposte 1.5× |
-| III | Crescent Flurry | Active | 20 | 800 | Enemy front row | Two hits of 0.6× Slash to each front-row enemy (1.2× each) | Flurry | Three hits |
+| III | Crescent Flurry | Active | 20 | 800 | Enemy front row | Two hits of 0.45× Slash to each front-row enemy (0.9× each) | Flurry | Three hits |
 | III | Momentum Surge | Active | 18 | 800 | Self | +30 Momentum; Haste 1 turn | Blade Rhythm | +40 Momentum |
 | III | Thousand Steps | Passive | — | — | Passive | Iron Dance skills cost −2 Stamina per Blade Rhythm stack; dodging an attack grants +10 Momentum | Mirror Step | −3 per stack |
 | IV | Tempest Dance | Active | 30 | 800 | Random enemies, any row | Five hits of 0.6× Slash spread over random enemies in both rows (3.0× total) — the dual Blade's only reach | Crescent Flurry | Seven hits |
@@ -85,11 +85,11 @@ The Blade's Ultimate is the only time it hits the back row. Iron Dance builds re
 | I | Cleaving Blow | Active | 12 | 1,400 | Single front | 1.8× Slash | — | Weaken 1 turn |
 | I | Wind-up | Active | 8 | 800 | Self | Your next Executioner skill deals +40% and cannot be interrupted (no energy push-back from hits while charging); +10 Momentum | — | +60% |
 | I | Headsman's Eye | Passive | — | — | Passive | +10% Crit Rate against enemies below 40% HP | — | +20% |
-| II | Execute | Active | 16 | 1,400 | Single front | 1.7× Slash; against a target below 30% HP, 3.4× | Cleaving Blow | Threshold 35% |
-| II | Sundering Swing | Active | 18 | 1,400 | Enemy front row | 1.1× Slash to each; Weaken 2 turns | Wind-up | Also strips Fortify |
+| II | Execute | Active | 16 | 1,400 | Single front | 1.45× Slash; against a target below 30% HP, 2.9× | Cleaving Blow | Threshold 35% |
+| II | Sundering Swing | Active | 18 | 1,400 | Enemy front row | 0.95× Slash to each; Weaken 2 turns | Wind-up | Also strips Fortify |
 | II | Heavy Hands | Passive | — | — | Passive | Crit Damage +20%; your heavy swings cannot be Dodged by Dazed, Rooted or Grabbed targets | Headsman's Eye | +35% |
-| III | Skull Splitter | Active | 24 | 1,400 | Single front | 2.4× Slash; Stun 1 turn on a crit | Execute | Stun on any hit against a target below 40% HP |
-| III | Breaker's Arc | Active | 26 | 1,400 | Single front | 2.0× Blunt (the flat and pommel — the anti-Mail swing); **part-break**: marks a limb, doubling that monster's rare-part roll (§6.5); in the corridor, forces a door or chest at +5 to the Strength check | Sundering Swing | Rare-part roll ×3 |
+| III | Skull Splitter | Active | 24 | 1,400 | Single front | 2.05× Slash; Stun 1 turn on a crit | Execute | Stun on any hit against a target below 40% HP |
+| III | Breaker's Arc | Active | 26 | 1,400 | Single front | 1.7× Blunt (the flat and pommel — the anti-Mail swing); **part-break**: marks a limb, doubling that monster's rare-part roll (§6.5); in the corridor, forces a door or chest at +5 to the Strength check | Sundering Swing | Rare-part roll ×3 |
 | III | Grim Harvest | Passive | — | — | Passive | A kill with an Executioner skill refunds its Stamina and grants +20 Momentum | Heavy Hands | +30 Momentum |
 | IV | Guillotine | Active | 35 | 1,400 | Single front | 2.6× Slash; below 40% HP, 5.2×; never misses a Marked target | Skull Splitter | Threshold 45% |
 | IV | Bone Knight's Cleave | Active | 32 | 1,400 | Enemy front row | **(monster technique: bone knight)** 1.6× Slash to each front-row enemy; Fear 1 turn | Breaker's Arc | 2.0× |
@@ -104,21 +104,40 @@ The Blade's Ultimate is the only time it hits the back row. Iron Dance builds re
 
 | Tier | Skill | Type | Cost | Weight | Target | Effect | Prerequisite | Mastery (rank 10 bonus) |
 |---|---|---|---|---|---|---|---|---|
-| I | Open Vein | Active | 10 | 1,000 | Single front | 1.2× Slash; Bleed 3 turns | — | Bleed 4 turns |
-| I | Reckless Swing | Active | 9 | 1,000 | Single front | 1.5× Slash; you take 5% max HP (tags Vitality, +10 Momentum) | — | No self-damage above 50% HP |
+| I | Open Vein | Active | 10 | 1,000 | Single front | 1.0× Slash; Bleed 3 turns | — | Bleed 4 turns |
+| I | Reckless Swing | Active | 9 | 1,000 | Single front | 1.3× Slash; you take 5% max HP (tags Vitality, +10 Momentum) | — | No self-damage above 50% HP |
 | I | Red Thirst | Passive | — | — | Passive | Basic attacks heal you for 8% of damage dealt | — | 15% |
-| II | Hemorrhage | Active | 15 | 1,000 | Single front | 1.4× Slash; consumes the target's Bleed and deals all its remaining ticks at once | Open Vein | Also re-applies Bleed 2 turns |
+| II | Hemorrhage | Active | 15 | 1,000 | Single front | 1.0× Slash; consumes the target's Bleed and deals all its remaining ticks at once | Open Vein | Also re-applies Bleed 2 turns |
 | II | Pain Threshold | Passive | — | — | Passive | Below 50% HP: +15% Attack; below 25%: +30% Attack and +10 Speed | Reckless Swing | +25% / +45% |
-| II | Drink Deep | Active | 14 | 1,000 | Single front | 1.3× Slash; heal 50% of damage dealt | Red Thirst | Heal 75% |
+| II | Drink Deep | Active | 14 | 1,000 | Single front | 1.0× Slash; heal 50% of damage dealt | Red Thirst | Heal 75% |
 | III | Crimson Field | Active | 24 | 1,000 | Enemy front row | 0.9× Slash to each; Bleed 2 turns on each; heal 10% of the total | Hemorrhage | Bleed 3 turns |
 | III | Berserk | Active | 20 | 800 | Self | For 3 turns: +25% Attack, +15 Speed, −20% Defense, Momentum gain ×1.5; you cannot Guard | Pain Threshold | 4 turns; −10% Defense |
 | III | Ghoul's Grasp | Active | 22 | 1,000 | Single front | **(monster technique: ghoul)** 1.6× Pierce; Grab 1 turn (the target cannot act until an ally frees it); heal 30% of damage dealt | Drink Deep | Heal 50% |
 | IV | Exsanguinate | Active | 32 | 1,000 | Single front | 2.4× Slash, +50% per turn of Bleed remaining on the target (cap +150%); removes the Bleed | Crimson Field | Cap +200% |
-| IV | Undying Rage | Passive | — | — | Passive | Once per fight, a hit that would down you while Berserk leaves you at 1 HP with Regen 10% max HP for 2 turns | Berserk | Works outside Berserk too |
+| IV | Undying Rage | Passive | — | — | Passive | Once per floor (D-099), a hit that would down you while Berserk leaves you at 1 HP with Regen 10% max HP for 2 turns | Berserk | Works outside Berserk too |
 | IV | Blood Price | Active | 28 | 800 | Self | Spend 25% max HP: restore 40% Stamina and +30 Momentum | Ghoul's Grasp | Spend 15% |
 | V | Red Tide | Active | 45 | 1,400 | All enemies | 2.0× Slash to every enemy in both rows; Bleed 3 turns; heal 20% of the total | Exsanguinate | 2.4× |
-| V | Deathless | Passive | — | — | Passive | Pain Threshold's bonuses are doubled; Undying Rage triggers twice per fight | Undying Rage | Regen lasts 3 turns |
+| V | Deathless | Passive | — | — | Passive | Pain Threshold's bonuses are doubled; Undying Rage triggers twice per floor (D-099) | Undying Rage | Regen lasts 3 turns |
 | V | Sanguine Pact | Active | 40 | 800 | Party | Every ally heals 15% of their damage dealt for 3 turns; you Bleed 3 turns | Blood Price | 4 turns; no self-Bleed |
+
+**As built (Phase 7).** Tiers IV–V are in `content/skills/blade/` (`tools/content/gen-class-blade.ts`). Tier IV comes by Insight, boss Tomes and Skill Tome chests (Bone Knight's Cleave only by witnessing a Bone Knight's Cleave); Tier V is written but locked until Segment 3 (D-099). Where a line needed a reading:
+- **Tempest Dance** picks a random enemy for each of its hits (both rows); **Hundred Cuts** restates every hit at Mastery, as the other multi-hit skills.
+- **Quicksilver** gives the 800 energy back at most once a fight (twice at Mastery); once spent, the fight stops offering it (a use from an old command still costs its Stamina and does nothing).
+- **Perfect Tempo** counts the Iron Dance actives a fight has seen; every third is free.
+- **Unending Rhythm** raises Blade Rhythm's cap for the rest of the fight (nothing to raise without Blade Rhythm slotted).
+- **Edge of the Dance**'s riposte answers every dodge; its 40% Dodge cap is a logged stub until the derived stats read loadout passives.
+- **Guillotine** keeps 5.2× (D-099: no execute above 6.0×); "never misses a Marked target" is a sure hit for that action.
+- **Death's Ledger** raises the thresholds of the Executioner actives by 10 points (Execute 30 → 40, Guillotine 40 → 50; +15 at Mastery); its +50 Crit Damage holds while the target is under the raised threshold as the blow lands.
+- **Final Verdict**'s +30% goes to the first ally action after the kill that deals damage (every hit of that action), then lapses for the others.
+- **Mountain Cleaver** cleaves through to the whole back row (D-073's "behind" reading).
+- **Reaper's Patience** primes when the action before was a Guard and spends the prime on the next action, heavy or not.
+- **Exsanguinate** counts its +50% per Bleed turn on every use, then takes the Bleed off.
+- **Undying Rage** is once per floor (D-099): the floor's earlier saves carry from fight to fight; with **Deathless** slotted it can save twice per floor, its Regen 2 turns (3 at Deathless's Mastery). A damage-over-time tick that would down you triggers it too, as it does Unbreakable (Phase 7 joint: the tick asks the same hooks a blow does).
+- **Blood Price** is a cost paid from HP and never drops the Blade below 1 HP.
+- **Sanguine Pact** heals every ally for 15% of each hit it deals, not halved against Burn (unlike the Vampiric affix); its Mastery's "no self-Bleed" is a Bleed line that never lands.
+
+
+**As tuned (Phase 7, the class-damage pass).** `tools/balance/class-damage.ts` measures each class alone against every zone’s standard monsters at its own level, as single-target damage per round (10 timeline ticks: one normal action of a Speed-100 hero), at levels 1, 5, 8 and 13; the brief is that no damage dealer outdoes another by more than about 1.5×. Before the pass the spread was 2.6× / 2.5× / 3.1× / 2.5×; after it, 1.41× / 1.28× / 1.49× / 1.49×. On the first numbers the Blade led every level from 5 up (L8 134, L13 193 with two blades), because its Strength — the stat physical Attack reads — grows with every other level. The dual school and Bloodletter come down: Twin Cut 2 × 0.5×, Flurry 3 × 0.4×, Crescent Flurry 2 × 0.45× each, Open Vein 1.0×, Reckless Swing 1.3×, Hemorrhage 1.0×, Drink Deep 1.0×; so does the greatsword kit's Executioner (D-099's second kit): Execute 1.45× (2.9× below 30%), Sundering Swing 0.95×, Skull Splitter 2.05×, Breaker's Arc 1.7×. The Blade is still the best single-target class at levels 8 and 13 (the greatsword at 13), within 1.5× of the others. Tier IV–V keep the sheet's numbers until Dungeon 2. §8's worked example keeps its original arithmetic.
 
 ---
 

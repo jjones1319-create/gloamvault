@@ -1,0 +1,80 @@
+{
+  "id": "ranger-comet-shot",
+  "classId": "ranger",
+  "school": "marksman",
+  "tier": 5,
+  "name": "Comet Shot",
+  "description": "4.0× Pierce to one enemy in any row that ignores Defense entirely; if it kills, +30 Momentum; 1 arrow.",
+  "type": "active",
+  "cost": 45,
+  "weight": 1400,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "ignore-defense-percent",
+      "percent": 100,
+      "target": "self",
+      "note": "this action's damage ignores all of the target's Defense"
+    },
+    {
+      "kind": "damage",
+      "multiplier": 4,
+      "damageType": "pierce",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "custom",
+      "customId": "momentum-on-kill",
+      "amount": 30,
+      "target": "self",
+      "note": "if this action killed, +amount Momentum"
+    },
+    {
+      "kind": "custom",
+      "customId": "consume-ammo",
+      "amount": 1,
+      "target": "self",
+      "note": "1 arrow (or bolt)"
+    }
+  ],
+  "prerequisiteId": "ranger-heartseeker",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "requirements": {
+    "weaponTypes": [
+      "bow",
+      "shortbow",
+      "longbow",
+      "crossbow"
+    ]
+  },
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "4.6×.",
+    "effects": [
+      {
+        "kind": "damage",
+        "multiplier": 4.6,
+        "damageType": "pierce",
+        "scalesWith": "strength"
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "reach",
+    "momentum"
+  ],
+  "xpTags": [
+    "perception",
+    "agility"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 75
+  }
+}

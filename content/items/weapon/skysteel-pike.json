@@ -1,0 +1,49 @@
+{
+  "id": "skysteel-pike",
+  "name": "Skysteel Pike",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "A",
+  "materialLadder": "metal",
+  "materialRung": 5,
+  "weaponType": "spear",
+  "armorFamily": null,
+  "hands": 2,
+  "damageType": "pierce",
+  "weight": 1000,
+  "baseStats": {
+    "attackPhys": 71,
+    "accuracy": 5,
+    "speed": -3
+  },
+  "requirements": {
+    "strength": 18,
+    "wisdom": 0
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 8,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 4.07,
+  "value": 2400,
+  "classLock": [
+    "warden"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-pike-01",
+    "tintPrimary": "#9ec5e0",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "skysteel"
+  }
+}

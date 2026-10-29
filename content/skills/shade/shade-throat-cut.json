@@ -4,7 +4,7 @@
   "school": "shadow",
   "tier": 2,
   "name": "Throat Cut",
-  "description": "1.3× Pierce to a front-row enemy; Silence 2 turns (no skills); +50% damage against a Dazed target.",
+  "description": "1.75× Pierce to a front-row enemy; Silence 2 turns (no skills); +50% damage against a Dazed target.",
   "type": "active",
   "cost": 15,
   "weight": 800,
@@ -12,7 +12,7 @@
   "effects": [
     {
       "kind": "damage",
-      "multiplier": 1.3,
+      "multiplier": 1.75,
       "damageType": "pierce"
     },
     {

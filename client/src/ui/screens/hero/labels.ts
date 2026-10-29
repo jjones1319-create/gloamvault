@@ -247,12 +247,21 @@ export function effectText(content: Content, e: Effect): string {
   }
 }
 
+/** A relic's active as the card says it (08 §3): "Once per fight: Taunts every enemy … (instant)". */
+export function relicActiveText(content: Content, def: ItemDef): string {
+  const a = def.active
+  if (!a) return ''
+  const when = a.timing === 'afterFight' ? 'After a fight, once per floor' : a.usesPerFloor ? 'Once per floor' : a.usesPerFight > 1 ? `${a.usesPerFight} times a fight` : 'Once per fight'
+  const what = a.text ?? a.effects.map((e) => effectText(content, e)).join('; ')
+  return `${when}: ${what}${a.instant ? ' (instant: no turn spent)' : ''}`
+}
+
 /** The short lines a gear row shows for an item: its stat lines, or a relic's once-per-fight active. */
 export function itemSummary(content: Content, def: ItemDef, s: EffectiveItemStats, pool: Pool, max = 3): string {
   if (s.band === 'broken') return 'Broken: gives nothing until repaired'
   const lines = itemLines(s, mainStatsFor(def, pool))
     .slice(0, max)
     .map(([stat, v], i) => `${STAT_NAME[stat]} ${i === 0 && v > 0 ? formatStat(stat, v) : signed(stat, v)}`)
-  if (def.active) lines.push(`Once per fight: ${def.active.effects.map((e) => effectText(content, e)).join('; ')}`)
+  if (def.active) lines.push(relicActiveText(content, def))
   return lines.length ? lines.join(' · ') : '—'
 }

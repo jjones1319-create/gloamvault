@@ -1,0 +1,184 @@
+{
+  "id": "vault-lantern",
+  "name": "Vault Lantern",
+  "familyId": "tidebound",
+  "dungeonId": "gravehollow-keep",
+  "zoneId": "the-drowned-vault",
+  "role": "fodder",
+  "size": "small",
+  "rows": [
+    "back"
+  ],
+  "levelBand": {
+    "min": 11,
+    "max": 11
+  },
+  "multipliers": {
+    "hp": 0.5,
+    "attack": 1,
+    "defense": 0.3
+  },
+  "speed": 120,
+  "xpClass": 1,
+  "goldMultiplier": 0.8,
+  "ambushModifier": 5,
+  "attacks": [
+    {
+      "id": "drowned-light",
+      "name": "Drowned Light",
+      "damageType": "shadow",
+      "weight": 800,
+      "multiplier": 0.7,
+      "target": "enemy",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "blind",
+          "duration": 2
+        }
+      ],
+      "aiWeight": 55,
+      "tell": null
+    },
+    {
+      "id": "lure",
+      "name": "Lure",
+      "damageType": "shadow",
+      "weight": 1000,
+      "multiplier": 0,
+      "target": "self",
+      "effects": [
+        {
+          "kind": "light",
+          "amount": -10,
+          "note": "the light dims while it lures (the fight's light)"
+        }
+      ],
+      "aiWeight": 25,
+      "tell": null
+    },
+    {
+      "id": "flicker",
+      "name": "Flicker",
+      "damageType": "shadow",
+      "weight": 800,
+      "multiplier": 0,
+      "target": "self",
+      "effects": [
+        {
+          "kind": "buffStat",
+          "stat": "dodge",
+          "amount": 50,
+          "duration": 1,
+          "target": "self",
+          "note": "Dodge 50% until its next turn"
+        }
+      ],
+      "aiWeight": 20,
+      "tell": null
+    },
+    {
+      "id": "last-flare",
+      "name": "Last Flare",
+      "damageType": "holy",
+      "weight": 1000,
+      "multiplier": 0,
+      "target": "self",
+      "effects": [
+        {
+          "kind": "custom",
+          "customId": "dies-into-light",
+          "amount": 5,
+          "note": "not an action: it dies into +5 light"
+        }
+      ],
+      "aiWeight": 0,
+      "tell": null
+    }
+  ],
+  "resist": [
+    "holy",
+    "shadow"
+  ],
+  "weak": [
+    "lightning"
+  ],
+  "immune": [],
+  "statusImmune": [
+    "poison",
+    "bleed",
+    "grab",
+    "web",
+    "root",
+    "petrify"
+  ],
+  "behavior": {
+    "rules": [
+      {
+        "if": "self status mark",
+        "then": "flicker"
+      },
+      {
+        "if": "blinds the hero with the highest Perception",
+        "then": "drowned-light"
+      }
+    ],
+    "fleesAtPercent": 0
+  },
+  "parts": {
+    "common": {
+      "itemId": "tide-glass",
+      "chance": 35,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "rare": {
+      "itemId": "wisp-egg",
+      "chance": 4,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "breakLimb": null
+  },
+  "monsterTechniqueSkillIds": [],
+  "elitePool": [
+    "shielded",
+    "vampiric",
+    "shackler",
+    "rabid",
+    "spiteful",
+    "warded",
+    "thorned",
+    "regenerating",
+    "mirrored",
+    "commander",
+    "leech",
+    "nullifier"
+  ],
+  "boss": null,
+  "hunter": null,
+  "visual": {
+    "baseMesh": "wisp",
+    "scale": 1,
+    "variantOf": null,
+    "palette": [
+      "#4f9e86",
+      "#7b4a2c",
+      "#f2fff8"
+    ],
+    "reads200px": true,
+    "animations": [
+      "Idle",
+      "Move",
+      "Attack1",
+      "Hit",
+      "Death",
+      "Flicker"
+    ],
+    "triBudget": 1500
+  }
+}

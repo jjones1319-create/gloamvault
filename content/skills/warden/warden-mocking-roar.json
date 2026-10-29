@@ -1,0 +1,54 @@
+{
+  "id": "warden-mocking-roar",
+  "classId": "warden",
+  "school": "warcry",
+  "tier": 4,
+  "name": "Mocking Roar",
+  "description": "Taunt 2 turns and Mark 1 turn (+20% damage taken) on every enemy — the party’s damage window.",
+  "type": "active",
+  "cost": 28,
+  "weight": 800,
+  "target": "allEnemies",
+  "effects": [
+    {
+      "kind": "applyStatus",
+      "status": "taunt",
+      "duration": 2
+    },
+    {
+      "kind": "applyStatus",
+      "status": "mark",
+      "duration": 1
+    }
+  ],
+  "prerequisiteId": "warden-thunderous-taunt",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Mark 2 turns.",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "mark",
+        "duration": 2
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "taunt",
+    "debuff",
+    "control"
+  ],
+  "xpTags": [
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "control",
+    "priority": 70
+  }
+}

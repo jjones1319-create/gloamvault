@@ -1,0 +1,41 @@
+/* The item card's deeper lines (Phase 7): a unique's signature, a relic's active, affixes, growth, the set. */
+.it-details {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin-top: 2px;
+  font-size: var(--fs-small);
+}
+.it-line {
+  display: block;
+  color: var(--ink-dim);
+}
+.it-line--unique {
+  color: #ffb347;
+}
+.it-line--relic {
+  color: #9ec5e0;
+}
+.it-line--set b {
+  color: var(--ink);
+}
+.it-count {
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.it-bonus {
+  display: block;
+  padding-left: 10px;
+  opacity: 0.6;
+}
+.it-bonus--on {
+  opacity: 1;
+  color: var(--good);
+}
+.it-awakened {
+  color: #ffd84d;
+}
+.it-affinity {
+  margin-left: 8px;
+  color: var(--good);
+}

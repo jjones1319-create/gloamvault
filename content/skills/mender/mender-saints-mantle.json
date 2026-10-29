@@ -1,0 +1,62 @@
+{
+  "id": "mender-saints-mantle",
+  "classId": "mender",
+  "school": "sanctity",
+  "tier": 5,
+  "name": "Saint’s Mantle",
+  "description": "When you are hit, the attacker takes 0.4× your spell Attack as Holy and is Feared 1 turn (once per enemy per turn); your Resistance +10%.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "retaliate-on-hit",
+      "multiplier": 0.4,
+      "damageType": "holy",
+      "status": "fear",
+      "duration": 1,
+      "target": "self",
+      "note": "a hit that lands on the holder: the attacker takes multiplier × the holder’s spell Attack as damageType and `status` for `duration`, once per attacker per action"
+    },
+    {
+      "kind": "buffStat",
+      "stat": "resistance",
+      "amount": 10
+    }
+  ],
+  "prerequisiteId": "mender-sanctified-weapon",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "0.6× Holy.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "retaliate-on-hit",
+        "multiplier": 0.6,
+        "damageType": "holy",
+        "status": "fear",
+        "duration": 1,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "control"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "defend",
+    "priority": 0
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "id": "blade-blood-price",
+  "classId": "blade",
+  "school": "bloodletter",
+  "tier": 4,
+  "name": "Blood Price",
+  "description": "Spend 25% of your max HP: restore 40% Stamina and gain +30 Momentum.",
+  "type": "active",
+  "cost": 28,
+  "weight": 800,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "spend-hp-percent",
+      "percent": 25,
+      "target": "self",
+      "note": "a cost of percent% of your max HP, never below 1 HP; it tags Vitality"
+    },
+    {
+      "kind": "pool",
+      "percent": 40,
+      "target": "self"
+    },
+    {
+      "kind": "momentum",
+      "amount": 30
+    }
+  ],
+  "prerequisiteId": "blade-ghouls-grasp",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Spend 15%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "spend-hp-percent",
+        "percent": 15,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "momentum",
+    "buff"
+  ],
+  "xpTags": [
+    "vitality",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 30
+  }
+}

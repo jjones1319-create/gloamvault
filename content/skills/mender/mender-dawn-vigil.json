@@ -1,0 +1,58 @@
+{
+  "id": "mender-dawn-vigil",
+  "classId": "mender",
+  "school": "vigil",
+  "tier": 4,
+  "name": "Dawn Vigil",
+  "description": "Every ally starts each fight with +10 Momentum; for ambush rolls the party counts its light band one step brighter.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "fight-start-momentum-allies",
+      "amount": 10,
+      "target": "self",
+      "note": "at the fight’s start every hero on the holder’s side gains +amount Momentum"
+    },
+    {
+      "kind": "custom",
+      "customId": "party-ambush-light-shift",
+      "amount": 1,
+      "target": "self",
+      "note": "delve-side: the ambush roll reads the light band `amount` step(s) brighter; a stub until delve.ts reads it"
+    }
+  ],
+  "prerequisiteId": "mender-beacon",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "+15 Momentum.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "fight-start-momentum-allies",
+        "amount": 15,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "momentum",
+    "light"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 0
+  }
+}

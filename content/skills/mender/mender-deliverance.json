@@ -1,0 +1,63 @@
+{
+  "id": "mender-deliverance",
+  "classId": "mender",
+  "school": "vigil",
+  "tier": 5,
+  "name": "Deliverance",
+  "description": "Every ally loses every debuff and gains Fortify 3 turns, Haste 1 turn and +20 Momentum. Heavy cast.",
+  "type": "active",
+  "cost": 45,
+  "weight": 1400,
+  "target": "allAllies",
+  "effects": [
+    {
+      "kind": "dispel",
+      "note": "on allies: every debuff"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "fortify",
+      "duration": 3
+    },
+    {
+      "kind": "applyStatus",
+      "status": "haste",
+      "duration": 1
+    },
+    {
+      "kind": "momentum",
+      "amount": 20
+    }
+  ],
+  "prerequisiteId": "mender-indomitable",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Haste 2 turns.",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "haste",
+        "duration": 2
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "cleanse",
+    "buff",
+    "momentum"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 80
+  }
+}

@@ -1,7 +1,8 @@
 import type { Content } from './content.ts'
 import type { Actor, FightEvent, FightState, HookInstance, Side, StatusInstance } from './fight-types.ts'
-import { activeHooks, installHook, removeHook } from './hooks.ts'
+import { activeHooks, armPassiveAttacks, installHook, removeHook } from './hooks.ts'
 import { lightBand, shiftedBand } from './light.ts'
+import { buildMonsterActor } from './monsters.ts'
 import type { Rng } from './rng.ts'
 import { customHandler, type CustomHandler, type HookContext, type HookFx, type IncomingDamage } from './skills/custom/index.ts'
 import { applyStatus, cleanse, hasStatus, removeStatus, statusDef, statusStatLines, strip } from './statuses.ts'
@@ -78,7 +79,26 @@ function fxFor(ctx: EffectContext): HookFx {
     },
     hasStatus: (actor, status) => hasStatus(actor, status),
     removeStatus: (actor, status) => removeStatus(actor, status),
+    summon: (actor, monsterId, opts = {}) => summonFromHook(ctx, actor, monsterId, opts),
   }
+}
+
+/**
+ * HookFx.summon (C1, Phase 7): a monster joins `actor`'s side as fight.ts spawnSummon builds one (same id scheme,
+ * side, energy 0, a 'summon' log line), with its passive attack hooks armed (hooks.ts armPassiveAttacks).
+ */
+function summonFromHook(ctx: EffectContext, actor: Actor, monsterId: string, opts: { row?: 'front' | 'back'; hpPercent?: number }): Actor | null {
+  const def = ctx.content.monsters.get(monsterId)
+  if (!def) return null
+  const id = `${monsterId}-s${ctx.state.actors.length}`
+  const summon = buildMonsterActor(ctx.content, ctx.t, def, { id, level: actor.level, row: opts.row ?? def.rows[0] ?? 'front', hpPercent: 100, summonedBy: actor.id })
+  summon.side = actor.side
+  summon.energy = 0
+  if (opts.hpPercent !== undefined) summon.hp = Math.max(1, Math.min(summon.maxHp, roundHalfUp((summon.maxHp * opts.hpPercent) / 100)))
+  armPassiveAttacks(summon)
+  ctx.state.actors.push(summon)
+  log(ctx, { kind: 'summon', actorId: actor.id, targetId: id, text: `${actor.name} summons ${summon.name}` })
+  return summon
 }
 
 /** Σ of a custom-hook percent across the holder's statuses. */
@@ -200,7 +220,8 @@ function rowOf(actors: Actor[], row: 'front' | 'back'): Actor[] {
 
 /** The enemies a melee attacker can reach: the front row, or the back row when the front is empty (§3.3). */
 export function reachableEnemies(ctx: EffectContext, actor: Actor, reach: boolean): Actor[] {
-  const enemies = enemiesOf(ctx.state, actor).filter((e) => canBeTargetedBy(ctx, e, actor))
+  // A boss arena's barricade or throne (07 §2.8; arena.ts meleeBlocked): out of a non-reach melee blow's reach; spells pass.
+  const enemies = enemiesOf(ctx.state, actor).filter((e) => canBeTargetedBy(ctx, e, actor) && (reach || actor.poolKind === 'mana' || !ctx.state.arena?.meleeBlocked.includes(e.id)))
   if (reach) return enemies
   // Huge monsters occupy both rows: reachable from anywhere (06 §7).
   const front = enemies.filter((e) => e.row === 'front' || e.monster?.size === 'huge')
@@ -247,10 +268,12 @@ export function resolveTargets(ctx: EffectContext, actor: Actor, target: Target,
       const row = chosen && allies.includes(chosen) ? chosen.row : actor.row
       return rowOf(allies, row)
     }
+    // "Party" is the heroes (03's DSL: "rows on both sides (partyFront, partyBack, allyRow, enemyRow, enemyRowBack)"):
+    // a monster's partyFront is the heroes' front row (the Broodmother's Sweep), never its own (C1, Phase 7).
     case 'partyFront':
-      return rowOf(allies, 'front')
+      return actor.side === 'party' ? rowOf(allies, 'front') : rowOf(enemies, 'front')
     case 'partyBack':
-      return rowOf(allies, 'back')
+      return actor.side === 'party' ? rowOf(allies, 'back') : rowOf(enemies, 'back')
     case 'enemy': {
       const e = pickEnemy()
       return e ? [e] : []
@@ -854,6 +877,8 @@ function durationWithBonus(ctx: EffectContext, applier: Actor, status: Status, t
  * an untyped limb breaks only on a critical hit, the sim's reading of "aimed at the limb" (D-071, D-078).
  */
 function breakPart(ctx: EffectContext, attacker: Actor | null, target: Actor, dealt: number, damageType: DamageType, crit: boolean): void {
+  // A boss in an arena (arena.ts): its several parts and the Warden's Oath read the blows from this queue.
+  if (target.monster?.isBoss && ctx.state.arena?.bossActorId === target.id) ctx.state.arena.hits.push({ attackerId: attacker?.id ?? null, dealt, damageType, crit })
   const m = target.monster
   if (!m || m.partBroken) return
   const limb = ctx.content.monsters.get(m.monsterId)?.parts.breakLimb

@@ -30,6 +30,9 @@ import { usePlayback, type FightPlayback } from './fight/playback.ts'
 import { fightAuto, fightFinale, fightSpeed, held, setFightSpeed } from './fight/prefs.ts'
 import { RuleEditor } from './fight/RuleEditor.tsx'
 import { FleeConfirm, ItemSheet, StanceSheet, type ItemRow } from './fight/Sheets.tsx'
+import { ArenaBar, ArenaSheet } from './fight/Arena.tsx'
+import { arenaRows, tellingIds, torchNote } from './fight/arenaView.ts'
+import { relicActiveText } from '../hero/labels.ts'
 import './fight.css'
 
 /** D-092: the encounter's threat against the party, in one word. */
@@ -88,7 +91,7 @@ interface Aim {
   testid: string
 }
 
-type Sheet = 'items' | 'stance' | 'flee' | 'rule' | null
+type Sheet = 'items' | 'stance' | 'flee' | 'rule' | 'arena' | null
 
 /** The legal list's reasons are lower-case fragments ("needs 10 stamina"); the HUD says them as sentences. */
 function reasonText(reason: string | undefined): string | undefined {
@@ -207,8 +210,16 @@ function Hud({ c, fight, pb, version }: { c: Content; fight: FightState; pb: Fig
     hero && h && basic
       ? {
           testid: 'fx-attack',
-          label: 'Attack',
-          sub: weightHint(h.weapon.weight, t.combat.weights.normal),
+          // Arrows (08 §4, D-099): the count rides on the attack, amber at ammo.lowAt; an empty bow bashes.
+          label: h.ammo && h.weapon.ranged && h.ammo.left <= 0 ? 'Bash' : 'Attack',
+          // The button is narrow: a counted bow shows its arrows in place of the weight word.
+          sub: h.ammo ? (
+            <span class={`fx-ammo ${h.ammo.left <= t.ammo.lowAt ? 'fx-ammo--low' : ''}`} data-testid="fx-ammo">
+              {h.ammo.left} {c.items.get(h.ammo.itemId)?.name.toLowerCase() ?? 'arrows'}
+            </span>
+          ) : (
+            weightHint(h.weapon.weight, t.combat.weights.normal)
+          ),
           enabled: basic.enabled,
           reason: reasonText(basic.reason),
           title: 'A basic attack with the weapon in hand; it restores some of your pool',
@@ -294,9 +305,10 @@ function Hud({ c, fight, pb, version }: { c: Content; fight: FightState; pb: Fig
               instanceId: cmd.instanceId,
               name,
               count: inst?.quantity ?? itemCount(l.label),
-              desc: def ? describeConsumable(def, (s) => c.statuses.get(s as never)?.name ?? s) : '',
+              // In the throne a Torch goes into a brazier (06 §3.4; pass C2): its line says so.
+              desc: (def?.consumable?.effects.some((e) => e.kind === 'light') ? torchNote(fight, fight.options.torchValue ?? t.exploration.light.torch) : null) ?? (def ? describeConsumable(def, (s) => c.statuses.get(s as never)?.name ?? s) : ''),
               enabled: l.enabled && plan.kind !== 'blocked',
-              reason: plan.kind === 'blocked' ? plan.reason : undefined,
+              reason: plan.kind === 'blocked' ? plan.reason : reasonText(l.reason),
               onPick: () => {
                 setSheet(null)
                 startAim(cmd, target, candidates, name, 'fx-item')
@@ -305,9 +317,18 @@ function Hud({ c, fight, pb, version }: { c: Content; fight: FightState; pb: Fig
           ]
         })
       : []
+  // The worn relic's active (08 §3): a line of the item sheet with its uses left this fight (pass B, Phase 7).
+  const relicL = find('relic')
+  const relicDef = h?.equipment.relic?.def
+  if (hero && h && relicL && relicDef) {
+    const target = relicDef.active?.target ?? null
+    const candidates = candidatesFor(target, relicL.targets, fight, hero.id)
+    itemRows.push({ instanceId: `relic-${relicDef.id}`, name: relicDef.name, count: h.relicUsesLeft, desc: relicActiveText(c, relicDef), enabled: relicL.enabled, reason: reasonText(relicL.reason), onPick: () => { setSheet(null); startAim(relicL.command, target, candidates, relicDef.name, 'fx-item') } })
+  }
   const itemTotal = itemRows.reduce((s, r) => s + r.count, 0)
 
   const guardL = find('guard')
+  const arenaList = arenaRows(legal)
   const rowL = find('swapRow')
   const fleeL = find('flee')
   const stanceL = find('stance')
@@ -344,13 +365,23 @@ function Hud({ c, fight, pb, version }: { c: Content; fight: FightState; pb: Fig
             if (rowL) send(rowL.command)
           },
         },
-        {
-          testid: 'fx-flee',
-          label: 'Flee',
-          enabled: fleeL?.enabled ?? false,
-          reason: bossHere ? 'No running from a boss' : (reasonText(fleeL?.reason) ?? 'Cannot flee now'),
-          onPress: () => setSheet('flee'),
-        },
+        // A boss arena (07 §2.8; pass C2) cannot be fled: its place goes to the room's interactables.
+        fight.arena && arenaList.length > 0
+          ? {
+              testid: 'fx-arena',
+              label: 'Arena',
+              sub: `${arenaList.filter((r) => r.enabled).length} ready`,
+              enabled: true,
+              title: 'The room itself: kegs, bone piles, the sluice wheel',
+              onPress: () => setSheet('arena'),
+            }
+          : {
+              testid: 'fx-flee',
+              label: 'Flee',
+              enabled: fleeL?.enabled ?? false,
+              reason: bossHere ? 'No running from a boss' : (reasonText(fleeL?.reason) ?? 'Cannot flee now'),
+              onPress: () => setSheet('flee'),
+            },
         ...(stanceL && pet
           ? [
               {
@@ -448,7 +479,7 @@ function Hud({ c, fight, pb, version }: { c: Content; fight: FightState; pb: Fig
     >
       <PartyColumn x={x} />
       <div class="fx-top">
-        {!fight.over && <TurnStrip chips={stripChips(fight, forecast, t.combat.timelineStripLength)} round={round} />}
+        {!fight.over && <TurnStrip chips={stripChips(fight, forecast, t.combat.timelineStripLength)} round={round} telling={tellingIds(fight)} />}
         <span class={`fx-threat fx-threat--${threat.band}`} data-testid="fx-threat" title={`Encounter level ${threat.encounterLevel} against your party's level ${threat.partyLevel}`}>
           {THREAT_WORD[threat.band]}
         </span>
@@ -457,6 +488,7 @@ function Hud({ c, fight, pb, version }: { c: Content; fight: FightState; pb: Fig
       <div class="fx-mid">
         <Banner state={banner} onCancel={cancelAim} />
         {tip && <Tip key={tip.key} text={tip.text} onClose={() => setTip(null)} />}
+        <ArenaBar c={c} fight={fight} onTip={showTip} />
         <Feed lines={pb.feed} playing={pb.playing} onSkip={() => pb.skip()} />
       </div>
       <EnemyColumn x={x} />
@@ -486,6 +518,17 @@ function Hud({ c, fight, pb, version }: { c: Content; fight: FightState; pb: Fig
         />
       )}
       {sheet === 'rule' && ruleActor && <RuleEditor c={c} hero={ruleActor} onClose={() => setSheet(null)} />}
+      {sheet === 'arena' && hero && (
+        <ArenaSheet
+          hero={hero.name}
+          rows={arenaList}
+          onPick={(propId) => {
+            setSheet(null)
+            send({ kind: 'arena', propId })
+          }}
+          onClose={() => setSheet(null)}
+        />
+      )}
     </div>
   )
 }

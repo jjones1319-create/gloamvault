@@ -4,7 +4,7 @@
   "school": "venom",
   "tier": 1,
   "name": "Toxic Jab",
-  "description": "1.0× Pierce to a front-row enemy; Poison 3 turns (re-applying refreshes the duration).",
+  "description": "1.35× Pierce to a front-row enemy; Poison 3 turns (re-applying refreshes the duration).",
   "type": "active",
   "cost": 10,
   "weight": 800,
@@ -12,7 +12,7 @@
   "effects": [
     {
       "kind": "damage",
-      "multiplier": 1,
+      "multiplier": 1.35,
       "damageType": "pierce"
     },
     {

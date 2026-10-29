@@ -1,6 +1,6 @@
 # 04 — Classes
 
-*Last updated 2026-10-27 · rev. 3 (checkpoint 1: open questions answered by delegation — D-099) · rev. 2 (§7 the Wayfarer Chest's cast, James's direction of 2026-10-27, D-091) · rev. 1 2026-10-26 · numbers are tuning starting points*
+*Last updated 2026-10-28 · rev. 4 (Phase 7, pass A: Tiers IV–V in the content, Tier V locked until Segment 3; techniques learned only by witnessing and may be prerequisites, as the sheets have them; the second starter kits; the class-damage pass and the bands note — D-028, D-099) · rev. 3 (checkpoint 1: open questions answered by delegation — D-099) · rev. 2 (§7 the Wayfarer Chest's cast, James's direction of 2026-10-27, D-091) · rev. 1 2026-10-26 · numbers are tuning starting points*
 
 Seven classes, one sheet each in `docs/classes/`. This file is the index: the rule every sheet follows, the seven at a glance, what each one covers, what parties they make, and what all of them share. The rulebook is `03-GAME-DESIGN.md`; the skill rules are its §7.
 
@@ -10,7 +10,7 @@ Seven classes, one sheet each in `docs/classes/`. This file is the index: the ru
 
 **Roles are soft.** Nobody owns a role outright: a Warden's Warcry school buffs, a Shade's Larceny is utility, a Beast Tamer's Lash is control without a spell, a Mender in the Crypts is a striker. Any three classes can finish Gravehollow Keep; the recipes below make it *easy*.
 
-**Forty-five skills each**: three schools × five tiers × three skills. Tier is fixed and opens at level 1 / 5 / 12 / 20 / 30; rank 1–10 grows by use (+4% effect, −2% cost per rank; rank 10 unlocks the Mastery line). Each Tier II–V skill has one prerequisite at the tier below in its school, so a school reads as three columns. Monster techniques (exactly two per class, Tier III–IV, learned only while the monster uses the move; `06-MONSTERS.md` says which monster teaches each) are leaves — nothing requires them. Loadout: 4 actives + 2 passives + 1 pet stance. The Ultimate sits at Tier III, costs 100 Momentum and never misses.
+**Forty-five skills each**: three schools × five tiers × three skills. Tier is fixed and opens at level 1 / 5 / 12 / 20 / 30; rank 1–10 grows by use (+4% effect, −2% cost per rank; rank 10 unlocks the Mastery line). Each Tier II–V skill has one prerequisite at the tier below in its school, so a school reads as three columns. Monster techniques (exactly two per class, Tier III–IV, learned only by witnessing the monster use the move — a flat 10% each time, certain by the 10th; `06-MONSTERS.md` says which monster teaches each) may stand in a school's chain where the sheet puts them: the Warden's Rampart follows Bone Knight's Stand, the Ranger's Spiked Net follows Deep Tentacle's Drag (the sheets own their trees; *Phase 7 reading* — the old "leaves" line was this index's, not the sheets'). Loadout: 4 actives + 2 passives + 1 pet stance. The Ultimate sits at Tier III, costs 100 Momentum and never misses.
 
 **Shared bands per tier** (the sheets stay inside these; the runner tunes the edges):
 
@@ -23,6 +23,8 @@ Seven classes, one sheet each in `docs/classes/`. This file is the index: the ru
 | V | L30 | 35–50 | 3.2–4.0 | 1.8–2.2 | 55–70 |
 
 Action weights: light 800 · normal 1,000 · heavy 1,400 (§3.1). Pools start near 60 (Stamina 30 + 3 × End; Mana 30 + 3 × Wis).
+
+*As tuned (Phase 7, the class-damage pass).* The bands read "× Attack", and physical Attack grows only with Strength (`03` §2.2). The Ranger and the Shade barely train Strength and the Crypts halve Pierce, so on the bands' numbers they dealt a third to a half of the Blade and the Arcanist. Their Tier I–III multipliers now sit above the bands (the Ranger's Tier I–II ×1.5 — Aimed Shot 2.1× — and Tier III ×1.1; the Shade's Tier I–III ×1.35), and the Blade's, the Arcanist's Tier I and the Mender's single-target spells came down, so that no damage dealer outdoes another by more than about 1.5× at levels 1, 5, 8 and 13 (`tools/balance/class-damage.ts`; each sheet's "As tuned" note lists the numbers). Tiers IV–V keep the sheets' numbers until Dungeon 2 makes them measurable.
 
 ## 2. The seven at a glance
 
@@ -73,6 +75,7 @@ Tank is the thinnest column (Warden, or a Beast Tamer's pet in Guard), heal the 
 - **The Ultimate** — one per class, Tier III, 100 Momentum, no pool cost, never misses, cannot be interrupted.
 - **Insight** — skills learned in the dungeon by using a school against the right enemies (§7.5); monster techniques by watching the monster.
 - **Field skills** — all eight, level-by-use; each class starts with +2 rank in two of them (its sheet's §5 owns the pair): Warden Field Repair + First Aid · Blade Field Repair + Cooking · Ranger Trap Disarm + Foraging (and +1 Cartography) · Shade Lockpicking + Haggling · Arcanist Cartography + Haggling · Mender First Aid + Cooking · Beast Tamer Foraging + Field Repair. Rank effects are `09-SKILLS.md` §5.
+- **A second starter kit** (D-099, `08` §12): New hero offers the Warden a spear kit (a Copper Spear in both hands instead of the sword and buckler; starts with Reaching Thrust · Provoke · Brace) and the Blade a greatsword kit (a Copper Greatsword instead of the longsword and dagger; Cleaving Blow · Wind-up · Headsman's Eye), because the town sells no weapons. A wayfarer arrives with the default kit.
 - **Revive** — out of combat: First Aid at any rank. In combat (`03` §12.1): First Aid from rank 5 as a weight-1,000 action, a Mender revive skill, a Phoenix Feather, or an Ultimate that says so.
 
 ## 6. The sheets
@@ -113,8 +116,14 @@ This section **owns the cast** (names, species, class, grade, points, starter sk
 | Varra Dawnscale | Draconid | Mender | D | Wis 3 · Wil 2 · Vit 1 | Mend · Smite · Gentle Hands | Keeps a candle lit for every patient lost, and has not run out of candles yet. |
 | Bruni Hearthward | Dwarf | Mender | C | Wis 3 · Vit 2 · Wil 2 | Mend · Soothing Word · Blessing | Sets bones, patches heads and makes a stew that has raised at least one man from the dead, he says. |
 | Uldra Greythorn | Orc | Mender | B | Wis 3 · Str 2 · Wil 2 · Vit 1 | Smite · Radiance · Mend | Traded the war-drum for the prayer-bell, and hits just as hard with either. |
+| Vorrin Scalehold | Draconid | Warden | S | End 3 · Vit 3 · Str 2 · Wil 2 | Shield Slam · Provoke · Brace | Held the bridge at Saltmere for a night and a day; the river remembers, and so does he. |
+| Ysolde Marrick | Human | Blade | S | Str 3 · Agi 3 · Per 2 · Vit 2 | Twin Cut · Open Vein · Flowing Guard | Retired from the sword twice, and came back both times because nothing else felt like being awake. |
+| Brenna Coalbrook | Dwarf | Ranger | S | Per 3 · Agi 3 · End 2 · Str 2 | Aimed Shot · Hunter's Mark · Keen Eyes | Hunts with the crossbow her grandfather built and the patience her grandmother taught. |
+| Zhurra Velk | Orc | Shade | S | Agi 3 · Str 3 · Per 2 · Lck 2 | Veil · Backstab · Toxic Jab | The loudest family in the clans raised the quietest daughter, and she has made a living of it. |
+| Ithiel Vantor | Elf | Arcanist | S | Wis 3 · Wil 3 · Per 2 · Lck 2 | Ember Lance · Frostbolt · Arcane Ward | Three hundred years of study, two hundred of them in the Ember Academy's library, and still taking notes. |
+| Hazel Thimblewick | Halfling | Mender | S | Wis 3 · Wil 3 · Lck 2 · Vit 2 | Mend · Smite · Cleanse | Bakes bread, binds wounds and has buried no one in forty years of walking behind adventurers. |
 
-Each species appears three times and each class three times; six are D, six C, four B and two A. A wayfarer whose starter skills differ from the class's picks carries an AI rule that uses them (the generator's table); the others use the class default. Every starter skill works with the class's starter kit (`node tools/balance/check-starters.ts`). The cast grows with the dungeons (Phase 7 and Segment 3: S-grade wayfarers, the Beast Tamer's).
+Each species appears four times and each class four times; six are D, six C, four B, two A and six S. **The S grade (Phase 7, pass B — Proposed):** "S-grade wayfarers for deeper bands" (`12` Phase 7) are called only by the **Grand Wayfarer Chest** (5 R, sold from chest band E — once a Crypts floor is finished; odds C 45 · B 35 · A 15 · S 5, the Grand shape one grade up from the Standard's D; the same pity counters, a Grand counting three); the Standard chest keeps D-091's D 50 · C 30 · B 15 · A 5 at every band of Gravehollow. An S wayfarer has 6 + 4 creation points and the class's own starter picks. A wayfarer whose starter skills differ from the class's picks carries an AI rule that uses them (the generator's table); the others use the class default. Every starter skill works with the class's starter kit (`node tools/balance/check-starters.ts`). The cast grows with the dungeons (Phase 7 and Segment 3: S-grade wayfarers, the Beast Tamer's).
 
 **Open questions**
 1. ~~Eighteen wayfarers for Segment 1, graded D–A — enough variety to make "hopefully redraw them" matter?~~ *Checkpoint 1 (D-098): enough for Segment 1; the cast grows with each dungeon (S-grade wayfarers in Phase 7, Beast Tamers in Segment 3).*

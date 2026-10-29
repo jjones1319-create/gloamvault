@@ -4,7 +4,7 @@
   "school": "trapper",
   "tier": 3,
   "name": "Spring Trap",
-  "description": "1.8× Pierce to one enemy in any row; if the target is Rooted, Grabbed or Webbed, Stun 1 turn; 1 arrow.",
+  "description": "2.0× Pierce to one enemy in any row; if the target is Rooted, Grabbed or Webbed, Stun 1 turn; 1 arrow.",
   "type": "active",
   "cost": 22,
   "weight": 1000,
@@ -12,7 +12,7 @@
   "effects": [
     {
       "kind": "damage",
-      "multiplier": 1.8,
+      "multiplier": 2,
       "damageType": "pierce",
       "scalesWith": "strength"
     },
@@ -47,11 +47,11 @@
     "costPerRank": -2
   },
   "mastery": {
-    "text": "2.2×.",
+    "text": "2.4×.",
     "effects": [
       {
         "kind": "damage",
-        "multiplier": 2.2,
+        "multiplier": 2.4,
         "damageType": "pierce",
         "scalesWith": "strength"
       }

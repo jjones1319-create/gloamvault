@@ -1,0 +1,59 @@
+{
+  "id": "mender-indomitable",
+  "classId": "mender",
+  "school": "vigil",
+  "tier": 4,
+  "name": "Indomitable",
+  "description": "Every ally is immune to every debuff for 2 turns and gains Fortify 2 turns.",
+  "type": "active",
+  "cost": 34,
+  "weight": 1000,
+  "target": "allAllies",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "immune-to-debuffs",
+      "duration": 2,
+      "note": "the target cannot receive any debuff for `duration` turns"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "fortify",
+      "duration": 2
+    }
+  ],
+  "prerequisiteId": "mender-absolution",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "3 turns.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "immune-to-debuffs",
+        "duration": 3
+      },
+      {
+        "kind": "applyStatus",
+        "status": "fortify",
+        "duration": 3
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "buff",
+    "cleanse"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 70
+  }
+}

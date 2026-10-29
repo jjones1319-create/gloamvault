@@ -1,4 +1,4 @@
-import { canChooseHero, isDead, pendingChosenLegacy, setParty } from '../../../../../sim/src/town.ts'
+import { canChooseHero, isDead, noStrikerHint, pendingChosenLegacy, setParty } from '../../../../../sim/src/town.ts'
 import { act, content, ephemeral, profile, toast } from '../../../game/session.ts'
 import { Btn, Grade, Section } from '../../kit/kit.tsx'
 import { buzz } from '../../lib/haptics.ts'
@@ -19,6 +19,8 @@ export function Inn() {
   const canChoose = canChooseHero(c, p)
   const legacy = pendingChosenLegacy(p)
   const party = p.partyIds.filter((id) => !isDead(p, id))
+  // D-099: a quiet hint when nobody in the party deals the damage — never a block.
+  const striker = noStrikerHint(p)
 
   const toggle = (id: string) => {
     const inParty = party.includes(id)
@@ -45,6 +47,11 @@ export function Inn() {
     <PlacePage id="inn">
       <div class="split split--wide-left">
         <Section title={`The roster (${p.heroes.length} / ${rosterMax})`}>
+          {striker && (
+            <p class="tw-hint tw-hint--top" data-testid="inn-no-striker">
+              {striker}. A Blade, Ranger, Shade or Arcanist brings the damage.
+            </p>
+          )}
           <div class="list">
             {p.heroes.map((h) => {
               const dead = isDead(p, h.id)

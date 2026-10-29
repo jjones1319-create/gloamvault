@@ -1,4 +1,4 @@
-import { bandForFloor } from './grades.ts'
+import { bandForFloor, bandRows } from './grades.ts'
 import { clamp, roundHalfUp } from './stats.ts'
 import type { Tuning } from './tuning.ts'
 
@@ -8,29 +8,18 @@ import type { Tuning } from './tuning.ts'
  * rounded half up.
  */
 
-/** R for a band by its centre grade: 300 at F, ×1.6 per band (08's table rounds by hand; those values win). */
+/** R for a band by its centre grade (08's R table, tuning.json → bands.floors; 300 at F, ×1.6 per band rounded by hand). */
 export function rForGrade(t: Tuning, grade: string): number {
   const order = ['F', 'E', 'D', 'C', 'B', 'A', 'S', 'SS']
   const i = order.indexOf(grade)
   if (i < 0) return t.economy.R.base
-  // The 08 table is the reference; derive from the band list so the two never drift.
-  const band = BAND_R.find((b) => b.grade === grade)
+  const band = bandRows(t).find((b) => b.grade === grade)
   return band ? band.r : roundHalfUp(t.economy.R.base * Math.pow(t.economy.R.perBandMultiplier, i))
 }
 
-const BAND_R = [
-  { grade: 'F', r: 300 },
-  { grade: 'E', r: 480 },
-  { grade: 'D', r: 770 },
-  { grade: 'C', r: 1230 },
-  { grade: 'B', r: 1970 },
-  { grade: 'A', r: 3150 },
-  { grade: 'S', r: 5040 },
-  { grade: 'SS', r: 8060 },
-] as const
-
-export function rForFloor(globalFloor: number): number {
-  return bandForFloor(globalFloor).r
+/** R at a global floor's band (08's R table): delve gold, curio stakes, merchant prices. Pass the tuning wherever it is at hand. */
+export function rForFloor(globalFloor: number, t?: Tuning): number {
+  return bandForFloor(globalFloor, t).r
 }
 
 /** Gold for a price written in R. */
@@ -78,9 +67,10 @@ export function retreatToll(t: Tuning, unbankedGold: number, tollPercent = t.dea
   return roundHalfUp((clamp(tollPercent, 0, 100) * unbankedGold) / 100)
 }
 
-/** The chest band: the band of the deepest floor cleared, capped at A (08 §10). */
-export function chestBandGrade(deepestFloorCleared: number): string {
-  const grade = bandForFloor(Math.max(1, deepestFloorCleared)).grade
+/** The chest band: the band of the deepest floor cleared, capped at A (08 §10; tuning bands.chestBandCap). */
+export function chestBandGrade(deepestFloorCleared: number, t?: Tuning): string {
+  const grade = bandForFloor(Math.max(1, deepestFloorCleared), t).grade
   const order = ['F', 'E', 'D', 'C', 'B', 'A', 'S', 'SS']
-  return order.indexOf(grade) > order.indexOf('A') ? 'A' : grade
+  const cap = t?.bands?.chestBandCap.value ?? 'A'
+  return order.indexOf(grade) > order.indexOf(cap) ? cap : grade
 }

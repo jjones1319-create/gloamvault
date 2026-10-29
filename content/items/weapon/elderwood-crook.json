@@ -1,0 +1,48 @@
+{
+  "id": "elderwood-crook",
+  "name": "Elderwood Crook",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "S",
+  "materialLadder": "wood",
+  "materialRung": 6,
+  "weaponType": "staff",
+  "armorFamily": null,
+  "hands": 2,
+  "damageType": "holy",
+  "weight": 1000,
+  "baseStats": {
+    "attackSpell": 72,
+    "mana": 60
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 15
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 9,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 5.09,
+  "value": 3750,
+  "classLock": [
+    "mender"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-crook-01",
+    "tintPrimary": "#5e7a4a",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "adamantine"
+  }
+}

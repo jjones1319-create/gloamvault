@@ -1,0 +1,59 @@
+{
+  "id": "adamantine-morningstar",
+  "name": "Adamantine Morningstar",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "S",
+  "materialLadder": "metal",
+  "materialRung": 6,
+  "weaponType": "mace",
+  "armorFamily": null,
+  "hands": 1,
+  "damageType": "blunt",
+  "weight": 1000,
+  "baseStats": {
+    "attackPhys": 78,
+    "critDamage": 5
+  },
+  "requirements": {
+    "strength": 18,
+    "wisdom": 0
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 9,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 5.09,
+  "value": 2500,
+  "classLock": [
+    "warden"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": {
+    "text": "5% Daze on hit",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "daze",
+        "chance": 5,
+        "target": "enemy",
+        "note": "on hit"
+      }
+    ]
+  },
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-morningstar-01",
+    "tintPrimary": "#4f6f7f",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "adamantine"
+  }
+}

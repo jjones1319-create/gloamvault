@@ -1,0 +1,63 @@
+{
+  "id": "the-barrow-bell",
+  "name": "The Barrow Bell",
+  "slot": "relic",
+  "kind": "relic",
+  "grade": "D",
+  "materialLadder": null,
+  "materialRung": null,
+  "weaponType": null,
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": 600,
+  "baseStats": {},
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 1,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 5,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1,
+  "value": 456,
+  "classLock": [],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": {
+    "effects": [
+      {
+        "kind": "taunt",
+        "duration": 2,
+        "target": "allEnemies"
+      },
+      {
+        "kind": "applyStatus",
+        "status": "fortify",
+        "duration": 1,
+        "target": "self"
+      }
+    ],
+    "usesPerFight": 1,
+    "target": "allEnemies",
+    "text": "Taunts every enemy onto you for 2 rounds; Fortify 1 round"
+  },
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "relic-barrow-bell-01",
+    "tintPrimary": "#6b6f73",
+    "tintSecondary": "#2f5e4a",
+    "trimMetal": "iron"
+  },
+  "tags": [
+    "boss-only"
+  ]
+}

@@ -4,7 +4,7 @@
   "school": "bloodletter",
   "tier": 2,
   "name": "Hemorrhage",
-  "description": "1.4× Slash to a front-row enemy; consumes the target's Bleed and deals all its remaining ticks at once.",
+  "description": "1.0× Slash to a front-row enemy; consumes the target's Bleed and deals all its remaining ticks at once.",
   "type": "active",
   "cost": 15,
   "weight": 1000,
@@ -12,7 +12,7 @@
   "effects": [
     {
       "kind": "damage",
-      "multiplier": 1.4,
+      "multiplier": 1,
       "damageType": "slash",
       "scalesWith": "strength"
     },

@@ -70,8 +70,8 @@ describe('the game save (10 §6)', () => {
   it('a version-1 save migrates through to the current version and keeps its death rule (D-095)', () => {
     const fixture = { ...profileWithHero(), saveVersion: 1, deathRule: 'sheltered' }
     const r = validateProfile(content, JSON.parse(JSON.stringify(fixture)))
-    expect(SAVE_VERSION).toBe(3)
-    expect(r.profile?.saveVersion).toBe(3)
+    expect(SAVE_VERSION).toBe(4)
+    expect(r.profile?.saveVersion).toBe(4)
     expect(r.profile?.deathRule).toBe('sheltered')
   })
 
@@ -93,7 +93,7 @@ describe('the game save (10 §6)', () => {
     )
     expect(fixture.heroes[0].look).toBeUndefined()
     const r = validateProfile(content, fixture)
-    expect(r.profile?.saveVersion).toBe(3)
+    expect(r.profile?.saveVersion).toBe(4)
     for (const h of r.profile!.heroes) {
       expect(h.look).toEqual(defaultLook(h.id, content.species.get(h.speciesId)))
       expect(h.saveVersion).toBe(2)
@@ -103,6 +103,34 @@ describe('the game save (10 §6)', () => {
     expect(validateProfile(content, fixture).profile?.heroes.map((h) => h.look)).toEqual(r.profile?.heroes.map((h) => h.look))
     // New heroes get the same look the migration would give them.
     expect(second.heroes[1]!.look).toEqual(defaultLook(second.heroes[1]!.id, content.species.get('halfling')))
+  })
+
+  it('a version-3 save (Phase 6) loads into version 4 with every Phase 7 field at its default', () => {
+    const p = profileWithHero()
+    // A version-3 fixture: no board, no kills by preset, no quiver, no witness counts, a delve begun before the update.
+    const fixture = JSON.parse(
+      JSON.stringify({
+        ...p,
+        saveVersion: 3,
+        activeDelve: { options: { dungeonId: 'gravehollow-keep', floor: 1, seed: 5 }, party: p.heroes, commands: [] },
+      }),
+    )
+    for (const h of fixture.heroes) {
+      delete h.quiver
+      delete h.techniqueWitness
+      delete h.insightPity
+    }
+    delete fixture.contracts
+    if (fixture.progress) delete fixture.progress.bossKillsByDifficulty
+    const r = validateProfile(content, fixture)
+    expect(r.profile?.saveVersion).toBe(4)
+    const hero = r.profile!.heroes[0]!
+    expect(hero.name).toBe('Orrin')
+    expect(hero.quiver).toBeUndefined() // a missing quiver counts as full (sim/src/ammo.ts)
+    expect(hero.techniqueWitness ?? {}).toEqual({})
+    expect(r.profile?.activeDelve?.options.dungeonId).toBe('gravehollow-keep')
+    // Deterministic, and loading it again changes nothing.
+    expect(validateProfile(content, JSON.parse(JSON.stringify(r.profile))).profile).toEqual(r.profile)
   })
 
   it('clamps a look to what the species has and repairs a broken one', () => {
@@ -152,5 +180,83 @@ describe('the Hall of Nightmares (D-095)', () => {
   it('drops lines that do not read and never throws', () => {
     expect(validateHall('junk')).toEqual([])
     expect(validateHall([null, { name: 3 }, { ...line, endedAt: 'x' }]).map((e) => e.name)).toEqual(['Orrin'])
+  })
+})
+
+describe('Phase 7 pass D: the optional fields (contracts, kills by preset, the quiver, pet traits)', () => {
+  it('a profile with a board, kills by preset, a quiver and a grown trait round-trips', async () => {
+    const base = profileWithHero()
+    const hero = base.heroes[0]!
+    const p = {
+      ...base,
+      heroes: [{ ...hero, quiver: { arrows: 37 }, petInstance: hero.petInstance ? { ...hero.petInstance, traitXp: 95, traitRank: 3 } : null }],
+      progress: { ...base.progress, bossKillsByDifficulty: { hard: { 'captain-vexa-marrow': 2 } } },
+      contracts: { day: 20_000, week: 2_857, dailies: [{ contractId: 'rat-catcher', band: 1, progress: 12, goal: 30, claimed: false }], weekly: null, keysWeek: 2_857, keysStandard: 1, keysGrand: 0 },
+    }
+    const store = memoryStore()
+    await writeProfile(store, p)
+    const back = await readProfile(store, content)
+    expect(back.profile).toEqual(p)
+  })
+
+  it('clamps them and drops what the content no longer has', () => {
+    const base = profileWithHero()
+    const hero = base.heroes[0]!
+    const broken = JSON.parse(
+      JSON.stringify({
+        ...base,
+        heroes: [{ ...hero, quiver: { arrows: 5000, 'no-such-ammo': 3, bolts: -4 }, petInstance: hero.petInstance ? { ...hero.petInstance, traitXp: -10, traitRank: 99 } : null }],
+        progress: { ...base.progress, bossKillsByDifficulty: { hard: { x: 1 }, nightmare: { y: 2 } } },
+        contracts: { day: 1, week: 1, dailies: [{ contractId: 'gone-contract', band: 1, progress: 2, goal: 3, claimed: false }, { contractId: 'rat-catcher', band: 1, progress: 99, goal: 30, claimed: false }], weekly: null, keysWeek: 1, keysStandard: -2, keysGrand: 0 },
+      }),
+    )
+    const r = validateProfile(content, broken).profile!
+    expect(r.heroes[0]!.quiver).toEqual({ arrows: content.tuning.ammo.carryMax, bolts: 0 })
+    if (r.heroes[0]!.petInstance) {
+      expect(r.heroes[0]!.petInstance.traitRank).toBe(content.tuning.pets.traitGrowth.usesForRank.length)
+      expect(r.heroes[0]!.petInstance.traitXp).toBe(0)
+    }
+    expect(Object.keys(r.progress.bossKillsByDifficulty ?? {})).toEqual(['hard'])
+    expect(r.contracts?.dailies.map((d) => [d.contractId, d.progress])).toEqual([['rat-catcher', 30]])
+    expect(r.contracts?.keysStandard).toBe(0)
+  })
+
+  it('a board that does not read is dropped (the Quest Board posts a fresh one)', () => {
+    const r = validateProfile(content, JSON.parse(JSON.stringify({ ...profileWithHero(), contracts: { day: 'monday' } }))).profile!
+    expect(r.contracts).toBeUndefined()
+  })
+})
+
+describe('Phase 7 pass A: the optional fields (techniques witnessed, the Insight pity, a Tome’s skill)', () => {
+  it('a hero with witness counts, an Insight pity and a Tome in the bag round-trips', async () => {
+    const p = profileWithHero()
+    const hero = p.heroes[0]!
+    const tome = { instanceId: 'it-tome-1', itemId: 'skill-tome', quantity: 1, affixes: [], plusN: 0, itemLevel: 1, itemXp: 0, affinities: [], durability: 100, maxDurability: 100, skillId: 'warden-intercept' }
+    const withFields = { ...p, heroes: [{ ...hero, techniqueWitness: { 'warden-bone-knights-stand': 3 }, insightPity: 12, bag: [...hero.bag, tome] }], armory: [{ ...tome, instanceId: 'it-tome-2' }] }
+    const store = memoryStore()
+    await writeProfile(store, withFields)
+    const back = await readProfile(store, content)
+    expect(back.notes).toEqual([])
+    expect(back.profile?.heroes[0]?.techniqueWitness).toEqual({ 'warden-bone-knights-stand': 3 })
+    expect(back.profile?.heroes[0]?.insightPity).toBe(12)
+    expect(back.profile?.heroes[0]?.bag.find((i) => i.instanceId === 'it-tome-1')?.skillId).toBe('warden-intercept')
+    expect(back.profile?.armory.find((i) => i.instanceId === 'it-tome-2')?.skillId).toBe('warden-intercept')
+  })
+
+  it('clamps them and drops what the content no longer has', () => {
+    const p = profileWithHero()
+    const hero = p.heroes[0]!
+    const lost = { instanceId: 'it-tome-x', itemId: 'skill-tome', quantity: 1, affixes: [], plusN: 0, itemLevel: 1, itemXp: 0, affinities: [], durability: 100, maxDurability: 100, skillId: 'warden-no-such-skill' }
+    const broken = {
+      ...p,
+      heroes: [{ ...hero, techniqueWitness: { 'warden-bone-knights-stand': 9.6, 'no-such-skill': 4, 'warden-provoke': 2, 'warden-sentinels-sweep': 'x' }, insightPity: 9999, bag: [...hero.bag, lost] }],
+    }
+    const r = validateProfile(content, JSON.parse(JSON.stringify(broken)))
+    const h = r.profile!.heroes[0]!
+    // A count for a skill the hero already knows (Provoke) or the game lacks is dropped; the rest is a whole number.
+    expect(h.techniqueWitness).toEqual({ 'warden-bone-knights-stand': 10 })
+    expect(h.insightPity).toBe(content.tuning.skills.insight.pityUses)
+    expect(h.bag.some((i) => i.instanceId === 'it-tome-x')).toBe(false)
+    expect(r.notes.some((n) => n.includes('Skill Tome'))).toBe(true)
   })
 })

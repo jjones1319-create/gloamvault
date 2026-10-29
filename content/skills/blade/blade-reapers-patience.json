@@ -1,0 +1,51 @@
+{
+  "id": "blade-reapers-patience",
+  "classId": "blade",
+  "school": "executioner",
+  "tier": 5,
+  "name": "Reaper's Patience",
+  "description": "If your previous action was Guard, your next heavy skill weighs 1,000 and crits automatically.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "guard-primes-heavy",
+      "amount": 1000,
+      "target": "self",
+      "note": "after a Guard, the next action, if a heavy skill, weighs amount, crits and deals +percent%"
+    }
+  ],
+  "prerequisiteId": "blade-deaths-ledger",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Also +20% damage.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "guard-primes-heavy",
+        "amount": 1000,
+        "percent": 20,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff"
+  ],
+  "xpTags": [
+    "strength",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 0
+  }
+}

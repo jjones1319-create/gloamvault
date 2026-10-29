@@ -27,7 +27,7 @@
     "cleanse"
   ],
   "appliesEnergyDelta": -1000,
-  "skipsActionChance": 100,
+  "skipsActionChance": 0,
   "immunityRoles": [
     "boss",
     "hunter"

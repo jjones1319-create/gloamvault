@@ -1,0 +1,59 @@
+{
+  "id": "lanternkeepers-habit",
+  "name": "Lanternkeeper's Habit",
+  "family": "robes",
+  "theme": "the Crypts",
+  "classIds": [
+    "mender"
+  ],
+  "pieces": [
+    "lanternkeepers-cowl",
+    "lanternkeepers-robe",
+    "lanternkeepers-leggings",
+    "lanternkeepers-slippers",
+    "lanternkeepers-wraps"
+  ],
+  "bonuses": {
+    "2": [
+      {
+        "kind": "custom",
+        "customId": "healing-done-percent",
+        "percent": 10,
+        "target": "self"
+      },
+      {
+        "kind": "custom",
+        "customId": "light-decay-reduction",
+        "amount": 1,
+        "target": "room",
+        "note": "light falls 1 less per room (read by the delve)"
+      }
+    ],
+    "4": [
+      {
+        "kind": "custom",
+        "customId": "holy-spells-grant-regen",
+        "status": "regen",
+        "percent": 5,
+        "duration": 2,
+        "target": "self",
+        "note": "Holy spells grant Regen 2 rounds (5% of max HP, the Candle of the Crypt’s, a Phase 7 reading) to the lowest ally"
+      },
+      {
+        "kind": "custom",
+        "customId": "damage-percent-vs-status",
+        "status": "smite",
+        "percent": 15,
+        "target": "self",
+        "note": "Smite +15%: your hits on a Smitten target +15%"
+      }
+    ]
+  },
+  "bonusText": {
+    "2": "+10% healing; light falls 1 less per room",
+    "4": "Holy spells grant Regen 2 rounds; Smite +15%"
+  },
+  "gradeMin": "D",
+  "gradeMax": "B",
+  "dropChance": 15
+}

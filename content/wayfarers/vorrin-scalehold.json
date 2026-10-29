@@ -1,0 +1,26 @@
+{
+  "id": "vorrin-scalehold",
+  "name": "Vorrin Scalehold",
+  "speciesId": "draconid",
+  "classId": "warden",
+  "grade": "S",
+  "freePoints": {
+    "endurance": 3,
+    "vitality": 3,
+    "strength": 2,
+    "willpower": 2
+  },
+  "starterSkillIds": [
+    "warden-shield-slam",
+    "warden-provoke",
+    "warden-brace"
+  ],
+  "aiRule": null,
+  "bio": "Held the bridge at Saltmere for a night and a day; the river remembers, and so does he.",
+  "look": {
+    "frame": "broad",
+    "skin": 2,
+    "face": 1,
+    "hair": 3
+  }
+}

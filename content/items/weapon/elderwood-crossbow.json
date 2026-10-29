@@ -1,0 +1,48 @@
+{
+  "id": "elderwood-crossbow",
+  "name": "Elderwood Crossbow",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "S",
+  "materialLadder": "wood",
+  "materialRung": 6,
+  "weaponType": "crossbow",
+  "armorFamily": null,
+  "hands": 2,
+  "damageType": "pierce",
+  "weight": 1400,
+  "baseStats": {
+    "attackPhys": 132,
+    "speed": -5
+  },
+  "requirements": {
+    "strength": 21,
+    "wisdom": 0
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 9,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 5.09,
+  "value": 3750,
+  "classLock": [
+    "ranger"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-crossbow-01",
+    "tintPrimary": "#5e7a4a",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "adamantine"
+  }
+}

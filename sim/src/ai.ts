@@ -4,7 +4,8 @@
  * the fight resolves verbs against the actor's loadout and attacks. Parsing never throws: a bad clause is dropped
  * and reported, and a rule always ends with a usable default.
  */
-export const CONDITION_SUBJECTS = ['self', 'ally', 'allies', 'lowest ally', 'enemy', 'enemies', 'party', 'pet', 'light', 'round', 'fight'] as const
+/** `phase` and `tide` read a boss arena (07 §2.8): the boss's phase (1-based) and the water's step; outside an arena 1 and 0. */
+export const CONDITION_SUBJECTS = ['self', 'ally', 'allies', 'lowest ally', 'enemy', 'enemies', 'party', 'pet', 'light', 'round', 'fight', 'phase', 'tide'] as const
 export type ConditionSubject = (typeof CONDITION_SUBJECTS)[number]
 
 export const CONDITION_METRICS = ['hp', 'pool', 'stamina', 'mana', 'momentum', 'count', 'level', 'value', 'status'] as const
@@ -97,7 +98,7 @@ function parseCondition(text: string): Condition | null {
     let subject: string
     if (metric) subject = parts.slice(0, -1).join(' ')
     else subject = left
-    const resolvedMetric: ConditionMetric | null = metric ?? (subject === 'light' || subject === 'round' ? 'value' : null)
+    const resolvedMetric: ConditionMetric | null = metric ?? (subject === 'light' || subject === 'round' || subject === 'phase' || subject === 'tide' ? 'value' : null)
     if (!resolvedMetric) return null
     if (!(CONDITION_SUBJECTS as readonly string[]).includes(subject)) return null
     return { subject: subject as ConditionSubject, metric: resolvedMetric, cmp, value, percent }

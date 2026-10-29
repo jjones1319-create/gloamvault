@@ -4,7 +4,7 @@
   "school": "bloodletter",
   "tier": 2,
   "name": "Drink Deep",
-  "description": "1.3× Slash to a front-row enemy; heal 50% of the damage dealt.",
+  "description": "1.0× Slash to a front-row enemy; heal 50% of the damage dealt.",
   "type": "active",
   "cost": 14,
   "weight": 1000,
@@ -12,7 +12,7 @@
   "effects": [
     {
       "kind": "damage",
-      "multiplier": 1.3,
+      "multiplier": 1,
       "damageType": "slash",
       "scalesWith": "strength"
     },

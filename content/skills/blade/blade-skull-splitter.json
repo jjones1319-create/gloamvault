@@ -4,7 +4,7 @@
   "school": "executioner",
   "tier": 3,
   "name": "Skull Splitter",
-  "description": "2.4× Slash to a front-row enemy; Stun 1 turn on a crit.",
+  "description": "2.05× Slash to a front-row enemy; Stun 1 turn on a crit.",
   "type": "active",
   "cost": 24,
   "weight": 1400,
@@ -12,7 +12,7 @@
   "effects": [
     {
       "kind": "damage",
-      "multiplier": 2.4,
+      "multiplier": 2.05,
       "damageType": "slash",
       "scalesWith": "strength"
     },

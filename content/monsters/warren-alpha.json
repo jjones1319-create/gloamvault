@@ -64,7 +64,8 @@
         }
       ],
       "aiWeight": 25,
-      "tell": "The Alpha throws its head back to howl."
+      "tell": "The Alpha throws its head back to howl.",
+      "hint": "Alpha howling"
     },
     {
       "id": "pin",
@@ -80,7 +81,8 @@
         }
       ],
       "aiWeight": 20,
-      "tell": "The Alpha rears up to pin."
+      "tell": "The Alpha rears up to pin.",
+      "hint": "Alpha rearing"
     }
   ],
   "resist": [
@@ -96,15 +98,11 @@
   "behavior": {
     "rules": [
       {
-        "if": "self's first turn and 2 or more Vermin allies are alive",
+        "if": "round = 1 and ally count >= 2",
         "then": "alphas-howl"
       },
       {
         "if": "a hero killed a rat this fight (target: that hero)",
-        "then": "rend"
-      },
-      {
-        "if": "always",
         "then": "rend"
       }
     ],

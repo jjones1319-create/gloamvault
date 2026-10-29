@@ -1,0 +1,49 @@
+{
+  "id": "warden-immovable",
+  "classId": "warden",
+  "school": "vanguard",
+  "tier": 5,
+  "name": "Immovable",
+  "description": "You are immune to Grab, Root, Web and energy push-back; allies in your row are immune to Fear.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "immovable",
+      "target": "self",
+      "note": "you resist Grab, Root, Web, Daze and Petrify in full; allies in your row resist Fear in full (amount 1: Grab too)"
+    }
+  ],
+  "prerequisiteId": "warden-unyielding-point",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Allies in your row are immune to Grab too.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "immovable",
+        "amount": 1,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff"
+  ],
+  "xpTags": [
+    "endurance",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "defend",
+    "priority": 0
+  }
+}

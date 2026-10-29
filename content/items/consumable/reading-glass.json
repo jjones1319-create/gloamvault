@@ -1,0 +1,53 @@
+{
+  "id": "reading-glass",
+  "name": "Reading Glass",
+  "slot": null,
+  "kind": "consumable",
+  "grade": "F",
+  "materialLadder": null,
+  "materialRung": null,
+  "weaponType": null,
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": 600,
+  "baseStats": {},
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 0,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 3,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1,
+  "value": 6,
+  "classLock": [],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": {
+    "effects": [],
+    "stackMax": 5,
+    "target": "room",
+    "inCombat": false,
+    "text": "The Warden's Ledger: read it safely, the map for sure"
+  },
+  "ammo": null,
+  "visual": {
+    "meshId": "consumable-reading-glass-01",
+    "tintPrimary": "#c9a227",
+    "tintSecondary": "#2b2b2b",
+    "trimMetal": "none"
+  },
+  "tags": [
+    "safe-item",
+    "zone:the-crypts"
+  ]
+}

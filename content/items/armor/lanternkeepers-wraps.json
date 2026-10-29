@@ -1,0 +1,49 @@
+{
+  "id": "lanternkeepers-wraps",
+  "name": "Lanternkeeper's Wraps",
+  "slot": "gloves",
+  "kind": "armor",
+  "grade": "D",
+  "materialLadder": "cloth",
+  "materialRung": 2,
+  "weaponType": null,
+  "armorFamily": "robes",
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "defense": 0,
+    "hp": 2,
+    "accuracy": 2
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 1,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 5,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 0.78,
+  "value": 190,
+  "classLock": [
+    "mender"
+  ],
+  "setId": "lanternkeepers-habit",
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "armor-robes-gloves-01",
+    "tintPrimary": "#e8e0c8",
+    "tintSecondary": "#c9a227",
+    "trimMetal": "brass"
+  }
+}

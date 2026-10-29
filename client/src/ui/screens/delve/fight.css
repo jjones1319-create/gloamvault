@@ -978,3 +978,11 @@ html[data-reduce-motion='1'] .fx-hud {
   color: #ff5e5e;
   background: rgba(90, 0, 0, 0.55);
 }
+
+/* Arrows (08 §4, D-099; pass D): the count on the attack button, amber at ammo.lowAt. */
+.fx-ammo {
+  color: var(--ink);
+}
+.fx-ammo--low {
+  color: var(--ember);
+}

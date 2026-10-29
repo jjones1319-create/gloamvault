@@ -1,0 +1,49 @@
+{
+  "id": "skysteel-hauberk",
+  "name": "Skysteel Hauberk",
+  "slot": "chest",
+  "kind": "armor",
+  "grade": "A",
+  "materialLadder": "metal",
+  "materialRung": 5,
+  "weaponType": null,
+  "armorFamily": "mail",
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "defense": 27,
+    "hp": 36,
+    "stamina": 13
+  },
+  "requirements": {
+    "strength": 15,
+    "wisdom": 0
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 8,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 3.05,
+  "value": 1600,
+  "classLock": [
+    "blade"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "armor-mail-chest-01",
+    "tintPrimary": "#9ec5e0",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "skysteel"
+  }
+}

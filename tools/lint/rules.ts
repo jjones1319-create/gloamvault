@@ -16,6 +16,12 @@ import fs from 'node:fs'
 import path from 'node:path'
 import type { ContentKind, Corpus } from './corpus.ts'
 import { at, bool, defined, isObj, num, obj, objs, str, strs, sum, tnum, walk, type Json, type JsonObject } from './json.ts'
+import { ITEM_RULES } from './rules-items.ts'
+import { RULES_F } from './rules-f.ts'
+import { RULES_D } from './rules-d.ts'
+import { RULES_C2 } from './rules-c2.ts'
+import { RULES_C1 } from './rules-c1.ts'
+import { RULES_A } from './rules-a.ts'
 
 export type Failure = { file: string; rule: number; message: string }
 
@@ -43,6 +49,11 @@ export type Tables = {
   eliteBands: EliteBand[]
   /** 08 §2.3: Block steps this many pp per grade on a shield's ladder (rule 22). */
   blockStepPerGrade: number
+  /** 08 §2: an armor piece's percent secondary steps `pp` per grade above the grade index `fromIndex` (B) (rule 22; pass B). */
+  armorPercentStep: { fromIndex: number; pp: number }
+  /** 08 §11: a loot table's itemChance by its centre grade, and the part odds every band shares (rule 27; pass B). */
+  lootItemChanceByCentre: Map<string, number>
+  partChance: { common: number; rare: number }
   /** D-082: the hero level curve. */
   heroXpBase: number
   heroXpGrowth: number
@@ -97,6 +108,8 @@ export type Ctx = {
 const LITERAL_CLASSES: ReadonlySet<string> = new Set(['field', 'pet', 'monster'])
 const GEAR_KINDS: ReadonlySet<string> = new Set(['weapon', 'armor', 'shield', 'focus', 'ring', 'talisman', 'relic'])
 const ARMOR_SLOTS = ['helmet', 'chest', 'legs', 'boots', 'gloves'] as const
+/** 08 §2's percentage secondaries: they step per grade from B instead of riding the ladder (rule 22). */
+const ARMOR_PERCENT_STATS: ReadonlySet<string> = new Set(['resistance', 'dodge', 'critRate', 'accuracy'])
 const FIXED_ROOM_KINDS: ReadonlySet<string> = new Set(['entry', 'stairs', 'boss', 'keyRoom', 'lockedDoor', 'secret'])
 const FIVE_ROLES = ['fodder', 'elite', 'special', 'monster', 'boss'] as const
 const NON_ATTACK_THEN: ReadonlySet<string> = new Set(['flee', 'guard', 'swap row'])
@@ -166,6 +179,9 @@ export function buildTables(corpus: Corpus): Tables {
     grades,
     gradeRows,
     blockStepPerGrade: tnum(at(tuning, 'equipment', 'shields', 'blockStepPerGrade')) ?? 2,
+    armorPercentStep: { fromIndex: Math.max(0, grades.indexOf(str(at(tuning, 'items', 'armorPercentStep', 'fromGrade')) ?? 'B')), pp: tnum(at(tuning, 'items', 'armorPercentStep', 'pp')) ?? 1 },
+    lootItemChanceByCentre: new Map(Object.entries(obj(at(tuning, 'items', 'lootItemChanceByCentre')) ?? {}).map(([g, v]) => [g, tnum(v)]).filter((e): e is [string, number] => e[1] !== undefined)),
+    partChance: { common: tnum(at(tuning, 'equipment', 'parts', 'commonChance')) ?? 35, rare: tnum(at(tuning, 'equipment', 'parts', 'rareChance')) ?? 4 },
     heroXpBase: tnum(at(tuning, 'xp', 'heroLevel', 'xpToNextBase')) ?? 60,
     heroXpGrowth: tnum(at(tuning, 'xp', 'heroLevel', 'xpToNextGrowth')) ?? 1.28,
     heroLevelCap: tnum(at(tuning, 'xp', 'heroLevel', 'cap')) ?? 99,
@@ -776,8 +792,8 @@ function rule4(ctx: Ctx): Failure[] {
     if (skills.length === 0) continue
     const schools = objs(c.json.schools).map((s) => str(s.id)).filter(defined)
     const present = new Set(skills.map((s) => num(s.json.tier)).filter((n): n is number => n !== undefined))
-    for (let tier = 1; tier <= 3; tier++) if (!present.has(tier)) out.push(fail(c.file, 4, `class has no Tier ${tier} skills; Tiers I–III ship first (12 Phase 3)`))
-    for (let tier = 4; tier <= tiers; tier++) if (!present.has(tier)) ctx.warnings.push(fail(c.file, 4, `class has no Tier ${tier} skills yet (Phase 7 adds IV–V)`))
+    // Phase 7 wrote Tiers IV–V (Tier V designed and present, locked until Segment 3 — D-099): every tier is required.
+    for (let tier = 1; tier <= tiers; tier++) if (!present.has(tier)) out.push(fail(c.file, 4, `class has no Tier ${tier} skills; a class has all ${tiers} tiers (12 Phase 7)`))
     for (const school of schools) {
       for (const tier of [...present].sort((a, b) => a - b)) {
         const n = skills.filter((s) => str(s.json.school) === school && num(s.json.tier) === tier).length
@@ -847,16 +863,36 @@ function rule6(ctx: Ctx): Failure[] {
 }
 
 // ---------------------------------------------------------------------------------------------------------------
-// Rule 7: starters are three Tier I skills; monster techniques point both ways (warning: ≥ 2 per dungeon)
+// Rule 7: starters are three Tier I skills (every starter kit's too, D-099); monster techniques point both ways; each
+// class with Tier IV has exactly two techniques, linked or marked later (06 §8.8); a move list names the monster's
+// attacks (warning: fewer than two per dungeon — the Mender's second waits for the Fungal Deep, D-099)
 
 function rule7(ctx: Ctx): Failure[] {
   const out: Failure[] = []
+  const perClass = num(at(ctx.corpus.byKind.get('tuning')?.[0]?.json, 'techniques', 'perClass')) ?? 2
   for (const c of ctx.classes.values()) {
-    for (const id of strs(c.json.starterSkillIds)) {
-      const s = ctx.skills.get(id)
-      if (!s) continue
-      if (str(s.json.classId) !== c.id) out.push(fail(c.file, 7, `starter skill '${id}' belongs to class '${str(s.json.classId) ?? '?'}'`))
-      if (num(s.json.tier) !== 1) out.push(fail(c.file, 7, `starter skill '${id}' is Tier ${num(s.json.tier) ?? '?'}, expected Tier I`))
+    const starterSets = [
+      { label: 'starter skill', ids: strs(c.json.starterSkillIds) },
+      ...objs(c.json.starterKitOptions).map((k) => ({ label: `starter kit '${str(k.id) ?? '?'}' skill`, ids: strs(k.starterSkillIds) })),
+    ]
+    for (const set of starterSets) {
+      for (const id of set.ids) {
+        const s = ctx.skills.get(id)
+        if (!s) {
+          if (set.label !== 'starter skill') out.push(fail(c.file, 7, `${set.label} '${id}' does not resolve to a skill`))
+          continue
+        }
+        if (str(s.json.classId) !== c.id) out.push(fail(c.file, 7, `${set.label} '${id}' belongs to class '${str(s.json.classId) ?? '?'}'`))
+        if (num(s.json.tier) !== 1) out.push(fail(c.file, 7, `${set.label} '${id}' is Tier ${num(s.json.tier) ?? '?'}, expected Tier I`))
+      }
+    }
+    // The second starter kits (D-099, 08 §12): unique ids, every item resolves.
+    const kitIds = new Set<string>()
+    for (const k of objs(c.json.starterKitOptions)) {
+      const kid = str(k.id) ?? '?'
+      if (kitIds.has(kid)) out.push(fail(c.file, 7, `starter kit '${kid}' is listed twice`))
+      kitIds.add(kid)
+      for (const itemId of strs(k.starterKit)) if (!ctx.items.has(itemId)) out.push(fail(c.file, 7, `starter kit '${kid}' item '${itemId}' does not resolve to an item`))
     }
     for (const id of strs(c.json.monsterTechniqueIds)) {
       const s = ctx.skills.get(id)
@@ -884,7 +920,37 @@ function rule7(ctx: Ctx): Failure[] {
       if (c && !strs(c.json.monsterTechniqueIds).includes(id)) out.push(fail(m.file, 7, `monsterTechniqueSkillIds '${id}' is not in class '${c.id}' monsterTechniqueIds`))
     }
   }
-  // Warning, not failure: a class should meet two or more techniques per dungeon (06 §8.8).
+  // A move list needs its monster and names its attacks; a technique marked later is not linked and its monster is not
+  // in the content yet (when it arrives, link it).
+  for (const s of ctx.skills.values()) {
+    const moves = strs(s.json.monsterTechniqueMoveIds)
+    const mid = str(s.json.monsterTechniqueOf)
+    const later = str(s.json.monsterTechniqueLater)
+    if (moves.length > 0 && mid === undefined) out.push(fail(s.file, 7, 'monsterTechniqueMoveIds without a monsterTechniqueOf'))
+    if (moves.length > 0 && mid !== undefined) {
+      const m = ctx.monsters.get(mid)
+      if (m) {
+        const attacks = objs(m.json.attacks).map((a) => str(a.id)).filter(defined)
+        for (const mv of moves) if (!attacks.includes(mv)) out.push(fail(s.file, 7, `move '${mv}' is not an attack of monster '${mid}' (${attacks.join(', ')})`))
+      }
+    }
+    if (later !== undefined) {
+      if (mid !== undefined) out.push(fail(s.file, 7, 'a technique is either linked (monsterTechniqueOf) or marked later (monsterTechniqueLater), not both'))
+      if (ctx.monsters.has(later)) out.push(fail(s.file, 7, `monster '${later}' is in the content now: link the technique (monsterTechniqueOf, the monster's monsterTechniqueSkillIds, the class's monsterTechniqueIds)`))
+      const tier = num(s.json.tier)
+      if (tier !== 3 && tier !== 4) out.push(fail(s.file, 7, `technique marked later is Tier ${tier ?? '?'}, expected Tier III or IV`))
+    }
+  }
+  // 06 §8.8: each class has exactly two techniques (Tier III–IV), linked or marked later. A class without Tier IV yet
+  // (the Beast Tamer before Phase 11) is skipped.
+  for (const c of ctx.classes.values()) {
+    const skills = ctx.skillsByClass.get(c.id) ?? []
+    if (!skills.some((s) => num(s.json.tier) === 4)) continue
+    const n = skills.filter((s) => str(s.json.monsterTechniqueOf) !== undefined || str(s.json.monsterTechniqueLater) !== undefined).length
+    if (n !== perClass) out.push(fail(c.file, 7, `class has ${n} monster technique(s), expected ${perClass} (06 §8.8: linked, or marked monsterTechniqueLater)`))
+  }
+  // Warning, not failure: 06 §8.8 has most classes meet both techniques in Gravehollow; the Mender's second (and the
+  // Beast Tamer's) waits for the Fungal Deep (D-099), so a count under two here is information, not an error.
   const dungeonsWithMonsters = new Set<string>()
   for (const m of ctx.monsters.values()) {
     const d = str(m.json.dungeonId)
@@ -896,7 +962,8 @@ function rule7(ctx: Ctx): Failure[] {
         const m = ctx.monsters.get(str(ctx.skills.get(id)?.json.monsterTechniqueOf) ?? '')
         return m !== undefined && str(m.json.dungeonId) === d
       }).length
-      if (n < 2) ctx.warnings.push(fail(c.file, 7, `class '${c.id}' meets ${n} monster technique(s) in dungeon '${d}'; 06 §8.8 wants two or more`))
+      const later = (ctx.skillsByClass.get(c.id) ?? []).filter((s) => str(s.json.monsterTechniqueLater) !== undefined).length
+      if (n < 2) ctx.warnings.push(fail(c.file, 7, `class '${c.id}' meets ${n} monster technique(s) in dungeon '${d}'${later ? `; ${later} more wait for a later dungeon (monsterTechniqueLater)` : ''}`))
     }
   }
   return out
@@ -1466,6 +1533,8 @@ function rule22(ctx: Ctx): Failure[] {
         if (v === fv) continue
         // 08 §2.3: a shield's Block steps +2 pp per grade instead of riding the multiplier.
         if (k === 'block' && v === fv + ctx.t.blockStepPerGrade * gradeIdx(ctx, grade)) continue
+        // 08 §2: an armor piece's percentage secondary (Resistance, Dodge, Crit, Accuracy) steps +1 pp per grade from B upward.
+        if (str(it.json.kind) === 'armor' && ARMOR_PERCENT_STATS.has(k) && v === fv + ctx.t.armorPercentStep.pp * Math.max(0, gradeIdx(ctx, grade) - ctx.t.armorPercentStep.fromIndex)) continue
         const expected = fv * mult
         if (Math.abs(v - expected) >= 1) out.push(fail(it.file, 22, `baseStats.${k} is ${v}; the F piece '${base.id}' has ${fv} × ${mult} (grade ${grade}) = ${expected.toFixed(2)} (shared mesh '${mesh}')`))
       }
@@ -1650,6 +1719,14 @@ function rule27(ctx: Ctx): Failure[] {
     const s = sum([gs.centre, gs.minus1, gs.plus1, gs.plus2, gs.plus3])
     if (s !== 100) out.push(fail(lt.file, 27, `gradeShape sums to ${s} (centre + minus1 + plus1 + plus2 + plus3), expected 100`))
     if (gradeIdx(ctx, gs.centreGrade) === 0 && (num(gs.minus1) ?? 0) !== 0) out.push(fail(lt.file, 27, `gradeShape.minus1 is ${String(gs.minus1)} with centre ${str(gs.centreGrade) ?? ''}; the fold goes into centre`))
+    // 08 §11's band rows (tuning.json → items.lootItemChanceByCentre, equipment.parts): itemChance by the centre grade, the part odds every band shares.
+    const wantItem = ctx.t.lootItemChanceByCentre.get(str(gs.centreGrade) ?? '')
+    const item = num(lt.json.itemChance)
+    if (wantItem !== undefined && item !== undefined && item !== wantItem) out.push(fail(lt.file, 27, `itemChance is ${item}; 08 §11 gives ${wantItem} at centre ${str(gs.centreGrade) ?? '?'}`))
+    const common = num(at(lt.json, 'partChance', 'common'))
+    const rare = num(at(lt.json, 'partChance', 'rare'))
+    if (common !== undefined && common !== ctx.t.partChance.common) out.push(fail(lt.file, 27, `partChance.common is ${common}; 08 §11 gives ${ctx.t.partChance.common}`))
+    if (rare !== undefined && rare !== ctx.t.partChance.rare) out.push(fail(lt.file, 27, `partChance.rare is ${rare}; 08 §11 gives ${ctx.t.partChance.rare}`))
   }
   return out
 }
@@ -1889,7 +1966,7 @@ function rule33(ctx: Ctx): Failure[] {
 // least one active, at most two passives); creation points are 6 + 1 per grade above D; names are unique; and every
 // grade a wayfarer chest's table names has someone in the cast.
 
-const WAYFARER_GRADE_ORDER = ['D', 'C', 'B', 'A'] as const
+const WAYFARER_GRADE_ORDER = ['D', 'C', 'B', 'A', 'S'] as const
 
 function rule34(ctx: Ctx): Failure[] {
   const out: Failure[] = []
@@ -1932,7 +2009,7 @@ function rule34(ctx: Ctx): Failure[] {
     objs(c.json.oddsByBand).forEach((entry, i) => {
       for (const [g, v] of Object.entries(obj(entry.table) ?? {})) {
         if ((num(v) ?? 0) <= 0) continue
-        if (!(WAYFARER_GRADE_ORDER as readonly string[]).includes(g)) out.push(fail(c.file, 34, `oddsByBand[${i}] lists grade ${g}; wayfarers are graded D–A`))
+        if (!(WAYFARER_GRADE_ORDER as readonly string[]).includes(g)) out.push(fail(c.file, 34, `oddsByBand[${i}] lists grade ${g}; wayfarers are graded D–S`))
         else if (ctx.wayfarers.size > 0 && (byGrade.get(g) ?? 0) === 0) out.push(fail(c.file, 34, `oddsByBand[${i}] gives grade ${g} ${num(v) ?? 0}% but no wayfarer of the cast is grade ${g}`))
       }
     })
@@ -1977,6 +2054,12 @@ export const RULES: ReadonlyArray<{ n: number; run: (ctx: Ctx) => Failure[] }> =
   { n: 32, run: rule32 },
   { n: 33, run: rule33 },
   { n: 34, run: rule34 },
+  ...ITEM_RULES,
+  ...RULES_F,
+  ...RULES_D,
+  ...RULES_C2,
+  ...RULES_C1,
+  ...RULES_A,
 ]
 
 /** Runs every rule over the corpus. A rule that throws becomes a failure, never a silent pass. */

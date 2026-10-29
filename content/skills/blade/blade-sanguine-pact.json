@@ -1,0 +1,68 @@
+{
+  "id": "blade-sanguine-pact",
+  "classId": "blade",
+  "school": "bloodletter",
+  "tier": 5,
+  "name": "Sanguine Pact",
+  "description": "For 3 turns every ally heals 15% of the damage they deal; you Bleed 3 turns.",
+  "type": "active",
+  "cost": 40,
+  "weight": 800,
+  "target": "allAllies",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "party-lifesteal-percent",
+      "duration": 3,
+      "percent": 15,
+      "target": "allAllies",
+      "note": "every hit an ally deals heals it for percent% of the damage, for duration turns"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "bleed",
+      "duration": 3,
+      "target": "self",
+      "note": "the price: your own Bleed"
+    }
+  ],
+  "prerequisiteId": "blade-blood-price",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "4 turns; no self-Bleed.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "party-lifesteal-percent",
+        "duration": 4,
+        "percent": 15,
+        "target": "allAllies"
+      },
+      {
+        "kind": "applyStatus",
+        "status": "bleed",
+        "chance": 0,
+        "target": "self",
+        "note": "Mastery: no self-Bleed (the line never lands)"
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "heal",
+    "buff"
+  ],
+  "xpTags": [
+    "vitality",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 55
+  }
+}

@@ -776,3 +776,12 @@ html[data-reduce-motion='1'] .dv-mroom--go::before {
 .dv-over__deaths--lost .dv-icon {
   color: #ff6a5a;
 }
+
+/* The Blind Map Pact (07 §6.2; pass D): the map shows only the doors out of this room. */
+.dv-minimap__blind {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ember);
+}

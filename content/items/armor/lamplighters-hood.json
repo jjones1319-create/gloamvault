@@ -1,0 +1,65 @@
+{
+  "id": "lamplighters-hood",
+  "name": "Lamplighter's Hood",
+  "slot": "helmet",
+  "kind": "armor",
+  "grade": "B",
+  "materialLadder": "hide",
+  "materialRung": 4,
+  "weaponType": null,
+  "armorFamily": "leather",
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "defense": 3,
+    "hp": 13,
+    "detection": 3
+  },
+  "requirements": {
+    "strength": 10,
+    "wisdom": 0
+  },
+  "affixSlots": 2,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 7,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1.95,
+  "value": 700,
+  "classLock": [
+    "ranger",
+    "shade"
+  ],
+  "setId": null,
+  "unique": true,
+  "uniquePower": {
+    "text": "+3 Detection; light falls 1 less per room",
+    "effects": [
+      {
+        "kind": "buffStat",
+        "stat": "detection",
+        "amount": 3
+      },
+      {
+        "kind": "custom",
+        "customId": "light-decay-reduction",
+        "amount": 1,
+        "target": "room"
+      }
+    ]
+  },
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "armor-leather-helm-01",
+    "tintPrimary": "#3b2a1e",
+    "tintSecondary": "#e8a33c",
+    "trimMetal": "brass"
+  }
+}

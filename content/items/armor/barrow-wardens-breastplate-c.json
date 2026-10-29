@@ -1,0 +1,49 @@
+{
+  "id": "barrow-wardens-breastplate-c",
+  "name": "Barrow Warden's Breastplate",
+  "slot": "chest",
+  "kind": "armor",
+  "grade": "C",
+  "materialLadder": "metal",
+  "materialRung": 3,
+  "weaponType": null,
+  "armorFamily": "plate",
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "defense": 20,
+    "hp": 25,
+    "stamina": 10
+  },
+  "requirements": {
+    "strength": 18,
+    "wisdom": 0
+  },
+  "affixSlots": 2,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 6,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 2.34,
+  "value": 600,
+  "classLock": [
+    "warden"
+  ],
+  "setId": "barrow-wardens-vigil",
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "armor-plate-chest-01",
+    "tintPrimary": "#4a5148",
+    "tintSecondary": "#2f5e4a",
+    "trimMetal": "iron"
+  }
+}

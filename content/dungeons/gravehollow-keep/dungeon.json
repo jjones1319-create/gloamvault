@@ -4,7 +4,7 @@
   "lore": "A border keep that sank into its own catacombs; the Grinning Company squats in its cellars, the dead still keep their own vigil below, and something older waits in the drowned vault.",
   "levelRange": {
     "min": 1,
-    "max": 14
+    "max": 13
   },
   "unlockedBy": null,
   "zones": [
@@ -22,6 +22,44 @@
       ],
       "waystone": true,
       "biomeKitId": "cel"
+    },
+    {
+      "id": "the-crypts",
+      "name": "The Crypts",
+      "floors": {
+        "from": 4,
+        "to": 6
+      },
+      "familyId": "restless-dead",
+      "hunterId": "wardens-hound",
+      "bossIds": [
+        "barrow-warden"
+      ],
+      "waystone": true,
+      "biomeKitId": "cry"
+    },
+    {
+      "id": "the-drowned-vault",
+      "name": "The Drowned Vault",
+      "floors": {
+        "from": 7,
+        "to": 8
+      },
+      "familyId": "tidebound",
+      "hunterId": "vault-leech",
+      "bossIds": [
+        "sister-naesa",
+        "hollow-king"
+      ],
+      "waystone": true,
+      "biomeKitId": "vlt",
+      "joiners": [
+        {
+          "monsterId": "pearl-ooze",
+          "chancePercent": 5,
+          "row": "back"
+        }
+      ]
     }
   ],
   "floors": [
@@ -97,6 +135,123 @@
       "secretChance": 25,
       "secretDifficulty": 14,
       "hunterClock": null
+    },
+    {
+      "merchant": false,
+      "bossId": null,
+      "lightAtArena": null,
+      "floor": 4,
+      "zoneId": "the-crypts",
+      "monsterLevel": 5,
+      "roomsMin": 9,
+      "roomsMax": 12,
+      "lightAtEntry": 75,
+      "encounterTableIds": [
+        "crypts-a",
+        "crypts-b"
+      ],
+      "eliteAffixCount": 2,
+      "trapBand": {
+        "min": 16,
+        "max": 20
+      },
+      "secretChance": 25,
+      "secretDifficulty": 18,
+      "hunterClock": 40
+    },
+    {
+      "merchant": true,
+      "bossId": null,
+      "lightAtArena": null,
+      "floor": 5,
+      "zoneId": "the-crypts",
+      "monsterLevel": 7,
+      "roomsMin": 9,
+      "roomsMax": 12,
+      "lightAtEntry": 70,
+      "encounterTableIds": [
+        "crypts-a",
+        "crypts-b",
+        "crypts-c",
+        "crypts-e"
+      ],
+      "eliteAffixCount": 2,
+      "trapBand": {
+        "min": 18,
+        "max": 22
+      },
+      "secretChance": 25,
+      "secretDifficulty": 20,
+      "hunterClock": 40
+    },
+    {
+      "merchant": true,
+      "bossId": "barrow-warden",
+      "lightAtArena": 50,
+      "floor": 6,
+      "zoneId": "the-crypts",
+      "monsterLevel": 8,
+      "roomsMin": 9,
+      "roomsMax": 12,
+      "lightAtEntry": 65,
+      "encounterTableIds": [
+        "crypts-b",
+        "crypts-c",
+        "crypts-e"
+      ],
+      "eliteAffixCount": 2,
+      "trapBand": {
+        "min": 20,
+        "max": 24
+      },
+      "secretChance": 25,
+      "secretDifficulty": 22,
+      "hunterClock": null
+    },
+    {
+      "merchant": true,
+      "bossId": "sister-naesa",
+      "lightAtArena": 40,
+      "floor": 7,
+      "zoneId": "the-drowned-vault",
+      "monsterLevel": 11,
+      "roomsMin": 10,
+      "roomsMax": 14,
+      "lightAtEntry": 60,
+      "encounterTableIds": [
+        "vault-a",
+        "vault-e"
+      ],
+      "eliteAffixCount": 3,
+      "trapBand": {
+        "min": 26,
+        "max": 34
+      },
+      "secretChance": 25,
+      "secretDifficulty": 30,
+      "hunterClock": null
+    },
+    {
+      "merchant": false,
+      "bossId": "hollow-king",
+      "lightAtArena": 70,
+      "floor": 8,
+      "zoneId": "the-drowned-vault",
+      "monsterLevel": 13,
+      "roomsMin": 4,
+      "roomsMax": 4,
+      "lightAtEntry": 70,
+      "encounterTableIds": [
+        "vault-throne"
+      ],
+      "eliteAffixCount": 3,
+      "trapBand": {
+        "min": 0,
+        "max": 0
+      },
+      "secretChance": 0,
+      "secretDifficulty": 1,
+      "hunterClock": null
     }
   ],
   "generator": {
@@ -112,7 +267,7 @@
     "grammar": [
       "G1 Floor(normal) -> Entry · Spine · Stairs",
       "G2 Floor(zoneBoss) -> Entry · Spine · Anteroom(Rest) · Boss",
-      "G3 Floor(throne) -> Entry · Antechamber(Fight) · Rest · Boss (F10: fixed, no further rules)",
+      "G3 Floor(throne) -> Entry · Antechamber(Fight) · Rest · Boss (F8: fixed, no further rules)",
       "G4 Spine -> Seg{3-5}",
       "G5 Seg -> Room | Room · Fork (Fork on 45% of segments, at most 3 Forks per floor)",
       "G6 Fork -> Branch{1-2}",
@@ -120,7 +275,7 @@
       "G8 Cap -> Treasure [40] | Curio [30] | Fight [20] | Elite [10]",
       "G9 Room -> Fight [50] | Elite [8] | Rest [10] | Merchant [5] | Treasure [7] | Curio [15] | Gauntlet [5]",
       "G10 Rest: exactly one per floor - if G9 rolled none, the Spine's middle Room becomes Rest; a second Rest re-rolls as Fight",
-      "G11 Merchant: on F2, F5, F8 exactly one - if none rolled, the last Spine Room before Stairs becomes Merchant; on other floors at most one",
+      "G11 Merchant: on the floor before each boss floor (F2, F5, F6, F7) exactly one - if none rolled, the last Spine Room before Stairs becomes Merchant; on a boss floor it is the Spine Room just before the Anteroom; on other floors at most one; F7's stocks four Torches",
       "G12 KeyLock (30%): choose a Spine edge after the Rest; mark its door Locked; place the Key as the loot of a room on a Branch rooted before the lock (if no such Branch exists, insert Fork -> Branch(Fight · Cap(Fight)) at the Room before the lock and put the Key in the Cap)",
       "G13 Secret (25%): attach Secret to a random Room with a free socket; its door difficulty = the floor's secret difficulty",
       "G14 Roles: re-roll the last Fight room's encounter until the floor meets 06 §8.2's role mix (>= 2 Fodder-only packs, >= 1 Special, >= 1 role-Elite from F2, <= 1 Monster room)",
@@ -128,7 +283,7 @@
     ],
     "keyLockChance": 30,
     "secretChance": 25,
-    "minRooms": 5,
+    "minRooms": 4,
     "maxRooms": 14,
     "maxBranches": 3,
     "bossFarthest": true,
@@ -748,6 +903,1202 @@
         }
       ],
       "safeItemId": null
+    },
+    {
+      "id": "sealed-sarcophagus",
+      "name": "Sealed Sarcophagus",
+      "zoneId": "the-crypts",
+      "description": "A stone sarcophagus with its lid chained; the chains are warm.",
+      "safeItemId": "holy-water",
+      "choices": [
+        {
+          "label": "Open",
+          "requires": [],
+          "outcomes": [
+            {
+              "chance": 45,
+              "effect": {
+                "kind": "loot",
+                "amount": 10,
+                "note": "gold 0.10 R"
+              }
+            },
+            {
+              "chance": 35,
+              "effect": {
+                "kind": "custom",
+                "customId": "curio-fight",
+                "summonId": "ghoul",
+                "amount": 1,
+                "note": "a Ghoul rises: a fight, not an ambush"
+              }
+            },
+            {
+              "chance": 20,
+              "effect": {
+                "kind": "custom",
+                "customId": "drop-item-of-grade",
+                "amount": 2,
+                "note": "a Fine (D) relic"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Pour holy water on the chains",
+          "requires": [
+            {
+              "kind": "item",
+              "id": "holy-water",
+              "amount": 1,
+              "consumed": true
+            }
+          ],
+          "outcomes": [
+            {
+              "chance": 70,
+              "effect": {
+                "kind": "loot",
+                "amount": 10,
+                "note": "the purchase: the treasure, the lid opens clean"
+              }
+            },
+            {
+              "chance": 30,
+              "effect": {
+                "kind": "custom",
+                "customId": "drop-item-of-grade",
+                "amount": 2,
+                "note": "a Fine (D) relic"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Leave",
+          "requires": [],
+          "outcomes": []
+        }
+      ]
+    },
+    {
+      "id": "bone-reliquary",
+      "name": "Bone Reliquary",
+      "zoneId": "the-crypts",
+      "description": "A niche of finger bones around a saint's skull.",
+      "safeItemId": "candle-of-vigil",
+      "choices": [
+        {
+          "label": "Pray",
+          "requires": [],
+          "outcomes": [
+            {
+              "chance": 40,
+              "effect": {
+                "kind": "custom",
+                "customId": "resist-for-floor",
+                "status": "fear",
+                "target": "allAllies",
+                "note": "the Holy blessing: Fear immunity this floor"
+              },
+              "also": [
+                {
+                  "kind": "custom",
+                  "customId": "element-damage-for-floor",
+                  "damageType": "holy",
+                  "percent": 15,
+                  "target": "allAllies",
+                  "note": "+15% Holy damage this floor"
+                }
+              ]
+            },
+            {
+              "chance": 40,
+              "effect": {
+                "kind": "custom",
+                "customId": "nothing"
+              }
+            },
+            {
+              "chance": 20,
+              "effect": {
+                "kind": "custom",
+                "customId": "status-for-floor",
+                "status": "curse",
+                "target": "allAllies",
+                "note": "Curse for the rest of the floor"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Take the skull",
+          "requires": [],
+          "outcomes": [
+            {
+              "chance": 100,
+              "effect": {
+                "kind": "loot",
+                "amount": 6,
+                "note": "0.06 R"
+              },
+              "also": [
+                {
+                  "kind": "custom",
+                  "customId": "floor-clock-add",
+                  "amount": 10,
+                  "target": "room",
+                  "note": "the floor's hunter clock +10"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Light a Candle of Vigil",
+          "requires": [
+            {
+              "kind": "item",
+              "id": "candle-of-vigil",
+              "amount": 1,
+              "consumed": true
+            }
+          ],
+          "outcomes": [
+            {
+              "chance": 100,
+              "effect": {
+                "kind": "custom",
+                "customId": "resist-for-floor",
+                "status": "fear",
+                "target": "allAllies",
+                "note": "the purchase: the blessing"
+              },
+              "also": [
+                {
+                  "kind": "custom",
+                  "customId": "element-damage-for-floor",
+                  "damageType": "holy",
+                  "percent": 15,
+                  "target": "allAllies"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Leave",
+          "requires": [],
+          "outcomes": []
+        }
+      ]
+    },
+    {
+      "id": "weeping-statue",
+      "name": "Weeping Statue",
+      "zoneId": "the-crypts",
+      "description": "A hooded mourner whose basin fills with tears.",
+      "safeItemId": "empty-vial",
+      "choices": [
+        {
+          "label": "Drink",
+          "requires": [],
+          "outcomes": [
+            {
+              "chance": 50,
+              "effect": {
+                "kind": "heal",
+                "percent": 30,
+                "target": "allAllies",
+                "note": "heal 30% HP to all"
+              }
+            },
+            {
+              "chance": 30,
+              "effect": {
+                "kind": "applyStatus",
+                "status": "chill",
+                "duration": 3,
+                "target": "allAllies",
+                "note": "Chill 3 turns on all, at the next fight"
+              }
+            },
+            {
+              "chance": 20,
+              "effect": {
+                "kind": "custom",
+                "customId": "cooking-ingredient",
+                "itemId": "mourners-tear",
+                "amount": 1,
+                "note": "a Mourner's Tear (a rare Mender ingredient)"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Bottle the tears",
+          "requires": [
+            {
+              "kind": "item",
+              "id": "empty-vial",
+              "amount": 1,
+              "consumed": true
+            }
+          ],
+          "outcomes": [
+            {
+              "chance": 100,
+              "effect": {
+                "kind": "custom",
+                "customId": "cooking-ingredient",
+                "itemId": "mourners-tear",
+                "amount": 1,
+                "note": "the purchase: a Mourner's Tear"
+              },
+              "also": [
+                {
+                  "kind": "heal",
+                  "percent": 30,
+                  "target": "allAllies",
+                  "note": "and the heal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Leave",
+          "requires": [],
+          "outcomes": []
+        }
+      ]
+    },
+    {
+      "id": "grave-bell",
+      "name": "Grave Bell",
+      "zoneId": "the-crypts",
+      "description": "A small bell on a gallows frame, its rope frayed.",
+      "safeItemId": "linen",
+      "choices": [
+        {
+          "label": "Ring it",
+          "requires": [],
+          "outcomes": [
+            {
+              "chance": 100,
+              "effect": {
+                "kind": "custom",
+                "customId": "large-chest-appears",
+                "amount": 20,
+                "note": "a Large chest appears here, and the hunter clock +20 (the Hound hears)"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Muffle it with linen",
+          "requires": [
+            {
+              "kind": "item",
+              "id": "linen",
+              "amount": 1,
+              "consumed": true,
+              "note": "a Cloth unit"
+            }
+          ],
+          "outcomes": [
+            {
+              "chance": 100,
+              "effect": {
+                "kind": "custom",
+                "customId": "small-chest-appears",
+                "note": "the purchase: a Small chest, no clock cost"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Muffle it with burlap",
+          "requires": [
+            {
+              "kind": "item",
+              "id": "burlap",
+              "amount": 1,
+              "consumed": true,
+              "note": "a Cloth unit"
+            }
+          ],
+          "outcomes": [
+            {
+              "chance": 100,
+              "effect": {
+                "kind": "custom",
+                "customId": "small-chest-appears",
+                "note": "a Small chest, no clock cost"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Leave",
+          "requires": [],
+          "outcomes": []
+        }
+      ]
+    },
+    {
+      "id": "funeral-urns",
+      "name": "Funeral Urns",
+      "zoneId": "the-crypts",
+      "description": "Five urns on a shelf, sealed with pitch.",
+      "safeItemId": "grave-salt",
+      "choices": [
+        {
+          "label": "Smash them all",
+          "requires": [],
+          "outcomes": [
+            {
+              "chance": 100,
+              "effect": {
+                "kind": "custom",
+                "customId": "smash-urns",
+                "summonId": "tomb-spider",
+                "amount": 1,
+                "note": "per urn: 60% 0.04 R / 25% grave dust, Blind 2 on the smasher / 15% a Tomb Spider egg hatches (one ambush at most); tuning floors.funeralUrns"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Salt the urns first",
+          "requires": [
+            {
+              "kind": "item",
+              "id": "grave-salt",
+              "amount": 1,
+              "consumed": true
+            }
+          ],
+          "outcomes": [
+            {
+              "chance": 100,
+              "effect": {
+                "kind": "loot",
+                "amount": 20,
+                "note": "the purchase: the gold from every urn (5 × 0.04 R)"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Leave",
+          "requires": [],
+          "outcomes": []
+        }
+      ]
+    },
+    {
+      "id": "embalmers-table",
+      "name": "Embalmer's Table",
+      "zoneId": "the-crypts",
+      "description": "A stone table with hooks, jars and a drawer.",
+      "safeItemId": null,
+      "choices": [
+        {
+          "label": "Take the tools",
+          "requires": [],
+          "outcomes": [
+            {
+              "chance": 100,
+              "effect": {
+                "kind": "custom",
+                "customId": "repair-durability",
+                "percent": 10,
+                "note": "a Field Repair use without material: one item, +10%"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Search the drawer",
+          "requires": [],
+          "outcomes": [
+            {
+              "chance": 50,
+              "effect": {
+                "kind": "custom",
+                "customId": "give-material",
+                "itemId": "honing-oil",
+                "amount": 1,
+                "note": "Honing Oil"
+              }
+            },
+            {
+              "chance": 30,
+              "effect": {
+                "kind": "applyStatus",
+                "status": "poison",
+                "duration": 4,
+                "note": "a poisoned needle"
+              }
+            },
+            {
+              "chance": 20,
+              "effect": {
+                "kind": "custom",
+                "customId": "tome-of-tier",
+                "amount": 2,
+                "note": "a Tier II Tome"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Search the drawer with care",
+          "requires": [
+            {
+              "kind": "fieldSkillRank",
+              "id": "trapDisarm",
+              "min": 3
+            }
+          ],
+          "outcomes": [
+            {
+              "chance": 50,
+              "effect": {
+                "kind": "custom",
+                "customId": "give-material",
+                "itemId": "honing-oil",
+                "amount": 1
+              }
+            },
+            {
+              "chance": 50,
+              "effect": {
+                "kind": "custom",
+                "customId": "tome-of-tier",
+                "amount": 2
+              }
+            }
+          ]
+        },
+        {
+          "label": "Leave",
+          "requires": [],
+          "outcomes": []
+        }
+      ]
+    },
+    {
+      "id": "the-wardens-ledger",
+      "name": "The Warden's Ledger",
+      "zoneId": "the-crypts",
+      "description": "A stone book on a lectern, the pages carved.",
+      "safeItemId": "reading-glass",
+      "choices": [
+        {
+          "label": "Read",
+          "requires": [],
+          "outcomes": [
+            {
+              "chance": 60,
+              "effect": {
+                "kind": "custom",
+                "customId": "reveal-secret-and-key",
+                "note": "the floor's secret door and Key are marked on the minimap"
+              }
+            },
+            {
+              "chance": 25,
+              "effect": {
+                "kind": "custom",
+                "customId": "status-next-fights",
+                "status": "fear",
+                "amount": 2,
+                "target": "self",
+                "note": "Fear on the reader for 2 fights"
+              }
+            },
+            {
+              "chance": 15,
+              "effect": {
+                "kind": "custom",
+                "customId": "insight-roll",
+                "multiplier": 3,
+                "note": "an Insight roll at ×3 for the reader"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Read through a Reading Glass",
+          "requires": [
+            {
+              "kind": "item",
+              "id": "reading-glass",
+              "amount": 1,
+              "consumed": true
+            }
+          ],
+          "outcomes": [
+            {
+              "chance": 100,
+              "effect": {
+                "kind": "custom",
+                "customId": "reveal-secret-and-key",
+                "note": "the purchase: the map"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Leave",
+          "requires": [],
+          "outcomes": []
+        }
+      ]
+    },
+    {
+      "id": "mourners-candles",
+      "name": "Mourner's Candles",
+      "zoneId": "the-crypts",
+      "description": "A ring of twelve unlit corpse-candles.",
+      "safeItemId": "torch",
+      "choices": [
+        {
+          "label": "Light them",
+          "requires": [
+            {
+              "kind": "item",
+              "id": "torch",
+              "amount": 1,
+              "consumed": true
+            }
+          ],
+          "outcomes": [
+            {
+              "chance": 100,
+              "effect": {
+                "kind": "light",
+                "amount": 20,
+                "target": "room"
+              },
+              "also": [
+                {
+                  "kind": "custom",
+                  "customId": "no-ambush-rooms",
+                  "amount": 4,
+                  "note": "no ambushes for the next 4 rooms"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Snuff and take them",
+          "requires": [],
+          "outcomes": [
+            {
+              "chance": 100,
+              "effect": {
+                "kind": "custom",
+                "customId": "give-material",
+                "itemId": "burlap",
+                "amount": 3,
+                "note": "3 Burlap"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Leave",
+          "requires": [],
+          "outcomes": []
+        }
+      ]
+    },
+    {
+      "id": "tide-altar",
+      "name": "Tide Altar",
+      "zoneId": "the-drowned-vault",
+      "description": "A black altar with a shell basin and three blue lamps.",
+      "safeItemId": "brine-pearl",
+      "choices": [
+        {
+          "label": "Offer 0.10 R",
+          "requires": [
+            {
+              "kind": "gold",
+              "amount": 0.1
+            }
+          ],
+          "outcomes": [
+            {
+              "chance": 70,
+              "effect": {
+                "kind": "custom",
+                "customId": "status-next-fights",
+                "status": "shield",
+                "amount": 3,
+                "percent": 30,
+                "target": "allAllies",
+                "note": "Shield for 30% max HP at the start of the next 3 fights"
+              }
+            },
+            {
+              "chance": 30,
+              "effect": {
+                "kind": "custom",
+                "customId": "ambush-encounter",
+                "summonId": "tidebound-blade",
+                "note": "the cult hears: a Tidebound ambush"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Offer a Brine Pearl",
+          "requires": [
+            {
+              "kind": "item",
+              "id": "brine-pearl",
+              "amount": 1,
+              "consumed": true
+            }
+          ],
+          "outcomes": [
+            {
+              "chance": 100,
+              "effect": {
+                "kind": "custom",
+                "customId": "status-next-fights",
+                "status": "shield",
+                "amount": 3,
+                "percent": 30,
+                "target": "allAllies",
+                "note": "the purchase: the Shield"
+              },
+              "also": [
+                {
+                  "kind": "light",
+                  "amount": 15,
+                  "target": "room",
+                  "note": "and +15 light"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Leave",
+          "requires": [],
+          "outcomes": []
+        }
+      ]
+    },
+    {
+      "id": "drowned-chest",
+      "name": "Drowned Chest",
+      "zoneId": "the-drowned-vault",
+      "description": "A large chest on its side in the shallows, weed-wrapped.",
+      "safeItemId": "rope-and-hook",
+      "choices": [
+        {
+          "label": "Haul it out",
+          "requires": [
+            {
+              "kind": "attribute",
+              "id": "strength",
+              "min": 14,
+              "note": "Strength 14 on the hauler"
+            }
+          ],
+          "outcomes": [
+            {
+              "chance": 65,
+              "effect": {
+                "kind": "custom",
+                "customId": "large-chest-appears",
+                "note": "a Large chest"
+              }
+            },
+            {
+              "chance": 20,
+              "effect": {
+                "kind": "custom",
+                "customId": "ambush-encounter",
+                "summonId": "deep-tentacle",
+                "amount": 1,
+                "note": "a Deep Tentacle has it: it has the hauler before anyone moves"
+              }
+            },
+            {
+              "chance": 15,
+              "effect": {
+                "kind": "custom",
+                "customId": "nothing",
+                "note": "rusted through"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Hook it with rope",
+          "requires": [
+            {
+              "kind": "item",
+              "id": "rope-and-hook",
+              "amount": 1,
+              "consumed": true
+            }
+          ],
+          "outcomes": [
+            {
+              "chance": 100,
+              "effect": {
+                "kind": "custom",
+                "customId": "large-chest-appears",
+                "note": "the purchase: the chest"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Leave",
+          "requires": [],
+          "outcomes": []
+        }
+      ]
+    },
+    {
+      "id": "thralls-cage",
+      "name": "Thrall's Cage",
+      "zoneId": "the-drowned-vault",
+      "description": "A half-sunk cage with a slumped drowned thrall.",
+      "safeItemId": "holy-water",
+      "choices": [
+        {
+          "label": "Open",
+          "requires": [],
+          "outcomes": [
+            {
+              "chance": 50,
+              "effect": {
+                "kind": "custom",
+                "customId": "roll-rare-part",
+                "percent": 100,
+                "note": "the thrall wakes free and gives a rare part"
+              }
+            },
+            {
+              "chance": 35,
+              "effect": {
+                "kind": "custom",
+                "customId": "curio-fight",
+                "summonId": "drowned-thrall",
+                "amount": 1,
+                "note": "it attacks: a fight"
+              }
+            },
+            {
+              "chance": 15,
+              "effect": {
+                "kind": "custom",
+                "customId": "nothing",
+                "note": "it dissolves"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Bless it with holy water",
+          "requires": [
+            {
+              "kind": "item",
+              "id": "holy-water",
+              "amount": 1,
+              "consumed": true
+            }
+          ],
+          "outcomes": [
+            {
+              "chance": 100,
+              "effect": {
+                "kind": "custom",
+                "customId": "roll-rare-part",
+                "percent": 100,
+                "note": "the purchase: it wakes free"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Leave",
+          "requires": [],
+          "outcomes": []
+        }
+      ]
+    },
+    {
+      "id": "sentinel-plinth",
+      "name": "Sentinel Plinth",
+      "zoneId": "the-drowned-vault",
+      "description": "A kneeling construct on a plinth, its chest-core glowing faintly.",
+      "safeItemId": null,
+      "choices": [
+        {
+          "label": "Pry the core",
+          "requires": [
+            {
+              "kind": "fieldSkillRank",
+              "id": "lockpicking",
+              "min": 3,
+              "note": "Lockpicking vs 24: rank 3 is the first whose roll 50% + 2% × (rank × 5 − 24 / 2) beats even odds"
+            }
+          ],
+          "outcomes": [
+            {
+              "chance": 60,
+              "effect": {
+                "kind": "custom",
+                "customId": "give-material",
+                "itemId": "sentinel-core",
+                "amount": 1,
+                "note": "a Construct Core (affix stone)"
+              }
+            },
+            {
+              "chance": 40,
+              "effect": {
+                "kind": "custom",
+                "customId": "curio-fight",
+                "summonId": "vault-sentinel",
+                "amount": 1,
+                "note": "it wakes: an Elite Vault Sentinel fight"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Unbolt the core",
+          "requires": [
+            {
+              "kind": "fieldSkillRank",
+              "id": "fieldRepair",
+              "min": 4
+            }
+          ],
+          "outcomes": [
+            {
+              "chance": 100,
+              "effect": {
+                "kind": "custom",
+                "customId": "give-material",
+                "itemId": "sentinel-core",
+                "amount": 1,
+                "note": "the purchase: the core"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Leave",
+          "requires": [],
+          "outcomes": []
+        }
+      ]
+    },
+    {
+      "id": "brine-pool",
+      "name": "Brine Pool",
+      "zoneId": "the-drowned-vault",
+      "description": "A still black pool with coins on the bottom.",
+      "safeItemId": "oilskin-cloak",
+      "choices": [
+        {
+          "label": "Wade in",
+          "requires": [],
+          "outcomes": [
+            {
+              "chance": 50,
+              "effect": {
+                "kind": "loot",
+                "amount": 12,
+                "note": "gold 0.12 R"
+              }
+            },
+            {
+              "chance": 30,
+              "effect": {
+                "kind": "applyStatus",
+                "status": "chill",
+                "duration": 3,
+                "note": "Chill 3 turns on the wader, at the next fight"
+              },
+              "also": [
+                {
+                  "kind": "applyStatus",
+                  "status": "poison",
+                  "duration": 3,
+                  "note": "and Poison 3 turns"
+                }
+              ]
+            },
+            {
+              "chance": 20,
+              "effect": {
+                "kind": "custom",
+                "customId": "ambush-encounter",
+                "summonId": "brine-ooze",
+                "note": "a Brine Ooze ambush"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Wade in an oilskin",
+          "requires": [
+            {
+              "kind": "item",
+              "id": "oilskin-cloak",
+              "amount": 1,
+              "consumed": true
+            }
+          ],
+          "outcomes": [
+            {
+              "chance": 100,
+              "effect": {
+                "kind": "loot",
+                "amount": 12,
+                "note": "the purchase: the gold"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Leave",
+          "requires": [],
+          "outcomes": []
+        }
+      ]
+    },
+    {
+      "id": "the-priestess-hymnal",
+      "name": "The Priestess's Hymnal",
+      "zoneId": "the-drowned-vault",
+      "description": "A book chained to a lectern, open, the ink running.",
+      "safeItemId": "wax-plugs",
+      "choices": [
+        {
+          "label": "Read",
+          "requires": [],
+          "outcomes": [
+            {
+              "chance": 50,
+              "effect": {
+                "kind": "custom",
+                "customId": "resist-for-floor",
+                "status": "silence",
+                "note": "Silence immunity this floor for the reader"
+              }
+            },
+            {
+              "chance": 30,
+              "effect": {
+                "kind": "custom",
+                "customId": "status-next-fights",
+                "status": "fear",
+                "amount": 2,
+                "target": "self",
+                "note": "Fear on the reader for 2 fights"
+              }
+            },
+            {
+              "chance": 10,
+              "effect": {
+                "kind": "custom",
+                "customId": "tome-of-tier",
+                "amount": 2,
+                "note": "a Tier II Tome (06: of a Mender or Arcanist school)"
+              }
+            },
+            {
+              "chance": 10,
+              "effect": {
+                "kind": "custom",
+                "customId": "tome-of-tier",
+                "amount": 3,
+                "note": "a Tier III Tome"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Read with wax in your ears",
+          "requires": [
+            {
+              "kind": "item",
+              "id": "wax-plugs",
+              "amount": 1,
+              "consumed": true
+            }
+          ],
+          "outcomes": [
+            {
+              "chance": 100,
+              "effect": {
+                "kind": "custom",
+                "customId": "resist-for-floor",
+                "status": "silence",
+                "note": "the purchase: the immunity, no Tome"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Leave",
+          "requires": [],
+          "outcomes": []
+        }
+      ]
+    },
+    {
+      "id": "rusted-sluice-wheel",
+      "name": "Rusted Sluice Wheel",
+      "zoneId": "the-drowned-vault",
+      "description": "A 2 m iron wheel on a post, seized.",
+      "safeItemId": null,
+      "choices": [
+        {
+          "label": "Turn it",
+          "requires": [
+            {
+              "kind": "attribute",
+              "id": "strength",
+              "min": 12
+            }
+          ],
+          "outcomes": [
+            {
+              "chance": 70,
+              "effect": {
+                "kind": "custom",
+                "customId": "drain-sluice",
+                "amount": 10,
+                "note": "drains the next flooded room; 0.10 R in the silt"
+              }
+            },
+            {
+              "chance": 30,
+              "effect": {
+                "kind": "custom",
+                "customId": "status-next-fights",
+                "status": "slow",
+                "amount": 1,
+                "target": "allAllies",
+                "note": "floods this room: Slow on the party in the next fight"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Free the gears",
+          "requires": [
+            {
+              "kind": "fieldSkillRank",
+              "id": "fieldRepair",
+              "min": 3
+            }
+          ],
+          "outcomes": [
+            {
+              "chance": 100,
+              "effect": {
+                "kind": "custom",
+                "customId": "drain-sluice",
+                "amount": 10,
+                "note": "the purchase: the drain"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Leave",
+          "requires": [],
+          "outcomes": []
+        }
+      ]
+    },
+    {
+      "id": "leech-jar",
+      "name": "Leech Jar",
+      "zoneId": "the-drowned-vault",
+      "description": "A glass jar of black leeches on a shelf, one of them very large.",
+      "safeItemId": "torch",
+      "choices": [
+        {
+          "label": "Smash it",
+          "requires": [],
+          "outcomes": [
+            {
+              "chance": 55,
+              "effect": {
+                "kind": "custom",
+                "customId": "roll-rare-part",
+                "percent": 100,
+                "note": "a rare part"
+              }
+            },
+            {
+              "chance": 30,
+              "effect": {
+                "kind": "custom",
+                "customId": "curio-fight",
+                "summonId": "vault-leech",
+                "amount": 1,
+                "note": "the Vault Leech comes for its brood: a fight in this room, not an ambush, never fled"
+              }
+            },
+            {
+              "chance": 15,
+              "effect": {
+                "kind": "applyStatus",
+                "status": "bleed",
+                "duration": 3,
+                "note": "Bleed 3 turns on the smasher"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Burn it",
+          "requires": [
+            {
+              "kind": "item",
+              "id": "torch",
+              "amount": 1,
+              "consumed": true
+            }
+          ],
+          "outcomes": [
+            {
+              "chance": 100,
+              "effect": {
+                "kind": "custom",
+                "customId": "roll-rare-part",
+                "percent": 100,
+                "note": "the purchase: a rare part"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Leave",
+          "requires": [],
+          "outcomes": []
+        }
+      ]
     }
   ],
   "traps": [
@@ -988,6 +2339,545 @@
           "note": "0.02 R at R ≈ 300"
         }
       ]
+    },
+    {
+      "id": "grave-breath-vent",
+      "name": "Grave Breath Vent",
+      "zoneId": "the-crypts",
+      "difficulty": 16,
+      "trigger": "enter",
+      "triggerNote": "entering the room",
+      "revealedBy": {
+        "detection": 16,
+        "classId": null,
+        "petId": "crypt-bat",
+        "fieldSkillRank": null,
+        "criticalScout": false
+      },
+      "effects": [
+        {
+          "kind": "custom",
+          "customId": "status-flat-per-tick",
+          "status": "poison",
+          "duration": 3,
+          "amount": 5,
+          "multiplier": 2,
+          "target": "allAllies",
+          "note": "Poison 3 turns (5 + 2 × floor per tick) on everyone"
+        }
+      ],
+      "blocksDoor": false,
+      "disarmReward": [
+        {
+          "kind": "item",
+          "id": "grave-salt",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "falling-portcullis",
+      "name": "Falling Portcullis",
+      "zoneId": "the-crypts",
+      "difficulty": 18,
+      "trigger": "enter",
+      "triggerNote": "the whole party crossing the N doorway: the back row is caught behind it",
+      "revealedBy": {
+        "detection": 18,
+        "classId": null,
+        "petId": null,
+        "fieldSkillRank": null,
+        "criticalScout": false
+      },
+      "effects": [
+        {
+          "kind": "custom",
+          "customId": "status-next-fights",
+          "status": "stun",
+          "amount": 1,
+          "duration": 2,
+          "target": "partyBack",
+          "note": "the back-row heroes cannot act for the first 2 turns of the fight that follows (read as Stun 2)"
+        },
+        {
+          "kind": "custom",
+          "customId": "status-next-fights",
+          "status": "stun",
+          "amount": 1,
+          "duration": 2,
+          "target": "pet",
+          "note": "and the pets, caught behind it with them (07 §2.5: HB1, HB2 and the pets)"
+        }
+      ],
+      "blocksDoor": false,
+      "disarmReward": [
+        {
+          "kind": "material",
+          "id": "iron",
+          "amount": 3
+        }
+      ],
+      "placement": {
+        "roomKinds": [
+          "fight",
+          "elite",
+          "keyRoom"
+        ]
+      }
+    },
+    {
+      "id": "bone-scythe",
+      "name": "Bone Scythe",
+      "zoneId": "the-crypts",
+      "difficulty": 18,
+      "trigger": "step",
+      "triggerNote": "the midline of cry_t_catacomb_run",
+      "revealedBy": {
+        "detection": 18,
+        "classId": null,
+        "petId": null,
+        "fieldSkillRank": null,
+        "criticalScout": true
+      },
+      "effects": [
+        {
+          "kind": "custom",
+          "customId": "trap-flat-damage",
+          "amount": 15,
+          "multiplier": 5,
+          "damageType": "slash",
+          "target": "partyFront",
+          "note": "Slash 15 + 5 × floor to both front-row heroes"
+        },
+        {
+          "kind": "applyStatus",
+          "status": "bleed",
+          "duration": 3,
+          "target": "partyFront"
+        }
+      ],
+      "blocksDoor": false,
+      "disarmReward": [
+        {
+          "kind": "material",
+          "id": "iron",
+          "amount": 2
+        },
+        {
+          "kind": "gold",
+          "amount": 14,
+          "note": "0.03 R at R ≈ 480"
+        }
+      ],
+      "placement": {
+        "templateIds": [
+          "cry-t-catacomb-run"
+        ]
+      }
+    },
+    {
+      "id": "candle-snuffer",
+      "name": "Candle Snuffer",
+      "zoneId": "the-crypts",
+      "difficulty": 20,
+      "trigger": "step",
+      "triggerNote": "touching any candle in the room (curios here are bait)",
+      "revealedBy": {
+        "detection": 20,
+        "classId": null,
+        "petId": null,
+        "fieldSkillRank": null,
+        "criticalScout": false
+      },
+      "effects": [
+        {
+          "kind": "light",
+          "amount": -20,
+          "target": "room"
+        }
+      ],
+      "blocksDoor": false,
+      "disarmReward": [
+        {
+          "kind": "item",
+          "id": "torch",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "warding-glyph",
+      "name": "Warding Glyph",
+      "zoneId": "the-crypts",
+      "difficulty": 22,
+      "trigger": "step",
+      "triggerNote": "a casting-class hero (Arcanist, Mender) stepping into the centre",
+      "revealedBy": {
+        "detection": 22,
+        "classId": "arcanist",
+        "petId": null,
+        "fieldSkillRank": null,
+        "criticalScout": false
+      },
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "silence",
+          "duration": 3,
+          "target": "partyBack",
+          "note": "Silence 3 turns on every caster (the back row)"
+        },
+        {
+          "kind": "applyStatus",
+          "status": "shock",
+          "duration": 2,
+          "target": "partyFront",
+          "note": "Shock 2 turns on everyone else (the front row)"
+        }
+      ],
+      "blocksDoor": false,
+      "disarmReward": [
+        {
+          "kind": "item",
+          "id": "grave-candle",
+          "amount": 1,
+          "chance": 10,
+          "note": "an affix stone"
+        },
+        {
+          "kind": "item",
+          "id": "honing-oil",
+          "amount": 1,
+          "chance": 90
+        }
+      ],
+      "condition": {
+        "partyClassIds": [
+          "arcanist",
+          "mender"
+        ]
+      }
+    },
+    {
+      "id": "coffin-catapult",
+      "name": "Coffin Catapult",
+      "zoneId": "the-crypts",
+      "difficulty": 24,
+      "trigger": "open",
+      "triggerNote": "opening a niche in the room",
+      "revealedBy": {
+        "detection": 24,
+        "classId": null,
+        "petId": null,
+        "fieldSkillRank": {
+          "fieldSkill": "cartography",
+          "min": 3
+        },
+        "criticalScout": false
+      },
+      "effects": [
+        {
+          "kind": "custom",
+          "customId": "trap-flat-damage",
+          "amount": 20,
+          "multiplier": 6,
+          "damageType": "blunt",
+          "note": "Blunt 20 + 6 × floor on the lowest-Perception hero"
+        },
+        {
+          "kind": "applyStatus",
+          "status": "stun",
+          "duration": 1
+        }
+      ],
+      "blocksDoor": false,
+      "disarmReward": [
+        {
+          "kind": "material",
+          "id": "oak",
+          "amount": 3
+        }
+      ],
+      "placement": {
+        "roomKinds": [
+          "curio",
+          "treasure"
+        ]
+      }
+    },
+    {
+      "id": "tide-gate",
+      "name": "Tide Gate",
+      "zoneId": "the-drowned-vault",
+      "difficulty": 26,
+      "trigger": "enter",
+      "triggerNote": "entering a flooded cell",
+      "revealedBy": {
+        "detection": 26,
+        "classId": null,
+        "petId": null,
+        "fieldSkillRank": null,
+        "criticalScout": false
+      },
+      "effects": [
+        {
+          "kind": "custom",
+          "customId": "flood-room",
+          "amount": -10,
+          "note": "the fight here is fought wading: −10 Speed and −10 Accuracy for everyone, both sides"
+        }
+      ],
+      "blocksDoor": false,
+      "disarmReward": [
+        {
+          "kind": "material",
+          "id": "steel",
+          "amount": 2
+        }
+      ],
+      "placement": {
+        "templateIds": [
+          "vlt-t-flooded-cell"
+        ],
+        "roomKinds": [
+          "fight",
+          "elite",
+          "keyRoom"
+        ]
+      }
+    },
+    {
+      "id": "sluice-surge",
+      "name": "Sluice Surge",
+      "zoneId": "the-drowned-vault",
+      "difficulty": 28,
+      "trigger": "step",
+      "triggerNote": "crossing the channel in vlt_t_sluice_hall",
+      "revealedBy": {
+        "detection": 28,
+        "classId": null,
+        "petId": null,
+        "fieldSkillRank": {
+          "fieldSkill": "fieldRepair",
+          "min": 3
+        },
+        "criticalScout": false
+      },
+      "effects": [
+        {
+          "kind": "custom",
+          "customId": "trap-flat-damage",
+          "amount": 20,
+          "multiplier": 6,
+          "damageType": "blunt",
+          "target": "partyFront",
+          "note": "Blunt 20 + 6 × floor to the front row"
+        },
+        {
+          "kind": "custom",
+          "customId": "status-next-fights",
+          "status": "stun",
+          "amount": 1,
+          "duration": 1,
+          "target": "partyFront",
+          "note": "Grab 1 turn (the current), read as Stun 1 at the next fight"
+        }
+      ],
+      "blocksDoor": false,
+      "disarmReward": [
+        {
+          "kind": "material",
+          "id": "steel",
+          "amount": 3
+        },
+        {
+          "kind": "gold",
+          "amount": 39,
+          "note": "0.05 R at R ≈ 770"
+        }
+      ],
+      "placement": {
+        "templateIds": [
+          "vlt-t-sluice-hall"
+        ]
+      }
+    },
+    {
+      "id": "anemone-floor",
+      "name": "Anemone Floor",
+      "zoneId": "the-drowned-vault",
+      "difficulty": 30,
+      "trigger": "step",
+      "triggerNote": "stepping on a glowing tile",
+      "revealedBy": {
+        "detection": 30,
+        "classId": null,
+        "petId": "brine-crab",
+        "fieldSkillRank": null,
+        "criticalScout": false
+      },
+      "effects": [
+        {
+          "kind": "custom",
+          "customId": "status-flat-per-tick",
+          "status": "poison",
+          "duration": 4,
+          "amount": 6,
+          "multiplier": 2,
+          "note": "Poison 4 turns (6 + 2 × floor per tick) on the stepper"
+        },
+        {
+          "kind": "light",
+          "amount": -5,
+          "target": "room",
+          "note": "the anemones close"
+        }
+      ],
+      "blocksDoor": false,
+      "disarmReward": [
+        {
+          "kind": "item",
+          "id": "brine-pearl",
+          "amount": 1,
+          "chance": 10
+        },
+        {
+          "kind": "material",
+          "id": "sharkskin",
+          "amount": 2,
+          "chance": 90,
+          "note": "2 Wolf Hide (the Vault names it Sharkskin, D-033)"
+        }
+      ],
+      "placement": {
+        "templateIds": [
+          "vlt-t-anemone-grotto"
+        ]
+      }
+    },
+    {
+      "id": "sentinel-eye",
+      "name": "Sentinel Eye",
+      "zoneId": "the-drowned-vault",
+      "difficulty": 32,
+      "trigger": "time",
+      "triggerNote": "the party standing in the room's centre for 1 tick (opening a curio or chest here)",
+      "revealedBy": {
+        "detection": 32,
+        "classId": null,
+        "petId": null,
+        "fieldSkillRank": null,
+        "criticalScout": true
+      },
+      "effects": [
+        {
+          "kind": "custom",
+          "customId": "curio-fight",
+          "summonId": "vault-sentinel",
+          "amount": 2,
+          "note": "two Vault Sentinels wake: an Elite fight"
+        }
+      ],
+      "blocksDoor": false,
+      "disarmReward": [
+        {
+          "kind": "item",
+          "id": "sentinel-core",
+          "amount": 1,
+          "note": "a Construct part"
+        }
+      ],
+      "placement": {
+        "roomKinds": [
+          "curio",
+          "treasure"
+        ]
+      }
+    },
+    {
+      "id": "drowning-bell",
+      "name": "Drowning Bell",
+      "zoneId": "the-drowned-vault",
+      "difficulty": 34,
+      "trigger": "time",
+      "triggerNote": "the room's light being Shadowy or worse when the party enters",
+      "revealedBy": {
+        "detection": 34,
+        "classId": null,
+        "petId": null,
+        "fieldSkillRank": null,
+        "criticalScout": false
+      },
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "fear",
+          "target": "allAllies",
+          "note": "Fear on the party for the next fight"
+        },
+        {
+          "kind": "light",
+          "amount": -10,
+          "target": "room",
+          "note": "the bell drowns the lamps"
+        }
+      ],
+      "blocksDoor": false,
+      "disarmReward": [
+        {
+          "kind": "material",
+          "id": "silk",
+          "amount": 2
+        }
+      ],
+      "condition": {
+        "lightBelow": 51
+      }
+    },
+    {
+      "id": "hags-snare",
+      "name": "Hag's Snare",
+      "zoneId": "the-drowned-vault",
+      "difficulty": 34,
+      "trigger": "loot",
+      "triggerNote": "picking up the room's treasure",
+      "revealedBy": {
+        "detection": 34,
+        "classId": null,
+        "petId": null,
+        "fieldSkillRank": {
+          "fieldSkill": "foraging",
+          "min": 5
+        },
+        "criticalScout": false
+      },
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "web",
+          "duration": 2,
+          "note": "Web 2 turns on the picker"
+        },
+        {
+          "kind": "custom",
+          "customId": "ambush-encounter",
+          "summonId": "brine-hag",
+          "note": "and a Brine Hag ambush"
+        }
+      ],
+      "blocksDoor": false,
+      "disarmReward": [
+        {
+          "kind": "gold",
+          "amount": 62,
+          "note": "0.08 R at R ≈ 770"
+        }
+      ],
+      "placement": {
+        "roomKinds": [
+          "treasure"
+        ]
+      }
     }
   ],
   "templates": [],
@@ -1002,6 +2892,7 @@
         "torchValue": 15
       },
       "ruleFlags": [],
+      "needsHunter": false,
       "reward": {
         "goldPercent": 20,
         "xpPercent": 0,
@@ -1017,6 +2908,7 @@
         "hunterClock": 20
       },
       "ruleFlags": [],
+      "needsHunter": true,
       "reward": {
         "goldPercent": 15,
         "xpPercent": 10,
@@ -1029,11 +2921,10 @@
       "description": "Durability wears ×1.5.",
       "weight": 1,
       "knobs": {
-        "enemyHpPercent": 100
+        "wearPercent": 150
       },
-      "ruleFlags": [
-        "wear-x1-5"
-      ],
+      "ruleFlags": [],
+      "needsHunter": false,
       "reward": {
         "goldPercent": 25,
         "xpPercent": 0,
@@ -1046,11 +2937,10 @@
       "description": "Revives per floor −2 (minimum 0): 1 on Normal, 0 on Hard and Dread.",
       "weight": 2,
       "knobs": {
-        "revivesPerFloor": 1
+        "revivesPerFloorDelta": -2
       },
-      "ruleFlags": [
-        "revives-minus-2"
-      ],
+      "ruleFlags": [],
+      "needsHunter": false,
       "reward": {
         "goldPercent": 0,
         "xpPercent": 15,
@@ -1063,11 +2953,12 @@
       "description": "The party is ambushed 15% more often; monsters are never ambushed.",
       "weight": 1,
       "knobs": {
-        "enemyHpPercent": 100
+        "ambushBonusPercent": 15
       },
       "ruleFlags": [
         "loud-boots"
       ],
+      "needsHunter": false,
       "reward": {
         "goldPercent": 10,
         "xpPercent": 5,
@@ -1084,6 +2975,7 @@
         "eliteAffixBonus": 1
       },
       "ruleFlags": [],
+      "needsHunter": false,
       "reward": {
         "goldPercent": 0,
         "xpPercent": 20,
@@ -1093,15 +2985,15 @@
     {
       "id": "every-door-locked",
       "name": "Every Door Locked",
-      "description": "A Key-and-Lock pair on every floor; chests are locked 30% of the time.",
+      "description": "A Key-and-Lock pair on every floor; a chest that would be open is locked 30% of the time.",
       "weight": 1,
       "knobs": {
-        "enemyHpPercent": 100
+        "lockedChestPercent": 30
       },
       "ruleFlags": [
-        "every-door-locked",
-        "locked-chests-30"
+        "every-door-locked"
       ],
+      "needsHunter": false,
       "reward": {
         "goldPercent": 10,
         "xpPercent": 0,
@@ -1113,14 +3005,13 @@
       "name": "Blind Map",
       "description": "No minimap, no scouting, Cartography does nothing.",
       "weight": 2,
-      "knobs": {
-        "enemyHpPercent": 100
-      },
+      "knobs": {},
       "ruleFlags": [
         "no-minimap",
         "no-scouting",
         "no-cartography"
       ],
+      "needsHunter": false,
       "reward": {
         "goldPercent": 15,
         "xpPercent": 10,
@@ -1130,14 +3021,13 @@
     {
       "id": "long-night",
       "name": "Long Night",
-      "description": "Light drains −8 per new room.",
+      "description": "Light drains −8 per new room (instead of −5).",
       "weight": 1,
       "knobs": {
-        "enemyHpPercent": 100
+        "lightPerNewRoom": -8
       },
-      "ruleFlags": [
-        "light-drain-8"
-      ],
+      "ruleFlags": [],
+      "needsHunter": false,
       "reward": {
         "goldPercent": 15,
         "xpPercent": 0,
@@ -1153,6 +3043,7 @@
         "enemyCountPercent": 125
       },
       "ruleFlags": [],
+      "needsHunter": false,
       "reward": {
         "goldPercent": 0,
         "xpPercent": 20,
@@ -1162,15 +3053,14 @@
     {
       "id": "iron-oath",
       "name": "Iron Oath",
-      "description": "No retreat; a wipe also costs the Waystone progress of this delve.",
+      "description": "No retreat: the only way out is the zone’s end; a wipe also costs the Waystone progress of this delve.",
       "weight": 3,
-      "knobs": {
-        "retreatTollPercent": 100
-      },
+      "knobs": {},
       "ruleFlags": [
         "no-retreat",
         "wipe-loses-waystone"
       ],
+      "needsHunter": false,
       "reward": {
         "goldPercent": 40,
         "xpPercent": 10,
@@ -1180,14 +3070,13 @@
     {
       "id": "twin-hunter",
       "name": "Twin Hunter",
-      "description": "Two hunters enter at 40 ticks from opposite ends of the floor.",
+      "description": "Two hunters enter when the clock runs out (40 ticks on Normal), from opposite ends of the floor.",
       "weight": 3,
-      "knobs": {
-        "enemyHpPercent": 100
-      },
+      "knobs": {},
       "ruleFlags": [
         "twin-hunter"
       ],
+      "needsHunter": true,
       "reward": {
         "goldPercent": 25,
         "xpPercent": 15,
@@ -1324,6 +3213,145 @@
       "id": "the-companys-bolt-hole",
       "name": "The Company's Bolt-hole",
       "description": "A crawlway that comes out in the Stairs room: the stairs are revealed and the route marked; taking it costs 0 ticks."
+    },
+    {
+      "zoneId": "the-crypts",
+      "rewards": [
+        {
+          "kind": "item",
+          "id": "candle-of-vigil",
+          "amount": 1,
+          "chance": 20,
+          "note": "a Candle of Vigil on the shelf"
+        }
+      ],
+      "chest": null,
+      "blessing": {
+        "name": "Vigil",
+        "description": "+15% Holy damage and Fear immunity for the floor.",
+        "effects": [
+          {
+            "kind": "custom",
+            "customId": "resist-for-floor",
+            "status": "fear",
+            "target": "allAllies"
+          },
+          {
+            "kind": "custom",
+            "customId": "element-damage-for-floor",
+            "damageType": "holy",
+            "percent": 15,
+            "target": "allAllies"
+          }
+        ]
+      },
+      "shortcutToExit": false,
+      "revealsFloor": false,
+      "lightBonus": 0,
+      "fieldSkillXp": null,
+      "id": "ossuary-shrine",
+      "name": "Ossuary Shrine",
+      "description": "A saint's niche the dead still keep clean."
+    },
+    {
+      "zoneId": "the-crypts",
+      "rewards": [],
+      "chest": null,
+      "blessing": null,
+      "shortcutToExit": false,
+      "revealsFloor": true,
+      "lightBonus": 0,
+      "fieldSkillXp": "cartography",
+      "id": "the-wardens-tablet",
+      "name": "The Warden's Tablet",
+      "description": "A lore tablet, one of five that tell the keep's story; reading it shows the whole floor."
+    },
+    {
+      "zoneId": "the-crypts",
+      "rewards": [],
+      "chest": null,
+      "blessing": null,
+      "shortcutToExit": true,
+      "revealsFloor": false,
+      "lightBonus": 0,
+      "fieldSkillXp": null,
+      "id": "sextons-passage",
+      "name": "Sexton's Passage",
+      "description": "A stair in the wall to the floor’s way down; the floor clock does not tick for the rooms it skips."
+    },
+    {
+      "zoneId": "the-drowned-vault",
+      "rewards": [
+        {
+          "kind": "material",
+          "id": "steel",
+          "amount": 3,
+          "note": "3 units of the zone's material"
+        },
+        {
+          "kind": "gold",
+          "amount": 154,
+          "note": "0.20 R at R ≈ 770"
+        }
+      ],
+      "chest": "large",
+      "blessing": null,
+      "shortcutToExit": false,
+      "revealsFloor": false,
+      "lightBonus": 0,
+      "fieldSkillXp": null,
+      "id": "pearl-cache",
+      "name": "Pearl Cache",
+      "description": "A locked Large chest among the pearl-beds, three ingots of steel and a purse of drowned coin.",
+      "chestLocked": true
+    },
+    {
+      "zoneId": "the-drowned-vault",
+      "rewards": [],
+      "chest": null,
+      "blessing": {
+        "name": "Undertow",
+        "description": "Shield for 20% max HP at the start of every fight on this floor.",
+        "effects": [
+          {
+            "kind": "applyStatus",
+            "status": "shield",
+            "percent": 20,
+            "target": "allAllies",
+            "note": "at the start of every fight on this floor"
+          }
+        ]
+      },
+      "shortcutToExit": false,
+      "revealsFloor": false,
+      "lightBonus": 0,
+      "fieldSkillXp": null,
+      "id": "the-drowned-shrine",
+      "name": "The Drowned Shrine",
+      "description": "An altar the cult never found."
+    },
+    {
+      "zoneId": "the-drowned-vault",
+      "rewards": [],
+      "chest": null,
+      "blessing": {
+        "name": "Forewarned",
+        "description": "Read before her chapel, it marks Sister Naesa's tell on screen and she opens the fight at −10% HP.",
+        "effects": [
+          {
+            "kind": "custom",
+            "customId": "naesa-confession",
+            "percent": -10
+          }
+        ]
+      },
+      "shortcutToExit": false,
+      "revealsFloor": false,
+      "lightBonus": 0,
+      "fieldSkillXp": null,
+      "id": "the-tidebound-confession",
+      "name": "The Tidebound Confession",
+      "description": "A lore tablet: the cult's own account of what they are waking."
     }
   ]
 }

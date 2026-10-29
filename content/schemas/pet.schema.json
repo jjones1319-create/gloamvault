@@ -84,6 +84,7 @@
         "xp": { "type": "integer", "minimum": 0 },
         "bondStars": { "type": "integer", "description": "0–5; +1 per duplicate egg, +5% stats each (§8.3).", "minimum": 0, "maximum": 5 },
         "traitRank": { "type": "integer", "minimum": 1, "maximum": 10 },
+        "traitXp": { "type": "integer", "description": "Weighted uses of the trait so far (03 §9: it grows by use; tuning pets.traitGrowth). Optional, Phase 7; absent = 0.", "minimum": 0 },
         "stance": { "$ref": "common.schema.json#/$defs/stance" },
         "ranchImport": {
           "description": "Set when the pet came through the Ranch Shrine (§9); null for dungeon-born pets.",

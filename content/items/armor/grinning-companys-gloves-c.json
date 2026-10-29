@@ -1,0 +1,50 @@
+{
+  "id": "grinning-companys-gloves-c",
+  "name": "Grinning Company's Gloves",
+  "slot": "gloves",
+  "kind": "armor",
+  "grade": "C",
+  "materialLadder": "hide",
+  "materialRung": 3,
+  "weaponType": null,
+  "armorFamily": "leather",
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "defense": 2,
+    "hp": 2,
+    "critRate": 2
+  },
+  "requirements": {
+    "strength": 9,
+    "wisdom": 0
+  },
+  "affixSlots": 2,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 6,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1.56,
+  "value": 300,
+  "classLock": [
+    "ranger",
+    "shade"
+  ],
+  "setId": "grinning-companys-cut",
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "armor-leather-gloves-01",
+    "tintPrimary": "#9b1c1c",
+    "tintSecondary": "#f1ece4",
+    "trimMetal": "brass"
+  }
+}

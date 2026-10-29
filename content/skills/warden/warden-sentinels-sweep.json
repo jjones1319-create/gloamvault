@@ -1,0 +1,61 @@
+{
+  "id": "warden-sentinels-sweep",
+  "classId": "warden",
+  "school": "vanguard",
+  "tier": 4,
+  "name": "Sentinel's Sweep",
+  "description": "1.4× Blunt to every enemy in both rows; each is pushed back 300 energy; 30% Daze. Monster technique: learned only while a Vault Sentinel uses the move.",
+  "type": "active",
+  "cost": 32,
+  "weight": 1400,
+  "target": "allEnemies",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1.4,
+      "damageType": "blunt",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "timeline",
+      "energy": -300
+    },
+    {
+      "kind": "applyStatus",
+      "status": "daze",
+      "chance": 30
+    }
+  ],
+  "prerequisiteId": "warden-pinning-strike",
+  "isUltimate": false,
+  "monsterTechniqueOf": "vault-sentinel",
+  "monsterTechniqueMoveIds": [
+    "halberd"
+  ],
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Daze 50%.",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "daze",
+        "chance": 50
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "control",
+    "reach"
+  ],
+  "xpTags": [
+    "strength"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 65
+  }
+}

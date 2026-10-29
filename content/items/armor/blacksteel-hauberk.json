@@ -1,0 +1,49 @@
+{
+  "id": "blacksteel-hauberk",
+  "name": "Blacksteel Hauberk",
+  "slot": "chest",
+  "kind": "armor",
+  "grade": "B",
+  "materialLadder": "metal",
+  "materialRung": 4,
+  "weaponType": null,
+  "armorFamily": "mail",
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "defense": 20,
+    "hp": 26,
+    "stamina": 10
+  },
+  "requirements": {
+    "strength": 14,
+    "wisdom": 0
+  },
+  "affixSlots": 2,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 7,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 2.44,
+  "value": 1000,
+  "classLock": [
+    "blade"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "armor-mail-chest-01",
+    "tintPrimary": "#2f3136",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "blacksteel"
+  }
+}

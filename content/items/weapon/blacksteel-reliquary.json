@@ -1,0 +1,48 @@
+{
+  "id": "blacksteel-reliquary",
+  "name": "Blacksteel Reliquary",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "B",
+  "materialLadder": "metal",
+  "materialRung": 4,
+  "weaponType": "staff",
+  "armorFamily": null,
+  "hands": 2,
+  "damageType": "holy",
+  "weight": 1000,
+  "baseStats": {
+    "attackSpell": 46,
+    "mana": 50
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 16
+  },
+  "affixSlots": 2,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 7,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 3.26,
+  "value": 1500,
+  "classLock": [
+    "mender"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-reliquary-01",
+    "tintPrimary": "#2f3136",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "blacksteel"
+  }
+}

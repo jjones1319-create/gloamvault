@@ -1,0 +1,49 @@
+{
+  "id": "lanternkeepers-robe-b",
+  "name": "Lanternkeeper's Robe",
+  "slot": "chest",
+  "kind": "armor",
+  "grade": "B",
+  "materialLadder": "cloth",
+  "materialRung": 4,
+  "weaponType": null,
+  "armorFamily": "robes",
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "defense": 7,
+    "hp": 13,
+    "mana": 13
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 2,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 7,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1.22,
+  "value": 1000,
+  "classLock": [
+    "mender"
+  ],
+  "setId": "lanternkeepers-habit",
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "armor-robes-chest-01",
+    "tintPrimary": "#e8e0c8",
+    "tintSecondary": "#c9a227",
+    "trimMetal": "brass"
+  }
+}

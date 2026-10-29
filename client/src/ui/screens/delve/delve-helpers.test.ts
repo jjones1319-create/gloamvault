@@ -178,6 +178,14 @@ describe('words', () => {
     expect(requirementWords({ kind: 'item', id: 'torch', amount: 1 }, name)).toBe('needs a Torch')
     expect(requirementWords({ kind: 'fieldSkillRank', id: 'foraging', min: 3 }, name)).toBe('needs Foraging rank 3')
     expect(requirementWords({ kind: 'detection', min: 14 }, name)).toBe('needs Detection 14')
+    // Phase 7 (C1): the Vault's safe items read as English.
+    const named = (id: string) => ({ 'oilskin-cloak': 'Oilskin Cloak', 'wax-plugs': 'Wax Plugs', 'flint-and-oil': 'Flint & Oil', 'loaded-dice': 'Loaded Dice', 'grave-salt': 'Grave Salt' })[id] ?? id
+    expect(requirementWords({ kind: 'item', id: 'oilskin-cloak', amount: 1 }, named)).toBe('needs an Oilskin Cloak')
+    expect(requirementWords({ kind: 'item', id: 'wax-plugs', amount: 1 }, named)).toBe('needs Wax Plugs')
+    expect(requirementWords({ kind: 'item', id: 'flint-and-oil', amount: 1 }, named)).toBe('needs Flint & Oil')
+    expect(requirementWords({ kind: 'item', id: 'loaded-dice', amount: 1 }, named)).toBe('needs Loaded Dice')
+    expect(requirementWords({ kind: 'item', id: 'grave-salt', amount: 1 }, named)).toBe('needs Grave Salt')
+    expect(requirementWords({ kind: 'attribute', id: 'strength', min: 14 }, named)).toBe('needs Strength 14')
   })
 
   it('describes a room in a line', () => {

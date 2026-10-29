@@ -4,7 +4,7 @@
   "school": "sanctity",
   "tier": 3,
   "name": "Wraith’s Lament",
-  "description": "1.0× Shadow to every enemy in both rows; living targets get Fear 1 turn; Undead and Shadow targets are immune to the Fear and take Mark 2 turns instead. Monster technique: Insights only while a wraith uses it (the wraith arrives with the Crypts in Phase 7).",
+  "description": "1.0× Shadow to every enemy in both rows; living targets get Fear 1 turn; Undead and Shadow targets are immune to the Fear and take Mark 2 turns instead. Monster technique: learned only by witnessing a Wraith use it.",
   "type": "active",
   "cost": 22,
   "weight": 1000,
@@ -31,7 +31,10 @@
   ],
   "prerequisiteId": "mender-censure",
   "isUltimate": false,
-  "monsterTechniqueOf": null,
+  "monsterTechniqueOf": "wraith",
+  "monsterTechniqueMoveIds": [
+    "wail"
+  ],
   "rankScaling": {
     "effectPerRank": 4,
     "costPerRank": -2

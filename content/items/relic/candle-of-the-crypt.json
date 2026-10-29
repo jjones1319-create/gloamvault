@@ -1,0 +1,56 @@
+{
+  "id": "candle-of-the-crypt",
+  "name": "Candle of the Crypt",
+  "slot": "relic",
+  "kind": "relic",
+  "grade": "D",
+  "materialLadder": null,
+  "materialRung": null,
+  "weaponType": null,
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": 600,
+  "baseStats": {},
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 1,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 5,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1,
+  "value": 456,
+  "classLock": [],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": {
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "regen",
+        "percent": 5,
+        "duration": 3,
+        "target": "allAllies"
+      }
+    ],
+    "usesPerFight": 1,
+    "target": "allAllies",
+    "text": "Regen 5% of max HP per round on the party for 3 rounds"
+  },
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "relic-crypt-candle-01",
+    "tintPrimary": "#e8e0c8",
+    "tintSecondary": "#7fbf6a",
+    "trimMetal": "bronze"
+  }
+}

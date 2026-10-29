@@ -1,24 +1,26 @@
 import { signal } from '@preact/signals'
-import { useState } from 'preact/hooks'
+import { useEffect, useState } from 'preact/hooks'
 import type { Content } from '../../../../../sim/src/content.ts'
-import { buildTomeBag, CHEST_RULES, chestOddsTable, EMPTY_PITY, type ChestResult } from '../../../../../sim/src/chests.ts'
-import { buyChest, chestBand, chestPrice, ownedWayfarerIds, wayfarerArrivalLevel, type BuyChestOptions, type Profile } from '../../../../../sim/src/town.ts'
+import { buildTomeBag, CHEST_RULES, chestOddsTable, chestOnSale, EMPTY_PITY, type ChestResult } from '../../../../../sim/src/chests.ts'
+import { buyChest, chestBand, chestKeyBlocker, chestKeysHeld, chestPrice, openChestWithKey, ownedWayfarerIds, wayfarerArrivalLevel, type BuyChestOptions, type Profile } from '../../../../../sim/src/town.ts'
 import type { ChestDef, HeroRecord } from '../../../../../sim/src/types/content.ts'
 import { CHEST_SUBTYPES, GRADES, gradeIndex, MATERIAL_LADDERS, WAYFARER_GRADES, type ChestSubtype, type Grade as GradeId, type MaterialLadder } from '../../../../../sim/src/types/enums.ts'
 import { wayfarerOddsTable, wayfarerPool } from '../../../../../sim/src/wayfarers.ts'
-import { actWith, content, profile } from '../../../game/session.ts'
+import { act, actWith, content, ephemeral, profile } from '../../../game/session.ts'
 import { Btn, Gold, Grade, Modal, Section } from '../../kit/kit.tsx'
 import { buzz } from '../../lib/haptics.ts'
-import { navigate } from '../../router.ts'
+import { navigate, route } from '../../router.ts'
 import { GRADE_NAMES, HeroPicker, PlacePage, SLOT_NAMES, canAfford, className, heroKind, ladderMaterial, materialName, pickedHero } from './shared.tsx'
 import { titleCase } from './text.ts'
 
 /**
- * The Curio Merchant, Mab (03 §8.3; 08 §10; D-091): the Wayfarer Chest that calls a new party member to the Lantern
- * Inn, and eight chests of gear, eggs, material and Tomes — gold only, each with an Odds sheet (the exact table at the
- * player's chest band with the hero's Luck, the pity counters, the Tome bag, the wayfarers still out in the world) and
- * a reveal that names what came out. The picked hero's class sets the gear and Tomes, and their Luck shifts the odds;
- * a Gear Chest can be aimed at a weapon, armor or a trinket and a Material Crate at a ladder.
+ * The Curio Merchant, Mab (03 §8.3; 08 §10; D-091): the Wayfarer Chests that call a new party member to the Lantern
+ * Inn (the Grand one from chest band E, with S-grade wayfarers), and eight chests of gear, eggs, material and Tomes —
+ * gold only, each with an Odds sheet (the exact table at the player's chest band with the hero's Luck, the pity
+ * counters, the Tome bag, the wayfarers still out in the world) and a reveal that names what came out. A chest key
+ * (07 §7: contracts and bosses give them) opens one chest of its tier free. The picked hero's class sets the gear and
+ * Tomes, and their Luck shifts the odds; a Gear Chest can be aimed at a weapon, armor or a trinket and a Material
+ * Crate at a ladder.
  */
 
 const KIND_ORDER = ['gear', 'petEgg', 'materialCrate', 'skillTome'] as const
@@ -51,7 +53,7 @@ function gradeAbove(band: GradeId, steps: number): GradeId {
 /** Chests until each pity layer forces its grade. Counters are kept per chest family (Standard and Grand share them; a Grand counts 3). */
 function pityLeft(p: Profile, chest: ChestDef): { one: number; two: number } {
   const st = p.pity[chest.kind] ?? EMPTY_PITY
-  const adv = chest.tier === 'grand' && chest.kind !== 'wayfarer' ? CHEST_RULES.grandPityAdvance : 1
+  const adv = chest.tier === 'grand' ? CHEST_RULES.grandPityAdvance : 1
   return {
     one: Math.max(1, Math.ceil((chest.pity.plusOneWithin - st.plusOneCounter) / adv)),
     two: Math.max(1, Math.ceil((chest.pity.plusTwoWithin - st.plusTwoCounter) / adv)),
@@ -91,7 +93,7 @@ function whatItGives(c: Content, chest: ChestDef, band: GradeId, hero: HeroRecor
       return `One ${cls} skill, Tier ${ROMAN[t.min] ?? t.min}–${ROMAN[t.max] ?? t.max}, never a repeat`
     }
     case 'wayfarer':
-      return 'Calls a wayfarer to the Lantern Inn: a new party member'
+      return grand ? 'Calls a wayfarer of grade C or better (S at 5%) to the Lantern Inn' : 'Calls a wayfarer to the Lantern Inn: a new party member'
     default:
       return chest.name
   }
@@ -101,12 +103,28 @@ function titleFirst(s: string): string {
   return s ? s[0]!.toUpperCase() + s.slice(1) : s
 }
 
-/** Why the Wayfarer Chest cannot be bought right now, or null. */
-function wayfarerBlock(c: Content, p: Profile, chest: ChestDef): string | null {
+/** Why a chest is not sold at the player's band yet (a chest's minBand), or null. */
+function notOnSale(chest: ChestDef, band: GradeId): string | null {
+  return chestOnSale(chest, band) ? null : `Sold from chest band ${chest.minBand}: finish a ${chest.minBand === 'E' ? 'Crypts' : 'deeper'} floor first`
+}
+
+/** Why the Wayfarer Chest cannot be opened right now (by gold unless `withKey`), or null. */
+function wayfarerBlock(c: Content, p: Profile, chest: ChestDef, withKey = false): string | null {
+  const sale = notOnSale(chest, chestBand(p))
+  if (sale) return sale
   if (p.heroes.length >= c.tuning.coop.rosterMax) return `The Lantern Inn is full (${c.tuning.coop.rosterMax} heroes)`
   if (wayfarerPool(c, ownedWayfarerIds(p)).length === 0) return 'Every wayfarer is already with you'
+  if (withKey) return chestKeyBlocker(c, p, chest.id)
   if (!canAfford(p, chestPrice(c, p, chest.id))) return 'Not enough gold'
   return null
+}
+
+/** "Standard Key ×2 · Grand Key ×1", or null when none are held. */
+function keysLine(c: Content, p: Profile): string | null {
+  const std = chestKeysHeld(c, p, 'standard')
+  const grand = chestKeysHeld(c, p, 'grand')
+  const parts = [std > 0 ? `Standard Key ×${std}` : null, grand > 0 ? `Grand Key ×${grand}` : null].filter((x): x is string => x !== null)
+  return parts.length ? parts.join(' · ') : null
 }
 
 interface Reveal {
@@ -116,7 +134,16 @@ interface Reveal {
   n: number
 }
 
+/** `#town&place=curio&demo=1&keys=1` (Phase 7): an EPHEMERAL demo profile gets two Standard Keys, a Grand Key and a Crypts floor finished (chest band E), so the key buttons and the Grand Wayfarer Chest show on a screenshot. */
+function seedKeyShowcase(): void {
+  if (!ephemeral.value) return
+  act((_c, p) => ((p.materials['standard-chest-key'] ?? 0) > 0 ? p : { ...p, materials: { ...p.materials, 'standard-chest-key': 2, 'grand-chest-key': 1 }, progress: { ...p.progress, deepest: { ...p.progress.deepest, 'gravehollow-keep': Math.max(4, p.progress.deepest['gravehollow-keep'] ?? 0) } } }))
+}
+
 export function CurioMerchant() {
+  useEffect(() => {
+    if (route.value.params.keys === '1') seedKeyShowcase()
+  }, [])
   const c = content.value!
   const p = profile.value!
   const hero = pickedHero(p)
@@ -124,9 +151,10 @@ export function CurioMerchant() {
   const [reveal, setReveal] = useState<Reveal | null>(null)
   const band = chestBand(p)
   const chests = sortedChests(c)
-  const wayfarerChests = [...c.chests.values()].filter((x) => x.kind === 'wayfarer')
+  // The Standard Wayfarer Chest first, the Grand (Phase 7, from band E) after it.
+  const wayfarerChests = [...c.chests.values()].filter((x) => x.kind === 'wayfarer').sort((a, b) => Number(a.tier === 'grand') - Number(b.tier === 'grand'))
 
-  const buy = (chestId: string) => {
+  const buy = (chestId: string, withKey = false) => {
     const chest = c.chests.get(chestId)
     if (!chest) return
     const wayfarer = chest.kind === 'wayfarer'
@@ -134,16 +162,31 @@ export function CurioMerchant() {
     const options: BuyChestOptions = {}
     if (chest.kind === 'gear' && gearAim.value) options.subtype = gearAim.value
     if (chest.kind === 'materialCrate') options.materialLadder = crateLadder.value
-    const result = actWith<ChestResult>((cc, pp) => buyChest(cc, pp, chestId, wayfarer ? null : hero!.id, options))
+    const heroId = wayfarer ? null : hero!.id
+    const result = actWith<ChestResult>((cc, pp) => (withKey ? openChestWithKey(cc, pp, chestId, heroId, options) : buyChest(cc, pp, chestId, heroId, options)))
     setOddsFor(null)
     if (result) setReveal({ chestId, hero: wayfarer ? null : hero, result, n: (reveal?.n ?? 0) + 1 })
   }
 
-  /** Why a chest's Buy is off, or null. */
-  const blockOf = (chest: ChestDef): string | null => {
-    if (chest.kind === 'wayfarer') return wayfarerBlock(c, p, chest)
+  /** Why a chest's Buy (or, with a key, its Open) is off, or null. */
+  const blockOf = (chest: ChestDef, withKey = false): string | null => {
+    if (chest.kind === 'wayfarer') return wayfarerBlock(c, p, chest, withKey)
     if (!hero) return 'No living hero to open it for'
+    const sale = notOnSale(chest, band)
+    if (sale) return sale
+    if (withKey) return chestKeyBlocker(c, p, chest.id)
     return canAfford(p, chestPrice(c, p, chest.id)) ? null : 'Not enough gold'
+  }
+
+  /** The "Open with a key" button, shown while a key of the chest's tier is held. */
+  const keyButton = (chest: ChestDef) => {
+    if (chestKeysHeld(c, p, chest.tier) <= 0) return null
+    const block = blockOf(chest, true)
+    return (
+      <Btn class="tw-btn44 tw-chest__key" testid={`cm-key-${chest.id}`} disabled={block !== null} title={block ?? `Open with a ${chest.tier === 'grand' ? 'Grand' : 'Standard'} Key`} onClick={() => buy(chest.id, true)}>
+        🗝 Key
+      </Btn>
+    )
   }
 
   const card = (chest: ChestDef) => {
@@ -168,6 +211,7 @@ export function CurioMerchant() {
           <Btn class="tw-btn44" testid={`cm-odds-${chest.id}`} onClick={() => setOddsFor(chest.id)}>
             Odds
           </Btn>
+          {keyButton(chest)}
           <Btn tone="primary" class="tw-btn44 tw-chest__buy" testid={`cm-buy-${chest.id}`} disabled={block !== null} title={block ?? `Buy ${chest.name}`} onClick={() => buy(chest.id)}>
             Buy <Gold amount={price} />
           </Btn>
@@ -195,6 +239,7 @@ export function CurioMerchant() {
           </p>
           <p class="tw-chest__pity">
             Sure: C or better within {pity.one}, B or better within {pity.two}
+            {chest.tier === 'grand' ? ' (a Grand counts as three)' : ''}
           </p>
           {block && block !== 'Not enough gold' && <p class="tw-chest__block">{block}.</p>}
         </div>
@@ -202,6 +247,7 @@ export function CurioMerchant() {
           <Btn class="tw-btn44" testid={`cm-odds-${chest.id}`} onClick={() => setOddsFor(chest.id)}>
             Odds
           </Btn>
+          {keyButton(chest)}
           <Btn tone="primary" class="tw-btn44 tw-chest__buy" testid={`cm-buy-${chest.id}`} disabled={block !== null} title={block ?? `Buy ${chest.name}`} onClick={() => buy(chest.id)}>
             Buy <Gold amount={price} />
           </Btn>
@@ -220,6 +266,11 @@ export function CurioMerchant() {
         <span class="tw-pill" title="Your chest band is the band of the deepest floor you have finished">
           Chest band <Grade grade={band} /> {GRADE_NAMES[band]}
         </span>
+        {keysLine(c, p) && (
+          <span class="tw-pill" data-testid="cm-keys" title="A chest key opens one chest of its tier free: contracts and bosses give them">
+            🗝 {keysLine(c, p)}
+          </span>
+        )}
       </div>
       {wayfarerChests.length > 0 && (
         <Section title="Party members">
@@ -408,13 +459,16 @@ function RevealResult({ c, p, r, hero }: { c: Content; p: Profile; r: ChestResul
         </>
       )
     case 'tome': {
+      // Phase 7: the chest gives a Skill Tome (an item in the armory); a hero of its class reads it on the Skills tab.
       const s = c.skills.get(r.skillId)
+      const cls = s ? c.classes.get(s.classId) : undefined
       return (
         <>
-          <p class="tw-reveal__name">
-            {s?.name ?? r.skillId} <span class="tw-dim">· Tier {ROMAN[r.tier] ?? r.tier}</span>
+          <p class="tw-reveal__name" data-testid="cm-reveal-tome">
+            📖 Skill Tome: {s?.name ?? r.skillId} <span class="tw-dim">· Tier {ROMAN[r.tier] ?? r.tier}</span>
           </p>
-          <p class="tw-reveal__sub">{who} learns it now. Put it in a slot on the Skills tab.</p>
+          <p class="tw-reveal__sub">{s?.description}</p>
+          <p class="tw-reveal__sub">In the armory now: {who === 'your hero' ? `a ${cls?.name ?? 'hero'}` : who} reads it on the Skills tab (a skill already known becomes a rank of practice).</p>
         </>
       )
     }

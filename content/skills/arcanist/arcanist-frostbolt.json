@@ -4,7 +4,7 @@
   "school": "rime",
   "tier": 1,
   "name": "Frostbolt",
-  "description": "1.3× Frost to one enemy in either row; Chill 2 turns.",
+  "description": "1.05× Frost to one enemy in either row; Chill 2 turns.",
   "type": "active",
   "cost": 10,
   "weight": 1000,
@@ -12,7 +12,7 @@
   "effects": [
     {
       "kind": "damage",
-      "multiplier": 1.3,
+      "multiplier": 1.05,
       "damageType": "frost"
     },
     {

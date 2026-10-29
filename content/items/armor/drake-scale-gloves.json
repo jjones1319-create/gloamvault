@@ -1,0 +1,50 @@
+{
+  "id": "drake-scale-gloves",
+  "name": "Drake Scale Gloves",
+  "slot": "gloves",
+  "kind": "armor",
+  "grade": "S",
+  "materialLadder": "hide",
+  "materialRung": 6,
+  "weaponType": null,
+  "armorFamily": "leather",
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "defense": 6,
+    "hp": 6,
+    "critRate": 4
+  },
+  "requirements": {
+    "strength": 12,
+    "wisdom": 0
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 9,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 3.05,
+  "value": 1250,
+  "classLock": [
+    "ranger",
+    "shade"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "armor-leather-gloves-01",
+    "tintPrimary": "#8c2f22",
+    "tintSecondary": "#3b2a1e",
+    "trimMetal": "adamantine"
+  }
+}

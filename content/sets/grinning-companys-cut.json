@@ -17,9 +17,11 @@
   "bonuses": {
     "2": [
       {
-        "kind": "loot",
+        "kind": "custom",
+        "customId": "gold-found-percent",
         "percent": 5,
-        "note": "+5% gold found"
+        "target": "self",
+        "note": "+5% gold found (the of Greed hook, read by the delve)"
       },
       {
         "kind": "buffStat",

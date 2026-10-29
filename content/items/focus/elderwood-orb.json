@@ -1,0 +1,48 @@
+{
+  "id": "elderwood-orb",
+  "name": "Elderwood Orb",
+  "slot": "offHand",
+  "kind": "focus",
+  "grade": "S",
+  "materialLadder": "wood",
+  "materialRung": 6,
+  "weaponType": "focus",
+  "armorFamily": null,
+  "hands": 1,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "attackSpell": 24,
+    "mana": 30
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 14
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 9,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 5.09,
+  "value": 1500,
+  "classLock": [
+    "arcanist"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "focus-orb-01",
+    "tintPrimary": "#5e7a4a",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "adamantine"
+  }
+}

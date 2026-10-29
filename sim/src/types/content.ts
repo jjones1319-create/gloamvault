@@ -191,6 +191,16 @@ export interface ClassVisual {
   readonly notes?: string
 }
 
+/** A second (third …) starter kit a class offers at New hero (D-099; 08 §12). */
+export interface StarterKitOption {
+  readonly id: ContentId
+  readonly name: string
+  readonly description: string
+  readonly starterKit: readonly ContentId[]
+  /** The three Tier I picks the kit recommends. */
+  readonly starterSkillIds: readonly ContentId[]
+}
+
 /** A hero class (03 §2.3, §6.1, §7.1): content/classes/<id>.json. */
 export interface ClassDef {
   readonly id: ContentId
@@ -209,6 +219,10 @@ export interface ClassDef {
   readonly starterKit: readonly ContentId[]
   /** Exactly three Tier I skills. */
   readonly starterSkillIds: readonly ContentId[]
+  /** What New hero calls the default kit when the class offers others ("Sword and shield"). */
+  readonly starterKitName?: string
+  /** Other starter kits New hero offers (D-099: the Warden's spear kit, the Blade's greatsword kit). */
+  readonly starterKitOptions?: readonly StarterKitOption[]
   readonly fieldSkillAffinities: readonly FieldSkillAffinity[]
   readonly monsterTechniqueIds: readonly ContentId[]
   readonly aiRuleDefault: string
@@ -364,6 +378,10 @@ export interface SkillDef {
   readonly prerequisiteId: ContentId | null
   readonly isUltimate: boolean
   readonly monsterTechniqueOf: ContentId | null
+  /** The attack ids of monsterTechniqueOf that count as "the move"; absent: any of its attacks (09 §4, Phase 7). */
+  readonly monsterTechniqueMoveIds?: readonly ContentId[]
+  /** A technique whose monster's dungeon is not in the content yet (Troll's Regrowth): unobtainable until linked. */
+  readonly monsterTechniqueLater?: ContentId
   readonly requirements?: SkillRequirements
   readonly rankScaling: RankScaling
   readonly mastery: Mastery
@@ -398,6 +416,8 @@ export interface ItemRequirements {
 export interface UniquePower {
   readonly text: string
   readonly effects: readonly Effect[]
+  /** Attribute lines a buffStat line cannot name (08 §7: the Emberheart Ring's "+2 Vitality"); Phase 7, optional. */
+  readonly attributes?: Readonly<Partial<Record<Attribute, number>>>
 }
 
 /** A relic's once-per-fight active. */
@@ -405,6 +425,14 @@ export interface RelicActive {
   readonly effects: readonly Effect[]
   readonly usesPerFight: number
   readonly target: Target
+  /** 08 §3's Effect column for the card (Phase 7, optional). */
+  readonly text?: string
+  /** "(instant)": no Item action, the hero acts again (Phase 7, optional; absent: an Item action). */
+  readonly instant?: boolean
+  /** A once-per-floor relic (the Hollow Coin; Phase 7, optional). */
+  readonly usesPerFloor?: number
+  /** In a fight (the default) or after a won fight (the Hollow Coin; Phase 7, optional). */
+  readonly timing?: 'fight' | 'afterFight'
 }
 
 /** What a consumable does when used. */
@@ -412,6 +440,8 @@ export interface ConsumableUse {
   readonly effects: readonly Effect[]
   readonly stackMax: number
   readonly target: Target
+  /** What the card says it is for: a safe item's curio (Phase 7, optional). */
+  readonly text?: string
   readonly inCombat: boolean
 }
 
@@ -463,6 +493,8 @@ export interface ItemDef {
   readonly consumable: ConsumableUse | null
   readonly ammo: ItemAmmo | null
   readonly visual: ItemVisual
+  /** Item tags (Phase 7, optional): 'safe-item' + 'zone:<id>', 'boss-only', 'chest-key:<tier>', 'skeleton-key', 'regional'. */
+  readonly tags?: readonly string[]
 }
 
 /** An item as it sits in a hero's equipment or bag (item.schema.json#/$defs/itemInstance). */
@@ -479,6 +511,8 @@ export interface ItemInstance {
   readonly affinities: readonly ItemAffinity[]
   readonly durability: number
   readonly maxDurability: number
+  /** A Skill Tome (kind 'tome'): the skill it teaches (03 §7.5, 08 §4; Phase 7). Absent on every other item. */
+  readonly skillId?: ContentId
 }
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -563,8 +597,16 @@ export interface MonsterAttack {
   readonly effects: readonly Effect[]
   /** Relative pick weight when no behavior rule chooses. */
   readonly aiWeight: number
+  /** A telegraphed attack's cue (06 §8.10): shown on the monster's turn before the blow, which lands on its next turn. */
   readonly tell: string | null
+  /** The tell's two-word hint ("Netter reloading", D-099); the attack's name when absent. */
+  readonly hint?: string
+  /** Whom a single-target attack picks among the heroes it can reach (06: "the hero with the lowest HP %"). */
+  readonly aim?: AttackAim
 }
+
+/** 06's target phrases for single-target attacks (fight.ts aimTarget). */
+export type AttackAim = 'lowestHp' | 'mostMomentum' | 'lowestStrength' | 'marked' | 'markedOrChilled' | 'backRow' | 'mostGold' | 'fullestPool' | 'caster'
 
 /** A part roll: exactly one of `materialId` (a material unit) or `itemId` (a rare part). */
 export interface MonsterDrop {
@@ -610,6 +652,144 @@ export interface BossPhase {
   readonly attacks: readonly ContentId[]
   readonly adds: readonly BossAdd[]
   readonly arenaRule: string | null
+  /** 06's name for the phase ("the Captain's Table"). */
+  readonly name?: string
+  /** The arena light when the phase begins (07 §2.8): set to a value, or stepped by an amount (the King's snuff −25). */
+  readonly light?: BossPhaseLight
+  /** The boss's Speed from this phase on (06 §3.4: the King's phase 3, 120). */
+  readonly speed?: number
+  /** The row the boss moves to (Vexa steps down, Naesa walks into the water, the King descends). */
+  readonly row?: PlacementRow
+  /** The boss's size from this phase on (Naesa Medium → Large, the King Large → Huge). */
+  readonly size?: Size
+  /** The boss's first move of the phase (Vexa kicks the barricade over). */
+  readonly opener?: ContentId
+  /** The arena's water jumps to at least this step (Naesa's phase 2: 3; the throne's phase 3: 4). */
+  readonly tide?: number
+  /** Statuses the boss shrugs off from this phase on (06 §3.4 phase 3: Petrify, Grab, Fear). */
+  readonly statusImmune?: readonly Status[]
+  /** Custom lines installed on the boss when the phase begins (Naesa's Silence aura). */
+  readonly hooks?: readonly Effect[]
+}
+
+export interface BossPhaseLight {
+  readonly set?: number
+  readonly add?: number
+}
+
+/** A row of 07 §2.8's tells table: the cue and its two-word hint (D-099). */
+export interface ArenaTellDef {
+  readonly id: ContentId
+  readonly hint: string
+  readonly cue: string
+}
+
+/**
+ * One rule of a boss arena (07 §2.8), from a closed vocabulary arena.ts implements; every number is the arena's own.
+ * `kind` picks the rule; the other fields are that rule's parameters (content/README.md "Boss arenas").
+ */
+export interface ArenaRuleDef {
+  readonly kind: ArenaRuleKind
+  /** Phases (1-based) the rule runs in; absent: every phase. */
+  readonly phases?: readonly number[]
+  /** The tell (an id of arena.tells) shown the round before the rule fires. */
+  readonly tell?: ContentId
+  /** A rule on a clock: fires every N rounds of its phase. */
+  readonly every?: number
+  /** A faster clock below an HP percent or from a phase on (the tide under 20%, the throne's pulls in phase 3). */
+  readonly fastEvery?: number
+  readonly fastBelowHpPercent?: number
+  readonly fastFromPhase?: number
+  /** A light step or a percent. */
+  readonly amount?: number
+  readonly percent?: number
+  /** Light bands the rule reads (the King's Dark and Pitch, his Radiant). */
+  readonly bands?: readonly LightBandId[]
+  /** Counts: kegs, piles, candles, braziers, the tide's top step; hits to break a keg or a pile. */
+  readonly count?: number
+  readonly hits?: number
+  readonly max?: number
+  /** The rule's attack(s) (the call rules, the King's Gaze), monsters (the flank), adds. */
+  readonly attack?: ContentId
+  readonly attacks?: readonly ContentId[]
+  readonly monsters?: readonly ContentId[]
+  readonly adds?: readonly BossAdd[]
+  /** A status the rule puts on heroes or adds (the wade, the pull, the pulse, the Radiant Fear) and its turns. */
+  readonly status?: Status
+  readonly duration?: number
+  /** Damage types a pile burns to. */
+  readonly damageTypes?: readonly DamageType[]
+  /** The attribute and minimum the sluice wheel needs. */
+  readonly attribute?: Attribute
+  readonly min?: number
+  /** At-HP rules (the King's re-call at 40%, Naesa's shade at 10%). */
+  readonly atHpPercent?: number
+  /** Rounds into the phase (the hunters: +2, +4, +6); rounds after an add fell (Naesa's returns). */
+  readonly rounds?: readonly number[]
+  readonly afterRounds?: number
+  /** A rule's named knobs (content/README.md "Boss arenas": hpPercent, accuracy, critBonus, chainPercent …). */
+  readonly params?: Readonly<Record<string, number | string | boolean>>
+  readonly note?: string
+}
+
+export type ArenaRuleKind =
+  | 'lightsOut'
+  | 'flank'
+  | 'barricade'
+  | 'reenter'
+  | 'frenzy'
+  | 'oath'
+  | 'candles'
+  | 'piles'
+  | 'call'
+  | 'heel'
+  | 'tide'
+  | 'outOfReach'
+  | 'braziers'
+  | 'lightBand'
+  | 'pull'
+  | 'pulse'
+  | 'addAt'
+  | 'hunters'
+
+export type LightBandId = 'radiant' | 'dim' | 'shadowy' | 'dark' | 'pitch'
+
+/** A boss arena (07 §2.8): the room, its tells and its rules. */
+export interface ArenaDef {
+  /** The room template (07 §2.8). */
+  readonly room: ContentId
+  readonly tells: readonly ArenaTellDef[]
+  readonly rules: readonly ArenaRuleDef[]
+}
+
+/**
+ * One of a boss's breakable parts (06 §3 "Part-breaks"): one blow of at least `hpPercent` of the boss's max HP, of one
+ * of `damageTypes` (any type when empty), a critical hit when `crit`, breaks it once; `effect` says what it costs him.
+ */
+export interface BossPartDef {
+  readonly id: ContentId
+  readonly name: string
+  readonly hpPercent: number
+  readonly damageTypes: readonly DamageType[]
+  readonly crit: boolean
+  /** The part exists from this phase on (Naesa's tentacle arms come in phase 2). */
+  readonly fromPhase?: number
+  readonly effect: BossPartEffect
+}
+
+/** What a broken part changes (arena.ts): attacks lost, an attack weakened, an attack's statuses lost, a mechanic stopped, a line. */
+export interface BossPartEffect {
+  readonly removeAttacks?: readonly ContentId[]
+  /** Attack id → its new multiplier. */
+  readonly attackMultiplier?: Readonly<Record<string, number>>
+  /** Attack id → statuses its lines no longer apply. */
+  readonly removeStatuses?: Readonly<Record<string, readonly Status[]>>
+  /** The light stops dropping (the Warden's lantern). */
+  readonly stopLight?: boolean
+  /** The tide stops (the throne's chain). */
+  readonly stopTide?: boolean
+  /** A DSL or custom line applied to the boss (the grin-mask's lost Fear immunity and Riposte). */
+  readonly line?: Effect
 }
 
 /** Boss rules (03 §11.3; 06; 07 §2.8). */
@@ -620,6 +800,10 @@ export interface BossDef {
   readonly firstKill: readonly Reward[]
   readonly immunities: readonly Status[]
   readonly cannotFlee: boolean
+  /** The arena (07 §2.8): optional so a boss without one fights in a plain room. */
+  readonly arena?: ArenaDef
+  /** The boss's breakable parts (06 §3); the monster's `parts.breakLimb` stays the single-limb rule of everything else. */
+  readonly parts?: readonly BossPartDef[]
 }
 
 /** Floor-hunter rules (03 §4.5). */
@@ -709,8 +893,18 @@ export interface ZoneDef {
   readonly hunterId: ContentId | null
   /** In floor order; each sits on the floor whose bossId names it. */
   readonly bossIds: readonly ContentId[]
+  /** A Waystone stands in the entry room of the zone's first floor (07 §1.1: Gravehollow F1, F4, F7). */
   readonly waystone: boolean
   readonly biomeKitId: ContentId
+  /** Rare monsters that join any fight of the zone at a chance (06 §3.3: the Pearl Ooze, 5%). Optional (C1, Phase 7). */
+  readonly joiners?: readonly ZoneJoiner[]
+}
+
+/** One rare joiner of a zone's fights (dungeon.schema.json#/$defs/zone joiners). */
+export interface ZoneJoiner {
+  readonly monsterId: ContentId
+  readonly chancePercent: number
+  readonly row: PlacementRow
 }
 
 export interface FloorDef {
@@ -754,6 +948,8 @@ export interface GeneratorDef {
 export interface CurioOutcome {
   readonly chance: number
   readonly effect: Effect
+  /** More lines resolved after `effect`, in order (07 §2.4's two-part outcomes). Optional (C1, Phase 7). */
+  readonly also?: readonly Effect[]
 }
 
 export interface CurioChoice {
@@ -787,6 +983,8 @@ export interface SecretDef {
   readonly revealsFloor: boolean
   readonly lightBonus: number
   readonly fieldSkillXp: FieldSkill | null
+  /** The secret's chest is locked (07 §2.6 Pearl Cache). Optional (C1, Phase 7). */
+  readonly chestLocked?: boolean
 }
 
 export interface FieldSkillRankReveal {
@@ -815,6 +1013,22 @@ export interface TrapDef {
   readonly effects: readonly Effect[]
   readonly blocksDoor: boolean
   readonly disarmReward: readonly Reward[]
+  /** Where it may be placed (07 §2.5's "the midline of cry_t_catacomb_run"). Optional (C1, Phase 7). */
+  readonly placement?: TrapPlacement
+  /** When an unrevealed trap fires at all (the Drowning Bell's low light, the Warding Glyph's caster). Optional (C1, Phase 7). */
+  readonly condition?: TrapCondition
+}
+
+export interface TrapPlacement {
+  readonly templateIds?: readonly ContentId[]
+  readonly roomKinds?: readonly RoomKind[]
+}
+
+export interface TrapCondition {
+  /** Fires only while the party's light is below this. */
+  readonly lightBelow?: number
+  /** Fires only when the party holds a hero of one of these classes. */
+  readonly partyClassIds?: readonly ContentId[]
 }
 
 export interface TemplateDoor {
@@ -872,6 +1086,16 @@ export interface DifficultyKnobs {
   readonly chestCentreShift?: number
   readonly bossExtraRareParts?: number
   readonly finalBossExtraShards?: number
+  /** Pacts (07 §6.2, Phase 7): durability wear in percent of Normal (Brittle 150). */
+  readonly wearPercent?: number
+  /** Added to the revive budget the preset leaves, never below 0 (Thin Line −2). */
+  readonly revivesPerFloorDelta?: number
+  /** Points added to the party's ambush chance (Loud Boots 15). */
+  readonly ambushBonusPercent?: number
+  /** The light a new room drains, replacing tuning's perNewRoom (Long Night −8). */
+  readonly lightPerNewRoom?: number
+  /** A chest that would be unlocked locks this often (Every Door Locked 30). */
+  readonly lockedChestPercent?: number
 }
 
 export interface PactReward {
@@ -890,6 +1114,8 @@ export interface PactDef {
   readonly knobs: DifficultyKnobs
   /** Rule flags the sim implements by name where a knob cannot say it. */
   readonly ruleFlags: readonly ContentId[]
+  /** The Pact changes the hunter (its clock, a second hunter): greyed out where the zone has no hunter clock (07 §6.2). */
+  readonly needsHunter?: boolean
   readonly reward: PactReward
 }
 
@@ -1004,6 +1230,8 @@ export interface PetInstance {
   readonly xp: number
   readonly bondStars: number
   readonly traitRank: number
+  /** Weighted uses of the trait so far (03 §9: it grows by use; tuning pets.traitGrowth). Optional; absent = 0 (Phase 7). */
+  readonly traitXp?: number
   readonly stance: Stance
   readonly ranchImport: RanchImport | null
 }
@@ -1038,6 +1266,8 @@ export interface ChestDef {
   readonly tomeTiers: IntRange | null
   readonly dupeRule: DupeRule
   readonly divineShardChance: number
+  /** The lowest chest band it is sold at (the Grand Wayfarer Chest, from band E; Phase 7, optional): every band when absent. */
+  readonly minBand?: Grade
 }
 
 /**
@@ -1131,6 +1361,10 @@ export interface LootTableDef {
 export interface ContractTarget {
   readonly familyId?: ContentId
   readonly monsterId?: ContentId
+  /** Several monsters counted together ("the Grinning Company"): any of them counts (Phase 7). */
+  readonly monsterIds?: readonly ContentId[]
+  /** A curio the condition watches ('no-curio-opened': Keeper's Peace's Sealed Sarcophagus). */
+  readonly curioId?: ContentId
   readonly dungeonId?: ContentId
   readonly zoneId?: ContentId
   readonly count?: number
@@ -1321,4 +1555,16 @@ export interface HeroRecord {
   readonly stats: HeroStats
   /** How the hero looks (Phase 5). Optional for records made before save 3; createHero always writes one. */
   readonly look?: HeroLook
+  /**
+   * Monster techniques witnessed and not yet learned (09 §4, Phase 7): skill id → qualifying witnessed uses so far.
+   * The Nth (tuning techniques.guaranteedByUse) teaches the skill. Optional; absent = none witnessed.
+   */
+  readonly techniqueWitness?: Readonly<Record<string, number>>
+  /** Qualifying uses since the last Insight, kept between delves so 03 §7.5's pity (one per 60) can land (Phase 7). Optional; absent = 0. */
+  readonly insightPity?: number
+  /**
+   * Arrows and bolts left by ammo item id (08 §4, D-099; Phase 7). A missing entry is a full quiver
+   * (tuning ammo.quiverMax), so a hero made before Phase 7 starts with one; Repair all refills it.
+   */
+  readonly quiver?: Readonly<Record<string, number>>
 }

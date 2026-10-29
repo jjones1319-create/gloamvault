@@ -2,6 +2,7 @@ import type { Content } from './content.ts'
 import { hiddenFindChance } from './detection.ts'
 import { buildGradeTable, rollGrade, type ShapeLine } from './grades.ts'
 import { createItemInstance, stoneFamilyFor, type StoneFamily } from './items.ts'
+import { shiftChestLines } from './pacts.ts'
 import type { Rng } from './rng.ts'
 import { roundHalfUp } from './stats.ts'
 import type { Tuning } from './tuning.ts'
@@ -27,7 +28,7 @@ export const LOOT_RULES = {
   championGoldMultiplierDefault: 3,
   /** Affixed elites roll parts twice (06 §1). */
   championPartRolls: 2,
-  /** Named uniques are 10% of any roll at a grade that has them (08 §10.1). */
+  /** Named uniques are 10% of any roll at a grade that has them (08 §10.1); tuning.json → items.namedUniquePercent wins when present. */
   namedUniquePercent: 10,
   /** The Skeleton Key's item id (08 §4, 07 §2.7). */
   skeletonKeyItemId: 'skeleton-key',
@@ -80,11 +81,17 @@ function classAllowed(def: ItemDef, classId: string | undefined): boolean {
   return classId === undefined || def.classLock.length === 0 || def.classLock.includes(classId)
 }
 
+/** A boss's own relic (08 §3 Source: "Crypts boss", "Hollow King" — tag `boss-only`): only its boss gives it, never a random roll. */
+export function isBossOnly(def: ItemDef): boolean {
+  return (def.tags ?? []).includes('boss-only')
+}
+
 /**
  * A random gear item of a grade (08 §10.1, §11): set pieces first at their set's `dropChance` (sets covering the
  * grade and open to the class), named uniques 10% at grades that have them, else an ordinary piece uniformly. When
  * no item of the grade passes a filter the grade steps down until one does; the filters are tried strictest first
- * (a slot-and-family armor filter, then its relaxations). God items never come out of here. null when nothing fits.
+ * (a slot-and-family armor filter, then its relaxations). God items and a boss's own relics (`boss-only`) never come
+ * out of here. null when nothing fits.
  */
 export function pickGearItem(content: Content, rng: Rng, grade: Grade, filters: readonly ItemFilter[] = [], classId?: string): ItemDef | null {
   const tried: readonly ItemFilter[] = filters.length === 0 ? [() => true] : filters
@@ -94,7 +101,7 @@ export function pickGearItem(content: Content, rng: Rng, grade: Grade, filters: 
       const candidates: ItemDef[] = []
       for (const kind of GEAR_KINDS) {
         for (const def of content.itemsByKind.get(kind) ?? []) {
-          if (def.grade === at && classAllowed(def, classId) && filter(def)) candidates.push(def)
+          if (def.grade === at && classAllowed(def, classId) && !isBossOnly(def) && filter(def)) candidates.push(def)
         }
       }
       if (candidates.length === 0) continue
@@ -110,7 +117,7 @@ export function pickGearItem(content: Content, rng: Rng, grade: Grade, filters: 
         const set = content.sets.get(rng.pick(setIds))
         if (set !== undefined && rng.pct(set.dropChance)) return rng.pick(setPieces.filter((d) => d.setId === set.id))
       }
-      if (uniques.length > 0 && rng.pct(LOOT_RULES.namedUniquePercent)) return rng.pick(uniques)
+      if (uniques.length > 0 && rng.pct(content.tuning.items?.namedUniquePercent?.value ?? LOOT_RULES.namedUniquePercent)) return rng.pick(uniques)
       if (ordinary.length > 0) return rng.pick(ordinary)
       return rng.pick(candidates)
     }
@@ -235,6 +242,28 @@ export function rollParts(t: Tuning, rng: Rng, monsters: readonly FightMonster[]
   return out
 }
 
+/**
+ * A fight's gear item (08 §11): a grade on the table's drop shape with the roller's Luck, then a gear item of that
+ * grade with its affixes rolled. null when the content has nothing at or below the grade. The Hollow Coin re-rolls
+ * a fight's drop through this (relics.ts).
+ */
+export function rollGearDrop(content: Content, t: Tuning, rng: Rng, table: LootTableDef, luck: number): ItemInstance | null {
+  const grade = rollDropGrade(t, rng, table.gradeShape, table.gradeShape.centreGrade, luck)
+  const def = pickGearItem(content, rng, grade)
+  return def === null ? null : createItemInstance(content, rng, def.id, { rollAffixes: true })
+}
+
+/**
+ * A boss reward's "one A-grade item" / "one S-grade item" (06 §3, 08 §11; a reward line `{ kind: 'item', grade }`
+ * with no id): a gear item of exactly that grade — a set piece or a named unique at their 08 §10.1 shares, never a
+ * God item or another boss's relic — open to `classId` when given (the party member it is for), with its affixes
+ * rolled. Steps down a grade only when the content has nothing at it. null when nothing fits.
+ */
+export function rollRewardItem(content: Content, rng: Rng, grade: Grade, classId?: string): ItemInstance | null {
+  const def = pickGearItem(content, rng, grade, [], classId)
+  return def === null ? null : createItemInstance(content, rng, def.id, { rollAffixes: true })
+}
+
 /** Everything a won fight drops; the order of draws is fixed (gold, gear, parts, consumable, stone) so replays agree. */
 export function rollFightLoot(content: Content, t: Tuning, rng: Rng, input: FightLootInput): FightLoot {
   const table = lootTableForFloor(content, input.dungeonId, input.floor)
@@ -245,9 +274,8 @@ export function rollFightLoot(content: Content, t: Tuning, rng: Rng, input: Figh
   const itemChance = (table.itemChance * (100 + bonus)) / 100
   const anyChampion = input.monsters.some((m) => m.champion)
   if (anyChampion || rng.pct(itemChance)) {
-    const grade = rollDropGrade(t, rng, table.gradeShape, table.gradeShape.centreGrade, input.luck)
-    const def = pickGearItem(content, rng, grade)
-    if (def !== null) items.push(createItemInstance(content, rng, def.id, { rollAffixes: true }))
+    const drop = rollGearDrop(content, t, rng, table, input.luck)
+    if (drop !== null) items.push(drop)
   }
 
   const parts = rollParts(t, rng, input.monsters)
@@ -368,6 +396,8 @@ export interface OpenDungeonChestInput {
   fightGold: number
   /** A Skeleton Key: makes it safe, opens it, upgrades a Small to Large and gives a Large a second item. */
   withKey: boolean
+  /** Pact: points moved one grade up in the chest's lines (Hard's +10 pp, the Pacts' rewards, the Oath — sim/src/pacts.ts). */
+  shiftPp?: number
 }
 
 export interface DungeonChestLoot {
@@ -398,7 +428,8 @@ function dungeonChestLines(t: Tuning, size: 'small' | 'large'): ShapeLine[] {
 export function openDungeonChest(content: Content, t: Tuning, rng: Rng, chest: DungeonChest, input: OpenDungeonChestInput): DungeonChestLoot {
   const size: 'small' | 'large' = chest.size === 'small' && input.withKey ? 'large' : chest.size
   const itemCount = 1 + (chest.size === 'large' && input.withKey ? 1 : 0)
-  const table = buildGradeTable(t, input.centreGrade, dungeonChestLines(t, size), { luck: input.luck })
+  // Pact: the delve's chest shift moves points one grade up before Luck (07 §6.1–§6.2).
+  const table = buildGradeTable(t, input.centreGrade, shiftChestLines(dungeonChestLines(t, size), input.shiftPp ?? 0), { luck: input.luck })
   const items: ItemInstance[] = []
   for (let i = 0; i < itemCount; i++) {
     const grade = rollGrade(rng, table)

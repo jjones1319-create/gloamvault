@@ -1,0 +1,162 @@
+{
+  "id": "shambling-corpse",
+  "name": "Shambling Corpse",
+  "familyId": "restless-dead",
+  "dungeonId": "gravehollow-keep",
+  "zoneId": "the-crypts",
+  "role": "fodder",
+  "size": "medium",
+  "rows": [
+    "front"
+  ],
+  "levelBand": {
+    "min": 5,
+    "max": 8
+  },
+  "multipliers": {
+    "hp": 1.4,
+    "attack": 1.1,
+    "defense": 0.6
+  },
+  "speed": 70,
+  "xpClass": 1,
+  "goldMultiplier": 1,
+  "ambushModifier": -5,
+  "attacks": [
+    {
+      "id": "grave-maul",
+      "name": "Grave Maul",
+      "damageType": "blunt",
+      "weight": 1000,
+      "multiplier": 1.1,
+      "target": "enemyFront",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "poison",
+          "chance": 30,
+          "duration": 2
+        }
+      ],
+      "aiWeight": 70,
+      "tell": null
+    },
+    {
+      "id": "lurch",
+      "name": "Lurch",
+      "damageType": "blunt",
+      "weight": 1400,
+      "multiplier": 1.5,
+      "target": "enemyFront",
+      "effects": [],
+      "aiWeight": 30,
+      "tell": null
+    },
+    {
+      "id": "rise",
+      "name": "Rise",
+      "damageType": "blunt",
+      "weight": 1000,
+      "multiplier": 0,
+      "target": "self",
+      "effects": [
+        {
+          "kind": "custom",
+          "customId": "rise-again",
+          "percent": 25,
+          "note": "fires when it first reaches 0 HP, not as an action: back up at 25% after one turn unless the blow was Fire or Holy"
+        }
+      ],
+      "aiWeight": 0,
+      "tell": null
+    }
+  ],
+  "resist": [
+    "pierce",
+    "shadow"
+  ],
+  "weak": [
+    "fire",
+    "holy",
+    "slash"
+  ],
+  "immune": [],
+  "statusImmune": [
+    "poison",
+    "fear"
+  ],
+  "behavior": {
+    "rules": [
+      {
+        "if": "attacks the nearest hero",
+        "then": "grave-maul"
+      }
+    ],
+    "fleesAtPercent": 0
+  },
+  "parts": {
+    "common": {
+      "materialId": "linen",
+      "chance": 35,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "rare": {
+      "materialId": "cured-ghoulhide",
+      "chance": 4,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "breakLimb": {
+      "name": "either leg",
+      "effect": {
+        "kind": "custom",
+        "customId": "set-speed",
+        "amount": 40,
+        "note": "Speed 40"
+      }
+    }
+  },
+  "monsterTechniqueSkillIds": [],
+  "elitePool": [
+    "shielded",
+    "vampiric",
+    "shackler",
+    "rabid",
+    "spiteful",
+    "warded",
+    "thorned",
+    "regenerating",
+    "mirrored",
+    "commander",
+    "leech",
+    "nullifier"
+  ],
+  "boss": null,
+  "hunter": null,
+  "visual": {
+    "baseMesh": "zombie",
+    "scale": 1,
+    "variantOf": null,
+    "palette": [
+      "#7b8f6e",
+      "#5b4632",
+      "#1c1010"
+    ],
+    "reads200px": true,
+    "animations": [
+      "Idle",
+      "Move",
+      "Attack1",
+      "Attack2",
+      "Hit",
+      "Death",
+      "Rise"
+    ],
+    "triBudget": 3000
+  }
+}

@@ -1,6 +1,6 @@
 # Arcanist — class sheet
 
-*Last updated 2026-10-27 · rev. 2 (checkpoint 1: open questions answered by delegation — D-099) · rev. 1 2026-10-26 · numbers are tuning starting points*
+*Last updated 2026-10-28 · rev. 4 (Phase 7 class-damage pass: the tuned multipliers in §4 and "As tuned" under it) · rev. 3 (Phase 7: Tiers IV–V built — Tier V designed and locked until Segment 3; the monster techniques learned only by witnessing, a flat 10% per witnessed use and certain by the 10th; the stale Blacksmith and sweet-spot lines fixed — D-028, D-099; "As built (Phase 7)" under §4) · rev. 2 (checkpoint 1: open questions answered by delegation — D-099) · rev. 1 2026-10-26 · numbers are tuning starting points*
 
 Every number here is a **starting point for the simulator and the balance runner**, not a promise. The rules it rests on are `03-GAME-DESIGN.md` (§2 attributes, §3 the timeline, §5 level-by-use, §7 skills) and `04-CLASSES.md`, which holds the shared multiplier bands per tier. Column headers are identical across the seven sheets so the tables can become `content/skills/arcanist/<id>.json` (one record per skill).
 
@@ -36,7 +36,7 @@ The Arcanist is the party's artillery and its clock. Nobody else clears a front 
 | Armor family | **Robes** (cloth ladder: Burlap → Celestial Thread); speed penalty **0**; lowest armorDefense of the four families |
 | Allowed weapons | **Staff** (2h, spell focus, normal 1,000 basic, +10 Mana; the **Greatstaff** is the heavy 1,400 one) · **Wand** (1h, spell focus, light 800 basic, either row) · **Orb** off hand (focus; no attack, one affix line) |
 | Derived at all-10s + class mods, no gear | HP 103 · Speed 100 · Mana 66 · spell Attack focus + 24 · Accuracy 91% · Crit 5.5% · Resistance ~1% |
-| F-grade starter kit (`08` §12) | Pine Wand (focusPower 9) · Pine Orb (off-hand focus: +4 spell Attack, +5 Mana) · Burlap Cowl · Burlap Robe · Burlap Leggings · Burlap Slippers · Burlap Wraps (Defense 4) · Ring of the Mind (+2 spell Attack) · 2 Small HP Potions · 2 Torches · 1 Repair Kit · 1 Bandage · one F-grade pet egg. A Pine Staff is the first Blacksmith purchase for a player who wants the two-handed build. |
+| F-grade starter kit (`08` §12) | Pine Wand (focusPower 9) · Pine Orb (off-hand focus: +4 spell Attack, +5 Mana) · Burlap Cowl · Burlap Robe · Burlap Leggings · Burlap Slippers · Burlap Wraps (Defense 4) · Ring of the Mind (+2 spell Attack) · 2 Small HP Potions · 2 Torches · 1 Repair Kit · 1 Bandage · one F-grade pet egg. The town sells no weapons (D-099): a player who wants the two-handed build finds a Pine Staff in a chest or a drop. |
 | Recommended Tier I starter picks | **Ember Lance** (Evocation) · **Frostbolt** (Rime) · **Arcane Ward** (Arcana). One damage-and-Burn, one damage-and-Chill, one Shield: every school's line is open on floor 1. |
 
 Free-point advice shown on the creation card: +3 Wisdom, +2 Willpower, +1 Vitality (a 15 / 13 / 11 Arcanist holds casts 39% of the time and has 110 HP).
@@ -59,8 +59,8 @@ Philosophy: damage first, status second, Mana third. Fire burns down a row; Ligh
 
 | Tier | Skill | Type | Cost | Weight | Target | Effect | Prerequisite | Mastery (rank 10 bonus) |
 |---|---|---|---|---|---|---|---|---|
-| I | Ember Lance | Active | 10 Mana | 1,000 | Single enemy, either row | 1.4× Fire; Burn 3 | — | Burn 4 |
-| I | Spark | Active | 8 Mana | 800 | Single enemy, either row | 1.2× Lightning; Shock 2; if the target was already Shocked, chains 0.5× to one adjacent enemy | — | Chains to two |
+| I | Ember Lance | Active | 10 Mana | 1,000 | Single enemy, either row | 1.1× Fire; Burn 3 | — | Burn 4 |
+| I | Spark | Active | 8 Mana | 800 | Single enemy, either row | 0.95× Lightning; Shock 2; if the target was already Shocked, chains 0.5× to one adjacent enemy | — | Chains to two |
 | I | Kindling | Passive | — | — | — | Fire and Lightning skills +8%; the first Evocation cast of each fight costs 0 Mana | — | +12% |
 | II | Firewave | Active | 16 Mana | 1,400 | Front row enemies | 0.9× Fire each; Burn 2 | Ember Lance | 1.0× each |
 | II | Arc Chain | Active | 15 Mana | 1,000 | Single enemy + chain | 1.5× Lightning; then 0.7× to up to 2 other enemies; all three Shock 2; Shocked targets take +15% from this skill | Spark | Chains to 3 others |
@@ -81,7 +81,7 @@ Philosophy: Frost is the control school. Chill costs enemies turns on the timeli
 
 | Tier | Skill | Type | Cost | Weight | Target | Effect | Prerequisite | Mastery (rank 10 bonus) |
 |---|---|---|---|---|---|---|---|---|
-| I | Frostbolt | Active | 10 Mana | 1,000 | Single enemy, either row | 1.3× Frost; Chill 2 | — | Chill 3 |
+| I | Frostbolt | Active | 10 Mana | 1,000 | Single enemy, either row | 1.05× Frost; Chill 2 | — | Chill 3 |
 | I | Frost Floor | Active | 12 Mana | 1,000 | Front row enemies | 0.7× Frost each; Chill 1 | — | 0.8× each |
 | I | Shatter | Passive | — | — | — | Any hit from any ally on a Frozen enemy deals +30% and crits; the Freeze ends and the enemy is pushed back 300 energy as it breaks free | — | +40% |
 | II | Glacier Spike | Active | 16 Mana | 1,400 | Single enemy, either row | 1.9× Frost; Chill 2; if the target was already Chilled it is Frozen 1 at once | Frostbolt | 2.1× |
@@ -119,7 +119,18 @@ Philosophy: Arcana never kills anything. It decides who acts when, who gets hit,
 | V | Nullfield | Active | 40 Mana | 1,400 | All | For 2 turns no enemy can use a skill (Silence 2 on every enemy, bosses 1) and every ally Shield is doubled | Font of Mana | Bosses 2 |
 | V | Paradox | Passive | — | — | — | The Arcanist's heavy casts weigh 1,000 and cannot be interrupted | Mass Haste | Normal casts weigh 800 |
 
-**Skill-line note.** Each school reads as three columns: a damage line, a control-or-defense line, a passive-and-utility line. The two monster techniques (Hag's Cauldron, Sentinel Pulse) are **leaves** — nothing requires them, so a player who never meets a Brine Hag loses nothing on the way to Tier V. Their Insight is proposed to use the *monster's* level as the sweet spot, because the Tier IV formula peak (enemy L24) is above anything in Gravehollow Keep; see Open questions.
+**Skill-line note.** Each school reads as three columns: a damage line, a control-or-defense line, a passive-and-utility line. The two monster techniques (Hag's Cauldron, Sentinel Pulse) are **leaves** — nothing requires them, so a player who never meets a Brine Hag loses nothing on the way to Tier V. A technique is learned only by **witnessing** its monster use the move in a fight the Arcanist is in: a flat 10% per witnessed use, certain by the 10th, skipping the Insight curve (D-028, D-099), and only once the Arcanist knows the technique's prerequisite. It is never sold and never in a Tome.
+
+**As built (Phase 7).** The eighteen Tier IV–V rows are content (`tools/content/gen-class-arcanist.ts`); Tier V is designed and locked until Segment 3's endgame (no Insight, no Tome, no Hall — D-099). Readings where the table was silent:
+- **Pyroclasm** hits first, then consumes each target's Burn (`consume-dot-burst`: the remaining ticks × stacks at once, as the DoT would). **Stormcall** reads the Shock a target held *before* the cast (`timeline-if-status`). **Hag's Cauldron**'s "ignores armor" is Poison's own rule.
+- **Absolute Zero** freezes after its hit (`freeze-if-chilled`), so the cast never shatters its own Freeze; a Large or Huge foe and a boss take Chill instead, by the status rules. **Winter's Breath** follows the convention for row spells: the row of the chosen enemy (a Taunt can turn it to the front row).
+- **Deep Cold** lengthens every Freeze the Arcanist causes in an action, a second Chill turning into one included (`freeze-duration-bonus`), and pays its Mana for every shatter by the party when the Arcanist next acts or starts a turn (`pool-on-party-shatter`).
+- **Sentinel Pulse** strips the enemies' buffs, then hits them, then shields the allies (10% of each one's own max HP). **Mass Haste** reaches pets. **Font of Mana**'s Fortune is +50 in the sim's tenths of a point (+5 points).
+- **Sunflare**'s light next cast (`next-action-weight`) cannot stop a heavy Mana cast from charging (fight.ts decides the charge from the skill's weight). **Vaultbreaker** chains to every other Shocked enemy (`damage-others-with-status`). **Conflagration** adds the turn to Burn and Shock (`status-duration-bonus`); its "stack twice" is already Burn's own record (three stacks, each a full tick), so the Mastery adds nothing more. **Endless Winter** puts a three-turn hook on each enemy that Chills it whenever it acts (`status-on-own-action`). **Glass Heart** cannot miss and crits against a Frozen target (`sure-hit-vs-status`, `guaranteed-crit-vs-status`), then pays the party's Momentum on a kill (`party-momentum-on-kill`). **Rimeborn**'s immunities are sure resists (`status-resist-bonus` 100), its cold answer `status-on-melee-attacker`. **Nullfield** silences for 2 (a boss holds it 1, as every boss status is a turn shorter; the Mastery's `apply-if-boss` gives a boss 2) and doubles every Shield on the party's side (`double-ally-shields`).
+- **Stubs** (Tier V, each a joint in fight.ts): **Rewind** (`rewind-ally`: no turn-start snapshot to return to) and **Paradox** (`heavy-casts-uninterrupted`: the charge is decided before any hook is asked). Both log `hookStub` once per fight.
+
+
+**As tuned (Phase 7, the class-damage pass).** `tools/balance/class-damage.ts` measures each class alone against every zone’s standard monsters at its own level, as single-target damage per round (10 timeline ticks: one normal action of a Speed-100 hero), at levels 1, 5, 8 and 13; the brief is that no damage dealer outdoes another by more than about 1.5×. Before the pass the spread was 2.6× / 2.5× / 3.1× / 2.5×; after it, 1.41× / 1.28× / 1.49× / 1.49×. On the first numbers the Arcanist's Tier I bolts led level 1 (79 against the Ranger's 30). Ember Lance is now 1.1×, Spark 0.95× and Frostbolt 1.05×; the area spells and Tiers II–III keep their numbers, since the area is the Arcanist's job. Tier IV–V keep the sheet's numbers until Dungeon 2.
 
 ---
 

@@ -30,7 +30,10 @@
   ],
   "prerequisiteId": "blade-drink-deep",
   "isUltimate": false,
-  "monsterTechniqueOf": null,
+  "monsterTechniqueOf": "ghoul",
+  "monsterTechniqueMoveIds": [
+    "ghouls-grasp"
+  ],
   "rankScaling": {
     "effectPerRank": 4,
     "costPerRank": -2

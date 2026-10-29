@@ -1,5 +1,5 @@
 import type { ComponentChildren } from 'preact'
-import { useState } from 'preact/hooks'
+import { useEffect, useState } from 'preact/hooks'
 import {
   GEAR_SLOTS,
   armoryCandidates,
@@ -21,11 +21,19 @@ import { DERIVED_STATS, type DerivedStat } from '../../../../../sim/src/types/en
 import { act, profile, toast } from '../../../game/session.ts'
 import { Btn, Chip, Empty, Grade, Modal, WearPips } from '../../kit/kit.tsx'
 import { buzz } from '../../lib/haptics.ts'
+import { route } from '../../router.ts'
+import { seedItemShowcase } from './demo.ts'
+import { ItemDetails } from './ItemDetails.tsx'
 import { SLOT_NAME, STAT_NAME, itemKindText, itemSummary, signed } from './labels.ts'
+import { heroAmmo } from '../../../../../sim/src/ammo.ts'
 
 /** Gear (03 §6.1, §6.4): the eleven slots with grade, +N and wear pips; tap one to swap from the armory; Auto-equip best. */
 export function GearTab({ c, p, hero, cls }: { c: Content; p: Profile; hero: HeroRecord; cls: ClassDef }) {
   const [open, setOpen] = useState<GearSlot | null>(null)
+  // `&items=1` on a demo profile: the Phase 7 item showcase (hero/demo.ts).
+  useEffect(() => {
+    if (route.value.params.items === '1') seedItemShowcase(hero.id)
+  }, [hero.id])
   const fitting = p.armory.filter((i) => {
     const def = c.items.get(i.itemId)
     return def !== undefined && def.slot !== null && def.slot !== 'pet' && wearBlocker(c, hero, def) === null
@@ -92,8 +100,21 @@ function GearCell({ c, hero, cls, slot, onOpen }: { c: Content; hero: HeroRecord
       <span class="hr-cell__sub">
         <span class="hr-cell__slot">{SLOT_NAME[slot]}</span>
         {def && s ? ` · ${itemSummary(c, def, s, cls.pool, 2)}` : ' · tap to choose'}
+        {slot === 'mainHand' && <QuiverLine c={c} hero={hero} />}
       </span>
     </button>
+  )
+}
+
+/** Arrows (08 §4, D-099): the quiver of the bow or crossbow in hand, amber at ammo.lowAt (pass D). */
+function QuiverLine({ c, hero }: { c: Content; hero: HeroRecord }) {
+  const ammo = heroAmmo(c, c.tuning, hero)
+  if (!ammo) return null
+  return (
+    <span class={ammo.low ? 'hr-ammo hr-ammo--low' : 'hr-ammo'} data-testid="hr-quiver">
+      {' '}
+      · {ammo.name} {ammo.count} / {ammo.max}
+    </span>
   )
 }
 
@@ -139,7 +160,7 @@ function GearModal({ c, p, hero, cls, slot, onClose }: { c: Content; p: Profile;
       <div class="hr-modal-scroll">
         <h3 class="hr-modal__sub">Worn</h3>
         {worn && wornDef ? (
-          <ItemRow c={c} cls={cls} def={wornDef} inst={worn}>
+          <ItemRow c={c} cls={cls} def={wornDef} inst={worn} hero={hero}>
             <Btn testid={`hr-takeoff-${slot}`} onClick={takeOff}>
               Take off
             </Btn>
@@ -176,7 +197,13 @@ function GearModal({ c, p, hero, cls, slot, onClose }: { c: Content; p: Profile;
   )
 }
 
-function ItemRow({ c, cls, def, inst, children }: { c: Content; cls: ClassDef; def: ItemDef; inst: ItemInstance; children?: ComponentChildren }) {
+/** What a hero wears, for a set's count (items.ts setProgressOf). */
+function wornBy(hero: HeroRecord): (ItemInstance | null)[] {
+  const e = hero.equipment
+  return [e.mainHand, e.offHand, e.helmet, e.chest, e.legs, e.boots, e.gloves, e.ring[0], e.ring[1], e.talisman, e.relic]
+}
+
+function ItemRow({ c, cls, def, inst, hero, children }: { c: Content; cls: ClassDef; def: ItemDef; inst: ItemInstance; hero: HeroRecord; children?: ComponentChildren }) {
   const s = effectiveItemStats(c, c.tuning, def, inst)
   return (
     <div class="list__row hr-item">
@@ -187,6 +214,7 @@ function ItemRow({ c, cls, def, inst, children }: { c: Content; cls: ClassDef; d
         <span class="list__sub">
           {itemKindText(def)} · {itemSummary(c, def, s, cls.pool, 4)}
         </span>
+        <ItemDetails c={c} def={def} inst={inst} worn={wornBy(hero)} showActive={false} />
       </div>
       {children}
     </div>
@@ -245,6 +273,7 @@ function CandidateRow({
         <span class="list__sub">
           {itemKindText(cand.def)} · {itemSummary(c, cand.def, s, cls.pool, 4)}
         </span>
+        <ItemDetails c={c} def={cand.def} inst={cand.inst} worn={wornBy(hero)} showActive={false} />
         {moves.length > 0 && (
           <span class="hr-moves">
             {moves.map(([stat, d]) => (

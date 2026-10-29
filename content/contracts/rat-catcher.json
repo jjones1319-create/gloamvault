@@ -1,11 +1,19 @@
 {
   "id": "rat-catcher",
   "name": "Rat-catcher",
-  "description": "Kill 30 Vermin in the Cellars.",
+  "description": "Kill 30 Vermin in the Cellars: rats and spiders (the Company’s hounds are not vermin).",
   "cadence": "daily",
   "kind": "kill",
   "target": {
-    "familyId": "cellar-vermin",
+    "monsterIds": [
+      "giant-rat",
+      "plague-rat",
+      "warren-alpha",
+      "cellar-spider",
+      "cellar-weaver",
+      "broodmother",
+      "old-gnaw"
+    ],
     "dungeonId": "gravehollow-keep",
     "zoneId": "the-cellars",
     "count": 30

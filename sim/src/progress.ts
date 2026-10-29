@@ -1,15 +1,17 @@
+import { quiverAfterFight } from './ammo.ts'
 import type { Content } from './content.ts'
 import type { DelveHero, DelveState } from './delve-types.ts'
 import type { Actor, FightState } from './fight-types.ts'
 import { applyBattleXpLevel, speciesRules } from './hero.ts'
-import { insightChanceBp, rollInsight } from './insight.ts'
+import { insightChanceBp, rollInsight, rollTechnique } from './insight.ts'
 import { gainItemXp, wearArmorPiece, wearShield, wearWeapon } from './items.ts'
 import { monsterXp } from './monsters.ts'
 import type { Rng } from './rng.ts'
 import { roundHalfUp } from './stats.ts'
 import { monsterThreatLevel, partyLevelOf, threatMonsterOf } from './threat.ts'
+import { createTome, isObtainable, isTechnique } from './tomes.ts'
 import type { Tuning } from './tuning.ts'
-import type { Equipment, HeroRecord, ItemInstance, KnownSkill, SkillDef } from './types/content.ts'
+import type { Equipment, HeroRecord, ItemInstance, KnownSkill, MonsterDef, SkillDef } from './types/content.ts'
 import { TRAINABLE_ATTRIBUTES, type Attribute, type TrainableAttribute } from './types/enums.ts'
 import { attributeGainAboveCap, attributePointCost, attributeSoftCap, difficultyMultiplier, isGated, levelGapMultiplier, skillRankFor, useBudgetPercent, useXp } from './xp.ts'
 
@@ -73,6 +75,7 @@ export function applyFightProgress(content: Content, t: Tuning, rng: Rng, state:
   // Participation shares for pet XP (03 §5.3, §9).
   const partyWork = fight.actors.filter((a) => a.kind === 'hero').reduce((s, a) => s + a.tally.damageDealt + a.tally.healingDone, 0)
   const xpPool = fightXpPool(t, fight)
+  const witnessed = witnessedTechniques(content, fight)
 
   heroActorIds.forEach((actorId, heroIndex) => {
     const dh = state.heroes[heroIndex]
@@ -97,12 +100,20 @@ export function applyFightProgress(content: Content, t: Tuning, rng: Rng, state:
         const rank = Math.min(t.xp.skill.maxRank, Math.max(known.rank, skillRankFor(t, xp)))
         if (rank > known.rank) report.skillRanks[ev.id] = (report.skillRanks[ev.id] ?? 0) + (rank - known.rank)
         hero = withSkill(hero, ev.id, (k) => ({ ...k, xp, rank }))
-        // Insight (§7.5): one roll per meaningful use, toward one unknown tier-adjacent skill of the school.
-        const learned = rollInsightFor(content, t, rng, hero, dh, skill, ev.enemyLevel)
+        // Insight (§7.5): one roll per meaningful use, toward one unknown tier-adjacent skill of the school. The pity
+        // counter lives on the hero (insightPity) so 60 qualifying uses across delves bring one; the party gets a Tome.
+        const counter = { usesSincePity: hero.insightPity ?? dh.insight.usesSincePity }
+        const learned = rollInsightFor(content, t, rng, hero, counter, skill, ev.enemyLevel)
+        dh.insight.usesSincePity = counter.usesSincePity
+        hero = { ...hero, insightPity: counter.usesSincePity }
         if (learned) {
           hero = { ...hero, skills: [...hero.skills, { skillId: learned.id, rank: 1, xp: 0 }] }
           report.insights.push(learned.id)
           state.stats.insights += 1
+          if (t.skills.tomes.insightDropsTome) {
+            state.pile.push(createTome(content, rng, learned.id))
+            state.stats.itemsFound += 1
+          }
         }
       } else if (ev.kind === 'attribute') {
         const attr = ev.id as Attribute
@@ -125,6 +136,25 @@ export function applyFightProgress(content: Content, t: Tuning, rng: Rng, state:
         if (r.levelsGained) report.itemLevels[ev.id] = (report.itemLevels[ev.id] ?? 0) + r.levelsGained
         hero = { ...hero, equipment: withEquipmentSlot(hero.equipment, ev.id, r.inst) }
       }
+    }
+
+    // Monster techniques (09 §4, D-028, D-099): each witnessed use of a technique's move rolls; the Nth is certain.
+    if (!actor.fallen) {
+      for (const skillId of witnessed) {
+        const r = rollTechniqueFor(content, t, rng, hero, skillId)
+        hero = r.hero
+        if (r.learned) {
+          report.insights.push(skillId)
+          state.stats.insights += 1
+        }
+      }
+    }
+
+    // Floor-limited passives (D-099: Undying Rage once per floor, Deathless twice): the fight logged each trigger.
+    for (const e of fight.log) {
+      if (e.kind !== 'floorLimit' || e.actorId !== actorId || typeof e.data?.skillId !== 'string') continue
+      const key = floorUseKey(state.floor.number, e.data.skillId)
+      dh.skillUses[key] = (dh.skillUses[key] ?? 0) + 1
     }
 
     // The kill trickle (03 §5 open question 2, D-055): +0.2 to the class's two affinity attributes per gated kill.
@@ -155,7 +185,8 @@ export function applyFightProgress(content: Content, t: Tuning, rng: Rng, state:
       const def = inst ? content.items.get(inst.itemId) : undefined
       if (!inst || !def) continue
       const carry = dh.wearCarry[slot] ?? 0
-      const events = c.n + c.double
+      // Pact: Brittle — durability wears ×1.5 (the `wearPercent` knob, 07 §6.2).
+      const events = ((c.n + c.double) * (state.knobs.wearPercent ?? 100)) / 100
       const r = c.kind === 'weapon' ? wearWeapon(t, def, inst, { events, carryBp: carry }) : c.kind === 'shield' ? wearShield(t, def, inst, { events, carryBp: carry }) : wearArmorPiece(t, def, inst, { events, carryBp: carry })
       dh.wearCarry[slot] = r.carryBp
       hero = { ...hero, equipment: withEquipmentSlot(hero.equipment, slot, r.destroyed ? null : r.inst) }
@@ -223,13 +254,17 @@ function gainAttributeCenti(t: Tuning, hero: HeroRecord, attr: TrainableAttribut
   return { ...hero, attributes: { ...hero.attributes, [attr]: value }, attributeXp: { ...hero.attributeXp, [attr]: xp } }
 }
 
-/** One Insight roll after a meaningful use: a random unknown tier-adjacent skill of the school whose prerequisite is known. */
-export function rollInsightFor(content: Content, t: Tuning, rng: Rng, hero: HeroRecord, dh: DelveHero, used: SkillDef, enemyLevel: number): SkillDef | null {
+/**
+ * One Insight roll after a meaningful use: a random unknown tier-adjacent skill of the school whose prerequisite is
+ * known. Never the Ultimate, a technique (09 §4: those come only by witnessing) or a tier the game keeps locked (Tier V,
+ * D-099). `counter` is the pity (the hero's insightPity); the roll advances it.
+ */
+export function rollInsightFor(content: Content, t: Tuning, rng: Rng, hero: HeroRecord, counter: { usesSincePity: number }, used: SkillDef, enemyLevel: number): SkillDef | null {
   const known = new Set(hero.skills.map((k) => k.skillId))
   const candidates = (content.skillsByClass.get(used.classId) ?? []).filter((s) => {
     if (known.has(s.id) || s.school !== used.school || s.isUltimate) return false
     if (Math.abs(s.tier - used.tier) > 1) return false
-    if (s.tier >= 5 || s.monsterTechniqueOf) return false
+    if (!isObtainable(t, s) || isTechnique(s)) return false
     return s.prerequisiteId === null || known.has(s.prerequisiteId)
   })
   if (candidates.length === 0) {
@@ -238,7 +273,81 @@ export function rollInsightFor(content: Content, t: Tuning, rng: Rng, hero: Hero
   }
   const target = rng.pick(candidates)
   const chance = insightChanceBp(t, enemyLevel, target.tier, hero.attributes.wisdom)
-  return rollInsight(t, rng, dh.insight, chance) ? target : null
+  return rollInsight(t, rng, counter, chance) ? target : null
+}
+
+/* ---------- monster techniques (09 §4, 06 §8.8; D-028, D-099) ---------- */
+
+/** The attack a monster's 'action' log entry names: `data.attackId` (fight.ts), else its name read from the text. */
+function attackIdOf(def: MonsterDef, actorName: string, text: string, data: Readonly<Record<string, unknown>> | undefined): string | null {
+  if (typeof data?.attackId === 'string') return data.attackId
+  for (const a of def.attacks) if (text === `${actorName} uses ${a.name}` || text.startsWith(`${actorName} uses ${a.name} on `)) return a.id
+  return null
+}
+
+/**
+ * The technique skills a fight let its heroes witness, one entry per use of a technique's move: a monster that carries
+ * the technique (monsterTechniqueSkillIds, linked back by the skill's monsterTechniqueOf) took one of the skill's
+ * monsterTechniqueMoveIds (any of its attacks when the skill names none). A summoned copy teaches like any other.
+ */
+export function witnessedTechniques(content: Content, fight: FightState): string[] {
+  const out: string[] = []
+  for (const e of fight.log) {
+    if (e.kind !== 'action' || !e.actorId) continue
+    const actor = fight.actors.find((a) => a.id === e.actorId)
+    const monsterId = actor?.monster?.monsterId
+    if (!actor || !monsterId) continue
+    const def = content.monsters.get(monsterId)
+    if (!def || def.monsterTechniqueSkillIds.length === 0) continue
+    const attackId = attackIdOf(def, actor.name, e.text, e.data)
+    for (const skillId of def.monsterTechniqueSkillIds) {
+      const skill = content.skills.get(skillId)
+      if (!skill || skill.monsterTechniqueOf !== monsterId) continue
+      const moves = skill.monsterTechniqueMoveIds
+      if (moves && moves.length > 0 && (attackId === null || !moves.includes(attackId))) continue
+      out.push(skillId)
+    }
+  }
+  return out
+}
+
+/**
+ * One witnessed use of a technique for one hero: a hero of the skill's class who does not know it and knows its
+ * prerequisite (tuning techniques.needsPrerequisite; the Mender sheet's §8 example) rolls the flat chance; the count of
+ * qualifying witnessed uses lives on the hero (techniqueWitness) and the Nth (techniques.guaranteedByUse) is certain.
+ * A learned technique drops no Tome (it is learned only by witnessing).
+ */
+export function rollTechniqueFor(content: Content, t: Tuning, rng: Rng, hero: HeroRecord, skillId: string): { hero: HeroRecord; learned: boolean } {
+  const skill = content.skills.get(skillId)
+  if (!skill || skill.classId !== hero.classId || !isObtainable(t, skill)) return { hero, learned: false }
+  const known = new Set(hero.skills.map((k) => k.skillId))
+  if (known.has(skillId)) return { hero, learned: false }
+  if (t.techniques.needsPrerequisite.value && skill.prerequisiteId !== null && !known.has(skill.prerequisiteId)) return { hero, learned: false }
+  const seen = (hero.techniqueWitness?.[skillId] ?? 0) + 1
+  if (rollTechnique(t, rng, seen)) {
+    const { [skillId]: _done, ...rest } = hero.techniqueWitness ?? {}
+    void _done
+    return { hero: { ...hero, skills: [...hero.skills, { skillId, rank: 1, xp: 0 }], techniqueWitness: rest }, learned: true }
+  }
+  return { hero: { ...hero, techniqueWitness: { ...(hero.techniqueWitness ?? {}), [skillId]: seen } }, learned: false }
+}
+
+/* ---------- floor-limited passives (D-099) ---------- */
+
+function floorUseKey(floor: number, skillId: string): string {
+  return `floor:${floor}:${skillId}`
+}
+
+/**
+ * A delve hero's floor-limited passive triggers on `floor` so far (skill id → count), for buildHeroActor's floorUses: a
+ * passive whose effect is limited per floor (Undying Rage once, Deathless twice) reads it as its hook's data.floorUsed,
+ * logs a 'floorLimit' event (data.skillId) when it fires, and applyFightProgress adds the event to the count.
+ */
+export function floorUsesFor(dh: DelveHero, floor: number): Record<string, number> {
+  const prefix = `floor:${floor}:`
+  const out: Record<string, number> = {}
+  for (const [k, v] of Object.entries(dh.skillUses)) if (k.startsWith(prefix) && v > 0) out[k.slice(prefix.length)] = v
+  return out
 }
 
 /** The post-fight state of a hero actor folded back into the delve hero (HP, pool, downed/fallen). */
@@ -248,4 +357,6 @@ export function carryHeroState(dh: DelveHero, actor: Actor): void {
   dh.downed = actor.downed
   dh.fallen = actor.fallen
   dh.record = { ...dh.record, bag: [...(actor.hero?.bag ?? dh.record.bag)] }
+  // Arrows (08 §4, D-099): what the fight left in the quiver, plus Forager's Instinct's share (sim/src/ammo.ts).
+  dh.record = quiverAfterFight(dh.record, actor)
 }

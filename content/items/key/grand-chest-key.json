@@ -39,5 +39,8 @@
     "tintPrimary": "#8a8f98",
     "tintSecondary": "#2b2b2b",
     "trimMetal": "iron"
-  }
+  },
+  "tags": [
+    "chest-key:grand"
+  ]
 }

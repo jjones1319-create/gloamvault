@@ -1,0 +1,47 @@
+{
+  "id": "skysteel-throwing-knives",
+  "name": "Skysteel Throwing Knives",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "A",
+  "materialLadder": "metal",
+  "materialRung": 5,
+  "weaponType": "throwingKnife",
+  "armorFamily": null,
+  "hands": 1,
+  "damageType": "pierce",
+  "weight": 800,
+  "baseStats": {
+    "attackPhys": 31
+  },
+  "requirements": {
+    "strength": 10,
+    "wisdom": 0
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 8,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 4.07,
+  "value": 1600,
+  "classLock": [
+    "shade"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-throwing-knives-01",
+    "tintPrimary": "#9ec5e0",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "skysteel"
+  }
+}

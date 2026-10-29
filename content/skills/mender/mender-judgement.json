@@ -4,7 +4,7 @@
   "school": "sanctity",
   "tier": 3,
   "name": "Judgement",
-  "description": "2.3× Holy to one enemy in either row, +1% damage per 1% of the target’s missing HP (up to +50%). Heavy cast.",
+  "description": "1.95× Holy to one enemy in either row, +1% damage per 1% of the target’s missing HP (up to +50%). Heavy cast.",
   "type": "active",
   "cost": 26,
   "weight": 1400,
@@ -12,7 +12,7 @@
   "effects": [
     {
       "kind": "damage",
-      "multiplier": 2.3,
+      "multiplier": 1.95,
       "damageType": "holy"
     },
     {

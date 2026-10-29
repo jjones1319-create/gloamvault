@@ -1,16 +1,18 @@
 /**
- * gen-items.ts — the re-runnable item content generator (Phase 3, content pass 1).
+ * gen-items.ts — the re-runnable item content generator (Phase 3, content pass 1; Phase 7, Gravehollow complete).
  *
  * `node tools/content/gen-items.ts` rewrites every file it owns from the tables of docs/08-ITEMS.md held below as
  * data: content/items/<kind>/<id>.json (weapons, armor, shields, foci, rings, talismans, relics, consumables, the
- * pet treat, ammo, materials, stones, keys, eggs), content/affixes/<id>.json (08 §5), content/sets/<id>.json
- * (08 §6: the Cellars set and its five pieces) and content/loot-tables/<id>.json (08 §11: the Cellars band).
+ * pet treat, ammo, materials, stones, keys, eggs; Skill Tomes under items/tome/ are pass A's and never touched),
+ * content/affixes/<id>.json (08 §5), content/sets/<id>.json (08 §6: Gravehollow's five sets, their pieces at every
+ * grade from the set's lowest to S so promotion keeps membership), the named uniques Gravehollow can drop (08 §7)
+ * and content/loot-tables/<id>.json (08 §11: the Cellars, the Crypts, the Vault and the throne).
  * It is idempotent — the same tables give byte-identical files. JSON files in the owned folders that a run did
  * not write are listed as stale; `--prune` deletes them. `--hooks` also prints the sim hooks the content names.
  *
- * Every number is 08's (grades F–C only; no God items). Where 08 is silent the reading taken is written beside
- * the table that needs it and repeated in the Phase 3 hand-over (docs/13-DECISIONS.md). Numbers are tuning
- * starting points: edit a table, re-run, `npm run lint`.
+ * Every number is 08's (grades F–S since Phase 7; SS is the chests' and the bosses', God items are Phase 11). Where
+ * 08 is silent the reading taken is written beside the table that needs it and repeated in the hand-over
+ * (docs/13-DECISIONS.md). Numbers are tuning starting points: edit a table, re-run, `npm run lint`.
  *
  * Run by Node 24 directly (type stripping): no enums, `.ts` imports, erasable syntax only.
  */
@@ -27,8 +29,8 @@ const SHOW_HOOKS = process.argv.includes('--hooks')
 // Grades, ladders, factors (08 preamble, §8.1, §8.5, §9.1; 03 §6.2)
 // ---------------------------------------------------------------------------------------------------------------
 
-type Grade = 'F' | 'E' | 'D' | 'C'
-type AnyGrade = Grade | 'B' | 'A' | 'S' | 'SS' | 'God'
+type Grade = 'F' | 'E' | 'D' | 'C' | 'B' | 'A' | 'S'
+type AnyGrade = Grade | 'SS' | 'God'
 
 interface GradeRow {
   index: number
@@ -53,21 +55,25 @@ const GRADE_ROWS: Record<AnyGrade, GradeRow> = {
   God: { index: 8, mult: 11.0, affixSlots: 4, maxPlusN: 10, value: 6500, word: 'Divine' },
 }
 
-/** The grades this pass ships on every ladder (12 Phase 3: "items F–C across every slot and family"). */
-const GRADES: readonly Grade[] = ['F', 'E', 'D', 'C']
+/** The grades shipped on every ladder: F–C since Phase 3, B–S since Phase 7 (12 Phase 7: "items B–A"; a boss gives "one S-grade item"). */
+const GRADES: readonly Grade[] = ['F', 'E', 'D', 'C', 'B', 'A', 'S']
 
 type Ladder = 'metal' | 'hide' | 'cloth' | 'wood'
 
-/** Gravehollow uses the first name of each 08 §8.1 pair; the F–C rungs. */
+/** Gravehollow uses the first name of each 08 §8.1 pair; the F–S rungs. */
 const LADDER: Record<Ladder, readonly string[]> = {
-  metal: ['Copper', 'Bronze', 'Iron', 'Steel'],
-  hide: ['Rawhide', 'Leather', 'Boiled Leather', 'Wolf Hide'],
-  cloth: ['Burlap', 'Linen', 'Wool', 'Silk'],
-  wood: ['Pine', 'Ash', 'Oak', 'Yew'],
+  metal: ['Copper', 'Bronze', 'Iron', 'Steel', 'Blacksteel', 'Skysteel', 'Adamantine'],
+  hide: ['Rawhide', 'Leather', 'Boiled Leather', 'Wolf Hide', 'Wyvern Hide', 'Basilisk Scale', 'Drake Scale'],
+  cloth: ['Burlap', 'Linen', 'Wool', 'Silk', 'Glyphweave', 'Moonweave', 'Phoenix Weave'],
+  wood: ['Pine', 'Ash', 'Oak', 'Yew', 'Ironwood', 'Ebony', 'Elderwood'],
 }
 
-/** Blacksmith price per unit by rung (08 §8.5). */
-const MATERIAL_PRICE: readonly number[] = [10, 20, 35, 60]
+/**
+ * Value per unit by rung: 08 §8.5's blacksmith prices F–C (10 / 20 / 35 / 60). B and up are never sold (§8.5); their
+ * value — what a unit sells for at 40% — continues the shape as a tenth of the grade value (B 100 · A 160 · S 250),
+ * a tuning reading (Phase 7, Proposed).
+ */
+const MATERIAL_PRICE: readonly number[] = [10, 20, 35, 60, 100, 160, 250]
 
 const TINT: Record<string, string> = {
   Copper: '#b87333',
@@ -86,6 +92,18 @@ const TINT: Record<string, string> = {
   Ash: '#c9b58a',
   Oak: '#8b6b3e',
   Yew: '#7a5a3a',
+  Blacksteel: '#2f3136',
+  Skysteel: '#9ec5e0',
+  Adamantine: '#4f6f7f',
+  'Wyvern Hide': '#4d5e3a',
+  'Basilisk Scale': '#6b7d4f',
+  'Drake Scale': '#8c2f22',
+  Glyphweave: '#3b4a8c',
+  Moonweave: '#c9d3e6',
+  'Phoenix Weave': '#d9541e',
+  Ironwood: '#4a3b2f',
+  Ebony: '#2a211c',
+  Elderwood: '#5e7a4a',
 }
 
 /** Slot factors of the value formula (08 preamble: value = gradeValue × slotFactor). */
@@ -105,17 +123,17 @@ const SLOT_FACTOR = {
 } as const
 
 /**
- * Wear constant k by item class and grade (08 §9.1), F–C. Written rounded half up because item.schema.json says
+ * Wear constant k by item class and grade (08 §9.1), F–S. Written rounded half up because item.schema.json says
  * `wearK` is 08 §9.1's number (1.33 …; the schema takes a number since D-072). Bows carry the bow row because the
  * sim never passes its `bow` wear option (sim/src/progress.ts calls wearWeapon without it).
  */
 const WEAR_K = {
-  weapon: [1.33, 1.67, 2.08, 2.6],
-  bow: [2.67, 3.33, 4.17, 5.21],
-  plate: [1.2, 1.5, 1.88, 2.34],
-  mail: [1, 1.25, 1.56, 1.95],
-  leather: [0.8, 1, 1.25, 1.56],
-  robes: [0.5, 0.63, 0.78, 0.98],
+  weapon: [1.33, 1.67, 2.08, 2.6, 3.26, 4.07, 5.09],
+  bow: [2.67, 3.33, 4.17, 5.21, 6.51, 8.14, 10.17],
+  plate: [1.2, 1.5, 1.88, 2.34, 2.93, 3.66, 4.58],
+  mail: [1, 1.25, 1.56, 1.95, 2.44, 3.05, 3.81],
+  leather: [0.8, 1, 1.25, 1.56, 1.95, 2.44, 3.05],
+  robes: [0.5, 0.63, 0.78, 0.98, 1.22, 1.53, 1.91],
 } as const
 type WearRow = keyof typeof WEAR_K
 
@@ -217,11 +235,34 @@ interface ItemRecord {
   classLock: string[]
   setId: string | null
   unique: boolean
-  uniquePower: { text: string; effects: Effect[] } | null
-  active: { effects: Effect[]; usesPerFight: number; target: string } | null
-  consumable: { effects: Effect[]; stackMax: number; target: string; inCombat: boolean } | null
+  uniquePower: UniquePowerRecord | null
+  active: ActiveRecord | null
+  consumable: { effects: Effect[]; stackMax: number; target: string; inCombat: boolean; text?: string } | null
   ammo: { stack: number } | null
   visual: Visual
+  /** Item tags (Phase 7): `safe-item` + `zone:<zoneId>` (the merchant's stock), `boss-only`, `chest-key:<tier>`, `skeleton-key`. Written only when non-empty. */
+  tags?: string[]
+}
+
+/** A named unique's signature (08 §7): its lines, plus attribute lines (`attributes`) the effect DSL's stat field cannot name. */
+interface UniquePowerRecord {
+  text: string
+  effects: Effect[]
+  attributes?: Record<string, number>
+}
+
+/**
+ * A relic's active (08 §3): `text` is 08's Effect column for the card; `instant` (no Item action, the hero acts again);
+ * `usesPerFloor` for a once-per-floor relic; `timing: 'afterFight'` for one used when a fight is over (the Hollow Coin).
+ */
+interface ActiveRecord {
+  effects: Effect[]
+  usesPerFight: number
+  target: string
+  text?: string
+  instant?: boolean
+  usesPerFloor?: number
+  timing?: 'fight' | 'afterFight'
 }
 
 type ItemOverrides = Partial<ItemRecord> & Pick<ItemRecord, 'id' | 'name' | 'kind' | 'grade' | 'visual'>
@@ -263,6 +304,7 @@ function item(o: ItemOverrides): ItemRecord {
     consumable: o.consumable ?? null,
     ammo: o.ammo ?? null,
     visual: o.visual,
+    ...(o.tags && o.tags.length > 0 ? { tags: [...o.tags] } : {}),
   }
 }
 
@@ -543,7 +585,7 @@ interface ArmorPiece {
   name: string
   defense: number
   hp: number
-  /** The secondary line; `rides` = a flat secondary that rides the ladder (Stamina, Mana, Carry, Speed, Detection); percent secondaries stay flat F–C (08 §2: "+1 pp per grade from B upward"). */
+  /** The secondary line; `rides` = a flat secondary that rides the ladder (Stamina, Mana, Carry, Speed, Detection); percent secondaries step +1 pp per grade above B (08 §2, `percentSecondary`). */
   secondary: { stat: string; value: number; rides: boolean } | null
   strReq: number
 }
@@ -625,11 +667,22 @@ const ARMOR: readonly ArmorFamilyRow[] = [
   },
 ]
 
-/** One armor piece at a grade; `over` lets the set pieces rename and re-tint the family piece. */
+/**
+ * 08 §2: "percentage secondaries (Resistance, Dodge, Crit, Accuracy) step +1 pp per grade from B upward (so a God
+ * Jerkin gives +6% Dodge)" — the Jerkin's 2 + 4 steps (A, S, SS, God), so B keeps the F line and each grade above B
+ * adds one point. tuning.json → items.armorPercentStep holds the same two numbers for the linter (rule 22).
+ */
+const ARMOR_PERCENT_STEP = { fromGradeIndex: 4, pp: 1 } as const
+
+function percentSecondary(value: number, grade: Grade): number {
+  return value + ARMOR_PERCENT_STEP.pp * Math.max(0, GRADE_ROWS[grade].index - ARMOR_PERCENT_STEP.fromGradeIndex)
+}
+
+/** One armor piece at a grade; `over` lets the set pieces and the uniques rename and re-tint the family piece. */
 function armorItem(fam: ArmorFamilyRow, p: ArmorPiece, grade: Grade, over: Partial<ItemOverrides> = {}): ItemRecord {
   const mat = material(fam.ladder, grade)
   const baseStats: Record<string, number> = { defense: scaled(p.defense, grade), hp: scaled(p.hp, grade) }
-  if (p.secondary) baseStats[p.secondary.stat] = p.secondary.rides ? scaled(p.secondary.value, grade) : p.secondary.value
+  if (p.secondary) baseStats[p.secondary.stat] = p.secondary.rides ? scaled(p.secondary.value, grade) : percentSecondary(p.secondary.value, grade)
   // No speed-penalty line: the family's share table lives in tuning.json → equipment.armorSpeedPenaltyShares (D-057).
   return item({
     id: `${kebab(mat)}-${p.type}`,
@@ -677,33 +730,33 @@ const SHIELDS: readonly ShieldRow[] = [
   { type: 'tower-shield', name: 'Tower Shield', weaponType: 'shieldTower', ladder: 'metal', block: 35, defense: 5, speedPenalty: -10, strReq: 15, reqStep: 2, classes: [WARDEN] },
 ]
 
+/** One shield at a grade; `over` lets a named unique rename and re-tint the family shield (08 §7). */
+function shieldItem(s: ShieldRow, grade: Grade, over: Partial<ItemOverrides> = {}): ItemRecord {
+  const mat = material(s.ladder, grade)
+  const g = GRADE_ROWS[grade].index
+  // Block steps +2 pp per grade and does not ride the ladder (08 §2.3); Defense rides; the speed penalty is flat.
+  const baseStats: Record<string, number> = { block: s.block + 2 * g, defense: scaled(s.defense, grade) }
+  if (s.speedPenalty !== 0) baseStats.speed = s.speedPenalty
+  return item({
+    id: `${kebab(mat)}-${s.type}`,
+    name: `${mat} ${s.name}`,
+    slot: 'offHand',
+    kind: 'shield',
+    grade,
+    materialLadder: s.ladder,
+    weaponType: s.weaponType,
+    baseStats,
+    requirements: { strength: s.strReq + s.reqStep * g, wisdom: 0 },
+    wearK: wearK('mail', grade), // 08 §9.1: "Mail · Shields (per block)" share a row
+    value: value(grade, SLOT_FACTOR.shield),
+    classLock: s.classes,
+    visual: { meshId: `shield-${s.type}-01`, tintPrimary: tint(mat), tintSecondary: '#5b4a2f', trimMetal: trimMetal(grade) },
+    ...over,
+  })
+}
+
 function genShields(): void {
-  for (const s of SHIELDS) {
-    for (const grade of GRADES) {
-      const mat = material(s.ladder, grade)
-      const g = GRADE_ROWS[grade].index
-      // Block steps +2 pp per grade and does not ride the ladder (08 §2.3); Defense rides; the speed penalty is flat.
-      const baseStats: Record<string, number> = { block: s.block + 2 * g, defense: scaled(s.defense, grade) }
-      if (s.speedPenalty !== 0) baseStats.speed = s.speedPenalty
-      writeItem(
-        item({
-          id: `${kebab(mat)}-${s.type}`,
-          name: `${mat} ${s.name}`,
-          slot: 'offHand',
-          kind: 'shield',
-          grade,
-          materialLadder: s.ladder,
-          weaponType: s.weaponType,
-          baseStats,
-          requirements: { strength: s.strReq + s.reqStep * g, wisdom: 0 },
-          wearK: wearK('mail', grade), // 08 §9.1: "Mail · Shields (per block)" share a row
-          value: value(grade, SLOT_FACTOR.shield),
-          classLock: s.classes,
-          visual: { meshId: `shield-${s.type}-01`, tintPrimary: tint(mat), tintSecondary: '#5b4a2f', trimMetal: trimMetal(grade) },
-        }),
-      )
-    }
-  }
+  for (const s of SHIELDS) for (const grade of GRADES) writeItem(shieldItem(s, grade))
 }
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -771,63 +824,198 @@ function genTrinkets(kind: 'ring' | 'talisman', rows: readonly TrinketRow[]): vo
 }
 
 // ---------------------------------------------------------------------------------------------------------------
-// §3 Relics — the three with a Cellars source (Lantern of the Deep, Moth Charm, the Grinning Mask)
+// §3 Relics — Gravehollow's nine: the Cellars' three (Lantern of the Deep, Moth Charm, the Grinning Mask) and the six
+// of the Crypts and the Vault (Phase 7). One record each at its first grade (08 §3 "First grade").
 // ---------------------------------------------------------------------------------------------------------------
 
+interface RelicRow {
+  id: string
+  name: string
+  grade: Grade
+  /** 08 §3 "(instant)": no Item action — the hero acts again (weight null on the record). */
+  instant: boolean
+  usesPerFight: number
+  /** "once per floor" (the Hollow Coin). */
+  usesPerFloor?: number
+  /** Used when the fight is over (the Hollow Coin re-rolls the fight's item drop), not in it. */
+  afterFight?: boolean
+  target: string
+  /** 08 §3's Effect column, for the card. */
+  text: string
+  effects: Effect[]
+  mesh: string
+  tint: string
+  tint2: string
+  trim: string
+  /** `boss-only`: a boss's own relic (08 §3 Source), never a random drop or a chest's (loot.ts pickGearItem). */
+  tags?: string[]
+}
+
+const RELICS: readonly RelicRow[] = [
+  {
+    id: 'lantern-of-the-deep',
+    name: 'Lantern of the Deep',
+    grade: 'E',
+    instant: true,
+    usesPerFight: 1,
+    target: 'room',
+    text: 'Sets the light to Radiant for 3 rounds',
+    effects: [{ kind: 'light', amount: 100, target: 'room', duration: 3, note: 'sets light to Radiant for 3 rounds (instant): the sim clamps the dial at 100; the revert after 3 rounds is a hook' }],
+    mesh: 'relic-deep-lantern-01',
+    tint: '#1e3a5f',
+    tint2: '#e8a33c',
+    trim: 'bronze',
+  },
+  {
+    id: 'moth-charm',
+    name: 'Moth Charm',
+    grade: 'E',
+    instant: false,
+    usesPerFight: 1,
+    target: 'allEnemies',
+    text: 'Blinds every enemy for 1 round',
+    effects: [{ kind: 'applyStatus', status: 'blind', duration: 1, target: 'allEnemies' }],
+    mesh: 'relic-moth-charm-01',
+    tint: '#c9b58a',
+    tint2: '#5b5650',
+    trim: 'bronze',
+  },
+  // The Phase 2 fixture record (sim/test/fixtures/content/items/relic/the-grinning-mask.json) plus its card text and tag.
+  {
+    id: 'the-grinning-mask',
+    name: 'The Grinning Mask',
+    grade: 'C',
+    instant: false,
+    usesPerFight: 1,
+    target: 'enemyFront',
+    text: 'Fears the enemy front row for 1 round',
+    effects: [{ kind: 'applyStatus', status: 'fear', duration: 1, target: 'enemyFront' }],
+    mesh: 'relic-grin-mask-01',
+    tint: '#f1ece4',
+    tint2: '#9b1c1c',
+    trim: 'brass',
+    tags: ['boss-only'],
+  },
+  {
+    id: 'hourglass-shard',
+    name: 'Hourglass Shard',
+    grade: 'D',
+    instant: true,
+    usesPerFight: 1,
+    target: 'self',
+    text: 'Your next action weighs nothing',
+    effects: [{ kind: 'custom', customId: 'next-action-weightless', target: 'self', note: '08 §3: "Your next action weighs 0 (instant)"' }],
+    mesh: 'relic-hourglass-shard-01',
+    tint: '#d9c38a',
+    tint2: '#9ec5e0',
+    trim: 'bronze',
+  },
+  {
+    id: 'the-barrow-bell',
+    name: 'The Barrow Bell',
+    grade: 'D',
+    instant: false,
+    usesPerFight: 1,
+    target: 'allEnemies',
+    text: 'Taunts every enemy onto you for 2 rounds; Fortify 1 round',
+    effects: [
+      { kind: 'taunt', duration: 2, target: 'allEnemies' },
+      { kind: 'applyStatus', status: 'fortify', duration: 1, target: 'self' },
+    ],
+    mesh: 'relic-barrow-bell-01',
+    tint: '#6b6f73',
+    tint2: '#2f5e4a',
+    trim: 'iron',
+    tags: ['boss-only'],
+  },
+  {
+    id: 'candle-of-the-crypt',
+    name: 'Candle of the Crypt',
+    grade: 'D',
+    instant: false,
+    usesPerFight: 1,
+    target: 'allAllies',
+    text: 'Regen 5% of max HP per round on the party for 3 rounds',
+    effects: [{ kind: 'applyStatus', status: 'regen', percent: 5, duration: 3, target: 'allAllies' }],
+    mesh: 'relic-crypt-candle-01',
+    tint: '#e8e0c8',
+    tint2: '#7fbf6a',
+    trim: 'bronze',
+  },
+  // "Brine Pearl" (08 §3) shares its name with the Tidebound's rare part (08 §8.3, `brine-pearl`); the relic takes the
+  // article so the two read apart (Phase 7, Proposed).
+  {
+    id: 'the-brine-pearl',
+    name: 'The Brine Pearl',
+    grade: 'C',
+    instant: true,
+    usesPerFight: 1,
+    target: 'allyLowest',
+    text: 'Shields the lowest ally for 25% of their max HP',
+    effects: [{ kind: 'shield', percent: 25, target: 'allyLowest' }],
+    mesh: 'relic-brine-pearl-01',
+    tint: '#dfe7ea',
+    tint2: '#0f766e',
+    trim: 'steel',
+  },
+  {
+    id: 'the-tidebound-idol',
+    name: 'The Tidebound Idol',
+    grade: 'C',
+    instant: false,
+    usesPerFight: 1,
+    target: 'allAllies',
+    text: 'Cleanses every debuff on the party',
+    effects: [{ kind: 'dispel', target: 'allAllies', note: 'on allies, dispel cleanses every debuff (sim/src/effects.ts)' }],
+    mesh: 'relic-tidebound-idol-01',
+    tint: '#1e3a4a',
+    tint2: '#9ec5e0',
+    trim: 'brass',
+    tags: ['boss-only'],
+  },
+  {
+    id: 'the-hollow-coin',
+    name: 'The Hollow Coin',
+    grade: 'C',
+    instant: false,
+    usesPerFight: 1,
+    usesPerFloor: 1,
+    afterFight: true,
+    target: 'self',
+    text: "Re-rolls this fight's item drop after the fight, once per floor",
+    effects: [{ kind: 'custom', customId: 'reroll-fight-drop', target: 'self', note: 'resolved by the delve after a won fight (sim/src/relics.ts)' }],
+    mesh: 'relic-hollow-coin-01',
+    tint: '#3a3a3a',
+    tint2: '#c9a227',
+    trim: 'brass',
+    tags: ['boss-only'],
+  },
+]
+
 function genRelics(): void {
-  writeItem(
-    item({
-      id: 'lantern-of-the-deep',
-      name: 'Lantern of the Deep',
-      slot: 'relic',
-      kind: 'relic',
-      grade: 'E',
-      weight: null, // instant: no Item action (08 §3); the schema has no 'instant' value, so no weight
-      value: value('E', SLOT_FACTOR.relic),
-      active: {
-        effects: [{ kind: 'light', amount: 100, target: 'room', duration: 3, note: 'sets light to Radiant for 3 rounds (instant): the sim clamps the dial at 100; the revert after 3 rounds is a hook' }],
-        usesPerFight: 1,
-        target: 'room',
-      },
-      visual: { meshId: 'relic-deep-lantern-01', tintPrimary: '#1e3a5f', tintSecondary: '#e8a33c', trimMetal: 'bronze' },
-    }),
-  )
+  for (const r of RELICS) {
+    for (const e of r.effects) if (e.kind === 'custom') hook(`custom ${String(e.customId)}`, r.name)
+    const active: ActiveRecord = { effects: r.effects, usesPerFight: r.usesPerFight, target: r.target, text: r.text }
+    if (r.instant) active.instant = true
+    if (r.usesPerFloor !== undefined) active.usesPerFloor = r.usesPerFloor
+    if (r.afterFight) active.timing = 'afterFight'
+    writeItem(
+      item({
+        id: r.id,
+        name: r.name,
+        slot: 'relic',
+        kind: 'relic',
+        grade: r.grade,
+        // Activating a relic is an Item action (weight 600) unless instant (08 §3); an after-fight relic is no fight action.
+        weight: r.instant || r.afterFight ? null : 600,
+        value: value(r.grade, SLOT_FACTOR.relic),
+        active,
+        visual: { meshId: r.mesh, tintPrimary: r.tint, tintSecondary: r.tint2, trimMetal: r.trim },
+        tags: r.tags ?? [],
+      }),
+    )
+  }
   hook('relic: Lantern of the Deep reverts to the previous light after 3 rounds', 'Lantern of the Deep')
-  writeItem(
-    item({
-      id: 'moth-charm',
-      name: 'Moth Charm',
-      slot: 'relic',
-      kind: 'relic',
-      grade: 'E',
-      weight: 600,
-      value: value('E', SLOT_FACTOR.relic),
-      active: {
-        effects: [{ kind: 'applyStatus', status: 'blind', duration: 1, target: 'allEnemies' }],
-        usesPerFight: 1,
-        target: 'allEnemies',
-      },
-      visual: { meshId: 'relic-moth-charm-01', tintPrimary: '#c9b58a', tintSecondary: '#5b5650', trimMetal: 'bronze' },
-    }),
-  )
-  // The Phase 2 fixture record, verbatim (sim/test/fixtures/content/items/relic/the-grinning-mask.json).
-  writeItem(
-    item({
-      id: 'the-grinning-mask',
-      name: 'The Grinning Mask',
-      slot: 'relic',
-      kind: 'relic',
-      grade: 'C',
-      weight: 600,
-      value: value('C', SLOT_FACTOR.relic),
-      active: {
-        effects: [{ kind: 'applyStatus', status: 'fear', duration: 1, target: 'enemyFront' }],
-        usesPerFight: 1,
-        target: 'enemyFront',
-      },
-      visual: { meshId: 'relic-grin-mask-01', tintPrimary: '#f1ece4', tintSecondary: '#9b1c1c', trimMetal: 'brass' },
-    }),
-  )
 }
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -845,9 +1033,17 @@ interface ConsumableRow {
   mesh: string
   tint: string
   kind?: 'consumable' | 'treat'
+  /** What the card says it is for (a safe item's curio, the Torch in a fight). */
+  text?: string
+  /** `safe-item` + `zone:<zoneId>` on the merchant's safe items (07 §2.7; explore.ts stocks by tag). */
+  tags?: string[]
 }
 
 const CONSUMABLE_TINT = '#2b2b2b'
+
+/** The zone ids of Gravehollow (content/dungeons/gravehollow-keep/dungeon.json): the merchant stocks "2 of the zone's safe items" (07 §2.7). */
+const ZONE = { cellars: 'zone:the-cellars', crypts: 'zone:the-crypts', vault: 'zone:the-drowned-vault' } as const
+const SAFE = 'safe-item'
 
 const CONSUMABLES: readonly ConsumableRow[] = [
   { id: 'small-hp-potion', name: 'Small HP Potion', effects: [{ kind: 'heal', percent: 25 }], stackMax: 10, target: 'ally', inCombat: true, priceR: 0.03, mesh: 'consumable-potion-small-01', tint: '#b3261e' },
@@ -878,7 +1074,8 @@ const CONSUMABLES: readonly ConsumableRow[] = [
   { id: 'cleansing-salt', name: 'Cleansing Salt', effects: [{ kind: 'dispel', target: 'ally', note: 'on an ally, dispel cleanses every debuff (sim/src/effects.ts)' }], stackMax: 10, target: 'ally', inCombat: true, priceR: 0.06, mesh: 'consumable-cleansing-salt-01', tint: '#f1ece4' },
   { id: 'haste-tonic', name: 'Haste Tonic', effects: [{ kind: 'applyStatus', status: 'haste', duration: 3 }], stackMax: 10, target: 'ally', inCombat: true, priceR: 0.1, mesh: 'consumable-haste-tonic-01', tint: '#eab308' },
   { id: 'fortify-draught', name: 'Fortify Draught', effects: [{ kind: 'applyStatus', status: 'fortify', duration: 3 }], stackMax: 10, target: 'ally', inCombat: true, priceR: 0.08, mesh: 'consumable-fortify-draught-01', tint: '#6b7280' },
-  { id: 'torch', name: 'Torch', effects: [{ kind: 'light', amount: 25, target: 'room' }], stackMax: 10, target: 'room', inCombat: false, priceR: 0.02, mesh: 'consumable-torch-01', tint: '#e8a33c' },
+  // In a fight the Torch is an Item action (07 §2.8: "An Item action with a Torch relights (+25)"; the Hollow King's braziers): inCombat since Phase 7.
+  { id: 'torch', name: 'Torch', effects: [{ kind: 'light', amount: 25, target: 'room' }], stackMax: 10, target: 'room', inCombat: true, priceR: 0.02, mesh: 'consumable-torch-01', tint: '#e8a33c', text: '+25 light; in a fight, an Item action (it relights an arena brazier)' },
   { id: 'repair-kit', name: 'Repair Kit', effects: [{ kind: 'custom', customId: 'repair-durability', percent: 25, note: '+25% durability to one item, out of combat' }], stackMax: 5, target: 'self', inCombat: false, priceR: 0.08, mesh: 'consumable-repair-kit-01', tint: '#6b7280' },
   { id: 'phoenix-feather', name: 'Phoenix Feather', effects: [{ kind: 'revive', percent: 30, target: 'downedAlly' }], stackMax: 2, target: 'downedAlly', inCombat: true, priceR: 0.5, mesh: 'consumable-phoenix-feather-01', tint: '#f97316' },
   { id: 'bandage', name: 'Bandage', effects: [{ kind: 'removeStatus', status: 'bleed' }, { kind: 'heal', percent: 15 }], stackMax: 10, target: 'ally', inCombat: true, priceR: 0.02, mesh: 'consumable-bandage-01', tint: '#f1ece4' },
@@ -889,12 +1086,21 @@ const CONSUMABLES: readonly ConsumableRow[] = [
   { id: 'meat', name: 'Meat', effects: [{ kind: 'custom', customId: 'meal', percent: 5, note: 'cooking ingredient; monster parts' }], stackMax: 20, target: 'allAllies', inCombat: false, priceR: 0.01, mesh: 'consumable-meat-01', tint: '#9b1c1c' },
   { id: 'fish', name: 'Fish', effects: [{ kind: 'custom', customId: 'meal', percent: 5, note: 'cooking ingredient' }], stackMax: 20, target: 'allAllies', inCombat: false, priceR: 0.01, mesh: 'consumable-fish-01', tint: '#6b7a80' },
   { id: 'salt', name: 'Salt', effects: [{ kind: 'custom', customId: 'meal', percent: 5, note: 'cooking ingredient' }], stackMax: 20, target: 'allAllies', inCombat: false, priceR: 0.01, mesh: 'consumable-salt-01', tint: '#f1ece4' },
-  // The Cellars' safe items (07 §2.4): bought from the merchant, consumed by the curio's `requires` line. Flint & Oil relights (the Lost Lantern line); the others have no use outside their curio, so their effect list is empty.
-  { id: 'flint-and-oil', name: 'Flint & Oil', effects: [{ kind: 'light', amount: 25, target: 'room' }], stackMax: 5, target: 'room', inCombat: false, priceR: 0.02, mesh: 'consumable-flint-oil-01', tint: '#5b5650' },
-  { id: 'holy-water', name: 'Holy Water', effects: [], stackMax: 5, target: 'room', inCombat: false, priceR: 0.02, mesh: 'consumable-holy-water-01', tint: '#bfdbfe' },
-  { id: 'loaded-dice', name: 'Loaded Dice', effects: [], stackMax: 5, target: 'room', inCombat: false, priceR: 0.02, mesh: 'consumable-loaded-dice-01', tint: '#f1ece4' },
-  { id: 'grave-salt', name: 'Grave Salt', effects: [], stackMax: 5, target: 'room', inCombat: false, priceR: 0.02, mesh: 'consumable-grave-salt-01', tint: '#9a9a9a' },
-  { id: 'candle-of-vigil', name: 'Candle of Vigil', effects: [], stackMax: 5, target: 'room', inCombat: false, priceR: 0.02, mesh: 'consumable-candle-of-vigil-01', tint: '#fde68a' },
+  // The safe items (07 §2.4): bought from the merchant, consumed by the curio's `requires` line. Flint & Oil relights (the
+  // Lost Lantern line); the others have no use outside their curio, so their effect list is empty and the card says
+  // which curio they answer. The merchant's eight (07 §2.7) carry `safe-item` and their zone; Holy Water and the Loaded
+  // Dice (a Cutpurse's rare part) are safe items too but never merchant stock, so they carry no tag.
+  { id: 'flint-and-oil', name: 'Flint & Oil', effects: [{ kind: 'light', amount: 25, target: 'room' }], stackMax: 5, target: 'room', inCombat: false, priceR: 0.02, mesh: 'consumable-flint-oil-01', tint: '#5b5650', text: 'The Lost Lantern: relight it, +25 light for sure', tags: [SAFE, ZONE.cellars] },
+  { id: 'holy-water', name: 'Holy Water', effects: [], stackMax: 5, target: 'room', inCombat: false, priceR: 0.02, mesh: 'consumable-holy-water-01', tint: '#bfdbfe', text: "The Toll Shrine, the Sealed Sarcophagus and the Thrall's Cage: the good outcome, for sure" },
+  { id: 'loaded-dice', name: 'Loaded Dice', effects: [], stackMax: 5, target: 'room', inCombat: false, priceR: 0.02, mesh: 'consumable-loaded-dice-01', tint: '#f1ece4', text: "The Company's Dice Table: a sure win" },
+  { id: 'grave-salt', name: 'Grave Salt', effects: [], stackMax: 5, target: 'room', inCombat: false, priceR: 0.02, mesh: 'consumable-grave-salt-01', tint: '#9a9a9a', text: 'The Funeral Urns: gold from every urn, for sure', tags: [SAFE, ZONE.crypts] },
+  { id: 'candle-of-vigil', name: 'Candle of Vigil', effects: [], stackMax: 5, target: 'room', inCombat: false, priceR: 0.02, mesh: 'consumable-candle-of-vigil-01', tint: '#fde68a', text: 'The Bone Reliquary: the Holy blessing, for sure', tags: [SAFE, ZONE.crypts] },
+  // The five Phase 7 adds (07 §2.4's Crypts and Vault curios).
+  { id: 'reading-glass', name: 'Reading Glass', effects: [], stackMax: 5, target: 'room', inCombat: false, priceR: 0.02, mesh: 'consumable-reading-glass-01', tint: '#c9a227', text: "The Warden's Ledger: read it safely, the map for sure", tags: [SAFE, ZONE.crypts] },
+  { id: 'empty-vial', name: 'Empty Vial', effects: [], stackMax: 5, target: 'room', inCombat: false, priceR: 0.02, mesh: 'consumable-empty-vial-01', tint: '#dfe7ea', text: "The Weeping Statue: bottle the tears, a Mourner's Tear and the heal for sure", tags: [SAFE, ZONE.crypts] },
+  { id: 'oilskin-cloak', name: 'Oilskin Cloak', effects: [], stackMax: 5, target: 'room', inCombat: false, priceR: 0.02, mesh: 'consumable-oilskin-cloak-01', tint: '#5c4a2e', text: 'The Brine Pool: wade it dry, the coins for sure', tags: [SAFE, ZONE.vault] },
+  { id: 'wax-plugs', name: 'Wax Plugs', effects: [], stackMax: 5, target: 'room', inCombat: false, priceR: 0.02, mesh: 'consumable-wax-plugs-01', tint: '#e8d9a0', text: "The Priestess's Hymnal: read it deaf, Silence immunity this floor for sure", tags: [SAFE, ZONE.vault] },
+  { id: 'rope-and-hook', name: 'Rope & Hook', effects: [], stackMax: 5, target: 'room', inCombat: false, priceR: 0.02, mesh: 'consumable-rope-and-hook-01', tint: '#8b6b3e', text: 'The Drowned Chest: haul it out, the Large chest for sure', tags: [SAFE, ZONE.vault] },
   // The pet treat is kind `treat` (content/README.md lists treat/); it carries a consumable block so the bag can use it.
   { id: 'pet-treat', name: 'Pet Treat', kind: 'treat', effects: [{ kind: 'custom', customId: 'pet-treat', percent: 10, target: 'pet', note: '+10% pet XP this delve (once per delve); +5% bond progress' }], stackMax: 5, target: 'pet', inCombat: false, priceR: 0.05, mesh: 'treat-pet-treat-01', tint: '#a16207' },
 ]
@@ -910,8 +1116,9 @@ function genConsumables(): void {
         grade: 'F',
         weight: 600,
         value: roundHalfUp(c.priceR * R_F),
-        consumable: { effects: c.effects, stackMax: c.stackMax, target: c.target, inCombat: c.inCombat },
+        consumable: { effects: c.effects, stackMax: c.stackMax, target: c.target, inCombat: c.inCombat, ...(c.text ? { text: c.text } : {}) },
         visual: { meshId: c.mesh, tintPrimary: c.tint, tintSecondary: CONSUMABLE_TINT, trimMetal: 'none' },
+        tags: c.tags ?? [],
       }),
     )
   }
@@ -945,10 +1152,53 @@ function genMaterials(): void {
       )
     }
   }
-  // Spider Silk (06 §3.1: the Cellars spiders' common part, "sells"): a material off every ladder, so a monster's
-  // parts.common.materialId can name it (rule 2 wants a material there); it never promotes anything. Sells at 0.01 R like a Bone Shard.
-  writeItem(item({ id: 'spider-silk', name: 'Spider Silk', kind: 'material', grade: 'F', value: roundHalfUp(0.01 * R_F), visual: { meshId: 'material-thread-spider-silk-01', tintPrimary: '#e5e7eb', tintSecondary: CONSUMABLE_TINT, trimMetal: 'none' } }))
+  // Regional names that count as a rung (06 §1: "Cured Ghoulhide (= Boiled Leather, D)", "Sharkskin (= Wolf Hide, C)";
+  // 08 §8.3: "Spidersilk (counts as Silk)"; 08 §8.1: "Promotion accepts either variant of a rung"). Tagged `regional` so
+  // a crate, a salvage or a chest dupe always pays the rung's first name (items.ts `rungMaterial`).
+  for (const r of REGIONAL) {
+    writeItem(
+      item({
+        id: kebab(r.name),
+        name: r.name,
+        kind: 'material',
+        grade: r.grade,
+        materialLadder: r.ladder,
+        value: need(MATERIAL_PRICE[GRADE_ROWS[r.grade].index], 'material price'),
+        visual: { meshId: `material-${MATERIAL_SHAPE[r.ladder]}-${kebab(r.name)}-01`, tintPrimary: r.tint, tintSecondary: CONSUMABLE_TINT, trimMetal: 'none' },
+        tags: ['regional'],
+      }),
+    )
+  }
+  // Parts that only sell (06 §3: "Spider Silk thread (sells)", "Bat Wing, sells", "Deep Flesh, sells", "Brine Salt, sells";
+  // 08 §8.3: "Bone Shards sell (0.01 R) and feed Field Repair"): materials off every ladder, so a monster's
+  // parts.common.materialId can name them (rule 2 wants a material there); they never promote anything. Each sells at
+  // 0.01 R of its zone's band (a tuning reading).
+  for (const m of SELL_PARTS) writeItem(item({ id: m.id, name: m.name, kind: 'material', grade: m.grade, value: roundHalfUp(0.01 * R_BAND[m.grade]), visual: { meshId: `material-${m.shape}-${m.id}-01`, tintPrimary: m.tint, tintSecondary: CONSUMABLE_TINT, trimMetal: 'none' } }))
+  // The Mourner's Tear (07 §2.4, the Weeping Statue: "a rare Mender ingredient"): a material off every ladder that sells
+  // like a Crypts rare part; no recipe reads it yet.
+  writeItem(item({ id: 'mourners-tear', name: "Mourner's Tear", kind: 'material', grade: 'E', value: roundHalfUp(0.04 * R_BAND.E), visual: { meshId: 'material-vial-mourners-tear-01', tintPrimary: '#bfe3f0', tintSecondary: CONSUMABLE_TINT, trimMetal: 'none' } }))
+  // The Divine Shard (08 §4: "10 forge one God item at the blacksmith, or convert 1 → 5 units of any God-rung material
+  // · never sold"; chests already put it in profile.materials['divine-shard']). A material off every ladder; its grade
+  // is SS because a God-grade record must be a unique God item (rule 23) — the forge is Phase 11.
+  writeItem(item({ id: 'divine-shard', name: 'Divine Shard', kind: 'material', grade: 'SS', value: 0, visual: { meshId: 'material-shard-divine-01', tintPrimary: '#fff1c7', tintSecondary: '#f5d76e', trimMetal: 'none' } }))
 }
+
+/** R per band (08's R table): the gold a sellable part or a zone's rare part is priced from. */
+const R_BAND: Record<'F' | 'E' | 'D' | 'C', number> = { F: 300, E: 480, D: 770, C: 1230 }
+
+const REGIONAL: readonly { name: string; ladder: Ladder; grade: Grade; tint: string }[] = [
+  { name: 'Cured Ghoulhide', ladder: 'hide', grade: 'D', tint: '#6b5a44' },
+  { name: 'Spidersilk', ladder: 'cloth', grade: 'C', tint: '#e3e0ea' },
+  { name: 'Sharkskin', ladder: 'hide', grade: 'C', tint: '#7b8a92' },
+]
+
+const SELL_PARTS: readonly { id: string; name: string; grade: 'F' | 'E' | 'D'; shape: string; tint: string }[] = [
+  { id: 'spider-silk', name: 'Spider Silk', grade: 'F', shape: 'thread', tint: '#e5e7eb' },
+  { id: 'bone-shard', name: 'Bone Shard', grade: 'E', shape: 'shard', tint: '#e7e5e4' },
+  { id: 'bat-wing', name: 'Bat Wing', grade: 'E', shape: 'wing', tint: '#3f3f46' },
+  { id: 'deep-flesh', name: 'Deep Flesh', grade: 'D', shape: 'lump', tint: '#4a5d6a' },
+  { id: 'brine-salt', name: 'Brine Salt', grade: 'D', shape: 'crystal', tint: '#dfe7ea' },
+]
 
 interface StoneRow {
   id: string
@@ -972,6 +1222,25 @@ const STONES: readonly StoneRow[] = [
   { id: 'weighted-net', name: 'Weighted Net', grade: 'F', value: 12, tint: '#6b7a80' },
   { id: 'hexers-fetish', name: "Hexer's Fetish", grade: 'F', value: 12, tint: '#4c1d95' },
   { id: 'gnaws-tooth', name: "Gnaw's Tooth", grade: 'F', value: 12, tint: '#f4f1ea' },
+  // The Crypts' rare parts (06 §3.2): affix stones at the zone's band, valued like its Whetstone (0.04 R at E).
+  { id: 'knights-gorget', name: "Knight's Gorget", grade: 'E', value: 19, tint: '#8a8f98' },
+  { id: 'sextons-bell', name: "Sexton's Bell", grade: 'E', value: 19, tint: '#b08d57' },
+  { id: 'grave-candle', name: 'Grave Candle', grade: 'E', value: 19, tint: '#d9e8c5' },
+  { id: 'ghoul-claw', name: 'Ghoul Claw', grade: 'E', value: 19, tint: '#6b5a44' },
+  { id: 'wraith-ash', name: 'Wraith Ash', grade: 'E', value: 19, tint: '#5b5650' },
+  { id: 'tomb-spinneret', name: 'Tomb Spinneret', grade: 'E', value: 19, tint: '#d1d5db' },
+  { id: 'hounds-collar', name: "Hound's Collar", grade: 'E', value: 19, tint: '#7f1d1d' },
+  // The Drowned Vault's rare parts (06 §3.3) at 0.04 R of band D. The Brine Pearl is also the trinket affix stone and
+  // the Tide Altar's safe item (08 §8.3, 07 §2.4); the Sentinel Core is 07's Sentinel Plinth "Construct Core" (Phase 7
+  // reading); the Maw Pearl is "SS-rated", so it carries SS and a Honing Oil's worth (0.12 R at D).
+  { id: 'brine-pearl', name: 'Brine Pearl', grade: 'D', value: 31, tint: '#dfe7ea' },
+  { id: 'tide-glass', name: 'Tide Glass', grade: 'D', value: 31, tint: '#7dd3fc' },
+  { id: 'penance-chain', name: 'Penance Chain', grade: 'D', value: 31, tint: '#6b7280' },
+  { id: 'diving-bell-plate', name: 'Diving Bell Plate', grade: 'D', value: 31, tint: '#8a8f98' },
+  { id: 'sentinel-core', name: 'Sentinel Core', grade: 'D', value: 31, tint: '#0ea5e9' },
+  { id: 'hags-eye', name: "Hag's Eye", grade: 'D', value: 31, tint: '#a3e635' },
+  { id: 'leech-heart', name: 'Leech Heart', grade: 'D', value: 31, tint: '#7f1d1d' },
+  { id: 'maw-pearl', name: 'Maw Pearl', grade: 'SS', value: 92, tint: '#c9d3e6' },
 ]
 
 function genStones(): void {
@@ -981,13 +1250,16 @@ function genStones(): void {
 }
 
 function genKeys(): void {
-  const keys: { id: string; name: string; value: number; mesh: string }[] = [
-    { id: 'skeleton-key', name: 'Skeleton Key', value: roundHalfUp(0.2 * R_F), mesh: 'key-skeleton-01' },
-    { id: 'bandit-lockpick', name: 'Bandit Lockpick', value: roundHalfUp(0.2 * R_F), mesh: 'key-lockpick-01' }, // a one-use Skeleton Key (06 §3.1)
-    { id: 'standard-chest-key', name: 'Standard Chest Key', value: roundHalfUp(0.5 * R_F), mesh: 'key-chest-standard-01' }, // the Standard chest's price (08 §10.1)
-    { id: 'grand-chest-key', name: 'Grand Chest Key', value: roundHalfUp(2.5 * R_F), mesh: 'key-chest-grand-01' },
+  // Tags say what a key opens (Phase 7): `skeleton-key` a locked chest or door in the dungeon (07 §2.7); `chest-key:<tier>`
+  // one Curio Merchant chest of that tier free (07 §7: "A Standard Key opens one Standard chest free; a Grand Key one
+  // Grand chest"). Chest keys are counted in profile.materials[<key id>], where reward lines land (town.ts openChestWithKey).
+  const keys: { id: string; name: string; value: number; mesh: string; tags: string[] }[] = [
+    { id: 'skeleton-key', name: 'Skeleton Key', value: roundHalfUp(0.2 * R_F), mesh: 'key-skeleton-01', tags: ['skeleton-key'] },
+    { id: 'bandit-lockpick', name: 'Bandit Lockpick', value: roundHalfUp(0.2 * R_F), mesh: 'key-lockpick-01', tags: ['skeleton-key'] }, // a one-use Skeleton Key (06 §3.1)
+    { id: 'standard-chest-key', name: 'Standard Chest Key', value: roundHalfUp(0.5 * R_F), mesh: 'key-chest-standard-01', tags: ['chest-key:standard'] }, // the Standard chest's price (08 §10.1)
+    { id: 'grand-chest-key', name: 'Grand Chest Key', value: roundHalfUp(2.5 * R_F), mesh: 'key-chest-grand-01', tags: ['chest-key:grand'] },
   ]
-  for (const k of keys) writeItem(item({ id: k.id, name: k.name, kind: 'key', grade: 'F', value: k.value, visual: { meshId: k.mesh, tintPrimary: '#8a8f98', tintSecondary: CONSUMABLE_TINT, trimMetal: 'iron' } }))
+  for (const k of keys) writeItem(item({ id: k.id, name: k.name, kind: 'key', grade: 'F', value: k.value, visual: { meshId: k.mesh, tintPrimary: '#8a8f98', tintSecondary: CONSUMABLE_TINT, trimMetal: 'iron' }, tags: k.tags }))
 }
 
 /** The sixteen pet species of 06 §9; an egg record's grade is the bottom of its species' drop band (the chest roll carries the hatched grade). */
@@ -1180,38 +1452,44 @@ function genAffixes(): void {
 }
 
 // ---------------------------------------------------------------------------------------------------------------
-// §6 The Cellars set: Grinning Company's Cut (content/examples/item-set.example.json) and its five E-grade pieces
+// §6 Gravehollow's sets (08 §6): the Cellars' Grinning Company's Cut and, since Phase 7, the four of the Crypts and the
+// Vault. Each piece is the family piece re-named and re-tinted with the setId (08 §6: "Set pieces drop as named family
+// pieces"); pieces exist at every grade from the set's lowest up to S, because "A set keeps its membership through
+// promotion" (items.ts nextRungItem prefers the next piece of the same set). The set's gradeMin–gradeMax is where the
+// pieces drop. Bonuses are effect lines the sim applies (items.ts setBonusLoad, D-071): `buffStat` lines are stat lines,
+// `custom` lines persistent hooks on the wearer (or delve-side lines such as gold found and light).
 // ---------------------------------------------------------------------------------------------------------------
 
-const SET_ID = 'grinning-companys-cut'
+interface SetRow {
+  id: string
+  name: string
+  /** The piece name prefix: "Barrow Warden's" → "Barrow Warden's Helm". */
+  prefix: string
+  family: ArmorFamily
+  theme: string
+  classes: string[]
+  gradeMin: Grade
+  gradeMax: Grade
+  bonuses: { '2': Effect[]; '4': Effect[] }
+  bonusText: { '2': string; '4': string }
+  tint: string
+  tint2: string
+  trim: string
+}
 
-function genSet(): void {
-  const leather = need(ARMOR.find((f) => f.family === 'leather'), 'leather family')
-  const pieceIds: string[] = []
-  for (const p of leather.pieces) {
-    const id = `grinning-companys-${p.type}`
-    pieceIds.push(id)
-    // The same E-grade Leather piece (08 §6: "Set pieces drop as named family pieces"), re-tinted to the Company's scarlet and lacquer white, setId set; the set line spends its one affix slot (affixes stay empty, rule 20).
-    writeItem(
-      armorItem(leather, p, 'E', {
-        id,
-        name: `Grinning Company's ${p.name}`,
-        setId: SET_ID,
-        visual: { meshId: `armor-leather-${MESH_SLOT[p.slot]}-01`, tintPrimary: '#9b1c1c', tintSecondary: '#f1ece4', trimMetal: 'brass' },
-      }),
-    )
-  }
-  hook('custom first-attack-each-fight-crits', `set ${SET_ID} (4-piece)`)
-  writeJson(`sets/${SET_ID}.json`, {
-    id: SET_ID,
+const SETS: readonly SetRow[] = [
+  {
+    id: 'grinning-companys-cut',
     name: "Grinning Company's Cut",
+    prefix: "Grinning Company's",
     family: 'leather',
     theme: 'the Cellars bandits, Gravehollow F1–3',
-    classIds: [SHADE, RANGER],
-    pieces: pieceIds,
+    classes: [SHADE, RANGER],
+    gradeMin: 'E',
+    gradeMax: 'C',
     bonuses: {
       '2': [
-        { kind: 'loot', percent: 5, note: '+5% gold found' },
+        { kind: 'custom', customId: 'gold-found-percent', percent: 5, target: 'self', note: '+5% gold found (the of Greed hook, read by the delve)' },
         { kind: 'buffStat', stat: 'detection', amount: 1 },
       ],
       '4': [
@@ -1219,48 +1497,350 @@ function genSet(): void {
         { kind: 'buffStat', stat: 'dodge', amount: 3 },
       ],
     },
-    bonusText: {
-      '2': '+5% gold found; +1 Detection',
-      '4': 'Your first attack each fight is a guaranteed crit; +3% Dodge',
+    bonusText: { '2': '+5% gold found; +1 Detection', '4': 'Your first attack each fight is a guaranteed crit; +3% Dodge' },
+    tint: '#9b1c1c',
+    tint2: '#f1ece4',
+    trim: 'brass',
+  },
+  {
+    id: 'barrow-wardens-vigil',
+    name: "Barrow Warden's Vigil",
+    prefix: "Barrow Warden's",
+    family: 'plate',
+    theme: 'the Crypts, Gravehollow F4–6',
+    classes: [WARDEN],
+    gradeMin: 'D',
+    gradeMax: 'B',
+    bonuses: {
+      '2': [
+        { kind: 'buffStat', stat: 'defense', amount: 5 },
+        { kind: 'custom', customId: 'status-resist-bonus', status: 'fear', percent: 10, target: 'self' },
+        { kind: 'custom', customId: 'status-resist-bonus', status: 'curse', percent: 10, target: 'self' },
+      ],
+      '4': [{ kind: 'custom', customId: 'guard-taunts-and-fortifies', duration: 1, target: 'self', note: 'Guard also Taunts every enemy and grants Fortify 1 round' }],
     },
-    gradeMin: 'E',
-    gradeMax: 'C',
-    dropChance: 15,
-  })
+    bonusText: { '2': '+5 Defense; +10% Resistance to Fear and Curse', '4': 'Guard also Taunts every enemy and grants Fortify 1 round' },
+    tint: '#4a5148',
+    tint2: '#2f5e4a',
+    trim: 'iron',
+  },
+  {
+    id: 'tidebound-reavers-mail',
+    name: "Tidebound Reaver's Mail",
+    prefix: "Tidebound Reaver's",
+    family: 'mail',
+    theme: 'the Drowned Vault, Gravehollow F7–8',
+    classes: [BLADE, TAMER],
+    gradeMin: 'D',
+    gradeMax: 'B',
+    bonuses: {
+      '2': [
+        { kind: 'buffStat', stat: 'speed', amount: 2 },
+        { kind: 'custom', customId: 'element-resist-percent', damageType: 'poison', percent: 10, target: 'self' },
+      ],
+      '4': [
+        { kind: 'custom', customId: 'basic-attack-pool-restore-percent', percent: 10, target: 'self', note: 'basic attacks restore +10% Stamina' },
+        { kind: 'custom', customId: 'haste-on-kill', status: 'haste', duration: 1, target: 'self', note: 'Haste 1 round on a kill' },
+      ],
+    },
+    bonusText: { '2': '+2 Speed; +10% Poison resistance', '4': 'Basic attacks restore +10% Stamina; Haste 1 round on a kill' },
+    tint: '#1e3a4a',
+    tint2: '#9ec5e0',
+    trim: 'steel',
+  },
+  {
+    id: 'drowned-choirs-vestments',
+    name: "Drowned Choir's Vestments",
+    prefix: "Drowned Choir's",
+    family: 'robes',
+    theme: 'the Tidebound cult, the Drowned Vault',
+    classes: [ARCANIST],
+    gradeMin: 'D',
+    gradeMax: 'B',
+    bonuses: {
+      '2': [
+        { kind: 'buffStat', stat: 'mana', amount: 10 },
+        { kind: 'custom', customId: 'element-damage-percent', damageType: 'frost', percent: 5, target: 'self' },
+      ],
+      '4': [{ kind: 'custom', customId: 'frost-freezes-chilled', status: 'freeze', target: 'self', note: 'a Chilled target hit by your Frost spell Freezes at once' }],
+    },
+    bonusText: { '2': '+10 Mana; +5% Frost damage', '4': 'A Chilled target hit by your Frost spell Freezes at once' },
+    tint: '#16324a',
+    tint2: '#dfe7ea',
+    trim: 'steel',
+  },
+  {
+    id: 'lanternkeepers-habit',
+    name: "Lanternkeeper's Habit",
+    prefix: "Lanternkeeper's",
+    family: 'robes',
+    theme: 'the Crypts',
+    classes: [MENDER],
+    gradeMin: 'D',
+    gradeMax: 'B',
+    bonuses: {
+      '2': [
+        { kind: 'custom', customId: 'healing-done-percent', percent: 10, target: 'self' },
+        { kind: 'custom', customId: 'light-decay-reduction', amount: 1, target: 'room', note: 'light falls 1 less per room (read by the delve)' },
+      ],
+      '4': [
+        { kind: 'custom', customId: 'holy-spells-grant-regen', status: 'regen', percent: 5, duration: 2, target: 'self', note: 'Holy spells grant Regen 2 rounds (5% of max HP, the Candle of the Crypt’s, a Phase 7 reading) to the lowest ally' },
+        { kind: 'custom', customId: 'damage-percent-vs-status', status: 'smite', percent: 15, target: 'self', note: 'Smite +15%: your hits on a Smitten target +15%' },
+      ],
+    },
+    bonusText: { '2': '+10% healing; light falls 1 less per room', '4': 'Holy spells grant Regen 2 rounds; Smite +15%' },
+    tint: '#e8e0c8',
+    tint2: '#c9a227',
+    trim: 'brass',
+  },
+]
+
+/** A set piece's id: the bare name at the set's lowest grade (the Phase 3 Grinning pieces keep theirs), `-<grade>` above it. */
+function setPieceId(set: SetRow, type: string, grade: Grade): string {
+  const base = `${kebab(set.prefix.replace(/['’]/g, ""))}-${type}`
+  return grade === set.gradeMin ? base : `${base}-${grade.toLowerCase()}`
+}
+
+function genSets(): void {
+  for (const set of SETS) {
+    const fam = need(ARMOR.find((f) => f.family === set.family), `${set.family} family`)
+    const classes = set.classes.filter((c) => SHIPPED_CLASSES.has(c))
+    const pieceIds: string[] = []
+    for (const p of fam.pieces) {
+      for (const grade of GRADES) {
+        if (GRADE_ROWS[grade].index < GRADE_ROWS[set.gradeMin].index) continue
+        const id = setPieceId(set, p.type, grade)
+        if (grade === set.gradeMin) pieceIds.push(id)
+        // The family piece (08 §6), re-named and re-tinted, setId set; the set line spends its one affix slot (affixes stay empty, rule 20).
+        writeItem(
+          armorItem(fam, p, grade, {
+            id,
+            name: `${set.prefix} ${p.name}`,
+            setId: set.id,
+            // The family's class order, narrowed to the set's classes (rule 25 compares them as sets).
+            classLock: fam.classes.filter((c) => classes.includes(c)),
+            visual: { meshId: `armor-${fam.family}-${MESH_SLOT[p.slot]}-01`, tintPrimary: set.tint, tintSecondary: set.tint2, trimMetal: set.trim },
+          }),
+        )
+      }
+    }
+    for (const n of ['2', '4'] as const) for (const e of set.bonuses[n]) if (e.kind === 'custom') hook(`custom ${String(e.customId)}`, `set ${set.id} (${n}-piece)`)
+    writeJson(`sets/${set.id}.json`, {
+      id: set.id,
+      name: set.name,
+      family: set.family,
+      theme: set.theme,
+      classIds: classes,
+      pieces: pieceIds,
+      bonuses: set.bonuses,
+      bonusText: set.bonusText,
+      gradeMin: set.gradeMin,
+      gradeMax: set.gradeMax,
+      dropChance: 15,
+    })
+  }
 }
 
 // ---------------------------------------------------------------------------------------------------------------
-// §11 The Cellars loot table (content/examples/loot-table.example.json; the Crypts, Vault and Throne tables wait
-// for their floors: Phase 3 ships floors 1–3 and rule 17 asks the tables to tile the dungeon's floors)
+// §7 Named uniques Gravehollow can drop: the B pair the brief names (the Lamplighter's Hood, the Shieldbrother's Kite)
+// and the A and S uniques whose 08 §7 source includes a Grand chest — the ones the Barrow Warden's, Sister Naesa's and
+// the Hollow King's "one A/S-grade item" can roll (named uniques are 10% of any roll at a grade that has them, 08
+// §10.1). The others are bound to a later dungeon's boss or monster and wait for it. A unique is its family piece at
+// its grade (so the mesh's ladder holds, rule 22) with a fixed signature line in one affix slot (08 §7).
 // ---------------------------------------------------------------------------------------------------------------
 
-function genLootTables(): void {
-  writeJson('loot-tables/gravehollow-cellars.json', {
-    id: 'gravehollow-cellars',
-    dungeonId: 'gravehollow-keep',
-    name: 'Gravehollow Keep — the Cellars (F1–3)',
-    floorBand: { min: 1, max: 3 },
-    monsterLevels: { min: 1, max: 4 },
-    goldRange: { min: 10, max: 20 },
-    itemChance: 35,
-    gradeShape: { centreGrade: 'F', centre: 81, minus1: 0, plus1: 14, plus2: 4, plus3: 1 },
-    partChance: { common: 35, rare: 4 },
-    stoneChance: 8,
-    consumableDrop: { chance: 40, itemIds: ['small-hp-potion', 'torch', 'arrows', 'bandage'] },
-    treasureRoom: {
-      goldPiles: { min: 2, max: 4 },
-      goldFightsWorth: 2,
-      smallChestChance: 100,
-      largeChestChance: 20,
-      largeLockedChance: 50,
-      trappedChance: 20,
-      trapId: 'spring-spikes',
-      consumableBundle: 3,
-      hiddenFind: { itemAtPlusOneChance: 90, skeletonKeyChance: 10 },
+function genUniques(): void {
+  const leather = need(ARMOR.find((f) => f.family === 'leather'), 'leather family')
+  const hood = need(leather.pieces.find((p) => p.slot === 'helmet'), 'leather hood')
+  writeItem(
+    armorItem(leather, hood, 'B', {
+      id: 'lamplighters-hood',
+      name: "Lamplighter's Hood",
+      unique: true,
+      uniquePower: {
+        text: '+3 Detection; light falls 1 less per room',
+        effects: [
+          { kind: 'buffStat', stat: 'detection', amount: 3 },
+          { kind: 'custom', customId: 'light-decay-reduction', amount: 1, target: 'room' },
+        ],
+      },
+      visual: { meshId: 'armor-leather-helm-01', tintPrimary: '#3b2a1e', tintSecondary: '#e8a33c', trimMetal: 'brass' },
+    }),
+  )
+  writeItem(
+    shieldItem(need(SHIELDS.find((x) => x.type === 'kite-shield'), 'kite'), 'B', {
+      id: 'shieldbrothers-kite',
+      name: "Shieldbrother's Kite",
+      unique: true,
+      uniquePower: { text: 'On block: a Shield of 5% of max HP on the lowest ally', effects: [{ kind: 'custom', customId: 'shield-lowest-ally-on-block', percent: 5, target: 'allyLowest' }] },
+      visual: { meshId: 'shield-kite-shield-01', tintPrimary: '#2f4f7f', tintSecondary: '#e8e0c8', trimMetal: 'blacksteel' },
+    }),
+  )
+  writeItem(
+    shieldItem(need(SHIELDS.find((x) => x.type === 'buckler'), 'buckler'), 'S', {
+      id: 'wyrmward-buckler',
+      name: 'Wyrmward Buckler',
+      unique: true,
+      uniquePower: { text: 'Block also applies to spell and breath damage', effects: [{ kind: 'custom', customId: 'block-applies-to-spells', target: 'self' }] },
+      visual: { meshId: 'shield-buckler-01', tintPrimary: '#5e7a4a', tintSecondary: '#c9d3e6', trimMetal: 'adamantine' },
+    }),
+  )
+  const trinket = (o: { id: string; name: string; kind: 'ring' | 'talisman'; grade: Grade; power: UniquePowerRecord; tint: string; gem: string }) =>
+    writeItem(
+      item({
+        id: o.id,
+        name: o.name,
+        slot: o.kind,
+        kind: o.kind,
+        grade: o.grade,
+        wearK: 1, // trinkets do not wear in play (08 §3)
+        value: value(o.grade, SLOT_FACTOR[o.kind]),
+        unique: true,
+        uniquePower: o.power,
+        visual: { meshId: `${o.kind}-${o.id.replace(/^(ring|talisman)-(of-)?(the-)?/, '').replace(/-(ring|talisman)$/, '')}-01`, tintPrimary: o.tint, tintSecondary: o.gem, trimMetal: trimMetal(o.grade) },
+      }),
+    )
+  trinket({
+    id: 'cinderborn-talisman',
+    name: 'Cinderborn Talisman',
+    kind: 'talisman',
+    grade: 'A',
+    power: {
+      text: '+10% Momentum gain; your Ultimate applies Burn',
+      effects: [
+        { kind: 'buffStat', stat: 'momentumGain', amount: 10 },
+        { kind: 'custom', customId: 'ultimate-applies-status', status: 'burn', target: 'enemy' },
+      ],
     },
-    darknessItemBonus: { radiant: 0, dim: 10, shadowy: 25, dark: 50, pitch: 75 },
-    bossFirstKill: 'captain-vexa-marrow',
+    tint: '#3a2a20',
+    gem: '#d9541e',
   })
+  trinket({
+    id: 'emberheart-ring',
+    name: 'Emberheart Ring',
+    kind: 'ring',
+    grade: 'A',
+    power: { text: '+10% Fire damage; +2 Vitality', effects: [{ kind: 'custom', customId: 'element-damage-percent', damageType: 'fire', percent: 10, target: 'self' }], attributes: { vitality: 2 } },
+    tint: '#b45309',
+    gem: '#dc2626',
+  })
+  trinket({
+    id: 'ring-of-the-long-winter',
+    name: 'Ring of the Long Winter',
+    kind: 'ring',
+    grade: 'S',
+    power: { text: '+3 Luck; +10% gold found', effects: [{ kind: 'custom', customId: 'gold-found-percent', percent: 10, target: 'self' }], attributes: { luck: 3 } },
+    tint: '#c9d3e6',
+    gem: '#60a5fa',
+  })
+  for (const id of ['shield-lowest-ally-on-block', 'block-applies-to-spells', 'ultimate-applies-status', 'element-damage-percent']) hook(`custom ${id}`, 'a named unique')
+}
+
+// ---------------------------------------------------------------------------------------------------------------
+// §11 Gravehollow's loot tables, one per floor band (08 §11 at 8 floors, D-104): the Cellars F1–3, the Crypts F4–6,
+// the Drowned Vault F7 and the Hollow King's floor F8. The Cellars' record is Phase 3's, unchanged.
+// ---------------------------------------------------------------------------------------------------------------
+
+interface LootRow {
+  id: string
+  name: string
+  floors: [number, number]
+  levels: [number, number]
+  gold: [number, number]
+  itemChance: number
+  /** 08 §11's grade shape: centre 56 · −1 25 · +1 14 · +2 4 · +3 1, a missing lower grade folded into the centre. */
+  shape: { centreGrade: Grade; centre: number; minus1: number; plus1: number; plus2: number; plus3: number }
+  consumable: { chance: number; itemIds: string[] }
+  treasure: { largeLockedChance: number; trappedChance: number; trapId: string }
+  bossFirstKill: string | null
+}
+
+const LOOT: readonly LootRow[] = [
+  {
+    id: 'gravehollow-cellars',
+    name: 'Gravehollow Keep — the Cellars (F1–3)',
+    floors: [1, 3],
+    levels: [1, 4],
+    gold: [10, 20],
+    itemChance: 35,
+    shape: { centreGrade: 'F', centre: 81, minus1: 0, plus1: 14, plus2: 4, plus3: 1 },
+    consumable: { chance: 40, itemIds: ['small-hp-potion', 'torch', 'arrows', 'bandage'] },
+    // Phase 3's reading, kept: the Cellars' strongroom locks its Large chest half the time (the Small at half that).
+    treasure: { largeLockedChance: 50, trappedChance: 20, trapId: 'spring-spikes' },
+    bossFirstKill: 'captain-vexa-marrow',
+  },
+  {
+    id: 'gravehollow-crypts',
+    name: 'Gravehollow Keep — the Crypts (F4–6)',
+    floors: [4, 6],
+    levels: [5, 8],
+    // The Phase 7 balance pass (pass F): 08 §11's 16–32, 25–50 and 40–60 cut by a third — fights paid 1.5–2× 08's band
+    // from F3 on (a four meets ×1.6 the monsters; the Crypts' and the Vault's packs run 4–6 against a typical 3).
+    gold: [11, 21],
+    itemChance: 40,
+    shape: { centreGrade: 'E', centre: 56, minus1: 25, plus1: 14, plus2: 4, plus3: 1 },
+    consumable: { chance: 40, itemIds: ['small-hp-potion', 'cleansing-salt', 'repair-kit'] },
+    // 08 §10.3: a Large chest locked 40% (the Small at half), trapped 15–25% (the table holds one number: 20); the
+    // Crypts' trapped chest breathes grave dust (07 §2.7: "a Grave Breath puff").
+    treasure: { largeLockedChance: 40, trappedChance: 20, trapId: 'grave-breath-vent' },
+    bossFirstKill: 'barrow-warden',
+  },
+  {
+    id: 'gravehollow-vault',
+    name: 'Gravehollow Keep — the Drowned Vault (F7)',
+    floors: [7, 7],
+    levels: [11, 11],
+    gold: [17, 33],
+    itemChance: 45,
+    shape: { centreGrade: 'D', centre: 56, minus1: 25, plus1: 14, plus2: 4, plus3: 1 },
+    consumable: { chance: 45, itemIds: ['medium-hp-potion', 'fortify-draught', 'bolts'] },
+    treasure: { largeLockedChance: 40, trappedChance: 20, trapId: 'hags-snare' },
+    bossFirstKill: 'sister-naesa',
+  },
+  {
+    id: 'gravehollow-throne',
+    name: "Gravehollow Keep — the Hollow King's floor (F8)",
+    floors: [8, 8],
+    levels: [13, 13],
+    gold: [27, 40],
+    itemChance: 50,
+    shape: { centreGrade: 'C', centre: 56, minus1: 25, plus1: 14, plus2: 4, plus3: 1 },
+    consumable: { chance: 50, itemIds: ['medium-hp-potion', 'haste-tonic'] },
+    // The throne floor is four fixed rooms with no strongroom (07 §2.3); the schema still wants a treasure block: the Vault's.
+    treasure: { largeLockedChance: 40, trappedChance: 20, trapId: 'hags-snare' },
+    bossFirstKill: 'hollow-king',
+  },
+]
+
+function genLootTables(): void {
+  for (const l of LOOT) {
+    writeJson(`loot-tables/${l.id}.json`, {
+      id: l.id,
+      dungeonId: 'gravehollow-keep',
+      name: l.name,
+      floorBand: { min: l.floors[0], max: l.floors[1] },
+      monsterLevels: { min: l.levels[0], max: l.levels[1] },
+      goldRange: { min: l.gold[0], max: l.gold[1] },
+      itemChance: l.itemChance,
+      gradeShape: l.shape,
+      partChance: { common: 35, rare: 4 },
+      stoneChance: 8,
+      consumableDrop: l.consumable,
+      treasureRoom: {
+        goldPiles: { min: 2, max: 4 },
+        goldFightsWorth: 2,
+        smallChestChance: 100,
+        largeChestChance: 20,
+        largeLockedChance: l.treasure.largeLockedChance,
+        trappedChance: l.treasure.trappedChance,
+        trapId: l.treasure.trapId,
+        consumableBundle: 3,
+        hiddenFind: { itemAtPlusOneChance: 90, skeletonKeyChance: 10 },
+      },
+      darknessItemBonus: { radiant: 0, dim: 10, shadowy: 25, dark: 50, pitch: 75 },
+      bossFirstKill: l.bossFirstKill,
+    })
+  }
 }
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -1268,6 +1848,8 @@ function genLootTables(): void {
 // ---------------------------------------------------------------------------------------------------------------
 
 const OWNED_FOLDERS = ['items', 'affixes', 'sets', 'loot-tables']
+/** Folders under the owned ones that another pass writes (Skill Tomes are pass A's, Phase 7): never listed as stale. */
+const NOT_OURS = ['items/tome/']
 
 function listJson(dir: string): string[] {
   if (!fs.existsSync(dir)) return []
@@ -1295,13 +1877,15 @@ function main(): void {
   genKeys()
   genEggs()
   genAffixes()
-  genSet()
+  genSets()
+  genUniques()
   genLootTables()
 
   const stale: string[] = []
   for (const folder of OWNED_FOLDERS) {
     for (const abs of listJson(path.join(CONTENT, folder))) {
       const rel = path.relative(CONTENT, abs).replace(/\\/g, '/')
+      if (NOT_OURS.some((prefix) => rel.startsWith(prefix))) continue
       if (!written.has(rel)) stale.push(rel)
     }
   }

@@ -1,0 +1,45 @@
+{
+  "id": "heroic-ring-of-vigor",
+  "name": "Heroic Ring of Vigor",
+  "slot": "ring",
+  "kind": "ring",
+  "grade": "A",
+  "materialLadder": null,
+  "materialRung": null,
+  "weaponType": null,
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "hp": 27
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 8,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1,
+  "value": 960,
+  "classLock": [],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "ring-vigor-01",
+    "tintPrimary": "#9ec5e0",
+    "tintSecondary": "#7f1d1d",
+    "trimMetal": "skysteel"
+  }
+}

@@ -132,6 +132,8 @@ estimate steady. Draw calls stay near a quarter of the budget: a hero is 2 calls
 its props instance (D-110). Models are runtime-cached, not precached: heroes ~6 MB, room kits 1.7 MB, monsters 8.9 MB,
 each fetched the first time it is needed.
 
+**Measured in Phase 7 (2026-10-28, the same desktop and viewport):** a Crypts fight 60 fps, 55 draw calls, 128k triangles; a Vault fight 60 fps, 57 calls, 139k; the Barrow Warden, Sister Naesa and the Hollow King in their arenas 60 fps at 54–64 calls and 122–143k triangles. Soaks walking the floors in turn: the Cellars 54–60 fps (12 min), the Crypts 50–60 (12 min), the Drowned Vault 47–60 (8 min) — the CPU stays under 6 ms a frame and nothing grows (geometries ~50, heap 60–95 MB), so the dips are the integrated GPU drawing the Crypts' mist and the Vault's water over the whole screen; Phase 8's performance pass takes them. The phone's own numbers come from James's checklist. A soak that freezes for a minute is the laptop going to standby on its idle timer — hold a keep-awake request while one runs. `node tools/shots/soak.ts --floor N` starts the soak on any floor.
+
 ## 5. Multiplayer
 
 **Model (D-014):** the sim is deterministic; one phone is the **host**; clients send *intents*, the host validates against `legalActions`, assigns a sequence number and broadcasts `{seq, command}`; everyone applies commands in order. A match is **seed + command log** → replays, desync detection (state hash every 20 commands), save-and-resume, late join (snapshot + log tail), **host migration** (lowest remaining peer re-hosts from its log; same invite code).
@@ -154,7 +156,7 @@ Pacing rules live in the rulebook §10.2 (grouped decision windows, 20 s timer, 
 ## 7. Build, deploy, verify
 
 - `npm run dev` (http://localhost:5173/gloamvault/; `-- --host` to play on the phone over Wi-Fi), `npm run build`, `npm run preview`.
-- `npm run verify` = `typecheck` + `test` (Vitest) + `lint` (content) + `build` + `check:build` (bundle budgets: app JS ≤ 600 KB gz, precache ≤ 8 MB, models runtime-cached). **Run before every commit.**
+- `npm run verify` = `typecheck` + `test` (Vitest) + `lint` (content) + `build` + `check:build` (bundle budgets: app code ≤ 600 KB gz and the content data ≤ 300 KB gz on its own line — D-129 — precache ≤ 8 MB, models runtime-cached). **Run before every commit.**
 - `npm run balance` (≈ 10–30 s): batch runs over seeds × party compositions × floors → `tools/balance/out/*.json` + `docs/balance/<date>-<tag>.md` with judgement lines (fight length, win rates, gold per delve, wear per delve, Insight rate, ambush rate).
 - `npm run shots`: Playwright drives the installed Chrome headless at the S25 Ultra's landscape viewport — 892 × 412 CSS px at device pixel ratio 2.625, i.e. the phone's default FHD+ 2,340 × 1,080 physical pixels (D-052) — through a scripted set of deep links and writes PNGs to `client/shots/` (plus one portrait shot for the rotate hint; `--only a,b` and `--skip-build` for quick re-runs; the run fails on any page error or horizontal scroll) — **Claude Code reads the PNGs before calling any visual change done.**
 - `npm run e2e`: Playwright smoke (new hero → first delve → town → chest) on the built app.

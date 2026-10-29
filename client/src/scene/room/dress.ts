@@ -79,6 +79,13 @@ export interface StaticRoomInput {
   /** Doorways drawn as openings (a secret one only once found). */
   openDoors: readonly Doorway[]
   isEntry: boolean
+  /**
+   * 07 §1.1: the entry room of a zone's first floor holds its Waystone (Gravehollow F1, F4, F7; sim/src/explore.ts
+   * isWaystoneFloor). True: the Waystone stands here, stairs or not; false: no Waystone — an entry without stairs gets
+   * the stairs the party came down. Absent (the gallery, the room viewer): Phase 4's reading, an entry without stairs
+   * shows the Waystone.
+   */
+  waystone?: boolean
   variation: number
   /** Phase 6: the zone's kit; null or missing draws the grey box. */
   env?: RoomEnv | null
@@ -364,22 +371,35 @@ export function buildStaticRoom(kit: Kit, input: StaticRoomInput): StaticRoom {
     for (const fx of [-0.25, 0.25]) for (const fz of [-0.25, 0.25]) obstacles.push({ x: cx + fx * (h.x1 - h.x0), z: cz + fz * (h.z1 - h.z0), r: Math.max(h.x1 - h.x0, h.z1 - h.z0) * 0.36 })
   }
 
-  // The entrance without stairs holds the Waystone (07 §2.2): on the far side, facing the camera.
-  if (input.isEntry && !arrival) {
+  // The entrance holds the Waystone on a zone's first floor (07 §1.1, input.waystone), else an entrance without stairs
+  // shows the stairs the party came down; on the far side, facing the camera. Without the flag (the gallery), the
+  // entrance without stairs holds the Waystone, as in Phase 4.
+  const stoneHere = input.isEntry && (input.waystone === true || (input.waystone === undefined && !arrival))
+  const stairsHere = input.isEntry && input.waystone === false && !arrival
+  if (stoneHere || stairsHere) {
     const far = { x: -camDir.x, z: -camDir.z }
     const lat = { x: -far.z, z: far.x }
     const reach = (Math.abs(far.x) > 0.5 ? frame.width : frame.depth) / 2 - 1.3
-    const cands = [-2.2, 0, 2.2].map((o) => ({ x: far.x * reach + lat.x * o, z: far.z * reach + lat.z * o }))
+    // Stairs on the far side already: the Waystone stands a step into the room beside them, where the landscape HUD
+    // and the stairs' own walls cannot hide it.
+    const stairsFar = arrival !== null && arrival.x * far.x + arrival.z * far.z > reach / 2
+    const latHalf = (Math.abs(far.x) > 0.5 ? frame.depth : frame.width) / 2 - 1.0
+    const beside = stairsFar ? [-2.8, 2.8, -3.6, 3.6].filter((o) => Math.abs(o) <= latHalf) : []
+    const line = beside.length > 0 ? Math.max(0, reach - 1.8) : reach
+    const offsets = beside.length > 0 ? beside : [-2.2, 0, 2.2]
+    const cands = offsets.map((o) => ({ x: far.x * line + lat.x * o, z: far.z * line + lat.z * o }))
     const at = freeSpot(cands, taken)
     const m = trs(at.x, 0, at.z, Math.atan2(camDir.x, camDir.z))
-    if (kb?.has('shr_waystone')) {
+    const id = stoneHere ? 'shr_waystone' : 'shr_stairs_up'
+    if (kb?.has(id)) {
       const before = kb.flames.length
-      kb.add('shr_waystone', m)
+      kb.add(id, m)
       lights.push(...flameLights(kb.flames.slice(before)))
       kitPieces++
-    } else P.addWaystone(pieces, m)
+    } else if (stoneHere) P.addWaystone(pieces, m)
+    else P.addStairsUp(pieces, m)
     taken.push(at)
-    obstacles.push({ x: at.x, z: at.z, r: 0.6 })
+    obstacles.push({ x: at.x, z: at.z, r: stoneHere ? 0.6 : 1.4 })
     arrival = at
   }
 
@@ -666,15 +686,22 @@ export function curioPiece(curioId: string, zone: KitZone): string[] {
   if (/thrall/.test(id)) return ['vlt_cage_thrall']
   if (/cage/.test(id)) return zone === 'vault' ? ['vlt_cage_thrall', 'cel_cage_hanging'] : ['cel_cage_hanging']
   if (/sarcophag/.test(id)) return ['cry_sarcophagus']
+  // The Crypts' and the Vault's own pieces (C1, Phase 7): the reliquary niche, the embalmer's table, the ledger's
+  // lectern, the Sentinel's plinth.
+  if (/reliquary/.test(id)) return ['cry_reliquary_niche']
+  if (/embalm/.test(id)) return ['cry_embalmer_table']
+  if (/ledger/.test(id)) return ['cry_ledger_lectern']
+  if (/plinth/.test(id)) return ['vlt_plinth_sentinel']
+  // Candles before urns: "mourners-candles" holds "urn".
+  if (/candle/.test(id)) return ['cry_candle_ring']
   if (/urn/.test(id)) return ['cry_urn_row']
   if (/statue|weeping/.test(id)) return ['cry_statue_weeping']
   if (/bell/.test(id)) return ['cry_bell_grave']
-  if (/candle/.test(id)) return ['cry_candle_ring']
   if (/altar/.test(id)) return ['vlt_altar_tide']
   if (/wheel|sluice/.test(id)) return ['vlt_wheel_sluice']
   if (/leech|jar/.test(id)) return ['vlt_jar_leech']
   if (/chest/.test(id)) return ['vlt_chest_drowned']
-  if (/tablet|lore|inscri/.test(id)) return ['shr_lore_tablet']
+  if (/tablet|lore|inscri|hymnal/.test(id)) return ['shr_lore_tablet']
   return []
 }
 
@@ -801,6 +828,7 @@ export function buildDynamic(kit: Kit, room: StaticRoom, input: DynamicInput): D
       else if (/shrine/.test(id)) P.addShrine(pieces, m)
       else if (/lantern/.test(id)) P.addLantern(pieces, m, !used)
       else if (/gallows/.test(id)) P.addGallows(pieces, m)
+      else if (/pool/.test(id)) P.addPuddle(pieces, m)
       else P.addTablet(pieces, m)
     } else if (/cage/.test(id) && !used && !kb?.has('cel_cage_hanging')) P.addCage(pieces, m, true)
     if (!used) P.addFloorRing(pieces, ground, /cask/.test(id) ? 1.5 : 1.1, PALETTE.doorGlow)

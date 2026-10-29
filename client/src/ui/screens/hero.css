@@ -361,6 +361,15 @@
 .hr-skill--locked {
   opacity: 0.6;
 }
+/* Phase 7: Tier V (and a technique whose monster is not in the game yet) is sealed, not merely out of reach. */
+.hr-skill--sealed {
+  opacity: 0.45;
+  border-style: dashed;
+}
+.hr-tier__note {
+  text-transform: none;
+  letter-spacing: 0;
+}
 .hr-skill--ult {
   border-color: var(--ember);
 }
@@ -615,4 +624,30 @@
   min-height: 44px;
   padding: 0 14px;
   white-space: nowrap;
+}
+
+/* The pet card's trait rank (03 §9; pass D): the same look as the Stables' (town.css .tw-trait). */
+.hr-petcard__line .tw-trait {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--fs-small);
+  color: var(--ink-dim);
+}
+.hr-petcard__line .tw-progress {
+  flex: 0 1 120px;
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+.hr-petcard__line .tw-progress__fill {
+  height: 100%;
+  background: var(--ember);
+}
+
+/* The quiver on the main-hand cell (08 §4, D-099; pass D). */
+.hr-ammo--low {
+  color: var(--ember);
+  font-weight: 700;
 }

@@ -1,0 +1,45 @@
+{
+  "id": "legendary-ring-of-finding",
+  "name": "Legendary Ring of Finding",
+  "slot": "ring",
+  "kind": "ring",
+  "grade": "S",
+  "materialLadder": null,
+  "materialRung": null,
+  "weaponType": null,
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "detection": 6
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 9,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1,
+  "value": 1500,
+  "classLock": [],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "ring-finding-01",
+    "tintPrimary": "#4f6f7f",
+    "tintSecondary": "#0ea5e9",
+    "trimMetal": "adamantine"
+  }
+}

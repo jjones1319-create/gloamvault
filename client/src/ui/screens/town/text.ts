@@ -75,6 +75,28 @@ export function contractChips(c: Content, k: ContractDef, r: number): string[] {
   return out
 }
 
+/** "New dailies in 5 h · a new weekly in 3 days" (07 §7: dailies at 04:00, the weekly on Monday). */
+export function turnsOverWords(dailyMs: number, weeklyMs: number): string {
+  const span = (ms: number) => {
+    const hours = Math.max(1, Math.ceil(ms / 3_600_000))
+    if (hours < 24) return `${hours} h`
+    const days = Math.ceil(ms / DAY_MS)
+    return `${days} day${days === 1 ? '' : 's'}`
+  }
+  return `New dailies in ${span(dailyMs)} · a new weekly in ${span(weeklyMs)}`
+}
+
+/** A claim's toast: "+72 gold · 1 Standard Key · 2 × Torch" and what the week's cap held back. */
+export function claimWords(c: Content, r: { gold: number; keys: { standard: number; grand: number }; capped: { standard: number; grand: number }; items: readonly { itemId: string; amount: number }[]; chestId: string | null }): string {
+  const bits = [`+${r.gold} gold`]
+  if (r.keys.standard > 0) bits.push(`${r.keys.standard} Standard Key${r.keys.standard === 1 ? '' : 's'}`)
+  if (r.keys.grand > 0) bits.push(`${r.keys.grand} Grand Key${r.keys.grand === 1 ? '' : 's'}`)
+  for (const it of r.items) bits.push(`${it.amount} × ${c.items.get(it.itemId)?.name ?? titleCase(it.itemId)}`)
+  if (r.chestId) bits.push(`${c.chests.get(r.chestId)?.name ?? titleCase(r.chestId)} opened`)
+  const held = r.capped.standard + r.capped.grand
+  return `${bits.join(' · ')}${held > 0 ? ' (the week’s keys were already claimed)' : ''}`
+}
+
 /** The reward in plain words: gold at the player's band, keys, a chest, items. */
 export function contractReward(c: Content, k: ContractDef, r: number): string[] {
   const out = [`${goldFor(k.reward.goldR, r)} gold`]

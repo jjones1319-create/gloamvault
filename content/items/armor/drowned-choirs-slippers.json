@@ -1,0 +1,49 @@
+{
+  "id": "drowned-choirs-slippers",
+  "name": "Drowned Choir's Slippers",
+  "slot": "boots",
+  "kind": "armor",
+  "grade": "D",
+  "materialLadder": "cloth",
+  "materialRung": 2,
+  "weaponType": null,
+  "armorFamily": "robes",
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "defense": 0,
+    "hp": 2,
+    "dodge": 1
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 1,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 5,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 0.78,
+  "value": 190,
+  "classLock": [
+    "arcanist"
+  ],
+  "setId": "drowned-choirs-vestments",
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "armor-robes-boots-01",
+    "tintPrimary": "#16324a",
+    "tintSecondary": "#dfe7ea",
+    "trimMetal": "steel"
+  }
+}

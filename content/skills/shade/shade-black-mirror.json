@@ -1,0 +1,57 @@
+{
+  "id": "shade-black-mirror",
+  "classId": "shade",
+  "school": "venom",
+  "tier": 4,
+  "name": "Black Mirror",
+  "description": "Strip every buff from one enemy in any row (Fortify, Haste, Shield, Regen) and Curse it for 2 turns.",
+  "type": "active",
+  "cost": 28,
+  "weight": 800,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "strip-all-buffs",
+      "status": "shield",
+      "amount": 0,
+      "note": "strips every buff; with `amount` 1 the target’s `status` goes to the holder"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "curse",
+      "duration": 2
+    }
+  ],
+  "prerequisiteId": "shade-hags-hex",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Stolen Shield goes to you.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "strip-all-buffs",
+        "status": "shield",
+        "amount": 1
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "reach",
+    "debuff"
+  ],
+  "xpTags": [
+    "agility",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "debuff",
+    "priority": 55
+  }
+}

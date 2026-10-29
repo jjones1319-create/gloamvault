@@ -16,10 +16,12 @@
     },
     "target": {
       "type": "object",
-      "description": "What the condition counts. Every key is optional; the linter checks the ones the kind needs: kill → count and one of familyId/monsterId; clear → floor or dungeonId; light → lightMin; collect → count.",
+      "description": "What the condition counts. Every key is optional; lint rule 56 checks the ones the kind needs: kill and noWipe → count and one of familyId/monsterId/monsterIds or a condition; clear → a zoneId, floor or dungeonId; light → lightMin or lightMax; collect → count or goldR; a condition is one the sim knows (sim/src/contracts.ts).",
       "properties": {
         "familyId": { "$ref": "common.schema.json#/$defs/id", "description": "The monster family counted (Vermin)." },
         "monsterId": { "$ref": "common.schema.json#/$defs/id", "description": "A specific monster (a hunter, a boss)." },
+        "monsterIds": { "type": "array", "description": "Several monsters counted together (the Grinning Company, the Cellars vermin): any of them counts. Phase 7.", "items": { "$ref": "common.schema.json#/$defs/id" }, "minItems": 1, "uniqueItems": true },
+        "curioId": { "$ref": "common.schema.json#/$defs/id", "description": "A curio of the target dungeon the condition watches (no-curio-opened: Keeper's Peace's Sealed Sarcophagus). Phase 7." },
         "dungeonId": { "$ref": "common.schema.json#/$defs/id" },
         "zoneId": { "$ref": "common.schema.json#/$defs/id" },
         "count": { "type": "integer", "minimum": 1 },
@@ -29,7 +31,7 @@
         "difficultyMin": { "$ref": "common.schema.json#/$defs/difficulty" },
         "partyMin": { "type": "integer", "minimum": 1, "maximum": 4 },
         "goldR": { "type": "number", "description": "For collect: unbanked gold in R to return with.", "exclusiveMinimum": 0 },
-        "condition": { "type": "string", "description": "An arena or floor condition the sim checks by name ('tide-below-step-4', 'no-sealed-sarcophagus-opened').", "minLength": 1 }
+        "condition": { "type": "string", "description": "An arena or floor condition the sim checks by name (sim/src/contracts.ts CONTRACT_CONDITIONS: 'zone-hunter', 'at-stairs', 'chests-opened-one-floor', 'parts-sold-one-delve', 'no-curio-opened', 'tide-below-step-4').", "minLength": 1 }
       },
       "additionalProperties": false
     },

@@ -1,0 +1,48 @@
+{
+  "id": "ironwood-recurve-bow",
+  "name": "Ironwood Recurve Bow",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "B",
+  "materialLadder": "wood",
+  "materialRung": 4,
+  "weaponType": "shortbow",
+  "armorFamily": null,
+  "hands": 2,
+  "damageType": "pierce",
+  "weight": 1000,
+  "baseStats": {
+    "attackPhys": 46,
+    "critRate": 4
+  },
+  "requirements": {
+    "strength": 14,
+    "wisdom": 0
+  },
+  "affixSlots": 2,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 7,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 6.51,
+  "value": 1500,
+  "classLock": [
+    "ranger"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-recurve-bow-01",
+    "tintPrimary": "#4a3b2f",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "blacksteel"
+  }
+}

@@ -1,6 +1,6 @@
 # Ranger — class sheet
 
-*Last updated 2026-10-27 · rev. 2 (checkpoint 1: open questions answered by delegation — D-099) · rev. 1 2026-10-26 · numbers are tuning starting points*
+*Last updated 2026-10-28 · rev. 5 (Phase 7 joints: Wayfinder, Ambush Sense and the passives' Detection read by the delve; Cartography's reveal; the corridor-skills line) · rev. 4 (Phase 7 class-damage pass: the tuned multipliers in §4 and "As tuned" under it) · rev. 3 (Phase 7: Tiers IV–V as built — §4's "As built" note; D-099's cap on Never Lost; the technique rule as accepted) · rev. 2 (checkpoint 1: open questions answered by delegation — D-099) · rev. 1 2026-10-26 · numbers are tuning starting points*
 
 *Every number below (costs, multipliers, durations, the Cellars monster stats in §8) is a starting point for the simulator and the balance runner, not a commitment. Rules referenced are `03-GAME-DESIGN.md` (§2 stats, §3 timeline, §4 exploring, §5 level-by-use, §6 gear, §7 skills). Status numbers quoted in skill lines (Bleed 25% of the applying hit per turn for 3 turns, ignores Defense · Poison 3% of max HP per turn, ignores Defense · Weaken −20% Attack · Fortify +20% Defense · Mark +20% damage taken · Slow ×0.67 Speed · Haste ×1.5 · Daze −500 energy · Petrify −1,000 energy) belong to `content/statuses/<id>.json` (`03` §3.5 is the table) and are repeated here only so the lines read on their own.*
 
@@ -54,7 +54,7 @@ The Ranger's Ultimate rewards the Mark-first rhythm: a Marksman who has Marked t
 
 ## 4. The three schools
 
-*Reading the tables.* Cost is Stamina. Weight is energy subtracted after the action (light 800 · normal 1,000 · heavy 1,400). Multipliers are of Attack; heavy 1,400-weight skills carry about ×1.3 on their multiplier to pay for the weight. "Any row" = the Ranger chooses. "Field" = a trap laid on the enemy side that fires on a condition. Each Tier II–V skill names exactly one Tier N−1 skill of its own school as prerequisite. Rank 1–10 grows by use (+4% effect, −2% cost per rank); Mastery is the rank-10 line. Insight sweet spots by tier (enemy level ≈ tier × 6): Tier II at L9–15 (the Crypts, the Vault), Tier III at L15–21 (the Fungal Deep), Tier IV at L21–27 (Emberforge). **Monster techniques** only Insight while the named monster uses the move; proposed flat 10% per witnessed use, pity at 10 (see §10).
+*Reading the tables.* Cost is Stamina. Weight is energy subtracted after the action (light 800 · normal 1,000 · heavy 1,400). Multipliers are of Attack; heavy 1,400-weight skills carry about ×1.3 on their multiplier to pay for the weight. "Any row" = the Ranger chooses. "Field" = a trap laid on the enemy side that fires on a condition. Each Tier II–V skill names exactly one Tier N−1 skill of its own school as prerequisite. Rank 1–10 grows by use (+4% effect, −2% cost per rank); Mastery is the rank-10 line. Insight sweet spots by tier (enemy level ≈ tier × 6): Tier II at L9–15 (the Crypts, the Vault), Tier III at L15–21 (the Fungal Deep), Tier IV at L21–27 (Emberforge). **Monster techniques** are learned only by witnessing the named monster use the move: a flat 10% per witnessed use, certain by the 10th (D-028, D-099; the witness also needs the technique's prerequisite). They are never sold and never come in a Tome.
 
 ### 4.1 Marksman — aimed shots, marks, either-row damage, first strike
 
@@ -62,15 +62,15 @@ The Ranger's Ultimate rewards the Mark-first rhythm: a Marksman who has Marked t
 
 | Tier | Skill | Type | Cost | Weight | Target | Effect | Prerequisite | Mastery (rank 10 bonus) |
 |---|---|---|---|---|---|---|---|---|
-| I | Aimed Shot | Active | 10 | 1,000 | Single any row | 1.4× Pierce; +10% Accuracy, +10% Crit Rate for this shot; 1 arrow | — | +20% Crit Rate |
+| I | Aimed Shot | Active | 10 | 1,000 | Single any row | 2.1× Pierce; +10% Accuracy, +10% Crit Rate for this shot; 1 arrow | — | +20% Crit Rate |
 | I | Hunter's Mark | Active | 8 | 800 | Single any row | Mark 3 turns (+20% damage taken from everyone, `03` §3.5); +5 Momentum | — | Mark 4 turns at +25% |
 | I | Steady Draw | Passive | — | — | Passive | Your first action in each fight has weight 800 and deals +20% | — | Also +10 Momentum |
-| II | Piercing Shot | Active | 14 | 1,000 | Single + behind | 1.5× Pierce to the target and 0.8× to the enemy directly behind it in the other row; 1 arrow | Aimed Shot | 0.8× becomes 1.1× |
+| II | Piercing Shot | Active | 14 | 1,000 | Single + behind | 2.25× Pierce to the target and 1.2× to the enemy directly behind it in the other row; 1 arrow | Aimed Shot | 1.2× becomes 1.65× |
 | II | Quarry | Passive | — | — | Passive | +10% damage and +10% Crit Rate against Marked targets; killing a Marked target refunds the Mark's Stamina and grants +10 Momentum | Hunter's Mark | +15% / +15% |
-| II | Snap Shot | Active | 12 | 800 | Single any row | 1.1× Pierce; light; 1 arrow | Steady Draw | 1.3× |
-| III | Deadeye | Active | 22 | 1,400 | Single any row | 2.6× Pierce; guaranteed crit against a Marked target; 1 arrow | Piercing Shot | 3.0× |
+| II | Snap Shot | Active | 12 | 800 | Single any row | 1.65× Pierce; light; 1 arrow | Steady Draw | 1.95× |
+| III | Deadeye | Active | 22 | 1,400 | Single any row | 2.85× Pierce; guaranteed crit against a Marked target; 1 arrow | Piercing Shot | 3.3× |
 | III | Predator's Patience | Passive | — | — | Passive | Each of your turns spent not attacking (Guard, Item, Mark, a Pathfinder active) adds +25% to your next shot (max +75%) | Quarry | Max +100% |
-| III | Volley | Active | 24 | 1,000 | All enemies | 1.0× Pierce to every enemy in both rows; 3 arrows | Snap Shot | 1.2× |
+| III | Volley | Active | 24 | 1,000 | All enemies | 1.1× Pierce to every enemy in both rows; 3 arrows | Snap Shot | 1.3× |
 | IV | Heartseeker | Active | 32 | 1,000 | Single any row | 2.8× Pierce; ignores 50% of the target's Defense (the anti-Plate shot); Bleed 2 turns; 1 arrow | Deadeye | Ignores 75% |
 | IV | One Shot | Passive | — | — | Passive | A crit against a fodder-role enemy below 25% HP kills it outright (never elites or bosses); Crit Damage +10% | Predator's Patience | Threshold 35% |
 | IV | Rain of Points | Active | 35 | 1,400 | All enemies | 1.5× Pierce to every enemy; Slow 1 turn; 5 arrows | Volley | 1.8× |
@@ -84,15 +84,15 @@ The Ranger's Ultimate rewards the Mark-first rhythm: a Marksman who has Marked t
 
 | Tier | Skill | Type | Cost | Weight | Target | Effect | Prerequisite | Mastery (rank 10 bonus) |
 |---|---|---|---|---|---|---|---|---|
-| I | Snare | Active | 10 | 1,000 | Single any row | 0.8× Pierce; Root 2 turns (cannot swap rows, cannot flee); 1 arrow | — | Root 3 turns |
+| I | Snare | Active | 10 | 1,000 | Single any row | 1.2× Pierce; Root 2 turns (cannot swap rows, cannot flee); 1 arrow | — | Root 3 turns |
 | I | Caltrop Toss | Active | 12 | 1,000 | Enemy front row (field) | For 3 turns every enemy standing in the front row takes 0.5× Pierce at its turn start | — | Also Slow 1 turn on each tick |
 | I | Quick Hands | Passive | — | — | Passive | Trap Disarm +2; Trapper skills cost −10%; disarming a trap in the corridor grants +10 Momentum at the start of the next fight | — | Trap Disarm +4 |
-| II | Net Throw | Active | 16 | 1,000 | Single any row | **Grab** 1 turn — the target cannot act until it is freed (any hit on it by an ally frees it; the Ranger's own shots do not); 0.6× Blunt | Snare | Grab survives one ally hit |
+| II | Net Throw | Active | 16 | 1,000 | Single any row | **Grab** 1 turn — the target cannot act until it is freed (any hit on it by an ally frees it; the Ranger's own shots do not); 0.9× Blunt | Snare | Grab survives one ally hit |
 | II | Tripwire | Active | 14 | 800 | Field | The next enemy to change rows, charge or use a reach attack is Dazed and takes 1.0× Pierce | Caltrop Toss | Two triggers |
-| II | Hamstring | Active | 13 | 1,000 | Single any row | 1.2× Pierce; Slow 2 turns; **part-break**: marks a leg, doubling that monster's rare-part roll (§6.5); 1 arrow | Quick Hands | Rare-part roll ×3 |
-| III | Spring Trap | Active | 22 | 1,000 | Single any row | 1.8× Pierce; if the target is Rooted, Grabbed or Webbed, Stun 1 turn; 1 arrow | Net Throw | 2.2× |
+| II | Hamstring | Active | 13 | 1,000 | Single any row | 1.8× Pierce; Slow 2 turns; **part-break**: marks a leg, doubling that monster's rare-part roll (§6.5); 1 arrow | Quick Hands | Rare-part roll ×3 |
+| III | Spring Trap | Active | 22 | 1,000 | Single any row | 2.0× Pierce; if the target is Rooted, Grabbed or Webbed, Stun 1 turn; 1 arrow | Net Throw | 2.4× |
 | III | Snare-Sense | Passive | — | — | Passive | Enemies under Root, Grab or Web take +15% damage from your party; your Detection +3 | Tripwire | +25% / Detection +5 |
-| III | Deep Tentacle's Drag | Active | 24 | 1,000 | Single back-row enemy | **(monster technique: deep tentacle)** Grab 1 turn and pull the target into the enemy front row, swapping it with a front-row enemy; 1.2× Blunt | Hamstring | Also Weaken 2 turns |
+| III | Deep Tentacle's Drag | Active | 24 | 1,000 | Single back-row enemy | **(monster technique: deep tentacle)** Grab 1 turn and pull the target into the enemy front row, swapping it with a front-row enemy; 1.3× Blunt | Hamstring | Also Weaken 2 turns |
 | IV | Bear Jaw | Active | 30 | 1,000 | Field, enemy front row | A trap that fires on the next enemy action taken from the front row: 2.5× Pierce, Bleed 3 turns, Root 2 turns | Spring Trap | 3.0× |
 | IV | Dismantle | Passive | — | — | Passive | Your part-breaks drop a guaranteed common part; a failed Trap Disarm never triggers on you | Snare-Sense | Part-breaks also roll a rare part at +10% |
 | IV | Spiked Net | Active | 32 | 1,000 | Enemy front row | Web 1 turn on every front-row enemy (cannot act until the Web ends); 0.8× Pierce to each | Deep Tentacle's Drag | Also the back row at 50% chance |
@@ -120,7 +120,25 @@ The Ranger's Ultimate rewards the Mark-first rhythm: a Marksman who has Marked t
 | IV | Rearguard | Active | 30 | 800 | Party back row | Every back-row ally gains Shield = 20% of its max HP for 2 turns and cannot be targeted by reach attacks for 1 turn | Cover Fire | 3 turns |
 | V | Nightwalker | Active | 40 | 1,000 | Party / floor | Corridor: for the rest of the floor the party reads Light one band brighter and monsters get no Dark-band bonuses (push your luck for the loot bonus at no risk). Combat: Blind 2 turns on every enemy | Wayfinder | Lasts the whole delve |
 | V | Hunter's Hour | Active | 50 | 1,400 | Party | Haste 2 turns to every ally; +20 Momentum each | Grave Bat's Screech | Haste 3 turns |
-| V | Never Lost | Passive | — | — | Passive | The party is never ambushed; room entries tick the floor clock half as often; Detection +5 | Rearguard | The party always surprises fodder-only encounters |
+| V | Never Lost | Passive | — | — | Passive | Party ambush chance −30% (D-099: a cap, not immunity, so Perception keeps its job); room entries tick the floor clock half as often; Detection +5 | Rearguard | The party always surprises fodder-only encounters |
+
+**As built (Phase 7).** Tiers IV–V are content (`content/skills/ranger/`, written by `tools/content/gen-class-ranger.ts`). Tier V is written but locked until Segment 3's endgame (D-099: no Insight, no Tome, no Skill Hall); Tier IV comes from Insight, boss Tomes and Skill Tome chests, never the Hall. The readings where a row needed one:
+- **Heartseeker** and **Comet Shot** ("ignores N% of Defense"): the shot lands as if N% of the target's Defense were gone (`ignore-defense-percent`). Comet Shot's kill pays its +30 Momentum once.
+- **One Shot**: once your action resolves, a fodder-role enemy your crit left under 25% HP dies. Elites, specials, bosses and hunters never do.
+- **Apex Hunter**: a Marked enemy takes +30% from the whole party in place of the Mark's +20 (the higher of it and a Mastery Mark, never both). The Crit Rate cap of 55% is a stub: the cap is a stat clamp no passive reaches yet.
+- **Bear Jaw** springs on the first enemy to start a turn in the front row, before it can act, then it is gone. **Killing Field** ticks each enemy at its own turn start for 3 of its turns.
+- **Dismantle**: a limb you break drops that monster's common part (a guaranteed part in the fight's loot). Its failed-disarm half is the same line as Saboteur's Mastery.
+- **Hunter's Cage** is Net Throw's hold made unbreakable. A boss is caged for 1 turn even though a Grab cannot otherwise hold a boss.
+- **Trapmaster**: once per round a trap-laying skill (Caltrop Toss, Tripwire, Bear Jaw, Killing Field) weighs 400. The +30% trap damage reaches Bear Jaw and Killing Field; Caltrop Toss and Tripwire do not read it yet. The Mastery's "three traps" changes nothing, because the sim caps no field.
+- **Rearguard**: "reach attacks" are melee blows into the back row, so a ranged shot still lands. Its Mastery's "3 turns" is the Shield's duration.
+- **Grave Bat's Screech** is the Ranger's Tier IV technique (the Grave Bat's Shriek teaches it).
+- **Wayfinder** works through the delve's own reads (Phase 7 joints). Its Cartography +2 counts in the Cartography reveal — entering a room shows the rooms within one ring per 3 ranks, so a Ranger's starting 2 becomes 4 (`09` §5; the reveal itself was built with this joint) — and in the traps a Cartography rank spots (the Coffin Catapult's 3+). The hunter comes 10 ticks later than the floor's own clock (Mastery 20): 50 instead of 40 on a standard floor, and a Hard floor's 32 becomes 42, so the presets keep their bite. A floor holds its secret room 10 points more often (Mastery 15); a floor with no secret keeps none.
+- **Ambush Sense**'s −10 now reaches the ambush roll — a bug since Phase 3: the delve read only the pets' traits — and the Detection lines on passives (Keen Eyes, Snare-Sense) count outside a fight. The heroes' ambush lines take the best single hero's, never past D-099's −30, and add to the best pet's.
+- **Waiting for Tier V to open** (each logs a `hookStub` the runner counts): Nightwalker's corridor light (its combat Blind works); Never Lost's half-speed floor clock and its Mastery. Its −30% and Detection +5 already go through the reads above.
+- **Corridor skills** (D-099, pass D, `sim/src/corridor.ts`): Flint & Tinder, Trailblaze, Double Time and Scout Ahead also work out of combat, from the delve's corridor menu. Each costs its Stamina (as a share of the pool), takes no turn and no floor-clock tick, and does not train the skill; Blind Map leaves Scout Ahead nothing to do.
+
+
+**As tuned (Phase 7, the class-damage pass).** `tools/balance/class-damage.ts` measures each class alone against every zone’s standard monsters at its own level, as single-target damage per round (10 timeline ticks: one normal action of a Speed-100 hero), at levels 1, 5, 8 and 13; the brief is that no damage dealer outdoes another by more than about 1.5×. Before the pass the spread was 2.6× / 2.5× / 3.1× / 2.5×; after it, 1.41× / 1.28× / 1.49× / 1.49×. On the first numbers the Ranger dealt a third to a half of the Arcanist and the Blade (L1 30 against 79 and 72; L8 44 against 134): its Attack grows only with Strength, which it barely trains, and the Crypts halve Pierce. Its Tier I–II damage multipliers are now ×1.5 (Aimed Shot 2.1×, Snare 1.2×, Piercing Shot 2.25× + 1.2×, Snap Shot 1.65×, Hamstring 1.8×, Net Throw 0.9×) and its Tier III ones ×1.1 (Deadeye 2.85×, Spring Trap 2.0×, Volley 1.1×, Deep Tentacle's Drag 1.3×); the tables above carry them. They sit above `04` §1's bands on purpose — the bands assume an Attack built on Strength. Tier IV–V keep the sheet's numbers until a dungeon where they can be met (Dungeon 2) gives them their own measure. §8's worked example keeps its original arithmetic.
 
 ---
 

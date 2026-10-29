@@ -1,0 +1,54 @@
+{
+  "id": "shade-phantom-twin",
+  "classId": "shade",
+  "school": "shadow",
+  "tier": 4,
+  "name": "Phantom Twin",
+  "description": "For 2 turns, the first single-target attack aimed at you each turn hits a decoy and misses; +15 Momentum.",
+  "type": "active",
+  "cost": 30,
+  "weight": 800,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "decoy-each-turn",
+      "duration": 2,
+      "target": "self",
+      "note": "for `duration` turns the first single-target attack on the holder each turn misses (a decoy)"
+    },
+    {
+      "kind": "momentum",
+      "amount": 15
+    }
+  ],
+  "prerequisiteId": "shade-wraith-step",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "3 turns.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "decoy-each-turn",
+        "duration": 3,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "momentum"
+  ],
+  "xpTags": [
+    "agility"
+  ],
+  "aiHints": {
+    "role": "defend",
+    "priority": 50
+  }
+}

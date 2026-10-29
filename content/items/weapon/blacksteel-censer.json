@@ -1,0 +1,48 @@
+{
+  "id": "blacksteel-censer",
+  "name": "Blacksteel Censer",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "B",
+  "materialLadder": "metal",
+  "materialRung": 4,
+  "weaponType": "censer",
+  "armorFamily": null,
+  "hands": 1,
+  "damageType": "blunt",
+  "weight": 1000,
+  "baseStats": {
+    "attackPhys": 33,
+    "attackSpell": 33
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 13
+  },
+  "affixSlots": 2,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 7,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 3.26,
+  "value": 1000,
+  "classLock": [
+    "mender"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-censer-01",
+    "tintPrimary": "#2f3136",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "blacksteel"
+  }
+}

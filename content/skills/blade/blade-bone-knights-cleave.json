@@ -1,0 +1,66 @@
+{
+  "id": "blade-bone-knights-cleave",
+  "classId": "blade",
+  "school": "executioner",
+  "tier": 4,
+  "name": "Bone Knight's Cleave",
+  "description": "1.6× Slash to every front-row enemy; Fear 1 turn on each. Monster technique: learned only while a Bone Knight uses the move.",
+  "type": "active",
+  "cost": 32,
+  "weight": 1400,
+  "target": "enemyFront",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1.6,
+      "damageType": "slash",
+      "target": "enemyRow",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "fear",
+      "duration": 1,
+      "target": "enemyRow"
+    }
+  ],
+  "prerequisiteId": "blade-breakers-arc",
+  "isUltimate": false,
+  "monsterTechniqueOf": "bone-knight",
+  "monsterTechniqueMoveIds": [
+    "cleave"
+  ],
+  "requirements": {
+    "weaponTypes": [
+      "greatsword",
+      "greataxe"
+    ]
+  },
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "2.0×.",
+    "effects": [
+      {
+        "kind": "damage",
+        "multiplier": 2,
+        "damageType": "slash",
+        "target": "enemyRow",
+        "scalesWith": "strength"
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "control"
+  ],
+  "xpTags": [
+    "strength"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 65
+  }
+}

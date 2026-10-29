@@ -42,7 +42,8 @@
     ],
     "stackMax": 10,
     "target": "room",
-    "inCombat": false
+    "inCombat": true,
+    "text": "+25 light; in a fight, an Item action (it relights an arena brazier)"
   },
   "ammo": null,
   "visual": {

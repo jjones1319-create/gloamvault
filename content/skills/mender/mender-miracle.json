@@ -1,0 +1,74 @@
+{
+  "id": "mender-miracle",
+  "classId": "mender",
+  "school": "benediction",
+  "tier": 5,
+  "name": "Miracle",
+  "description": "Every ally and pet is healed in full and loses every debuff; every downed and fallen ally is revived at 60% HP. Once per fight. Heavy cast.",
+  "type": "active",
+  "cost": 50,
+  "weight": 1400,
+  "target": "allAllies",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "skill-once-per-fight",
+      "target": "self",
+      "note": "the skill works once per fight: a second cast in the same fight resolves nothing"
+    },
+    {
+      "kind": "heal",
+      "percent": 100,
+      "scalesWith": "wisdom",
+      "note": "a full heal: 100% × healing power, capped at max HP"
+    },
+    {
+      "kind": "dispel",
+      "note": "on allies: every debuff"
+    },
+    {
+      "kind": "revive",
+      "percent": 60,
+      "target": "allDowned",
+      "note": "every downed ally"
+    },
+    {
+      "kind": "custom",
+      "customId": "revive-fallen",
+      "percent": 60,
+      "target": "self",
+      "note": "every fallen ally (no `amount`: no limit; the skill itself is once per fight)"
+    }
+  ],
+  "prerequisiteId": "mender-rebirth",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Allies also gain Fortify 2 turns.",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "fortify",
+        "duration": 2
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "heal",
+    "cleanse",
+    "revive"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "heal",
+    "priority": 98
+  }
+}

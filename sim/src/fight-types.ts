@@ -94,7 +94,7 @@ export interface HeroActorData {
     dual: boolean
     offHandAttackPercent: number
     heavy: boolean
-    /** Bows and crossbows: either row; ammo counts later. */
+    /** Bows and crossbows: either row; their arrows and bolts are counted in `ammo` (08 §4, D-099). */
     ranged: boolean
     reach: boolean
     onHit: Effect[]
@@ -106,6 +106,11 @@ export interface HeroActorData {
   bag: ItemInstance[]
   aiRule: string
   relicUsesLeft: number
+  /**
+   * The bow's or crossbow's ammo the delve counts for this fight (08 §4, D-099; sim/src/ammo.ts): a basic attack
+   * spends 1, a shot skill its `consume-ammo` lines; empty, the basic attack is a Bash. Absent or null: not counted.
+   */
+  ammo?: { itemId: string; left: number; spent: number } | null
   stanceChangeUsed: boolean
   /** Species rule knobs the fight consults. */
   species: {
@@ -146,6 +151,22 @@ export interface MonsterActorData {
   goldMultiplier: number
   xpClass: number
   summonedBy: string | null
+  /**
+   * A telegraphed attack wound up on the monster's last turn (06 §8.10: "none lands on the turn its tell shows"):
+   * it lands on the monster's next turn unless a Daze or a Silence breaks it first (arena.ts). Absent or null: none.
+   */
+  windup?: MonsterWindup | null
+}
+
+/** A telegraphed attack between its tell and its blow (arena.ts; the HUD's hint and the 3D model's tell read it). */
+export interface MonsterWindup {
+  attackId: string
+  /** The hero it will strike, when the attack names one (Verdict's swinging lantern). */
+  targetId: string | null
+  /** The two-word hint (06 §8.10, 07 §2.8; D-099). */
+  hint: string
+  /** The log length when the tell was shown: a Daze or Silence logged after it breaks the wind-up. */
+  sinceLog: number
 }
 
 export interface PetActorData {
@@ -192,6 +213,11 @@ export interface Actor {
   grabDamage: number
   /** Did this actor act since the round started (heroes only count toward rounds). */
   actedThisRound: boolean
+  /**
+   * D-127 (Proposed): a control status's timeline push (Freeze, Stun, Daze, Petrify) has landed since this actor's last
+   * turn, so another one only applies the status, not the push (statuses.ts applyStatus); cleared when its turn comes up.
+   */
+  pushGuard?: boolean
   /** The last enemy this actor attacked (a Fierce pet follows it; bandit dogs follow their handler's). */
   lastTargetId: string | null
   tally: ActorTally
@@ -214,6 +240,10 @@ export type FightCommand =
   | { kind: 'flee' }
   | { kind: 'freeAlly'; targetId: string }
   | { kind: 'stance'; stance: Stance }
+  /** A boss arena's interactable (07 §2.8): shoot a keg, burn a bone pile, turn the sluice wheel. arena.ts. */
+  | { kind: 'arena'; propId: string }
+  /** The worn relic's active (08 §3; relics.ts): an Item action, or no turn at all when it is instant. */
+  | { kind: 'relic'; targetId: string | null }
   | { kind: 'auto' }
 
 export interface LegalFightAction {
@@ -280,6 +310,8 @@ export interface FightState {
   flags: Record<string, number | string | boolean>
   /** The actor whose turn is resolving (a status it gains now does not count down at this turn's end; D-077). */
   actingId: string | null
+  /** A boss fight's arena (07 §2.8; sim/src/arena.ts): its light steps, tide, braziers, props and tells. Absent or null elsewhere. */
+  arena?: ArenaState | null
 }
 
 export interface FightOptions {
@@ -297,4 +329,120 @@ export interface FightOptions {
   floor: number
   /** The party's carried gold when the fight began (a Cutpurse steals a share of it). */
   partyGold: number
+  /** A Torch's light in this fight (07 §6.1's knob: +25, Dread +20, the Candle Pact +15); absent: the item's own line. */
+  torchValue?: number
+}
+
+/* ---------- boss arenas (07 §2.8; sim/src/arena.ts) ---------- */
+
+/** What an arena interactable is: Vexa's kegs, the Warden's bone piles, Naesa's sluice wheel, the King's braziers. */
+export type ArenaPropKind = 'keg' | 'pile' | 'sluice' | 'brazier'
+
+/** One interactable of the arena (07 §2.8): a hero's Arena action works on it (a brazier through a Torch Item action). */
+export interface ArenaProp {
+  /** 'keg-1', 'pile-3', 'sluice', 'brazier-2'. */
+  id: string
+  kind: ArenaPropKind
+  name: string
+  /** Hits left before it breaks (a keg spills, a pile burns out); 0 once it has, and for the sluice and the braziers. */
+  hitsLeft: number
+  /** A keg spilled, a pile burnt out, a brazier lit in this phase. */
+  done: boolean
+}
+
+/** A tell on show (07 §2.8 "the visible cue one turn before the dangerous thing"; D-099's two-word hint). */
+export interface ArenaTell {
+  /** The arena tell's id ('tide-rising', 'lantern-targeted' …). */
+  id: string
+  hint: string
+  cue: string
+  /** The round the thing it warns of happens. */
+  firesAtRound: number
+  /** Who shows it (the boss, or null for the room itself) and whom it threatens, when one hero. */
+  actorId: string | null
+  targetId: string | null
+}
+
+/** An add that fell, for the re-entries (07 §2.8: Vexa's crew rallies, Naesa's adds return, the King re-calls). */
+export interface ArenaFallenAdd {
+  monsterId: string
+  row: FightRow
+  fellAtRound: number
+  /** It came back already (each add re-enters once). */
+  returned: boolean
+  /** Where it came from: 'start' (the phase-1 adds), 'phase-2', 'call', 'deep', 'doors', 'heel', 'return', 'hunter'. */
+  group: string
+}
+
+/** One blow on a boss, queued by effects.ts's breakPart for the boss's several parts (06 §3: the conch, the crown …). */
+export interface ArenaHit {
+  attackerId: string | null
+  dealt: number
+  damageType: string
+  crit: boolean
+}
+
+/** The arena's tally (DelveState.stats.bossArenas keeps one row per boss fight; the balance runner reads it). */
+export interface ArenaStats {
+  lightMin: number
+  lanternsOut: number
+  candlesOut: number
+  doorsOpened: boolean
+  tideMax: number
+  sluiceTurns: number
+  braziersLit: number
+  torchesUsed: number
+  recalls: number
+  huntersReturned: number
+  huntersSkipped: number
+  pulls: number
+  tells: number
+  /** Telegraphed blows a Daze or a Silence broke off. */
+  tellsBroken: number
+}
+
+/** A boss fight's arena (07 §2.8): plain data on the fight, hashed with it. */
+export interface ArenaState {
+  /** The boss's monster id and its actor's id. */
+  bossId: string
+  bossActorId: string
+  /** The room template (07 §2.8: cel-t-tap-room, cry-t-wardens-vigil, vlt-t-drowned-chapel, vlt-t-throne). */
+  templateId: string | null
+  /** The boss's phase, 1-based (its monster's phaseIndex + 1), and the round it began. */
+  phase: number
+  phaseStartRound: number
+  /** The light the room set at the start (07 §2.3 "arena sets"). The live light is FightState.light. */
+  lightSet: number
+  /** Actor ids a non-reach melee blow cannot reach now (Vexa's barricade, the King on his throne); read by effects.ts. */
+  meleeBlocked: string[]
+  /** Vexa's barricade still stands. */
+  barricade: boolean
+  /** The Warden's ring: candles still lit of the ring's count. */
+  candles: { lit: number; of: number } | null
+  /** The Warden's secret doors (the sixth candle, or phase 2). */
+  doorsOpen: boolean
+  /** Naesa's tide (and the throne's water): the step 0–max, the round of the next rise, and whether a broken chain stopped it. */
+  tide: { level: number; max: number; nextRound: number | null; stopped: boolean } | null
+  props: ArenaProp[]
+  /** Tells on show now. */
+  tells: ArenaTell[]
+  /** Hints already shown this fight (a hint shows the first time it fires; D-099). */
+  hintsShown: string[]
+  fallen: ArenaFallenAdd[]
+  /** The Warden's Oath: the heroes who have struck him, and the one whose blow holds his attention. */
+  struckBy: string[]
+  oathHolderId: string | null
+  /** The King's returning hunters: waves done so far. */
+  hunterWaves: number
+  /** Boss parts broken (06 §3 part-breaks), by part id. */
+  partsBroken: string[]
+  /** Blows on the boss since the last turn ended (effects.ts breakPart queues them). */
+  hits: ArenaHit[]
+  /** Heroes who swapped rows since the throne's last tide tell (they are spared the pull). */
+  swapped: string[]
+  /** Each monster's row at the last check, for the slick floor (a monster that changes rows slips). */
+  rows: Record<string, FightRow>
+  /** Small one-off marks (a phase's opener used, an at-HP add spent, the sluice turned this round). */
+  flags: Record<string, number | string | boolean>
+  stats: ArenaStats
 }

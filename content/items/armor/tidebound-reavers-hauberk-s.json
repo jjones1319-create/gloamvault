@@ -1,0 +1,49 @@
+{
+  "id": "tidebound-reavers-hauberk-s",
+  "name": "Tidebound Reaver's Hauberk",
+  "slot": "chest",
+  "kind": "armor",
+  "grade": "S",
+  "materialLadder": "metal",
+  "materialRung": 6,
+  "weaponType": null,
+  "armorFamily": "mail",
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "defense": 36,
+    "hp": 48,
+    "stamina": 18
+  },
+  "requirements": {
+    "strength": 16,
+    "wisdom": 0
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 9,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 3.81,
+  "value": 2500,
+  "classLock": [
+    "blade"
+  ],
+  "setId": "tidebound-reavers-mail",
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "armor-mail-chest-01",
+    "tintPrimary": "#1e3a4a",
+    "tintSecondary": "#9ec5e0",
+    "trimMetal": "steel"
+  }
+}

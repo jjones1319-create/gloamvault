@@ -41,6 +41,8 @@ export interface AutoplayOptions {
   classes: string[]
   species: string[]
   level: number
+  /** The first delve's floor (`&floor=4`: start in the Crypts); later delves take the next floor in turn. */
+  floor?: number
 }
 
 const STEP_MS = 1100
@@ -52,7 +54,7 @@ export async function startAutoplay(opts: AutoplayOptions): Promise<void> {
   w.__gvSoak = []
   w.__gvSoakDone = false
   let seed = 101
-  let floor = 1
+  let floor = Math.max(1, Math.floor(opts.floor ?? 1))
   let delves = 0
   let rooms = 0
   let fights = 0
@@ -66,9 +68,12 @@ export async function startAutoplay(opts: AutoplayOptions): Promise<void> {
     delves++
     seen = new Set()
     stale = 0
-    await startDeepDelve({ dungeonId: 'gravehollow-keep', floor, seed, classes: opts.classes, species: opts.species, level: opts.level, auto: false })
+    // Every floor in turn (Phase 7: the Crypts and the Vault too), the party at least the floor's monster level.
+    const floors = content.value?.dungeons.get('gravehollow-keep')?.floors ?? []
+    const level = Math.max(opts.level, floors[floor - 1]?.monsterLevel ?? 1)
+    await startDeepDelve({ dungeonId: 'gravehollow-keep', floor, seed, classes: opts.classes, species: opts.species, level, auto: false })
     seed++
-    floor = (floor % 3) + 1
+    floor = (floor % Math.max(1, floors.length)) + 1
   }
   await begin()
   setFightSpeed(2)

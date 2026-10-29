@@ -58,19 +58,46 @@ export function attributeGrowth(content: Content, t: Tuning, hero: HeroRecord, a
 
 /* ---------- skills ---------- */
 
-export type SkillState = { known: true; rank: number; mastery: boolean } | { known: false; where: string; open: boolean }
+export type SkillState = { known: true; rank: number; mastery: boolean } | { known: false; where: string; open: boolean; locked?: boolean }
 
-/** Known (rank, Mastery at 10) or where to get it (03 §7.2, §7.4, §7.5). */
+const ROMAN_TIER: Readonly<Record<number, string>> = { 1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V' }
+
+/** "warren-troll" → "Warren Troll": a monster the content does not hold yet, by its 06 id. */
+function idName(id: string): string {
+  return id
+    .split('-')
+    .map((w) => (w ? w[0]!.toUpperCase() + w.slice(1) : w))
+    .join(' ')
+}
+
+/** "a Wraith use Wail": the technique's monster and its move (any of its moves when the skill names none). */
+export function techniqueSource(content: Content, skill: SkillDef): string {
+  const id = skill.monsterTechniqueOf ?? skill.monsterTechniqueLater
+  if (!id) return ''
+  const m = content.monsters.get(id)
+  const moves = (skill.monsterTechniqueMoveIds ?? []).map((mv) => m?.attacks.find((a) => a.id === mv)?.name).filter((x): x is string => !!x)
+  return `a ${m?.name ?? idName(id)}${moves.length ? ` use ${moves.join(' or ')}` : ''}`
+}
+
+/**
+ * Known (rank, Mastery at 10) or where to get it (03 §7.2, §7.4, §7.5; Phase 7): the Skill Hall sells Tiers I–III; a
+ * technique comes only by watching its monster use the move (the count shows); Tier IV and the Ultimate come from
+ * Insight or a Skill Tome, never the Hall; Tier V is locked until the endgame of later dungeons (D-099).
+ */
 export function skillState(content: Content, t: Tuning, hero: HeroRecord, skill: SkillDef): SkillState {
   const known = hero.skills.find((s) => s.skillId === skill.id)
   if (known) return { known: true, rank: known.rank, mastery: known.rank >= t.xp.skill.maxRank }
   const open = skill.tier <= tierOpenAt(t, hero.level)
   const opensAt = (t.skills.tierOpensAtLevel as Record<string, number>)[String(skill.tier)]
-  if (!open) return { known: false, open, where: `Opens at Lv ${opensAt ?? '?'}` }
+  if (skill.tier > t.skills.obtainableTierMax.value) return { known: false, open: false, locked: true, where: 'Locked: the endgame of later dungeons' }
+  if (skill.monsterTechniqueLater) return { known: false, open: false, locked: true, where: `Watch ${techniqueSource(content, skill)} (a later dungeon)` }
   if (skill.monsterTechniqueOf) {
-    return { known: false, open, where: `Insight: watch ${content.monsters.get(skill.monsterTechniqueOf)?.name ?? 'its monster'}` }
+    const seen = hero.techniqueWitness?.[skill.id] ?? 0
+    return { known: false, open, where: `Watch ${techniqueSource(content, skill)}${seen > 0 ? ` · seen ${seen} of ${t.techniques.guaranteedByUse}` : ''}` }
   }
-  if (skill.isUltimate || skill.tier > t.skills.skillHall.highestTierSold) return { known: false, open, where: 'Insight in the dungeon' }
+  if (skill.isUltimate) return { known: false, open, where: 'A Skill Tome: bosses, Skill Tome chests' }
+  if (skill.tier > t.skills.skillHall.highestTierSold) return { known: false, open, where: open ? 'Insight or a Skill Tome (never sold)' : `Insight or a Skill Tome · Tier ${ROMAN_TIER[skill.tier] ?? skill.tier} is for Lv ${opensAt ?? '?'}` }
+  if (!open) return { known: false, open, where: `Opens at Lv ${opensAt ?? '?'}` }
   const prereq = skill.prerequisiteId && !hero.skills.some((s) => s.skillId === skill.prerequisiteId) ? content.skills.get(skill.prerequisiteId)?.name : null
   return { known: false, open, where: prereq ? `Skill Hall, after ${prereq}` : 'Skill Hall' }
 }

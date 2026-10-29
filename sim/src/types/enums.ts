@@ -442,8 +442,8 @@ export type DeathRule = (typeof DEATH_RULES)[number]
 export const BODY_FRAMES = ['broad', 'slight'] as const
 export type BodyFrame = (typeof BODY_FRAMES)[number]
 
-/** wayfarer.schema.json `grade` (D-091): the Segment 1 cast is graded D to A. */
-export const WAYFARER_GRADES = ['D', 'C', 'B', 'A'] as const
+/** wayfarer.schema.json `grade` (D-091): the Segment 1 cast is graded D to A; S since Phase 7 (the Grand Wayfarer Chest). */
+export const WAYFARER_GRADES = ['D', 'C', 'B', 'A', 'S'] as const
 export type WayfarerGrade = (typeof WAYFARER_GRADES)[number]
 
 /** An encounter's threat against the party's level (D-092). */

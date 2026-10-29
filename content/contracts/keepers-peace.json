@@ -1,0 +1,25 @@
+{
+  "id": "keepers-peace",
+  "name": "Keeper's Peace",
+  "description": "Clear a Crypts floor without opening a Sealed Sarcophagus.",
+  "cadence": "daily",
+  "kind": "clear",
+  "target": {
+    "dungeonId": "gravehollow-keep",
+    "zoneId": "the-crypts",
+    "curioId": "sealed-sarcophagus",
+    "condition": "no-curio-opened"
+  },
+  "reward": {
+    "goldR": 0.25,
+    "keys": [
+      {
+        "kind": "standard",
+        "amount": 1
+      }
+    ],
+    "chestId": null,
+    "items": []
+  },
+  "band": null
+}

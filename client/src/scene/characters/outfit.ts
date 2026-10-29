@@ -149,11 +149,13 @@ export function characterSpec(content: Content, hero: HeroRecord, gear = true): 
  * The class's starter kit as worn (the viewer and the new-hero preview): the kit's armor and hands, placed the way
  * createHero places them (a second one-hand weapon goes to the off hand). `tier` S shows the same kit at grade S.
  */
-export function starterOutfit(content: Content, classId: string, tier: 'F' | 'S' = 'F'): Outfit {
+export function starterOutfit(content: Content, classId: string, tier: 'F' | 'S' = 'F', kitId: string | null = null): Outfit {
   const cls = content.classes.get(classId)
   if (!cls) return EMPTY_OUTFIT
   const worn: Partial<Record<'mainHand' | 'offHand' | GearSlot, string | null>> = {}
-  for (const id of cls.starterKit) {
+  // D-099: a second starter kit (the Warden's spear, the Blade's greatsword) dresses the preview when it is chosen.
+  const kit = (kitId ? cls.starterKitOptions?.find((k) => k.id === kitId)?.starterKit : undefined) ?? cls.starterKit
+  for (const id of kit) {
     const def = content.items.get(id)
     if (!def?.slot) continue
     if (def.slot === 'mainHand') {
@@ -166,10 +168,10 @@ export function starterOutfit(content: Content, classId: string, tier: 'F' | 'S'
   return outfitOf(content, classId, worn, tier === 'S' ? 'S' : undefined)
 }
 
-export function starterSpec(content: Content, opts: { speciesId: string; classId: string; look: HeroLook; tier?: 'F' | 'S'; gear?: boolean }): CharacterSpec {
+export function starterSpec(content: Content, opts: { speciesId: string; classId: string; look: HeroLook; tier?: 'F' | 'S'; gear?: boolean; kitId?: string | null }): CharacterSpec {
   const species = content.species.get(opts.speciesId)
   const look = clampLook(opts.look, species, `${opts.speciesId}:${opts.classId}`)
-  return { frame: look.frame, speciesId: opts.speciesId, classId: opts.classId, look, outfit: starterOutfit(content, opts.classId, opts.tier ?? 'F'), gear: opts.gear ?? true }
+  return { frame: look.frame, speciesId: opts.speciesId, classId: opts.classId, look, outfit: starterOutfit(content, opts.classId, opts.tier ?? 'F', opts.kitId ?? null), gear: opts.gear ?? true }
 }
 
 /** A stable key for a spec: two specs with the same key build the same character. */

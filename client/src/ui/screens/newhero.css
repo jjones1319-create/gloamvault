@@ -478,6 +478,15 @@
   font-size: 19px;
   font-variant-numeric: tabular-nums;
 }
+/* The starting kit (D-099): two tiles under the class's pros and cons. */
+.nh-kits {
+  margin-top: 10px;
+}
+.nh-kits__row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+}
 .nh-proscons {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);

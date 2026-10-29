@@ -1,0 +1,58 @@
+{
+  "id": "blade-unending-rhythm",
+  "classId": "blade",
+  "school": "iron-dance",
+  "tier": 5,
+  "name": "Unending Rhythm",
+  "description": "Haste 3 turns; Blade Rhythm’s cap is 6 stacks for the rest of the fight.",
+  "type": "active",
+  "cost": 40,
+  "weight": 800,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "applyStatus",
+      "status": "haste",
+      "duration": 3
+    },
+    {
+      "kind": "custom",
+      "customId": "school-combo-cap",
+      "amount": 6,
+      "target": "self",
+      "note": "Blade Rhythm's stack cap becomes amount for the rest of the fight"
+    }
+  ],
+  "prerequisiteId": "blade-quicksilver",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "requirements": {
+    "dualWield": true
+  },
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Haste 4 turns.",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "haste",
+        "duration": 4
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "momentum"
+  ],
+  "xpTags": [
+    "agility",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 55
+  }
+}

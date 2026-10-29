@@ -263,6 +263,12 @@ function EnemyCard({ foe, x, tight }: { foe: Actor; x: CardContext; tight: boole
         {m?.isBoss && <Badge tone="boss">Boss</Badge>}
         {name.champion && <Badge tone="boss">Champion</Badge>}
         {foe.charging && <Badge tone="cast">Casting</Badge>}
+        {m?.windup && (
+          // 06 §8.10: the tell on the card — its hint where the card has room, the mark alone on a boss's or a crowded one.
+          <Badge tone="tell" title={`${m.windup.hint}: it lands on its next turn (a Daze or a Silence breaks it off)`}>
+            {tight || m.isBoss ? '!' : m.windup.hint}
+          </Badge>
+        )}
         {foe.guarding && <Badge tone="guard">Guard</Badge>}
       </div>
       {affixes.length > 0 && (

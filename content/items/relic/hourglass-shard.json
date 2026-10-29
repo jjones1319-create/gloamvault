@@ -1,0 +1,56 @@
+{
+  "id": "hourglass-shard",
+  "name": "Hourglass Shard",
+  "slot": "relic",
+  "kind": "relic",
+  "grade": "D",
+  "materialLadder": null,
+  "materialRung": null,
+  "weaponType": null,
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {},
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 1,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 5,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1,
+  "value": 456,
+  "classLock": [],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": {
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "next-action-weightless",
+        "target": "self",
+        "note": "08 §3: \"Your next action weighs 0 (instant)\""
+      }
+    ],
+    "usesPerFight": 1,
+    "target": "self",
+    "text": "Your next action weighs nothing",
+    "instant": true
+  },
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "relic-hourglass-shard-01",
+    "tintPrimary": "#d9c38a",
+    "tintSecondary": "#9ec5e0",
+    "trimMetal": "bronze"
+  }
+}

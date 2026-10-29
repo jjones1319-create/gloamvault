@@ -1,0 +1,114 @@
+{
+  "id": "blade-tempest-dance",
+  "classId": "blade",
+  "school": "iron-dance",
+  "tier": 4,
+  "name": "Tempest Dance",
+  "description": "Five hits of 0.6× Slash, each on a random enemy in either row (3.0× in all) — the dual Blade’s only reach.",
+  "type": "active",
+  "cost": 30,
+  "weight": 800,
+  "target": "enemyRandom",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 0.6,
+      "damageType": "slash",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "damage",
+      "multiplier": 0.6,
+      "damageType": "slash",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "damage",
+      "multiplier": 0.6,
+      "damageType": "slash",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "damage",
+      "multiplier": 0.6,
+      "damageType": "slash",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "damage",
+      "multiplier": 0.6,
+      "damageType": "slash",
+      "scalesWith": "strength"
+    }
+  ],
+  "prerequisiteId": "blade-crescent-flurry",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "requirements": {
+    "dualWield": true
+  },
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Seven hits.",
+    "effects": [
+      {
+        "kind": "damage",
+        "multiplier": 0.6,
+        "damageType": "slash",
+        "scalesWith": "strength",
+        "note": "Mastery restates every hit: seven of 0.6×, each on a random enemy"
+      },
+      {
+        "kind": "damage",
+        "multiplier": 0.6,
+        "damageType": "slash",
+        "scalesWith": "strength"
+      },
+      {
+        "kind": "damage",
+        "multiplier": 0.6,
+        "damageType": "slash",
+        "scalesWith": "strength"
+      },
+      {
+        "kind": "damage",
+        "multiplier": 0.6,
+        "damageType": "slash",
+        "scalesWith": "strength"
+      },
+      {
+        "kind": "damage",
+        "multiplier": 0.6,
+        "damageType": "slash",
+        "scalesWith": "strength"
+      },
+      {
+        "kind": "damage",
+        "multiplier": 0.6,
+        "damageType": "slash",
+        "scalesWith": "strength"
+      },
+      {
+        "kind": "damage",
+        "multiplier": 0.6,
+        "damageType": "slash",
+        "scalesWith": "strength"
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "reach"
+  ],
+  "xpTags": [
+    "strength",
+    "agility"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 65
+  }
+}

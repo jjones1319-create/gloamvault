@@ -15,8 +15,8 @@
     "max": 4
   },
   "multipliers": {
-    "hp": 14,
-    "attack": 1.6,
+    "hp": 10,
+    "attack": 1.15,
     "defense": 1.3
   },
   "speed": 110,
@@ -52,11 +52,13 @@
         {
           "kind": "custom",
           "customId": "next-attack-guaranteed-crit",
-          "target": "self"
+          "target": "self",
+          "note": "the flip and a star on her strip icon are the tell for her NEXT attack (a sure crit) — Guard it"
         }
       ],
       "aiWeight": 25,
-      "tell": "She flips the coin; a star lights on her strip icon. Guard it."
+      "tell": null,
+      "hint": "Coin flipped"
     },
     {
       "id": "grin",
@@ -106,7 +108,8 @@
         }
       ],
       "aiWeight": 0,
-      "tell": "The Captain sets her boot against the kegs."
+      "tell": "The Captain sets her boot against the kegs.",
+      "hint": "Boot raised"
     },
     {
       "id": "cutlass",
@@ -141,6 +144,25 @@
       ],
       "aiWeight": 30,
       "tell": null
+    },
+    {
+      "id": "coin-flip-2",
+      "name": "Coin Flip",
+      "damageType": "blunt",
+      "weight": 800,
+      "multiplier": 0,
+      "target": "self",
+      "effects": [
+        {
+          "kind": "custom",
+          "customId": "next-attack-guaranteed-crit",
+          "target": "self",
+          "note": "phase 2's Coin Flip (06: 20% beside the cutlass)"
+        }
+      ],
+      "aiWeight": 20,
+      "tell": null,
+      "hint": "Coin flipped"
     }
   ],
   "resist": [],
@@ -150,20 +172,8 @@
   "behavior": {
     "rules": [
       {
-        "if": "phase 2 begins",
-        "then": "kick-the-barricade"
-      },
-      {
-        "if": "self HP < 20% (she stops flipping and attacks twice per turn)",
+        "if": "self hp < 20%",
         "then": "cutlass"
-      },
-      {
-        "if": "a hero is Marked and phase 1",
-        "then": "throwing-knife"
-      },
-      {
-        "if": "always",
-        "then": "grin"
       }
     ],
     "fleesAtPercent": 0
@@ -171,28 +181,21 @@
   "parts": {
     "common": {
       "materialId": "copper",
-      "chance": 100,
+      "chance": 35,
       "quantity": {
-        "min": 5,
-        "max": 10
+        "min": 1,
+        "max": 2
       }
     },
     "rare": {
       "itemId": "marked-cards",
-      "chance": 100,
+      "chance": 4,
       "quantity": {
         "min": 1,
         "max": 1
       }
     },
-    "breakLimb": {
-      "name": "grin-mask",
-      "effect": {
-        "kind": "custom",
-        "customId": "lose-fear-immunity-and-riposte",
-        "note": "Blunt, 6% HP: she loses Fear immunity and Riposte (06 also names a second break, the coin — a Pierce crit ends her Coin Flips; the schema holds one limb)"
-      }
-    }
+    "breakLimb": null
   },
   "monsterTechniqueSkillIds": [],
   "elitePool": [],
@@ -200,6 +203,7 @@
     "phases": [
       {
         "atHpPercent": 100,
+        "name": "the Captain's Table",
         "attacks": [
           "throwing-knife",
           "coin-flip",
@@ -217,15 +221,16 @@
             "row": "back"
           }
         ],
-        "arenaRule": "The Wine Hall (cel-t-tap-room), light set to 60. A barricade of kegs splits the room: while it stands, melee cannot reach her back row (bows, spells and spears can); shooting a keg (an interactable, 3 hits) spills it and the front floor is slick — Slow (1) on any monster that changes rows. Lights out: every 3rd round the crew shoots out a lantern (light −10, announced on the timeline strip); below Shadowy her Cutpurses flank (+15% to hit the back row); an Item action with a Torch relights (+25). Fallen adds re-enter by the E/W doors once, every 4 rounds; her laugh and raised hat the round before is the tell."
+        "arenaRule": "Behind the barricade of kegs: melee cannot reach her back row (bows, spells and spears can). Every 3rd round the crew shoots out a lantern (light −10); below Shadowy her Cutpurses flank. Her laugh and raised hat: next round the fallen crew re-enter by the E/W doors (every 4 rounds, each once)."
       },
       {
         "atHpPercent": 50,
+        "name": "the Captain Steps Down",
         "attacks": [
           "kick-the-barricade",
           "cutlass",
           "riposte",
-          "coin-flip"
+          "coin-flip-2"
         ],
         "adds": [
           {
@@ -234,20 +239,19 @@
             "row": "back"
           }
         ],
-        "arenaRule": "The Captain steps down: she kicks the barricade over (Blunt ×1.0 to the front row, Daze), steps forward with the cutlass and Haste (3), and 1 Grinning Netter enters at the back; light set to 40. Under 20% she stops flipping and attacks twice per turn."
+        "arenaRule": "She kicks the barricade over (Blunt to the front row, Daze), steps forward with the cutlass and Haste, and a Grinning Netter enters at the back; light set to 40. Under 20% she stops flipping and attacks twice per turn.",
+        "light": {
+          "set": 40
+        },
+        "opener": "kick-the-barricade"
       }
     ],
     "everyKill": [
       {
-        "kind": "gold",
-        "amount": 60,
-        "note": "08 §11 row: boss gold 60"
-      },
-      {
         "kind": "material",
         "id": "copper",
         "amount": 4,
-        "note": "the stack halves after the first kill: 4 + 4 here, topped up to 8 + 8 by firstKill"
+        "note": "08 §11: the stack — Copper ×4 + Rawhide ×4 every kill, topped up to ×8 + ×8 by the first kill"
       },
       {
         "kind": "material",
@@ -256,13 +260,9 @@
       },
       {
         "kind": "item",
-        "grade": "E",
-        "note": "one E item of the player's class family, pick 1 of 3 shown (the band's grade-rolled item; kept from the Phase 2 fixture)"
-      },
-      {
-        "kind": "item",
         "id": "whetstone",
-        "amount": 2
+        "amount": 2,
+        "note": "08 §8.6: 2 Whetstones guaranteed"
       }
     ],
     "firstKill": [
@@ -276,6 +276,11 @@
         "kind": "material",
         "id": "rawhide",
         "amount": 4
+      },
+      {
+        "kind": "gold",
+        "amount": 120,
+        "note": "06 'gold ×10 (×3 first kill)': the fight's own gold is 08 §11's 60; the first kill adds twice that"
       },
       {
         "kind": "tome",
@@ -298,8 +303,7 @@
       {
         "kind": "item",
         "id": "marked-cards",
-        "difficultyMin": "hard",
-        "note": "+1 rare part on Hard and Dread (07 §6.1)"
+        "note": "08 §8.3: the boss's rare part, guaranteed on the first kill"
       },
       {
         "kind": "title",
@@ -307,7 +311,8 @@
       },
       {
         "kind": "waystone",
-        "id": "the-cellars"
+        "id": "the-cellars",
+        "note": "the Cellar Waystone rises through the dais (07 §2.8)"
       }
     ],
     "immunities": [
@@ -317,7 +322,118 @@
       "web",
       "root"
     ],
-    "cannotFlee": true
+    "cannotFlee": true,
+    "arena": {
+      "room": "cel-t-tap-room",
+      "tells": [
+        {
+          "id": "lantern-targeted",
+          "hint": "Lantern targeted",
+          "cue": "a lantern's icon on the timeline strip"
+        },
+        {
+          "id": "crew-rallying",
+          "hint": "Crew rallying",
+          "cue": "her laugh and raised hat"
+        }
+      ],
+      "rules": [
+        {
+          "kind": "barricade",
+          "count": 2,
+          "hits": 3,
+          "status": "slow",
+          "duration": 1,
+          "params": {
+            "endsWithAttack": "kick-the-barricade"
+          },
+          "note": "07 §2.8: while the barricade stands, melee cannot reach her back row; shooting a keg (3 hits) spills it and the front floor is slick — Slow (1) on any monster that changes rows. Two kegs (Proposed)."
+        },
+        {
+          "kind": "lightsOut",
+          "every": 3,
+          "amount": -10,
+          "tell": "lantern-targeted",
+          "params": {
+            "requiresCrew": true
+          }
+        },
+        {
+          "kind": "flank",
+          "bands": [
+            "dark",
+            "pitch"
+          ],
+          "monsters": [
+            "grinning-cutpurse"
+          ],
+          "params": {
+            "accuracy": 15
+          }
+        },
+        {
+          "kind": "reenter",
+          "phases": [
+            1
+          ],
+          "every": 4,
+          "tell": "crew-rallying",
+          "params": {
+            "groups": "start"
+          }
+        },
+        {
+          "kind": "frenzy",
+          "phases": [
+            2
+          ],
+          "attacks": [
+            "coin-flip",
+            "coin-flip-2"
+          ],
+          "params": {
+            "belowHpPercent": 20,
+            "actions": 2
+          }
+        }
+      ]
+    },
+    "parts": [
+      {
+        "id": "grin-mask",
+        "name": "grin-mask",
+        "hpPercent": 6,
+        "damageTypes": [
+          "blunt"
+        ],
+        "crit": false,
+        "effect": {
+          "removeAttacks": [
+            "riposte"
+          ],
+          "line": {
+            "kind": "custom",
+            "customId": "lose-fear-immunity-and-riposte",
+            "note": "06 §3.1: she loses Fear immunity and Riposte"
+          }
+        }
+      },
+      {
+        "id": "coin",
+        "name": "coin",
+        "hpPercent": 6,
+        "damageTypes": [
+          "pierce"
+        ],
+        "crit": true,
+        "effect": {
+          "removeAttacks": [
+            "coin-flip",
+            "coin-flip-2"
+          ]
+        }
+      }
+    ]
   },
   "hunter": null,
   "visual": {

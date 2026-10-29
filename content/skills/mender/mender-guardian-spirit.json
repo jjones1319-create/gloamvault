@@ -1,0 +1,54 @@
+{
+  "id": "mender-guardian-spirit",
+  "classId": "mender",
+  "school": "benediction",
+  "tier": 5,
+  "name": "Guardian Spirit",
+  "description": "For 3 turns, half of all the damage one ally takes is paid from your Mana at 2 Mana per HP instead of from their HP; when your Mana runs out the effect ends.",
+  "type": "active",
+  "cost": 42,
+  "weight": 1000,
+  "target": "ally",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "damage-to-pool-redirect",
+      "percent": 50,
+      "amount": 2,
+      "duration": 3,
+      "note": "for `duration` turns percent% of each hit on the target is paid from the caster’s pool at `amount` pool per HP; ends when the pool cannot pay"
+    }
+  ],
+  "prerequisiteId": "mender-verdant-pulse",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "1 Mana per HP.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "damage-to-pool-redirect",
+        "percent": 50,
+        "amount": 1,
+        "duration": 3
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "shield",
+    "buff"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "defend",
+    "priority": 70
+  }
+}

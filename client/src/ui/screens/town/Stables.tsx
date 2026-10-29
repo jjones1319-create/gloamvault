@@ -1,5 +1,6 @@
 import { useState } from 'preact/hooks'
 import type { Content } from '../../../../../sim/src/content.ts'
+import { petTraitProgress } from '../../../../../sim/src/pets.ts'
 import { hatchEgg, livingHeroes, setPetStance, swapPet } from '../../../../../sim/src/town.ts'
 import type { PetInstance } from '../../../../../sim/src/types/content.ts'
 import { STANCES, type Stance } from '../../../../../sim/src/types/enums.ts'
@@ -29,6 +30,32 @@ function Stars({ n, max }: { n: number; max: number }) {
   )
 }
 
+/** How a trait grows (03 §9; tuning pets.traitGrowth.sources): the words for the source its growsBy tag maps to. */
+const GROWS_BY: Readonly<Record<string, string>> = {
+  finds: 'grows as the party finds traps, secret doors and unwary monsters',
+  hitsLanded: 'grows with every hit it lands',
+  hitsTaken: 'grows with every hit it takes',
+  actions: 'grows with every turn it fights',
+}
+
+/** The trait's rank and its way to the next (03 §9: traits grow by use). */
+export function TraitRank({ c, pet }: { c: Content; pet: PetInstance }) {
+  const def = c.pets.get(pet.petId)
+  if (!def) return null
+  const pr = petTraitProgress(c.tuning, pet)
+  const source = (c.tuning.pets.traitGrowth.sources as Readonly<Record<string, string>>)[def.trait.growsBy] ?? ''
+  const pct = pr.next === null ? 100 : Math.round(((pr.xp - pr.from) * 100) / Math.max(1, pr.next - pr.from))
+  return (
+    <span class="tw-trait" data-testid={`st-trait-${pet.petId}`} title={GROWS_BY[source] ?? ''}>
+      <b>Trait rank {pr.rank}</b>
+      <span class="tw-progress" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.max(0, Math.min(100, pct))}>
+        <span class="tw-progress__fill" style={{ display: 'block', width: `${Math.max(0, Math.min(100, pct))}%` }} />
+      </span>
+      <span>{pr.next === null ? 'mastered' : `${pr.xp} / ${pr.next} to rank ${pr.rank + 1}`}</span>
+    </span>
+  )
+}
+
 function PetLine({ c, pet }: { c: Content; pet: PetInstance }) {
   const def = c.pets.get(pet.petId)
   const max = c.tuning.economy.dupes.bondStarMax
@@ -44,6 +71,7 @@ function PetLine({ c, pet }: { c: Content; pet: PetInstance }) {
           {def.trait.name}: {def.trait.description}
         </span>
       )}
+      <TraitRank c={c} pet={pet} />
     </>
   )
 }

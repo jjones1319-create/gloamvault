@@ -1,0 +1,62 @@
+{
+  "id": "arcanist-endless-winter",
+  "classId": "arcanist",
+  "school": "rime",
+  "tier": 5,
+  "name": "Endless Winter",
+  "description": "1.8× Frost to every enemy in both rows; Chill 3 turns; for 3 turns every enemy that acts is Chilled 1 turn. Heavy cast.",
+  "type": "active",
+  "cost": 50,
+  "weight": 1400,
+  "target": "allEnemies",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1.8,
+      "damageType": "frost"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "chill",
+      "duration": 3
+    },
+    {
+      "kind": "custom",
+      "customId": "status-on-own-action",
+      "status": "chill",
+      "amount": 1,
+      "duration": 3,
+      "note": "for `duration` turns the target gets `status` for `amount` turn(s) whenever it acts"
+    }
+  ],
+  "prerequisiteId": "arcanist-absolute-zero",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "2.0× each.",
+    "effects": [
+      {
+        "kind": "damage",
+        "multiplier": 2,
+        "damageType": "frost"
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "control",
+    "debuff"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 85
+  }
+}

@@ -7,7 +7,8 @@ import type { FightSpeed } from './prefs.ts'
  * ("Your turn — Orrin", D-085: said in words), the tip line and the combat feed.
  */
 
-export function TurnStrip({ chips, round }: { chips: readonly StripChip[]; round: number }) {
+/** `telling`: actors winding a telegraphed blow up (06 §8.10): their chips are ringed. */
+export function TurnStrip({ chips, round, telling }: { chips: readonly StripChip[]; round: number; telling?: ReadonlySet<string> }) {
   return (
     <div class="fx-strip" data-testid="fx-strip" role="list" aria-label="The next turns, in order">
       <span class="fx-strip__round" title="A round ends when every hero has acted">
@@ -17,7 +18,7 @@ export function TurnStrip({ chips, round }: { chips: readonly StripChip[]; round
         <span
           key={`${ch.id}-${i}`}
           role="listitem"
-          class={`fx-strip__chip fx-strip__chip--${ch.side} ${ch.boss ? 'fx-strip__chip--boss' : ''} ${i === 0 ? 'fx-strip__chip--now' : ''}`}
+          class={`fx-strip__chip fx-strip__chip--${ch.side} ${ch.boss ? 'fx-strip__chip--boss' : ''} ${i === 0 ? 'fx-strip__chip--now' : ''} ${telling?.has(ch.id) ? 'fx-strip__chip--tell' : ''}`}
           title={i === 0 ? `${ch.name} (acts now)` : ch.name}
           aria-label={i === 0 ? `${ch.name}, now` : ch.name}
         >

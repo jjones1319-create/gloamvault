@@ -4,7 +4,7 @@
   "school": "shadow",
   "tier": 3,
   "name": "Wraith-step",
-  "description": "Veil 2 turns that your own Poison ticks do not break; your next attack is Shadow element and applies Wither (−50% healing) for 2 turns. Monster technique: Insights only while a wraith uses the move (the wraith arrives with the Crypts in Phase 7).",
+  "description": "Veil 2 turns that your own Poison ticks do not break; your next attack is Shadow element and applies Wither (−50% healing) for 2 turns. Monster technique: learned only by witnessing a Wraith use it.",
   "type": "active",
   "cost": 22,
   "weight": 800,
@@ -34,7 +34,10 @@
   ],
   "prerequisiteId": "shade-shadowstep",
   "isUltimate": false,
-  "monsterTechniqueOf": null,
+  "monsterTechniqueOf": "wraith",
+  "monsterTechniqueMoveIds": [
+    "drift"
+  ],
   "rankScaling": {
     "effectPerRank": 4,
     "costPerRank": -2

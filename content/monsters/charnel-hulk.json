@@ -1,0 +1,180 @@
+{
+  "id": "charnel-hulk",
+  "name": "Charnel Hulk",
+  "familyId": "restless-dead",
+  "dungeonId": "gravehollow-keep",
+  "zoneId": "the-crypts",
+  "role": "monster",
+  "size": "huge",
+  "rows": [
+    "front"
+  ],
+  "levelBand": {
+    "min": 7,
+    "max": 8
+  },
+  "multipliers": {
+    "hp": 5.5,
+    "attack": 1.6,
+    "defense": 1.1
+  },
+  "speed": 80,
+  "xpClass": 6,
+  "goldMultiplier": 4,
+  "ambushModifier": -5,
+  "attacks": [
+    {
+      "id": "corpse-toss",
+      "name": "Corpse Toss",
+      "damageType": "blunt",
+      "weight": 1400,
+      "multiplier": 1.5,
+      "target": "enemyBack",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "daze"
+        }
+      ],
+      "aiWeight": 35,
+      "tell": "The hulk hefts a corpse over its head.",
+      "hint": "Hulk hefting"
+    },
+    {
+      "id": "crush",
+      "name": "Crush",
+      "damageType": "blunt",
+      "weight": 1400,
+      "multiplier": 1.8,
+      "target": "enemyFront",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "grab",
+          "note": "released by the Grab rule (06 §7)"
+        }
+      ],
+      "aiWeight": 30,
+      "tell": "The hulk reaches with all four arms.",
+      "hint": "Hulk reaching"
+    },
+    {
+      "id": "shed",
+      "name": "Shed",
+      "damageType": "blunt",
+      "weight": 1000,
+      "multiplier": 0,
+      "target": "self",
+      "effects": [
+        {
+          "kind": "summon",
+          "summonId": "shambling-corpse",
+          "target": "summon"
+        },
+        {
+          "kind": "custom",
+          "customId": "brood-call",
+          "percent": 50,
+          "note": "the shed corpse stands in the front row at 50% HP"
+        },
+        {
+          "kind": "heal",
+          "percent": 10,
+          "target": "self"
+        }
+      ],
+      "aiWeight": 20,
+      "tell": null
+    },
+    {
+      "id": "flail",
+      "name": "Flail",
+      "damageType": "slash",
+      "weight": 1000,
+      "multiplier": 0.8,
+      "target": "partyFront",
+      "effects": [],
+      "aiWeight": 15,
+      "tell": null
+    }
+  ],
+  "resist": [
+    "pierce",
+    "shadow"
+  ],
+  "weak": [
+    "fire",
+    "holy"
+  ],
+  "immune": [],
+  "statusImmune": [
+    "poison",
+    "fear",
+    "grab",
+    "web",
+    "root",
+    "petrify"
+  ],
+  "behavior": {
+    "rules": [
+      {
+        "if": "sheds every time it loses 20% HP — tosses the hero who is healing — Huge: the back row reaches it",
+        "then": "shed"
+      }
+    ],
+    "fleesAtPercent": 0
+  },
+  "parts": {
+    "common": {
+      "materialId": "wool",
+      "chance": 35,
+      "quantity": {
+        "min": 2,
+        "max": 2
+      }
+    },
+    "rare": {
+      "materialId": "iron",
+      "chance": 4,
+      "quantity": {
+        "min": 3,
+        "max": 3
+      }
+    },
+    "breakLimb": {
+      "name": "the second torso",
+      "effect": {
+        "kind": "custom",
+        "customId": "lose-summon-attacks",
+        "summonId": "shambling-corpse",
+        "note": "no Shed (the rare roll doubles, as every break does)"
+      }
+    }
+  },
+  "monsterTechniqueSkillIds": [],
+  "elitePool": [],
+  "boss": null,
+  "hunter": null,
+  "visual": {
+    "baseMesh": "zombie",
+    "scale": 2,
+    "variantOf": "shambling-corpse",
+    "palette": [
+      "#6f8a5f",
+      "#6b4a5e",
+      "#141014"
+    ],
+    "reads200px": true,
+    "animations": [
+      "Idle",
+      "Move",
+      "Attack1",
+      "Attack2",
+      "Hit",
+      "Death",
+      "Toss",
+      "Shed"
+    ],
+    "triBudget": 8000
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "id": "ithiel-vantor",
+  "name": "Ithiel Vantor",
+  "speciesId": "elf",
+  "classId": "arcanist",
+  "grade": "S",
+  "freePoints": {
+    "wisdom": 3,
+    "willpower": 3,
+    "perception": 2,
+    "luck": 2
+  },
+  "starterSkillIds": [
+    "arcanist-ember-lance",
+    "arcanist-frostbolt",
+    "arcanist-arcane-ward"
+  ],
+  "aiRule": null,
+  "bio": "Three hundred years of study, two hundred of them in the Ember Academy's library, and still taking notes.",
+  "look": {
+    "frame": "broad",
+    "skin": 0,
+    "face": 1,
+    "hair": 5
+  }
+}

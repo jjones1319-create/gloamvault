@@ -1,0 +1,50 @@
+{
+  "id": "shade-toxicologist",
+  "classId": "shade",
+  "school": "venom",
+  "tier": 5,
+  "name": "Toxicologist",
+  "description": "Your Poison can hold two separate lines on one target (two tick lines, two durations); your DoTs ignore Resistance.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "toxicologist",
+      "amount": 2,
+      "target": "self",
+      "note": "`amount` separate Poison lines per target; your DoTs skip the Resistance roll (stub: a statuses.ts joint)"
+    }
+  ],
+  "prerequisiteId": "shade-nightshade-veins",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Three lines.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "toxicologist",
+        "amount": 3,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "dot"
+  ],
+  "xpTags": [
+    "perception"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 0
+  }
+}

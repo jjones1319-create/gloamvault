@@ -4,7 +4,7 @@
   "school": "venom",
   "tier": 3,
   "name": "Venom Burst",
-  "description": "1.6× Shadow to one enemy in any row; consumes the target’s Poison and deals its remaining ticks ×1.5 at once.",
+  "description": "2.15× Shadow to one enemy in any row; consumes the target’s Poison and deals its remaining ticks ×1.5 at once.",
   "type": "active",
   "cost": 24,
   "weight": 1000,
@@ -12,7 +12,7 @@
   "effects": [
     {
       "kind": "damage",
-      "multiplier": 1.6,
+      "multiplier": 2.15,
       "damageType": "shadow"
     },
     {

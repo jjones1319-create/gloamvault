@@ -1,0 +1,57 @@
+{
+  "id": "shade-unseen-hand",
+  "classId": "shade",
+  "school": "shadow",
+  "tier": 5,
+  "name": "Unseen Hand",
+  "description": "Every ally is untargetable by single-target attacks for 1 turn (an AoE still lands); Taunts and Marks on allies are stripped.",
+  "type": "active",
+  "cost": 40,
+  "weight": 800,
+  "target": "allAllies",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "single-target-misses-turns",
+      "duration": 1,
+      "note": "for `duration` turns single-target attacks on the holder miss"
+    },
+    {
+      "kind": "removeStatus",
+      "status": "taunt"
+    },
+    {
+      "kind": "removeStatus",
+      "status": "mark"
+    }
+  ],
+  "prerequisiteId": "shade-phantom-twin",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "2 turns.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "single-target-misses-turns",
+        "duration": 2
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "buff",
+    "cleanse"
+  ],
+  "xpTags": [
+    "agility"
+  ],
+  "aiHints": {
+    "role": "defend",
+    "priority": 60
+  }
+}

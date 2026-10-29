@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { ActorLayer, type ActorInput, type ActorLook, type ActorState } from './actors.ts'
+import { ActorLayer, type ActorInput, type ActorLook, type ActorModel, type ActorState } from './actors.ts'
 import type { Kit } from './kit.ts'
 
 /**
@@ -92,6 +92,81 @@ describe('the actor layer in a fight', () => {
     expect(bar(layer)).toBeCloseTo(14 / 31)
     vi.advanceTimersByTime(1000)
     expect(bar(layer)).toBeCloseTo(14 / 31)
+    layer.dispose()
+  })
+})
+
+/** A model that records its tell (the Bursting Corpse's swell, monsters/wear.ts). */
+function tellModel(): { model: ActorModel; tells: number[] } {
+  const tells: number[] = []
+  const animator = { has: () => false, hasClips: () => false, setBase() {}, play: () => false, update() {}, release() {}, eventTime: () => null, durationOf: () => 0, speedOf: () => null, baseClip: () => 'Idle', setBaseTimeScale() {}, loopClip: () => false }
+  const model = {
+    root: new THREE.Group(),
+    animator: animator as unknown as ActorModel['animator'],
+    height: 1.8,
+    stride: 1,
+    hasShield: false,
+    update() {},
+    setTint() {},
+    setFlash() {},
+    setOpacity() {},
+    setTell: (k: number) => tells.push(k),
+    dispose() {},
+  } satisfies ActorModel
+  return { model, tells }
+}
+
+describe('the actor layer and the arena', () => {
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  const corpse = (model: ActorModel | null, tell: boolean): ActorInput => ({
+    look: { id: 'bursting-corpse-1', side: 'enemy', kind: 'monster', height: 1.8, radius: 0.3, shape: 'biped', body: 0x6e4f6b, trim: 0, face: 0, eyes: 0, model: { key: 'zombie|bursting', build: () => Promise.resolve(model) } },
+    state: { hp: 20, maxHp: 40, down: false, gone: false, tell },
+    mark: { x: 2, z: 0, yaw: -Math.PI / 2 },
+  })
+
+  it('a wound-up tell swells the model over the wind-up and lets it go with the blow', async () => {
+    vi.useFakeTimers()
+    const { model, tells } = tellModel()
+    const layer = new ActorLayer(testKit(), new THREE.PerspectiveCamera())
+    layer.set([corpse(model, false)], { ...fightSet, instant: true, stateNow: true })
+    await layer.modelsSettled()
+    expect(tells.at(-1)).toBe(0)
+    layer.set([corpse(model, true)], { ...fightSet, stateNow: true })
+    layer.update(450, 0)
+    expect(tells.at(-1)).toBeCloseTo(0.5)
+    for (let i = 0; i < 10; i++) layer.update(100, i * 100)
+    expect(tells.at(-1)!).toBeGreaterThan(0.93)
+    layer.set([corpse(model, false)], { ...fightSet, stateNow: true })
+    layer.update(150, 0)
+    expect(tells.at(-1)).toBeCloseTo(0.5)
+    layer.update(400, 0)
+    expect(tells.at(-1)).toBe(0)
+    layer.dispose()
+  })
+
+  it('with Reduce motion the tell shows at once', async () => {
+    vi.useFakeTimers()
+    const { model, tells } = tellModel()
+    const layer = new ActorLayer(testKit(), new THREE.PerspectiveCamera())
+    layer.setReduceMotion(true)
+    layer.set([corpse(model, false)], { ...fightSet, instant: true, stateNow: true })
+    await layer.modelsSettled()
+    layer.set([corpse(model, true)], { ...fightSet, stateNow: true })
+    expect(tells.at(-1)).toBe(1)
+    layer.dispose()
+  })
+
+  it('a monster joining the fight walks in to its mark, but a boss on his arena mark is there already', () => {
+    const layer = new ActorLayer(testKit(), new THREE.PerspectiveCamera())
+    const views = (layer as unknown as { views: Map<string, { pos: THREE.Vector3 }> }).views
+    layer.set([{ ...input('capsule', 31), mark: { x: 2, z: 0, yaw: -Math.PI / 2 } }], fightSet)
+    expect(views.get('spider-1')!.pos.x).toBeGreaterThan(2.5)
+    const king: ActorInput = { look: { ...look('capsule'), id: 'hollow-king' }, state: { hp: 1, maxHp: 1, down: false, gone: false }, mark: { x: 0, y: 2, z: -5, yaw: 0 }, stand: true }
+    layer.set([king], fightSet)
+    expect(views.get('hollow-king')!.pos.toArray()).toEqual([0, 2, -5])
     layer.dispose()
   })
 })

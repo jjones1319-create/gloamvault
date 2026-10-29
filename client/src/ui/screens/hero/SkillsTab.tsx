@@ -1,22 +1,26 @@
 import { useEffect, useState } from 'preact/hooks'
 import { parseRule } from '../../../../../sim/src/ai.ts'
 import type { Content } from '../../../../../sim/src/content.ts'
-import { setAiRule, setLoadoutSlot } from '../../../../../sim/src/town.ts'
+import { tomeReadBlocker, tomeSkill } from '../../../../../sim/src/tomes.ts'
+import { readTome, setAiRule, setLoadoutSlot } from '../../../../../sim/src/town.ts'
 import type { ClassDef, HeroRecord, SkillDef } from '../../../../../sim/src/types/content.ts'
-import { act } from '../../../game/session.ts'
+import { act, actWith, profile, toast } from '../../../game/session.ts'
 import { Btn, Empty, Modal, Section } from '../../kit/kit.tsx'
 import { buzz } from '../../lib/haptics.ts'
 import { requirementText, skillMeta, tierName } from './labels.ts'
 import { clauseText, namesNotInLoadout, skillState } from './progress.ts'
 
 /**
- * Skills (03 §7): the class's three schools as columns, Tier I–III, known or where to get each; the loadout (four
- * actives, two passives; the Ultimate has its own button); and the AI rule used on Auto (03 §3.6, §10.3).
+ * Skills (03 §7): the class's three schools as columns, Tiers I–V, known or where to get each (Phase 7: a technique by
+ * watching its monster, Tier IV by Insight or a Skill Tome, Tier V locked until the endgame of later dungeons); the
+ * loadout (four actives, two passives; the Ultimate has its own button); and the AI rule used on Auto (03 §3.6, §10.3).
  */
 export function SkillsTab({ c, hero, cls }: { c: Content; hero: HeroRecord; cls: ClassDef }) {
   const [slot, setSlot] = useState<{ kind: 'active' | 'passive'; index: number } | null>(null)
   const [info, setInfo] = useState<SkillDef | null>(null)
-  const all = (c.skillsByClass.get(cls.id) ?? []).filter((s) => s.tier <= 3)
+  const all = c.skillsByClass.get(cls.id) ?? []
+  const tiers = [...new Set(all.map((s) => s.tier))].sort((a, b) => a - b)
+  const lockedTier = (tier: number) => tier > c.tuning.skills.obtainableTierMax.value
   const placedAt = (id: string): string | null => {
     const a = hero.loadout.actives.indexOf(id)
     if (a >= 0) return `Active ${a + 1}`
@@ -31,9 +35,12 @@ export function SkillsTab({ c, hero, cls }: { c: Content; hero: HeroRecord; cls:
             <h3 class="hr-school__name" title={school.philosophy}>
               {school.name}
             </h3>
-            {[1, 2, 3].map((tier) => (
-              <div key={tier} class="hr-tier">
-                <span class="hr-tier__name">Tier {tierName(tier)}</span>
+            {tiers.map((tier) => (
+              <div key={tier} class={`hr-tier ${lockedTier(tier) ? 'hr-tier--locked' : ''}`}>
+                <span class="hr-tier__name">
+                  Tier {tierName(tier)}
+                  {lockedTier(tier) && <span class="hr-tier__note"> · locked until the endgame of later dungeons</span>}
+                </span>
                 {all
                   .filter((s) => s.school === school.id && s.tier === tier)
                   .sort((a, b) => Number(a.isUltimate) - Number(b.isUltimate) || (a.type === b.type ? 0 : a.type === 'active' ? -1 : 1) || a.name.localeCompare(b.name))
@@ -47,6 +54,7 @@ export function SkillsTab({ c, hero, cls }: { c: Content; hero: HeroRecord; cls:
       </div>
       <div class="hr-side">
         <Loadout c={c} hero={hero} cls={cls} onSlot={(kind, index) => setSlot({ kind, index })} />
+        <TomesCard c={c} hero={hero} cls={cls} />
         <AiRuleCard c={c} hero={hero} cls={cls} />
       </div>
       {slot && <SlotPicker c={c} hero={hero} cls={cls} kind={slot.kind} index={slot.index} onClose={() => setSlot(null)} />}
@@ -59,7 +67,7 @@ function SkillButton({ c, hero, s, placed, onOpen }: { c: Content; hero: HeroRec
   const st = skillState(c, c.tuning, hero, s)
   return (
     <button
-      class={`hr-skill ${st.known ? 'hr-skill--known' : st.open ? '' : 'hr-skill--locked'} ${s.isUltimate ? 'hr-skill--ult' : ''}`}
+      class={`hr-skill ${st.known ? 'hr-skill--known' : st.open ? '' : 'hr-skill--locked'} ${!st.known && st.locked ? 'hr-skill--sealed' : ''} ${s.isUltimate ? 'hr-skill--ult' : ''}`}
       data-testid={`hr-skill-${s.id}`}
       onClick={() => {
         buzz()
@@ -78,6 +86,8 @@ function SkillButton({ c, hero, s, placed, onOpen }: { c: Content; hero: HeroRec
             {st.mastery && <span class="hr-star" title="Mastery">★</span>}
             {placed && <span class="hr-skill__placed"> · {placed}</span>}
           </>
+        ) : st.locked && s.tier > c.tuning.skills.obtainableTierMax.value ? (
+          'Locked'
         ) : (
           st.where
         )}
@@ -118,7 +128,7 @@ function Loadout({ c, hero, cls, onSlot }: { c: Content; hero: HeroRecord; cls: 
         <span class="hr-loadout__label">Passives</span>
         <div class="hr-loadout__row">{hero.loadout.passives.map((id, i) => cell('passive', i, id))}</div>
         <p class="hr-loadout__ult">
-          <span class="hr-skill__tag hr-skill__tag--ult">Ultimate</span> {ult?.name ?? '—'}: {knowsUlt ? 'its own button at 100 Momentum.' : 'not learned yet (Insight in the dungeon).'}
+          <span class="hr-skill__tag hr-skill__tag--ult">Ultimate</span> {ult?.name ?? '—'}: {knowsUlt ? 'its own button at 100 Momentum.' : 'not learned yet: a Skill Tome teaches it (bosses, Skill Tome chests).'}
         </p>
       </div>
     </Section>
@@ -206,6 +216,66 @@ function SkillInfo({ c, hero, cls, s, onClose }: { c: Content; hero: HeroRecord;
         </p>
       </div>
     </Modal>
+  )
+}
+
+/* ---------- Skill Tomes (03 §7.5, 08 §4; Phase 7) ---------- */
+
+/**
+ * The Skill Tomes this hero can read: the ones of its class in the armory (the town's store) and in its own bag. Read
+ * teaches an unknown skill at rank 1, or gives a known one a rank's worth of XP; the Tome is used up. Tomes of other
+ * classes wait for a hero of their class (or the Blacksmith buys them).
+ */
+function TomesCard({ c, hero, cls }: { c: Content; hero: HeroRecord; cls: ClassDef }) {
+  const p = profile.value
+  if (!p) return null
+  const all = [...hero.bag.map((inst) => ({ inst, where: 'bag' as const })), ...p.armory.map((inst) => ({ inst, where: 'armory' as const }))]
+    .map((x) => ({ ...x, skill: tomeSkill(c, x.inst) }))
+    .filter((x): x is typeof x & { skill: SkillDef } => x.skill !== null)
+  const mine = all.filter((x) => x.skill.classId === cls.id)
+  const others = all.length - mine.length
+  if (all.length === 0) return null
+  return (
+    <Section title={`Skill Tomes (${mine.length})`}>
+      {mine.length === 0 ? (
+        <Empty>No {cls.name} Tomes yet: Insights, bosses and Skill Tome chests bring them.</Empty>
+      ) : (
+        <div class="list">
+          {mine.map(({ inst, where, skill }) => {
+            const blocked = tomeReadBlocker(c, hero, inst)
+            const known = hero.skills.some((k) => k.skillId === skill.id)
+            return (
+              <div key={inst.instanceId} class="list__row hr-tome">
+                <span class="list__main">
+                  <span class="hr-pick__name">{skill.name}</span>
+                  <span class="list__sub">
+                    Tier {tierName(skill.tier)} · {where === 'bag' ? 'in the bag' : 'in the armory'} · {known ? 'known: a rank of practice' : 'new to you'}
+                  </span>
+                </span>
+                <Btn
+                  class="hr-btn44"
+                  tone="primary"
+                  testid={`hr-read-${inst.instanceId}`}
+                  disabled={blocked !== null}
+                  title={blocked ?? `Read the Tome of ${skill.name}`}
+                  onClick={() => {
+                    buzz()
+                    const out = actWith((cc, pp) => {
+                      const r = readTome(cc, pp, hero.id, inst.instanceId)
+                      return { profile: r.profile, result: r.outcome }
+                    })
+                    if (out) toast(out.kind === 'learned' ? `${hero.name} learns ${skill.name}. Put it in a slot.` : `${hero.name} studies ${skill.name}: +${out.xp} rank XP${out.ranksGained ? ' (rank up!)' : ''}`, 'good')
+                  }}
+                >
+                  Read
+                </Btn>
+              </div>
+            )
+          })}
+        </div>
+      )}
+      {others > 0 && <p class="hr-note">{others} Tome{others === 1 ? '' : 's'} of other classes wait for a hero of their class.</p>}
+    </Section>
   )
 }
 

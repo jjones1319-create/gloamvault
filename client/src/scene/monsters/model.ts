@@ -8,7 +8,9 @@ import { bakeMorphs, morphWeights } from '../characters/geometry.ts'
 import type { ClipInfo } from '../characters/manifest.ts'
 import { createCharacterMaterials, SLOT_ATTRIBUTE, type CharacterMaterials } from '../characters/material.ts'
 import { slotOf } from '../characters/palette.ts'
-import { EMPTY_MANIFEST, HERO_CLIP_FOR, parseMonsterClips, parseMonsterManifest, partShown, variantKey, variantPalette, type MonsterManifest, type MonsterVariant } from './manifest.ts'
+import type { FrameTemplate } from '../characters/template.ts'
+import { EMPTY_MANIFEST, HERO_CLIP_FOR, parseMonsterClips, parseMonsterManifest, partShown, resolveMonsterVariant, variantKey, variantPalette, type MonsterManifest, type MonsterVariant } from './manifest.ts'
+import { attachmentFor, attachTransform, readAttach, TELL_SHAPES, tellDelta, type TellShape } from './wear.ts'
 
 /**
  * The monsters in 3D (Phase 6; tools/blender/README.md → *Monsters*): a base file per body plan, a variant per monster
@@ -116,6 +118,8 @@ export class MonsterLibrary {
   private manifestNow: MonsterManifest | null = null
   private clipsP: Promise<Map<string, Map<string, ClipInfo>>> | null = null
   private readonly protos = new Map<string, Promise<Proto | null>>()
+  /** Tell shapes' extras by variant (wear.ts tellDelta), worked out once each. */
+  private readonly tells = new Map<string, Float32Array | null>()
 
   /** True when a base's file is there to load. */
   available(base: string): boolean {
@@ -160,22 +164,62 @@ export class MonsterLibrary {
     return p
   }
 
-  /** A monster (or pet) of this variant; null when its base is missing or fails. */
+  /**
+   * A monster (or pet) of this variant; null when its base is missing or fails. A boss phase that wears another variant
+   * (Naesa's tentacle arms, wear.ts) wears it on its bones instead of its costume's stand-ins; a tell shape (the
+   * Bursting Corpse's swell) rides as a live morph; a throne risen on its column (the Hollow King from phase 2) is left
+   * on its dais for the arena to draw (`buildProps`, room/arena.ts) while he descends without it.
+   */
   async build(v: MonsterVariant): Promise<MonsterModel | null> {
     try {
-      const proto = await this.proto(v)
+      const worn = await this.wornFor(v)
+      const body = worn && v.parts ? { ...v, parts: v.parts.filter((p) => !worn.replaces.includes(p)) } : v
+      const proto = await this.proto(body)
       if (!proto) return null
       // The Deep Maw's ring: copies of the base's body alone, each with its own mixer.
       const copies = v.instances ? await this.proto({ ...v, parts: v.instances.spots[0]?.mesh ? [v.instances.spots[0].mesh] : [], instances: null, shapes: {} }) : null
       if (proto.heroRig) {
         const [tpl, clips] = await Promise.all([heroLibrary.frame('broad'), heroLibrary.clips()])
         if (!tpl) return null
-        const inner = assembleRigged(proto.meshes, tpl, clips, { palette: variantPalette(v), morphs: v.shapes, scale: v.scale, key: variantKey(v), boneScales: v.boneScales })
-        return MonsterModel.fromCharacter(v, inner, proto.props)
+        const inner = assembleRigged(proto.meshes, tpl, clips, { palette: variantPalette(v), morphs: v.shapes, scale: v.scale, key: variantKey(body), boneScales: v.boneScales })
+        const m = MonsterModel.fromCharacter(v, inner, v.throne?.raised ? [] : proto.props)
+        const tell = TELL_SHAPES[v.id]
+        if (tell) m.setTellShape(this.tellOf(body, proto, tpl, tell))
+        if (worn) m.wear(await Promise.all(worn.spec.sockets.map(() => this.build(worn.variant))), worn.spec.sockets)
+        return m
       }
       return MonsterModel.fromProto(v, proto, copies)
     } catch (e) {
       console.warn('monster assembly failed', e)
+      return null
+    }
+  }
+
+  /** What a variant wears at its phase (wear.ts), when the worn variant's file and `attach` block are there. */
+  private async wornFor(v: MonsterVariant): Promise<{ variant: MonsterVariant; spec: NonNullable<ReturnType<typeof readAttach>>; replaces: readonly string[] } | null> {
+    const a = attachmentFor(v.id, v.phase)
+    if (!a) return null
+    const variant = resolveMonsterVariant(a.variant, await this.manifest(), null, (b) => this.available(b))
+    const spec = readAttach(variant?.raw)
+    return variant && spec ? { variant, spec, replaces: a.replaces } : null
+  }
+
+  private tellOf(v: MonsterVariant, proto: Proto, tpl: FrameTemplate, tell: TellShape): Float32Array | null {
+    const key = `${variantKey(v)}~${tell.key}=${tell.to}`
+    if (!this.tells.has(key)) this.tells.set(key, tellDelta(proto.meshes, tpl, v.shapes, tell))
+    return this.tells.get(key) ?? null
+  }
+
+  /**
+   * A boss's rigid props on their own, in its colours: the Hollow King's throne risen on its column, which stays on its
+   * dais when he descends (room/arena.ts). Null without props or files.
+   */
+  async buildProps(v: MonsterVariant): Promise<PropModel | null> {
+    try {
+      const proto = await this.proto({ ...v, parts: [] })
+      return proto && proto.props.length > 0 ? PropModel.of(v, proto.props) : null
+    } catch (e) {
+      console.warn('monster props failed', e)
       return null
     }
   }
@@ -248,6 +292,45 @@ function rigidGeometry(mesh: THREE.Mesh): THREE.BufferGeometry {
   g.computeBoundingSphere()
   return g
 }
+
+/**
+ * A variant's rigid props as meshes with their outlines, at the monster's unscaled size (a parent scales them): its
+ * throne, the column only once a later phase raises the seat on it.
+ */
+function rigidMeshes(v: MonsterVariant, props: readonly THREE.Mesh[], materials: CharacterMaterials): { meshes: THREE.Mesh[]; geometries: THREE.BufferGeometry[]; triangles: number } {
+  const size = new THREE.Vector2()
+  const meshes: THREE.Mesh[] = []
+  const geometries: THREE.BufferGeometry[] = []
+  let triangles = 0
+  for (const p of props) {
+    const name = p.name.replace(/_\d+$/, '')
+    const column = v.throne?.column === name
+    if (column && !v.throne?.raised) continue
+    const body = new THREE.Mesh(rigidGeometry(p), materials.body)
+    body.name = p.name
+    p.updateWorldMatrix(true, false)
+    p.matrixWorld.decompose(body.position, body.quaternion, body.scale)
+    if (!column && v.throne?.raised) body.position.y += v.throne.columnHeight
+    body.frustumCulled = false
+    const outline = new THREE.Mesh(body.geometry, materials.outline)
+    outline.onBeforeRender = (renderer) => {
+      renderer.getDrawingBufferSize(size)
+      materials.setViewportHeight(size.y)
+    }
+    body.add(outline)
+    meshes.push(body)
+    geometries.push(body.geometry)
+    triangles += body.geometry.index ? body.geometry.index.count / 3 : body.geometry.getAttribute('position').count / 3
+  }
+  return { meshes, geometries, triangles }
+}
+
+/** The glowing slots' strength at rest (characters/material.ts), and how much a full tell adds. */
+const GLOW_AT_REST = 0.85
+const TELL_GLOW = 2.2
+
+/** A worn variant's own names for the clips its wearer plays (Naesa's Embrace is the arm's grab-wrap). */
+const WORN_ALIASES: Readonly<Record<string, string>> = { Embrace: 'Attack2', Undertow: 'Attack2', Call: 'Attack2', Ascend: 'Rise', Roar: 'Attack1' }
 
 /** A clone of an own-rig prototype on shared materials: each mesh with its outline (sharing its morph weights). */
 function dress(scene: THREE.Object3D, materials: CharacterMaterials): { root: THREE.Object3D; triangles: number } {
@@ -363,6 +446,10 @@ export class MonsterModel {
   private readonly inner: CharacterModel | null
   private readonly opacity: number
   private readonly owned: { dispose(): void }[] = []
+  /** Models worn on its bones (Naesa's tentacle arms, wear.ts). */
+  private readonly worn: MonsterModel[] = []
+  /** The tell shape's weight (the merged mesh's morph influences, shared with the outline), when it has one. */
+  private tellWeights: number[] | null = null
   private disposed = false
 
   private constructor(parts: { variant: MonsterVariant; animator: CharacterAnimator; materials: CharacterMaterials; height: number; radius: number; stride: number; triangles: number; inner: CharacterModel | null }) {
@@ -405,31 +492,76 @@ export class MonsterModel {
       }
     }
     if (v.poseAdd || v.poseHold || hips) a.setPosture(inner.bones, v.poseAdd, v.poseHold, hips)
-    const m = new MonsterModel({ variant: v, animator: a, materials: inner.materials, height: v.height ?? inner.height, radius: 0.3 * v.scale, stride: inner.stride * v.clipSpeed, triangles: inner.triangles, inner })
+    // Seated (a hips drop), the head comes down as far: the King on his throne is 2.9 m, not his standing 3.7 (bars, framing).
+    const standing = v.height ?? inner.height
+    const height = v.hipsOffset ? Math.max(0.5, standing + v.hipsOffset[1] * v.scale) : standing
+    const m = new MonsterModel({ variant: v, animator: a, materials: inner.materials, height, radius: 0.3 * v.scale, stride: inner.stride * v.clipSpeed, triangles: inner.triangles, inner })
     // Rigid props (the throne) at his origin, scaled with him, in his colours, with the outline.
-    const size = new THREE.Vector2()
-    for (const p of props) {
-      // The throne's column shows once a later phase raises the seat on it.
-      const name = p.name.replace(/_\d+$/, '')
-      const column = v.throne?.column === name
-      if (column && !v.throne?.raised) continue
-      const body = new THREE.Mesh(rigidGeometry(p), inner.materials.body)
-      body.name = p.name
-      p.updateWorldMatrix(true, false)
-      p.matrixWorld.decompose(body.position, body.quaternion, body.scale)
-      if (!column && v.throne?.raised) body.position.y += v.throne.columnHeight
-      body.frustumCulled = false
-      const outline = new THREE.Mesh(body.geometry, inner.materials.outline)
-      outline.onBeforeRender = (renderer) => {
-        renderer.getDrawingBufferSize(size)
-        inner.materials.setViewportHeight(size.y)
-      }
-      body.add(outline)
-      inner.root.add(body)
-      m.owned.push(body.geometry)
-    }
+    const rigid = rigidMeshes(v, props, inner.materials)
+    for (const body of rigid.meshes) inner.root.add(body)
+    m.owned.push(...rigid.geometries)
     m.root.add(inner.root)
     return m
+  }
+
+  /**
+   * Puts worn models on this one's bones (wear.ts; call once, with the skeleton at rest): each at its bone's head on
+   * the bone's line, moving with it, playing this model's clips on its own rig (a little out of step with the other),
+   * tinted, flashed and faded with it, and let go with it.
+   */
+  wear(models: readonly (MonsterModel | null)[], sockets: readonly string[]): void {
+    const inner = this.inner
+    const copies: { animator: CharacterAnimator; offset: number }[] = []
+    if (inner) inner.root.updateMatrixWorld(true)
+    models.forEach((w, i) => {
+      const bone = inner?.bones.get(sockets[i] ?? '')
+      const t = bone ? attachTransform(bone, this.variant.scale) : null
+      if (!w || !bone || !t) {
+        w?.dispose()
+        return
+      }
+      w.root.position.set(0, 0, 0)
+      w.root.quaternion.copy(t.quaternion)
+      w.root.scale.setScalar(t.scale)
+      bone.add(w.root)
+      w.animator.addAliases(WORN_ALIASES)
+      this.worn.push(w)
+      copies.push({ animator: w.animator, offset: i * 0.35 })
+    })
+    if (copies.length > 0) fanOut(this.animator, copies)
+  }
+
+  /** The tell's live shape (wear.ts tellDelta) as a morph target on the merged mesh, at no weight until `setTell`. */
+  setTellShape(delta: Float32Array | null): void {
+    const inner = this.inner
+    const pos = inner?.mesh.geometry.getAttribute('position')
+    if (!inner || !delta || !pos || pos.count * 3 !== delta.length) return
+    const g = inner.mesh.geometry
+    g.morphAttributes.position = [new THREE.BufferAttribute(delta, 3)]
+    g.morphTargetsRelative = true
+    inner.mesh.updateMorphTargets()
+    const weights = inner.mesh.morphTargetInfluences
+    if (!weights) return
+    // One array for both, so the outline swells with the body.
+    inner.outline.morphTargetInfluences = weights
+    inner.outline.morphTargetDictionary = inner.mesh.morphTargetDictionary
+    this.tellWeights = weights
+  }
+
+  /**
+   * How far a tell has swollen it (0 at rest, 1 at the tell shape's full weight), its glowing slots flaring with it (the
+   * Bursting Corpse's gas-lit belly: 06's "must read"); nothing without a tell shape.
+   */
+  setTell(k: number): void {
+    if (!this.tellWeights) return
+    const w = Math.max(0, Math.min(1, k))
+    this.tellWeights[0] = w
+    this.materials.setGlow(GLOW_AT_REST + TELL_GLOW * w)
+  }
+
+  /** True when it has a tell shape (the actor layer eases it while a telegraphed attack is wound up). */
+  hasTell(): boolean {
+    return this.tellWeights !== null
   }
 
   /** An own-rig monster: a clone of the variant's scene on fresh materials, and its ring of copies if it has one. */
@@ -498,6 +630,7 @@ export class MonsterModel {
   /** The body material's colour (the actor layer greys a body with it). */
   setTint(c: THREE.Color): void {
     this.materials.body.color.copy(c)
+    for (const w of this.worn) w.setTint(c)
   }
 
   setFlash(c: THREE.Color | null, intensity = 0): void {
@@ -509,10 +642,12 @@ export class MonsterModel {
       m.emissive.setRGB(0, 0, 0)
       m.emissiveIntensity = 0
     }
+    for (const w of this.worn) w.setFlash(c, intensity)
   }
 
   setOpacity(o: number): void {
     this.materials.setOpacity(o * this.opacity)
+    for (const w of this.worn) w.setOpacity(o)
   }
 
   update(dtMs: number): void {
@@ -524,6 +659,9 @@ export class MonsterModel {
     this.disposed = true
     this.root.removeFromParent()
     if (this.inner) {
+      for (const w of this.worn.splice(0)) w.dispose()
+      // Its props' geometry is its own (the throne's, rigidGeometry), not the variant's.
+      for (const o of this.owned) o.dispose()
       this.inner.dispose()
       return
     }
@@ -535,6 +673,40 @@ export class MonsterModel {
     })
     this.materials.dispose()
     for (const o of this.owned) o.dispose()
+    this.root.clear()
+  }
+}
+
+/** A boss's rigid props drawn on their own (the Hollow King's risen throne on its dais): one root in its colours. */
+export class PropModel {
+  readonly root = new THREE.Group()
+  readonly triangles: number
+  private readonly materials: CharacterMaterials
+  private readonly geometries: THREE.BufferGeometry[]
+  private disposed = false
+
+  private constructor(materials: CharacterMaterials, geometries: THREE.BufferGeometry[], triangles: number) {
+    this.materials = materials
+    this.geometries = geometries
+    this.triangles = triangles
+  }
+
+  static of(v: MonsterVariant, props: readonly THREE.Mesh[]): PropModel {
+    const materials = createCharacterMaterials(variantPalette(v), { invScale: 1 / v.scale })
+    const rigid = rigidMeshes(v, props, materials)
+    const m = new PropModel(materials, rigid.geometries, rigid.triangles)
+    m.root.name = `props:${v.id}`
+    m.root.scale.setScalar(v.scale)
+    for (const body of rigid.meshes) m.root.add(body)
+    return m
+  }
+
+  dispose(): void {
+    if (this.disposed) return
+    this.disposed = true
+    this.root.removeFromParent()
+    for (const g of this.geometries) g.dispose()
+    this.materials.dispose()
     this.root.clear()
   }
 }

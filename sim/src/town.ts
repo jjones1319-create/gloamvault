@@ -1,15 +1,20 @@
-import { EMPTY_PITY, openTownChest, type ChestPityState, type ChestResult, type TomeBagState } from './chests.ts'
+import { quiverRefill, withQuiver } from './ammo.ts'
+import { EMPTY_PITY, chestKeyItemId, chestOnSale, keyOpens, openTownChest, type ChestPityState, type ChestResult, type TomeBagState } from './chests.ts'
 import type { Content } from './content.ts'
+import { boardSlot, contractPayout, delveContractProgress, markClaimed, playerBand, syncBoard, type BoardContext, type ContractBoard, type ContractPayout } from './contracts.ts'
 import { createDelve } from './delve.ts'
 import type { DelveCommand, DelveOptions, DelveState } from './delve-types.ts'
 import { chestBandGrade, chestPriceR, goldFor, rForFloor, sellPrice, skillHallPriceR, type ChestFamily } from './economy.ts'
 import { wearBlocker } from './armory.ts'
 import { addBattleXp, createHero, loseLevels, type CreateHeroInput } from './hero.ts'
-import { canHoldOffHand, canPromote, createItemInstance, plusNUpgrade, promote, repairAllCost, salvage } from './items.ts'
+import { canHoldOffHand, canPromote, createItemInstance, plusNUpgrade, promote, repairAllCost, rungMaterial, salvage } from './items.ts'
 import { stoneItemFor } from './loot.ts'
+import { difficultyOpen, finalBossOf, pactsBlocker } from './pacts.ts'
+import { growPetTraitFromFinds } from './pets.ts'
 import { Rng, seedFor, type RngState } from './rng.ts'
+import { itemValue, readTomeOnHero, tomeReadBlocker, tomeSkill, type TomeReadOutcome } from './tomes.ts'
 import type { Equipment, HeroRecord, ItemInstance, KnownSkill, PetInstance } from './types/content.ts'
-import type { ChestSubtype, DeathRule, Grade, MaterialLadder, Stance } from './types/enums.ts'
+import { DIFFICULTIES, type ChestSubtype, type DeathRule, type Difficulty, type Grade, type MaterialLadder, type Stance } from './types/enums.ts'
 import { heroFromWayfarer, wayfarerPool } from './wayfarers.ts'
 import { skillRankFor, skillRankThreshold, tierOpenAt } from './xp.ts'
 
@@ -28,13 +33,18 @@ import { skillRankFor, skillRankThreshold, tierOpenAt } from './xp.ts'
  * rest; a hero lost for good leaves a **legacy** (a share of their battle XP) and a line on the Memorial.
  */
 /** 2: the Nightmare death rule (D-095). 3: every hero has a look (Phase 5). */
-export const PROFILE_VERSION = 3
+export const PROFILE_VERSION = 4
 
 export interface TowerProgress {
   /** The deepest floor reached-and-finished per dungeon (D-083): the Waystone offers the floor below it. */
   deepest: Record<string, number>
   /** Boss kills by monster id. */
   bossKills: Record<string, number>
+  /**
+   * Boss kills by preset and monster id (07 §6.1: Hard and Dread open per dungeon when its final boss is dead on the
+   * preset below; the presets' first-kill extras). Optional; absent in saves from before Phase 7 = none recorded.
+   */
+  bossKillsByDifficulty?: Partial<Record<Difficulty, Record<string, number>>>
   delves: number
   clears: number
   wipes: number
@@ -160,6 +170,8 @@ export interface Profile {
   seedCounter: number
   activeDelve: ActiveDelveRecord | null
   lastDelve: DelveSummaryRecord | null
+  /** The Quest Board (07 §7; sim/src/contracts.ts): today's dailies, the week's weekly, progress, claims, the key caps. Optional (Phase 7). */
+  contracts?: ContractBoard
 }
 
 export class TownError extends Error {}
@@ -413,15 +425,40 @@ export function wayfarerArrivalLevel(profile: Profile): number {
 
 /* ---------- the Waystone: delves in and out (D-083) ---------- */
 
-/** The floors the Waystone offers in a dungeon: its first floor and every floor below one already finished. */
+/**
+ * The zone Waystones lit for this player (07 §1.1): a zone with `waystone` has its stone in the entry room of its first
+ * floor (Gravehollow F1, F4, F7); the first zone's is lit from the start, a later zone's once its previous zone's last
+ * boss has died for this player (its kill counted, or the floor before the zone finished). The "column of lamps".
+ */
+export function litWaystones(content: Content, profile: Profile, dungeonId: string): number[] {
+  const dungeon = content.dungeons.get(dungeonId) ?? fail(`no dungeon ${dungeonId}`)
+  const deepest = profile.progress.deepest[dungeonId] ?? 0
+  const zones = [...dungeon.zones].sort((a, b) => a.floors.from - b.floors.from)
+  const out: number[] = []
+  zones.forEach((z, i) => {
+    if (!z.waystone) return
+    const prev = zones[i - 1]
+    const prevBoss = prev?.bossIds[prev.bossIds.length - 1]
+    const lit = !prev || deepest >= z.floors.from - 1 || (prevBoss !== undefined && (profile.progress.bossKills[prevBoss] ?? 0) > 0)
+    if (lit) out.push(z.floors.from)
+  })
+  return out
+}
+
+/**
+ * The floors the Waystone offers in a dungeon (D-083, 07 §1.1; C1, Phase 7): the floor memory — its first floor and
+ * every floor below one already finished, as built — and every lit zone Waystone (`litWaystones`). A zone whose
+ * `waystone` is false is reached by the memory alone. Sorted, no repeats.
+ */
 export function waystoneFloors(content: Content, profile: Profile, dungeonId: string): number[] {
   const dungeon = content.dungeons.get(dungeonId) ?? fail(`no dungeon ${dungeonId}`)
   const first = Math.min(...dungeon.floors.map((f) => f.floor))
   const last = Math.max(...dungeon.floors.map((f) => f.floor))
   const deepest = profile.progress.deepest[dungeonId] ?? 0
-  const out: number[] = []
-  for (let f = first; f <= Math.min(last, Math.max(first, deepest + 1)); f++) out.push(f)
-  return out
+  const out = new Set<number>()
+  for (let f = first; f <= Math.min(last, Math.max(first, deepest + 1)); f++) out.add(f)
+  for (const f of litWaystones(content, profile, dungeonId)) if (f >= first && f <= last) out.add(f)
+  return [...out].sort((a, b) => a - b)
 }
 
 export interface StartDelveInput {
@@ -432,6 +469,8 @@ export interface StartDelveInput {
   policy?: DelveOptions['policy']
   /** The first-ever delve: F1 is the fixed 3-room tutorial (D-038). */
   firstDelve?: boolean
+  /** The Pacts the party takes at the Waystone (07 §6.2); none by default. */
+  pactIds?: readonly string[]
 }
 
 /** Starts a delve with the party at full HP and pool; the purse goes in with them (it is at risk). */
@@ -444,22 +483,33 @@ export function startDelve(content: Content, profile: Profile, input: StartDelve
   if (!waystoneFloors(content, profile, input.dungeonId).includes(input.floor)) fail(`floor ${input.floor} is not open yet`)
   const dungeon = content.dungeons.get(input.dungeonId)!
   const zone = dungeon.zones.find((z) => input.floor >= z.floors.from && input.floor <= z.floors.to)
+  // 07 §6: the preset must be open in this dungeon, and every Pact known and meant for this zone (no hunter Pact
+  // where no hunter stalks).
+  const difficulty = input.difficulty ?? 'normal'
+  const preset = difficultyOpen(dungeon, profile.progress, difficulty)
+  if (!preset.open) fail(preset.reason ?? `${difficulty} is not open yet`)
+  const pactIds = [...new Set(input.pactIds ?? [])]
+  const pactProblem = pactsBlocker(dungeon, input.floor, pactIds)
+  if (pactProblem) fail(pactProblem)
   const seed = seedFor('delve', profile.rng.a, profile.rng.b, profile.seedCounter + 1)
   const options: DelveOptions = {
     dungeonId: input.dungeonId,
     floor: input.floor,
     seed,
-    difficulty: input.difficulty ?? 'normal',
-    pactIds: [],
+    difficulty,
+    pactIds,
     auto: input.auto ?? false,
     policy: input.policy ?? 'textbook',
     ...(input.firstDelve ? { firstDelve: true } : {}),
     lastFloor: zone?.floors.to ?? Math.max(...dungeon.floors.map((f) => f.floor)),
     deathRule: profile.deathRule,
     ...(profile.deathRule === 'nightmare' && profile.chosenId ? { leaderId: profile.chosenId } : {}),
+    // C2: the kills so far, so a boss knows its first death (06 §3, 08 §11).
+    bossKills: { ...profile.progress.bossKills },
+    // The purse rides in the options so a replay keeps it; the delve starts with it as its gold.
+    purseIn: profile.purse,
   }
   const state = createDelve(content, options, party)
-  state.gold = profile.purse
   return { profile: { ...profile, purse: 0, seedCounter: profile.seedCounter + 1, activeDelve: { options, party, commands: [] } }, state }
 }
 
@@ -481,10 +531,12 @@ export function settleDelve(content: Content, profile: Profile, state: DelveStat
   const dungeon = content.dungeons.get(dungeonId)
   const back = new Map(state.heroes.map((h) => [h.record.id, h.record]))
   const before = new Map(profile.heroes.map((h) => [h.id, h]))
+  // 03 §9: a Perception trait grows by what the party found — traps revealed, secret doors, monsters caught unawares.
+  const finds = state.stats.trapsRevealed + state.stats.secretsFound + state.stats.ambushedMonsters
   // A rule edited during the delve (the fight's rule editor) is the profile's now; the delve ran on the old one.
   const heroes = profile.heroes.map((h) => {
     const r = back.get(h.id)
-    return r ? { ...r, aiRule: h.aiRule } : h
+    return r ? { ...r, aiRule: h.aiRule, ...(r.petInstance ? { petInstance: growPetTraitFromFinds(content, content.tuning, r.petInstance, finds) } : {}) } : h
   })
   const levelsGained: Record<string, number> = {}
   const battleXp: Record<string, number> = {}
@@ -501,14 +553,35 @@ export function settleDelve(content: Content, profile: Profile, state: DelveStat
   const from = state.options.floor ?? 1
   const finished = state.stats.deepestFloorCompleted
   const deepest = { ...profile.progress.deepest }
-  if (finished > 0) deepest[dungeonId] = Math.max(deepest[dungeonId] ?? 0, finished)
+  // Pact: Iron Oath — a wipe also costs the Waystone progress of this delve (07 §6.2).
+  const oathBroken = wiped && state.ruleFlags.includes('wipe-loses-waystone')
+  if (finished > 0 && !oathBroken) deepest[dungeonId] = Math.max(deepest[dungeonId] ?? 0, finished)
   const bossKills = { ...profile.progress.bossKills }
   for (const f of dungeon?.floors ?? []) {
     if (f.bossId && f.floor >= from && f.floor <= finished) bossKills[f.bossId] = (bossKills[f.bossId] ?? 0) + 1
   }
+  // 07 §6.1: kills by preset — Hard and Dread open on them (difficultyOpen) — and a boss's first kill on Hard or Dread
+  // pays the preset's extras: +1 rare part of the boss, and on Dread +1 Divine Shard from a final boss.
+  const byDifficulty = { ...(profile.progress.bossKillsByDifficulty ?? {}) }
+  const onPreset = { ...(byDifficulty[state.options.difficulty] ?? {}) }
+  const finalBoss = dungeon ? finalBossOf(dungeon) : null
+  for (const f of dungeon?.floors ?? []) {
+    if (!f.bossId || f.floor < from || f.floor > finished) continue
+    const firstOnPreset = (onPreset[f.bossId] ?? 0) === 0
+    onPreset[f.bossId] = (onPreset[f.bossId] ?? 0) + 1
+    if (!firstOnPreset) continue
+    const boss = content.monsters.get(f.bossId)
+    const rareId = boss?.parts.rare.itemId ?? boss?.parts.rare.materialId
+    const rare = state.knobs.bossExtraRareParts ?? 0
+    if (rareId && rare > 0) materials[rareId] = (materials[rareId] ?? 0) + rare
+    const shards = f.bossId === finalBoss ? (state.knobs.finalBossExtraShards ?? 0) : 0
+    if (shards > 0) materials['divine-shard'] = (materials['divine-shard'] ?? 0) + shards
+  }
+  byDifficulty[state.options.difficulty] = onPreset
   const progress: TowerProgress = {
     deepest,
     bossKills,
+    bossKillsByDifficulty: byDifficulty,
     delves: profile.progress.delves + 1,
     clears: profile.progress.clears + (outcome === 'cleared' ? 1 : 0),
     wipes: profile.progress.wipes + (wiped ? 1 : 0),
@@ -538,7 +611,11 @@ export function settleDelve(content: Content, profile: Profile, state: DelveStat
     progress,
     activeDelve: null,
     lastDelve: summary,
+    // 07 §7: what the delve did toward the Quest Board's contracts (sim/src/contracts.ts).
+    ...(profile.contracts ? { contracts: delveContractProgress(content, profile.contracts, state) } : {}),
   }
+  // 06 §3, D-037: a boss's first-kill title and +1 Luck reach the heroes who stood at the kill (pass C2).
+  next = payBossTownRewards(next, state)
   // D-095: under Nightmare the chosen hero's death ends the save — everything is lost; only the Hall's line remains.
   const leader = state.options.deathRule === 'nightmare' && state.options.leaderId ? state.heroes.find((h) => h.record.id === state.options.leaderId) : undefined
   if (leader?.fallen) {
@@ -575,6 +652,28 @@ export function settleDelve(content: Content, profile: Profile, state: DelveStat
     next = { ...next, lastDelve: summary }
   }
   return { profile: next, summary, hall: null }
+}
+
+/**
+ * The boss lines the delve could not pay (DelveState.bossRewards, 06 §3): each title joins the titles of every hero who
+ * came home standing, once; +N Luck (a final boss's first kill, D-037: at most one per final boss, so at most +4 over
+ * the four dungeons) adds to their Luck and its creation value. A Waystone line needs nothing: the floor memory opens
+ * the floors (D-083).
+ */
+function payBossTownRewards(profile: Profile, state: DelveState): Profile {
+  const rewards = state.bossRewards ?? []
+  if (rewards.length === 0) return profile
+  const standing = new Set(state.heroes.filter((h) => !h.fallen).map((h) => h.record.id))
+  const heroes = profile.heroes.map((h) => {
+    if (!standing.has(h.id)) return h
+    let next = h
+    for (const r of rewards) {
+      if (r.kind === 'title' && r.id && !next.titles.includes(r.id)) next = { ...next, titles: [...next.titles, r.id] }
+      if (r.kind === 'luck' && r.amount > 0) next = { ...next, attributes: { ...next.attributes, luck: next.attributes.luck + r.amount }, creationValues: { ...next.creationValues, luck: next.creationValues.luck + r.amount } }
+    }
+    return next
+  })
+  return { ...profile, heroes }
 }
 
 /** Abandons a saved delve that can no longer be replayed (content changed): the party comes home as it went in. */
@@ -668,8 +767,15 @@ export function unequip(profile: Profile, heroId: string, slot: SingleSlot | 'ri
 
 /* ---------- the Blacksmith (03 §6.4–§6.5, 08 §8–§9) ---------- */
 
-export function repairAllQuote(content: Content, profile: Profile, heroId: string): { gold: number; points: number } {
-  return repairAllCost(content, content.tuning, equippedItems(heroOf(profile, heroId)))
+/**
+ * "Repair all"'s bill (03 §6.4): the gear's wear, and the quiver (D-099: Repair all refills it — the arrows or bolts the
+ * hand draws, back to ammo.quiverMax, at their own price). `gold` is the whole bill; `points` the gear's wear alone.
+ */
+export function repairAllQuote(content: Content, profile: Profile, heroId: string): { gold: number; points: number; ammo: { itemId: string; missing: number; gold: number } | null } {
+  const hero = heroOf(profile, heroId)
+  const gear = repairAllCost(content, content.tuning, equippedItems(hero))
+  const ammo = quiverRefill(content, content.tuning, hero)
+  return { gold: gear.gold + (ammo?.gold ?? 0), points: gear.points, ammo }
 }
 
 /** "Repair all" (03 §6.4): every equipped item back to its max durability for 0.5% of value per point. */
@@ -680,7 +786,9 @@ export function repairAll(content: Content, profile: Profile, heroId: string): P
   const fix = (i: ItemInstance | null): ItemInstance | null => (i ? { ...i, durability: i.maxDurability } : i)
   const e = hero.equipment
   const equipment: Equipment = { ...e, mainHand: fix(e.mainHand), offHand: fix(e.offHand), helmet: fix(e.helmet), chest: fix(e.chest), legs: fix(e.legs), boots: fix(e.boots), gloves: fix(e.gloves), talisman: fix(e.talisman), relic: fix(e.relic), ring: [fix(e.ring[0]), fix(e.ring[1])] }
-  return replaceHero(paid, { ...hero, equipment })
+  const mended = { ...hero, equipment }
+  // D-099: the quiver comes back full with the gear.
+  return replaceHero(paid, quote.ammo ? withQuiver(content.tuning, mended, quote.ammo.itemId, content.tuning.ammo.quiverMax) : mended)
 }
 
 function findEquipped(hero: HeroRecord, instanceId: string): { slot: SingleSlot | 'ring0' | 'ring1'; inst: ItemInstance } | null {
@@ -739,7 +847,7 @@ export function salvageItem(content: Content, profile: Profile, instanceId: stri
   const def = content.items.get(inst.itemId)!
   const r = salvage(content.tuning, def, inst)
   const materials = { ...profile.materials }
-  const ladderItem = r.materialLadder ? [...content.items.values()].find((d) => d.kind === 'material' && d.materialLadder === r.materialLadder && d.materialRung === r.materialRung) : undefined
+  const ladderItem = r.materialLadder ? (rungMaterial(content, r.materialLadder, r.materialRung) ?? undefined) : undefined
   if (ladderItem && r.units > 0) materials[ladderItem.id] = (materials[ladderItem.id] ?? 0) + r.units
   return { ...profile, armory: profile.armory.filter((i) => i !== inst), materials }
 }
@@ -747,8 +855,9 @@ export function salvageItem(content: Content, profile: Profile, instanceId: stri
 /** Sell an armory item to the town (Haggling, 03 §7.6). */
 export function sellItem(content: Content, profile: Profile, instanceId: string, hagglingRank = 0): Profile {
   const inst = profile.armory.find((i) => i.instanceId === instanceId) ?? fail('not in the armory')
-  const def = content.items.get(inst.itemId)!
-  return { ...profile, armory: profile.armory.filter((i) => i !== inst), purse: profile.purse + sellPrice(content.tuning, def.value, hagglingRank) * Math.max(1, inst.quantity) }
+  // A Skill Tome is worth its skill's tier (08 §4; tomes.ts itemValue); every other item its def's value.
+  const value = itemValue(content, inst, townR(profile))
+  return { ...profile, armory: profile.armory.filter((i) => i !== inst), purse: profile.purse + sellPrice(content.tuning, value, hagglingRank) * Math.max(1, inst.quantity) }
 }
 
 /* ---------- the Skill Hall (03 §7.4) ---------- */
@@ -783,6 +892,27 @@ export function learnSkill(content: Content, profile: Profile, heroId: string, s
   const known: KnownSkill = { skillId, rank: 1, xp: 0 } as KnownSkill
   const key = `${heroId}:${Math.min(3, skill.tier)}`
   return { ...replaceHero(paid, { ...hero, skills: [...hero.skills, known] }), skillPurchases: { ...paid.skillPurchases, [key]: (paid.skillPurchases[key] ?? 0) + 1 } }
+}
+
+/**
+ * A hero reads a Skill Tome from their bag or the armory (03 §7.5, 08 §4; Phase 7): an unknown skill is learned at rank
+ * 1, a known one gains a rank's worth of XP (a duplicate is never dead loot). Only a hero of the skill's class reads it;
+ * the dead do not read; the Tome is used up.
+ */
+export function readTome(content: Content, profile: Profile, heroId: string, instanceId: string): { profile: Profile; outcome: TomeReadOutcome } {
+  const hero = heroOf(profile, heroId)
+  if (isDead(profile, heroId)) fail(`${hero.name} lies at the Shrine`)
+  const inBag = hero.bag.find((i) => i.instanceId === instanceId)
+  const inst = inBag ?? profile.armory.find((i) => i.instanceId === instanceId) ?? fail('no such Tome')
+  const skill = tomeSkill(content, inst) ?? fail('that is not a Skill Tome')
+  const blocked = tomeReadBlocker(content, hero, inst)
+  if (blocked) fail(blocked)
+  const r = readTomeOnHero(content.tuning, hero, skill)
+  const useUp = (list: readonly ItemInstance[]): ItemInstance[] =>
+    list.flatMap((i) => (i.instanceId !== instanceId ? [i] : i.quantity > 1 ? [{ ...i, quantity: i.quantity - 1 }] : []))
+  const reader = inBag ? { ...r.hero, bag: useUp(r.hero.bag) } : r.hero
+  const next = replaceHero(profile, reader)
+  return { profile: inBag ? next : { ...next, armory: useUp(next.armory) }, outcome: r.outcome }
 }
 
 /** Puts a known skill in a loadout slot (actives 0–3, passives 0–1). */
@@ -826,6 +956,42 @@ export interface BuyChestOptions {
   practiceSkillId?: string
 }
 
+/** How a chest is paid for: gold at the band's price, or one chest key of the chest's tier (07 §7; pass B, Phase 7). */
+export type ChestPayment = 'gold' | 'key'
+
+/** Chest keys held, counted in the materials where reward lines and contracts put them (chests.ts chestKeyItemId). */
+export function chestKeysHeld(content: Content, profile: Profile, tier: 'standard' | 'grand'): number {
+  const id = chestKeyItemId(content, tier)
+  return id === null ? 0 : Math.max(0, profile.materials[id] ?? 0)
+}
+
+/** Why the chest cannot be opened with a key now, or null (no key of its tier held, or a kind keys do not open). */
+export function chestKeyBlocker(content: Content, profile: Profile, chestId: string): string | null {
+  const chest = content.chests.get(chestId)
+  if (!chest) return `no chest ${chestId}`
+  if (!keyOpens(content.tuning, chest)) return 'a key does not open this chest'
+  return chestKeysHeld(content, profile, chest.tier) > 0 ? null : `no ${chest.tier === 'grand' ? 'Grand' : 'Standard'} Key`
+}
+
+/** Pays for a chest: its gold price, or one key of its tier from the materials. Refuses a chest not on sale at the band. */
+function payForChest(content: Content, profile: Profile, chestId: string, via: ChestPayment): Profile {
+  const chest = content.chests.get(chestId) ?? fail(`no chest ${chestId}`)
+  if (!chestOnSale(chest, chestBand(profile))) fail(`${chest.name} is sold from band ${chest.minBand ?? 'F'}`)
+  if (via === 'gold') return pay(profile, chestPrice(content, profile, chestId))
+  const blocked = chestKeyBlocker(content, profile, chestId)
+  if (blocked) fail(blocked)
+  const keyId = chestKeyItemId(content, chest.tier) as string
+  return { ...profile, materials: { ...profile.materials, [keyId]: (profile.materials[keyId] ?? 0) - 1 } }
+}
+
+/**
+ * Opens a chest with a chest key instead of gold (07 §7: "A Standard Key opens one Standard chest free; a Grand Key
+ * one Grand chest"): the same chest, odds and pity as buying it; the key comes off `profile.materials`.
+ */
+export function openChestWithKey(content: Content, profile: Profile, chestId: string, heroId: string | null, options: BuyChestOptions = {}): { profile: Profile; result: ChestResult } {
+  return buyChest(content, profile, chestId, heroId, options, 'key')
+}
+
 /** The wayfarers the player has (living or dead at the Shrine): never drawn again while they are (D-091). */
 export function ownedWayfarerIds(profile: Profile): Set<string> {
   return new Set(Object.values(profile.wayfarerOf))
@@ -835,13 +1001,13 @@ export function ownedWayfarerIds(profile: Profile): Set<string> {
  * A Wayfarer Chest (D-091): the writ calls a wayfarer not already with you to the Lantern Inn, at the level of your
  * lowest-level living hero; they join the party while it has room.
  */
-function buyWayfarerChest(content: Content, profile: Profile, chestId: string): { profile: Profile; result: ChestResult } {
+function buyWayfarerChest(content: Content, profile: Profile, chestId: string, via: ChestPayment = 'gold'): { profile: Profile; result: ChestResult } {
   const chest = content.chests.get(chestId) ?? fail(`no chest ${chestId}`)
   const t = content.tuning
   if (profile.heroes.length >= t.coop.rosterMax) fail(`the Lantern Inn is full (${t.coop.rosterMax} heroes)`)
   const owned = ownedWayfarerIds(profile)
   if (wayfarerPool(content, owned).length === 0) fail('every wayfarer of the cast is already with you')
-  const paid = pay(profile, chestPrice(content, profile, chestId))
+  const paid = payForChest(content, profile, chestId, via)
   const pityKey = chest.kind
   const { value: outcome, rng } = withRng(paid, (r) => openTownChest(content, t, r, { chest, bandGrade: chestBand(paid), luck: 10, pity: paid.pity[pityKey] ?? EMPTY_PITY, ownedWayfarerIds: owned }))
   let next: Profile = { ...paid, rng, pity: { ...paid.pity, [pityKey]: outcome.pity } }
@@ -861,12 +1027,12 @@ function buyWayfarerChest(content: Content, profile: Profile, chestId: string): 
  * armor family and the Tome bag); a Wayfarer Chest needs none. Pity counters are kept per chest family, so a Grand
  * chest advances the same counters as a Standard (08 §10.1).
  */
-export function buyChest(content: Content, profile: Profile, chestId: string, heroId: string | null, options: BuyChestOptions = {}): { profile: Profile; result: ChestResult } {
+export function buyChest(content: Content, profile: Profile, chestId: string, heroId: string | null, options: BuyChestOptions = {}, via: ChestPayment = 'gold'): { profile: Profile; result: ChestResult } {
   const chest = content.chests.get(chestId) ?? fail(`no chest ${chestId}`)
-  if (chest.kind === 'wayfarer') return buyWayfarerChest(content, profile, chestId)
+  if (chest.kind === 'wayfarer') return buyWayfarerChest(content, profile, chestId, via)
   const hero = heroOf(profile, heroId ?? fail('choose a hero for this chest'))
   const cls = content.classes.get(hero.classId)
-  const paid = pay(profile, chestPrice(content, profile, chestId))
+  const paid = payForChest(content, profile, chestId, via)
   const pityKey = chest.kind
   // Dupes (03 §8.3): a gear chest checks item ids; an egg chest checks the pet species you have hatched.
   const owned =
@@ -913,11 +1079,10 @@ export function buyChest(content: Content, profile: Profile, chestId: string, he
     case 'shard':
       next = { ...next, materials: { ...next.materials, 'divine-shard': (next.materials['divine-shard'] ?? 0) + r.amount } }
       break
-    case 'tome': {
-      const h = heroOf(next, hero.id)
-      if (!h.skills.some((s) => s.skillId === r.skillId)) next = replaceHero(next, { ...h, skills: [...h.skills, { skillId: r.skillId, rank: 1, xp: 0 } as KnownSkill] })
+    case 'tome':
+      // Phase 7 (03 §8.3, 08 §10.2): the Tome is an item — into the armory, read by a hero of its class (readTome).
+      next = { ...next, armory: [...next.armory, r.inst] }
       break
-    }
     case 'tomeOfPractice': {
       // 08 §10: rank XP equal to one full rank for a chosen skill (the lowest-ranked skill in the loadout when none is chosen).
       const h = heroOf(next, hero.id)
@@ -940,7 +1105,8 @@ export function buyChest(content: Content, profile: Profile, chestId: string, he
 }
 
 function salvageUnits(content: Content, profile: Profile, ladder: string | null, rung: number, units: number): Profile {
-  const item = ladder ? [...content.items.values()].find((d) => d.kind === 'material' && d.materialLadder === ladder && d.materialRung === rung) : undefined
+  // The rung's first name, never a regional one (items.ts rungMaterial).
+  const item = ladder ? (rungMaterial(content, ladder as MaterialLadder, rung) ?? undefined) : undefined
   if (!item || units <= 0) return profile
   return { ...profile, materials: { ...profile.materials, [item.id]: (profile.materials[item.id] ?? 0) + units } }
 }
@@ -973,16 +1139,109 @@ export function setPetStance(profile: Profile, heroId: string, stance: Stance): 
 
 /* ---------- the Quest Board (07 §7) ---------- */
 
-/** The week's three contracts: drawn deterministically from the week number (the client passes it; the sim has no clock). */
-export function questBoard(content: Content, weekIndex: number): string[] {
-  const ids = [...content.contracts.keys()].sort()
-  const rng = Rng.fromSeed(weekIndex * 7919 + 17)
-  const out: string[] = []
-  while (out.length < Math.min(3, ids.length)) {
-    const id = rng.pick(ids)
-    if (!out.includes(id)) out.push(id)
+/**
+ * The dailies a new save would be offered on board day `dayIndex` (deterministic; kept for the tools and old tests —
+ * the game posts its board with `syncQuestBoard`).
+ */
+export function questBoard(content: Content, dayIndex: number): string[] {
+  const fresh = newProfile(0)
+  return syncBoard(content, null, boardContext(content, fresh), { day: dayIndex, week: Math.floor(dayIndex / 7) }).dailies.map((s) => s.contractId)
+}
+
+/** A dungeon the player may enter: the first, and each one whose unlocking boss is dead (07 §1.1). */
+function dungeonOpenTo(content: Content, profile: Profile, dungeonId: string): boolean {
+  const d = content.dungeons.get(dungeonId)
+  return d !== undefined && (d.unlockedBy === null || (profile.progress.bossKills[d.unlockedBy] ?? 0) > 0)
+}
+
+/** What the board reads about the player (sim/src/contracts.ts): the band, the floors open, the presets open. */
+export function boardContext(content: Content, profile: Profile): BoardContext {
+  return {
+    band: playerBand(profile.progress.deepest, content.tuning),
+    openFloors: (dungeonId) => (dungeonOpenTo(content, profile, dungeonId) ? waystoneFloors(content, profile, dungeonId) : []),
+    difficultyOpen: (dungeonId, difficulty) => {
+      const d = content.dungeons.get(dungeonId)
+      return d !== undefined && difficultyOpen(d, profile.progress, difficulty).open
+    },
   }
-  return out
+}
+
+/**
+ * Posts or keeps the Quest Board for the client's board day and week (07 §7: three dailies from 04:00, a weekly from
+ * Monday; `boardClock` turns the client's clock into them). Unchanged when nothing turned over.
+ */
+export function syncQuestBoard(content: Content, profile: Profile, clock: { day: number; week: number }): Profile {
+  const board = syncBoard(content, profile.contracts, boardContext(content, profile), clock)
+  return board === profile.contracts ? profile : { ...profile, contracts: board }
+}
+
+export interface ContractClaim extends ContractPayout {
+  /** The chest the contract gives, opened for `heroId` (null when it gives none). */
+  chest: ChestResult | null
+  /** The hero who took the items and opened the chest. */
+  heroId: string | null
+}
+
+/**
+ * Claims a finished contract (07 §7): gold at the band it was posted at into the purse; chest keys into the materials
+ * (`standard-chest-key` / `grand-chest-key`; at most 3 Standard and 1 Grand a week — past the cap the gold and the
+ * rest still pay); items into the bag of `heroId` (the party's first hero by default); a chest opened at once for
+ * that hero, free (its price is paid by the contract).
+ */
+export function claimContract(content: Content, profile: Profile, which: number | 'weekly', heroId: string | null = null, options: BuyChestOptions = {}): { profile: Profile; result: ContractClaim } {
+  const board = profile.contracts ?? fail('the Quest Board is bare')
+  const slot = boardSlot(board, which) ?? fail('no such contract')
+  if (slot.claimed) fail('already claimed')
+  if (slot.progress < slot.goal) fail('not finished yet')
+  const payout = contractPayout(content, board, slot)
+  // Chest keys are counted in the materials (pass B: chests.ts chestKeyItemId; Grand and Standard Keys open chests free).
+  const materials = { ...profile.materials }
+  for (const tier of ['standard', 'grand'] as const) {
+    const id = chestKeyItemId(content, tier)
+    if (id !== null && payout.keys[tier] > 0) materials[id] = (materials[id] ?? 0) + payout.keys[tier]
+  }
+  let next: Profile = { ...profile, purse: profile.purse + payout.gold, materials, contracts: markClaimed(board, which, payout) }
+  const receiver = heroId !== null && next.heroes.some((h) => h.id === heroId) && !isDead(next, heroId) ? heroId : (partyHeroes(next)[0]?.id ?? livingHeroes(next)[0]?.id ?? null)
+  for (const line of payout.items) {
+    if (!content.items.has(line.itemId) || line.amount <= 0) continue
+    const { value: inst, rng } = withRng(next, (r) => createItemInstance(content, r, line.itemId, { quantity: line.amount }))
+    next = { ...next, rng }
+    const hero = receiver ? heroOf(next, receiver) : null
+    if (!hero) {
+      next = { ...next, armory: [...next.armory, inst] }
+      continue
+    }
+    const i = hero.bag.findIndex((b) => b.itemId === inst.itemId)
+    const bag = i >= 0 ? hero.bag.map((b, j) => (j === i ? { ...b, quantity: b.quantity + inst.quantity } : b)) : [...hero.bag, inst]
+    next = replaceHero(next, { ...hero, bag })
+  }
+  let chest: ChestResult | null = null
+  if (payout.chestId) {
+    const price = chestPrice(content, next, payout.chestId)
+    const opened = buyChest(content, { ...next, purse: next.purse + price }, payout.chestId, receiver, options)
+    next = opened.profile
+    chest = opened.result
+  }
+  return { profile: next, result: { ...payout, chest, heroId: receiver } }
+}
+
+/** 04 §3: the classes with a ● in a damage column (melee or ranged) — a party's strikers (D-099's "No striker" hint). */
+const STRIKER_CLASS_IDS: ReadonlySet<string> = new Set(['blade', 'ranger', 'shade', 'arcanist'])
+
+/** D-099: the Inn's (and Phase 9's lobby's) quiet hint when the party has no striker — a hint, never a block. */
+export function noStrikerHint(profile: Profile): string | null {
+  const party = partyHeroes(profile)
+  if (party.length === 0 || party.some((h) => STRIKER_CLASS_IDS.has(h.classId))) return null
+  return 'No striker: fights will be long'
+}
+
+/** The Waystone's presets for a dungeon (07 §6.1): each open, or why not ("Defeat the Hollow King on Normal to open Hard"). */
+export function difficultyChoices(content: Content, profile: Profile, dungeonId: string): { difficulty: Difficulty; open: boolean; reason: string | null }[] {
+  const d = content.dungeons.get(dungeonId)
+  if (!d) return []
+  const final = finalBossOf(d)
+  const name = final ? (content.monsters.get(final)?.name.split(',')[0]?.trim() ?? final) : undefined
+  return DIFFICULTIES.map((difficulty) => ({ difficulty, ...difficultyOpen(d, profile.progress, difficulty, name) }))
 }
 
 /** A repair-kit-style helper for the Inn: everything the town sells is priced in gold at the player's band. */

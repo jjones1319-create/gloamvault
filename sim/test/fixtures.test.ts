@@ -49,7 +49,7 @@ describe('the fixture corpus under the content linter', () => {
   })
 
   it('skips only the rules a fixture cannot satisfy', () => {
-    expect([...FIXTURE_SKIP_RULES]).toEqual([4, 10, 14])
+    expect([...FIXTURE_SKIP_RULES]).toEqual([4, 10, 14, 35, 36, 45, 46, 48, 53, 56, 62, 63])
   })
 })
 

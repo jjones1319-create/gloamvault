@@ -1,0 +1,52 @@
+{
+  "id": "shade-nightshade-veins",
+  "classId": "shade",
+  "school": "venom",
+  "tier": 4,
+  "name": "Nightshade Veins",
+  "description": "Each tick of your Poison on an enemy restores 3% of your Stamina; Poison on a target below 20% HP ticks double.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "nightshade-veins",
+      "percent": 3,
+      "amount": 20,
+      "target": "self",
+      "note": "percent% of the pool per tick of your Poison; below `amount`% HP the tick lands twice"
+    }
+  ],
+  "prerequisiteId": "shade-shadow-oil",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "5% Stamina.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "nightshade-veins",
+        "percent": 5,
+        "amount": 20,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "dot"
+  ],
+  "xpTags": [
+    "perception"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 0
+  }
+}

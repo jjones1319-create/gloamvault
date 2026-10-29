@@ -1,0 +1,74 @@
+{
+  "id": "ranger-killing-field",
+  "classId": "ranger",
+  "school": "trapper",
+  "tier": 5,
+  "name": "Killing Field",
+  "description": "For 3 turns every enemy in both rows takes 1.0× Pierce at the start of its turn and is Slowed; 6 arrows.",
+  "type": "active",
+  "cost": 45,
+  "weight": 1400,
+  "target": "allEnemies",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "field-trap-both-rows",
+      "multiplier": 1,
+      "damageType": "pierce",
+      "status": "slow",
+      "duration": 3,
+      "scalesWith": "strength",
+      "note": "each enemy takes multiplier × Attack at its turn start and status 1 turn, for duration turns"
+    },
+    {
+      "kind": "custom",
+      "customId": "consume-ammo",
+      "amount": 6,
+      "target": "self",
+      "note": "6 arrows (or bolts)"
+    }
+  ],
+  "prerequisiteId": "ranger-spiked-net",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "requirements": {
+    "weaponTypes": [
+      "bow",
+      "shortbow",
+      "longbow",
+      "crossbow"
+    ]
+  },
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "4 turns.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "field-trap-both-rows",
+        "multiplier": 1,
+        "damageType": "pierce",
+        "status": "slow",
+        "duration": 4,
+        "scalesWith": "strength"
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "dot",
+    "control",
+    "reach"
+  ],
+  "xpTags": [
+    "perception",
+    "agility"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 65
+  }
+}

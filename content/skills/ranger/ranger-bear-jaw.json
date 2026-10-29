@@ -1,0 +1,60 @@
+{
+  "id": "ranger-bear-jaw",
+  "classId": "ranger",
+  "school": "trapper",
+  "tier": 4,
+  "name": "Bear Jaw",
+  "description": "Set a bear jaw before the enemy front row: the next enemy to act from the front row takes 2.5× Pierce, Bleed 3 turns and Root 2 turns.",
+  "type": "active",
+  "cost": 30,
+  "weight": 1000,
+  "target": "enemyFront",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "field-trap-front-action",
+      "multiplier": 2.5,
+      "damageType": "pierce",
+      "status": "root",
+      "duration": 2,
+      "amount": 3,
+      "scalesWith": "strength",
+      "note": "fires once, on the first enemy to start a turn in the front row: multiplier × Attack, Bleed amount turns, status for duration turns"
+    }
+  ],
+  "prerequisiteId": "ranger-spring-trap",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "3.0×.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "field-trap-front-action",
+        "multiplier": 3,
+        "damageType": "pierce",
+        "status": "root",
+        "duration": 2,
+        "amount": 3,
+        "scalesWith": "strength"
+      }
+    ]
+  },
+  "tags": [
+    "control",
+    "dot",
+    "utility"
+  ],
+  "xpTags": [
+    "perception",
+    "agility"
+  ],
+  "aiHints": {
+    "role": "control",
+    "priority": 55
+  }
+}

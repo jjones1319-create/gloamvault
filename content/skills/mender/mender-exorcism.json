@@ -1,0 +1,55 @@
+{
+  "id": "mender-exorcism",
+  "classId": "mender",
+  "school": "sanctity",
+  "tier": 4,
+  "name": "Exorcism",
+  "description": "1.5× Holy to every enemy in both rows; a non-boss Undead or Shadow target left under 20% HP is destroyed outright (loot and XP as a kill). Heavy cast.",
+  "type": "active",
+  "cost": 36,
+  "weight": 1400,
+  "target": "allEnemies",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1.5,
+      "damageType": "holy"
+    },
+    {
+      "kind": "custom",
+      "customId": "destroy-below-hp",
+      "percent": 20,
+      "damageType": "holy",
+      "note": "after the hit, a non-boss Undead- or Shadow-family target under percent% HP is destroyed — a kill, loot and XP as any other"
+    }
+  ],
+  "prerequisiteId": "mender-judgement",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Under 25%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "destroy-below-hp",
+        "percent": 25,
+        "damageType": "holy"
+      }
+    ]
+  },
+  "tags": [
+    "aoe"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 75
+  }
+}

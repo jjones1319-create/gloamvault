@@ -1,0 +1,26 @@
+{
+  "id": "ysolde-marrick",
+  "name": "Ysolde Marrick",
+  "speciesId": "human",
+  "classId": "blade",
+  "grade": "S",
+  "freePoints": {
+    "strength": 3,
+    "agility": 3,
+    "perception": 2,
+    "vitality": 2
+  },
+  "starterSkillIds": [
+    "blade-twin-cut",
+    "blade-open-vein",
+    "blade-flowing-guard"
+  ],
+  "aiRule": null,
+  "bio": "Retired from the sword twice, and came back both times because nothing else felt like being awake.",
+  "look": {
+    "frame": "slight",
+    "skin": 0,
+    "face": 2,
+    "hair": 1
+  }
+}

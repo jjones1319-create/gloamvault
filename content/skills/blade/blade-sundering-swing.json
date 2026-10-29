@@ -4,7 +4,7 @@
   "school": "executioner",
   "tier": 2,
   "name": "Sundering Swing",
-  "description": "1.1× Slash to every front-row enemy; Weaken 2 turns on each.",
+  "description": "0.95× Slash to every front-row enemy; Weaken 2 turns on each.",
   "type": "active",
   "cost": 18,
   "weight": 1400,
@@ -12,7 +12,7 @@
   "effects": [
     {
       "kind": "damage",
-      "multiplier": 1.1,
+      "multiplier": 0.95,
       "damageType": "slash",
       "target": "enemyRow",
       "scalesWith": "strength"

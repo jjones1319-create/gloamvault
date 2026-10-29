@@ -38,7 +38,8 @@
         }
       ],
       "aiWeight": 45,
-      "tell": "The Broodmother rears, fangs wide."
+      "tell": "The Broodmother rears, fangs wide.",
+      "hint": "Brood rearing"
     },
     {
       "id": "brood-call",
@@ -66,7 +67,8 @@
         }
       ],
       "aiWeight": 30,
-      "tell": "Her abdomen pulses."
+      "tell": "Her abdomen pulses.",
+      "hint": "Sac pulsing"
     },
     {
       "id": "sweep",

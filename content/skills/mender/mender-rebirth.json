@@ -1,0 +1,59 @@
+{
+  "id": "mender-rebirth",
+  "classId": "mender",
+  "school": "benediction",
+  "tier": 4,
+  "name": "Rebirth",
+  "description": "Revive every downed ally at 50% HP; once per fight it also raises one fallen hero (past the 3-turn window) at 50%. Heavy cast.",
+  "type": "active",
+  "cost": 40,
+  "weight": 1400,
+  "target": "allDowned",
+  "effects": [
+    {
+      "kind": "revive",
+      "percent": 50,
+      "note": "every downed ally, inside the 3-turn window (03 §12.1)"
+    },
+    {
+      "kind": "custom",
+      "customId": "revive-fallen",
+      "percent": 50,
+      "amount": 1,
+      "target": "self",
+      "note": "raises up to `amount` fallen heroes per fight at percent% HP: the chosen target when it has fallen, else the first (D-089)"
+    }
+  ],
+  "prerequisiteId": "mender-sanctuary",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Fallen: twice per fight.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "revive-fallen",
+        "percent": 50,
+        "amount": 2,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "revive",
+    "heal"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "heal",
+    "priority": 95
+  }
+}

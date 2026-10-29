@@ -1,0 +1,49 @@
+{
+  "id": "blacksteel-zweihander",
+  "name": "Blacksteel Zweihander",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "B",
+  "materialLadder": "metal",
+  "materialRung": 4,
+  "weaponType": "greatsword",
+  "armorFamily": null,
+  "hands": 2,
+  "damageType": "slash",
+  "weight": 1400,
+  "baseStats": {
+    "attackPhys": 76,
+    "critDamage": 10,
+    "speed": -8
+  },
+  "requirements": {
+    "strength": 25,
+    "wisdom": 0
+  },
+  "affixSlots": 2,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 7,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 3.26,
+  "value": 1500,
+  "classLock": [
+    "blade"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-zweihander-01",
+    "tintPrimary": "#2f3136",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "blacksteel"
+  }
+}

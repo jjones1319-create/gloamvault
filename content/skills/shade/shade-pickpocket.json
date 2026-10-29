@@ -4,7 +4,7 @@
   "school": "larceny",
   "tier": 1,
   "name": "Pickpocket",
-  "description": "0.6× Pierce to a front-row enemy and steal gold equal to 5 × its level (once per enemy).",
+  "description": "0.8× Pierce to a front-row enemy and steal gold equal to 5 × its level (once per enemy).",
   "type": "active",
   "cost": 8,
   "weight": 800,
@@ -12,7 +12,7 @@
   "effects": [
     {
       "kind": "damage",
-      "multiplier": 0.6,
+      "multiplier": 0.8,
       "damageType": "pierce"
     },
     {

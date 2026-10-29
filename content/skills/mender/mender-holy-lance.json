@@ -4,7 +4,7 @@
   "school": "sanctity",
   "tier": 2,
   "name": "Holy Lance",
-  "description": "1.9× Holy to one enemy in either row; a target carrying the Smite mark is also Stunned 1 turn. Heavy cast.",
+  "description": "1.6× Holy to one enemy in either row; a target carrying the Smite mark is also Stunned 1 turn. Heavy cast.",
   "type": "active",
   "cost": 16,
   "weight": 1400,
@@ -12,7 +12,7 @@
   "effects": [
     {
       "kind": "damage",
-      "multiplier": 1.9,
+      "multiplier": 1.6,
       "damageType": "holy"
     },
     {
@@ -31,11 +31,11 @@
     "costPerRank": -2
   },
   "mastery": {
-    "text": "2.1×.",
+    "text": "1.8×.",
     "effects": [
       {
         "kind": "damage",
-        "multiplier": 2.1,
+        "multiplier": 1.8,
         "damageType": "holy"
       }
     ]

@@ -1,0 +1,43 @@
+{
+  "id": "basilisk-scale",
+  "name": "Basilisk Scale",
+  "slot": null,
+  "kind": "material",
+  "grade": "A",
+  "materialLadder": "hide",
+  "materialRung": 5,
+  "weaponType": null,
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {},
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 8,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1,
+  "value": 160,
+  "classLock": [],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "material-hide-basilisk-scale-01",
+    "tintPrimary": "#6b7d4f",
+    "tintSecondary": "#2b2b2b",
+    "trimMetal": "none"
+  }
+}

@@ -1,0 +1,163 @@
+{
+  "id": "blade-hundred-cuts",
+  "classId": "blade",
+  "school": "iron-dance",
+  "tier": 5,
+  "name": "Hundred Cuts",
+  "description": "Eight hits of 0.5× Slash on a front-row enemy (4.0× in all); each hit that lands +4 Momentum; Bleed 2 turns.",
+  "type": "active",
+  "cost": 45,
+  "weight": 800,
+  "target": "enemyFront",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 0.5,
+      "damageType": "slash",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "damage",
+      "multiplier": 0.5,
+      "damageType": "slash",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "damage",
+      "multiplier": 0.5,
+      "damageType": "slash",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "damage",
+      "multiplier": 0.5,
+      "damageType": "slash",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "damage",
+      "multiplier": 0.5,
+      "damageType": "slash",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "damage",
+      "multiplier": 0.5,
+      "damageType": "slash",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "damage",
+      "multiplier": 0.5,
+      "damageType": "slash",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "damage",
+      "multiplier": 0.5,
+      "damageType": "slash",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "custom",
+      "customId": "momentum-per-hit-landed",
+      "amount": 4,
+      "target": "self",
+      "note": "amount Momentum for every hit of this skill that lands"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "bleed",
+      "duration": 2
+    }
+  ],
+  "prerequisiteId": "blade-tempest-dance",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "requirements": {
+    "dualWield": true
+  },
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Ten hits.",
+    "effects": [
+      {
+        "kind": "damage",
+        "multiplier": 0.5,
+        "damageType": "slash",
+        "scalesWith": "strength",
+        "note": "Mastery restates every hit: ten of 0.5×"
+      },
+      {
+        "kind": "damage",
+        "multiplier": 0.5,
+        "damageType": "slash",
+        "scalesWith": "strength"
+      },
+      {
+        "kind": "damage",
+        "multiplier": 0.5,
+        "damageType": "slash",
+        "scalesWith": "strength"
+      },
+      {
+        "kind": "damage",
+        "multiplier": 0.5,
+        "damageType": "slash",
+        "scalesWith": "strength"
+      },
+      {
+        "kind": "damage",
+        "multiplier": 0.5,
+        "damageType": "slash",
+        "scalesWith": "strength"
+      },
+      {
+        "kind": "damage",
+        "multiplier": 0.5,
+        "damageType": "slash",
+        "scalesWith": "strength"
+      },
+      {
+        "kind": "damage",
+        "multiplier": 0.5,
+        "damageType": "slash",
+        "scalesWith": "strength"
+      },
+      {
+        "kind": "damage",
+        "multiplier": 0.5,
+        "damageType": "slash",
+        "scalesWith": "strength"
+      },
+      {
+        "kind": "damage",
+        "multiplier": 0.5,
+        "damageType": "slash",
+        "scalesWith": "strength"
+      },
+      {
+        "kind": "damage",
+        "multiplier": 0.5,
+        "damageType": "slash",
+        "scalesWith": "strength"
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "momentum",
+    "dot"
+  ],
+  "xpTags": [
+    "strength",
+    "agility"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 75
+  }
+}

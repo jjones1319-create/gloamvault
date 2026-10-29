@@ -1,0 +1,49 @@
+{
+  "id": "blacksteel-coif",
+  "name": "Blacksteel Coif",
+  "slot": "helmet",
+  "kind": "armor",
+  "grade": "B",
+  "materialLadder": "metal",
+  "materialRung": 4,
+  "weaponType": null,
+  "armorFamily": "mail",
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "defense": 7,
+    "hp": 17,
+    "resistance": 1
+  },
+  "requirements": {
+    "strength": 12,
+    "wisdom": 0
+  },
+  "affixSlots": 2,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 7,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 2.44,
+  "value": 700,
+  "classLock": [
+    "blade"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "armor-mail-helm-01",
+    "tintPrimary": "#2f3136",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "blacksteel"
+  }
+}

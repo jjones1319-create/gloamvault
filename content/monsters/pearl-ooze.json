@@ -1,0 +1,147 @@
+{
+  "id": "pearl-ooze",
+  "name": "Pearl Ooze",
+  "familyId": "tidebound",
+  "dungeonId": "gravehollow-keep",
+  "zoneId": "the-drowned-vault",
+  "role": "fodder",
+  "size": "medium",
+  "rows": [
+    "back"
+  ],
+  "levelBand": {
+    "min": 11,
+    "max": 13
+  },
+  "multipliers": {
+    "hp": 1.2,
+    "attack": 0.5,
+    "defense": 0.4
+  },
+  "speed": 140,
+  "xpClass": 1,
+  "goldMultiplier": 6,
+  "ambushModifier": 5,
+  "attacks": [
+    {
+      "id": "spit",
+      "name": "Spit",
+      "damageType": "frost",
+      "weight": 800,
+      "multiplier": 0.5,
+      "target": "enemy",
+      "effects": [],
+      "aiWeight": 40,
+      "tell": null
+    },
+    {
+      "id": "edge-away",
+      "name": "Edge Away",
+      "damageType": "frost",
+      "weight": 800,
+      "multiplier": 0,
+      "target": "self",
+      "effects": [],
+      "aiWeight": 60,
+      "tell": null
+    },
+    {
+      "id": "countdown",
+      "name": "Countdown",
+      "damageType": "frost",
+      "weight": 1000,
+      "multiplier": 0,
+      "target": "self",
+      "effects": [
+        {
+          "kind": "custom",
+          "customId": "flee-countdown",
+          "amount": 3,
+          "note": "not an action: it leaves the fight after 3 of its turns; Root or Slow stops the count"
+        }
+      ],
+      "aiWeight": 0,
+      "tell": null
+    }
+  ],
+  "resist": [
+    "frost",
+    "pierce"
+  ],
+  "weak": [
+    "fire",
+    "lightning"
+  ],
+  "immune": [],
+  "statusImmune": [
+    "poison",
+    "bleed",
+    "grab",
+    "web"
+  ],
+  "behavior": {
+    "rules": [
+      {
+        "if": "never attacks a hero who is attacking it — a kill drops its whole stack",
+        "then": "spit"
+      }
+    ],
+    "fleesAtPercent": 0
+  },
+  "parts": {
+    "common": {
+      "itemId": "brine-pearl",
+      "chance": 100,
+      "quantity": {
+        "min": 3,
+        "max": 3
+      }
+    },
+    "rare": {
+      "materialId": "silk",
+      "chance": 25,
+      "quantity": {
+        "min": 4,
+        "max": 4
+      }
+    },
+    "breakLimb": null
+  },
+  "monsterTechniqueSkillIds": [],
+  "elitePool": [
+    "shielded",
+    "vampiric",
+    "shackler",
+    "rabid",
+    "spiteful",
+    "warded",
+    "thorned",
+    "regenerating",
+    "mirrored",
+    "commander",
+    "leech",
+    "nullifier"
+  ],
+  "boss": null,
+  "hunter": null,
+  "visual": {
+    "baseMesh": "ooze",
+    "scale": 0.8,
+    "variantOf": "brine-ooze",
+    "palette": [
+      "#a9d8cf",
+      "#e6c8f2",
+      "#fbf6ec"
+    ],
+    "reads200px": true,
+    "animations": [
+      "Idle",
+      "Move",
+      "Attack1",
+      "Hit",
+      "Death",
+      "Flee"
+    ],
+    "triBudget": 2500
+  }
+}

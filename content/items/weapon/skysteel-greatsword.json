@@ -1,0 +1,48 @@
+{
+  "id": "skysteel-greatsword",
+  "name": "Skysteel Greatsword",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "A",
+  "materialLadder": "metal",
+  "materialRung": 5,
+  "weaponType": "greatsword",
+  "armorFamily": null,
+  "hands": 2,
+  "damageType": "slash",
+  "weight": 1400,
+  "baseStats": {
+    "attackPhys": 89,
+    "speed": -5
+  },
+  "requirements": {
+    "strength": 24,
+    "wisdom": 0
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 8,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 4.07,
+  "value": 2400,
+  "classLock": [
+    "blade"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-greatsword-01",
+    "tintPrimary": "#9ec5e0",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "skysteel"
+  }
+}

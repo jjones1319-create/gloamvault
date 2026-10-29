@@ -4,7 +4,7 @@
   "school": "evocation",
   "tier": 1,
   "name": "Ember Lance",
-  "description": "1.4× Fire to one enemy in either row; Burn 3 turns.",
+  "description": "1.1× Fire to one enemy in either row; Burn 3 turns.",
   "type": "active",
   "cost": 10,
   "weight": 1000,
@@ -12,7 +12,7 @@
   "effects": [
     {
       "kind": "damage",
-      "multiplier": 1.4,
+      "multiplier": 1.1,
       "damageType": "fire"
     },
     {

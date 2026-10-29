@@ -1,0 +1,63 @@
+{
+  "id": "arcanist-vaultbreaker",
+  "classId": "arcanist",
+  "school": "evocation",
+  "tier": 5,
+  "name": "Vaultbreaker",
+  "description": "3.8× Lightning to one enemy in either row; Stun 1 turn; the bolt then chains 1.2× to every other enemy that is Shocked. Heavy cast.",
+  "type": "active",
+  "cost": 45,
+  "weight": 1400,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 3.8,
+      "damageType": "lightning"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "stun",
+      "duration": 1
+    },
+    {
+      "kind": "custom",
+      "customId": "damage-others-with-status",
+      "multiplier": 1.2,
+      "damageType": "lightning",
+      "status": "shock",
+      "note": "after the main hit, multiplier × spell Attack as damageType to every other enemy holding `status`"
+    }
+  ],
+  "prerequisiteId": "arcanist-stormcall",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "4.2×.",
+    "effects": [
+      {
+        "kind": "damage",
+        "multiplier": 4.2,
+        "damageType": "lightning"
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "aoe",
+    "control",
+    "reach"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 85
+  }
+}

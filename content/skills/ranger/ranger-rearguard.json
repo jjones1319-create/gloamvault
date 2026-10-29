@@ -1,0 +1,56 @@
+{
+  "id": "ranger-rearguard",
+  "classId": "ranger",
+  "school": "pathfinder",
+  "tier": 4,
+  "name": "Rearguard",
+  "description": "Every back-row ally gains Shield = 20% of its max HP for 2 turns, and for 1 turn reach attacks (melee blows into the back row) miss them.",
+  "type": "active",
+  "cost": 30,
+  "weight": 800,
+  "target": "partyBack",
+  "effects": [
+    {
+      "kind": "shield",
+      "duration": 2,
+      "percent": 20,
+      "note": "20% of each ally's own max HP"
+    },
+    {
+      "kind": "custom",
+      "customId": "single-target-misses-turns",
+      "duration": 1,
+      "amount": 1,
+      "note": "for duration turns single-target melee attacks on the holder miss (amount 1: melee only)"
+    }
+  ],
+  "prerequisiteId": "ranger-cover-fire",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Shield 3 turns.",
+    "effects": [
+      {
+        "kind": "shield",
+        "duration": 3,
+        "percent": 20
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "shield",
+    "buff"
+  ],
+  "xpTags": [
+    "perception"
+  ],
+  "aiHints": {
+    "role": "defend",
+    "priority": 55
+  }
+}

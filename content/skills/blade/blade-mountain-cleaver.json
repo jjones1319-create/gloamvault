@@ -1,0 +1,72 @@
+{
+  "id": "blade-mountain-cleaver",
+  "classId": "blade",
+  "school": "executioner",
+  "tier": 5,
+  "name": "Mountain Cleaver",
+  "description": "2.2× Slash to every front-row enemy and through to the enemies behind them in the back row.",
+  "type": "active",
+  "cost": 45,
+  "weight": 1400,
+  "target": "enemyFront",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 2.2,
+      "damageType": "slash",
+      "target": "enemyRow",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "damage",
+      "multiplier": 2.2,
+      "damageType": "slash",
+      "target": "enemyRowBack",
+      "scalesWith": "strength",
+      "note": "the back row (the sheet's 'the enemy directly behind each'; D-073: the whole other row)"
+    }
+  ],
+  "prerequisiteId": "blade-bone-knights-cleave",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "requirements": {
+    "weaponTypes": [
+      "greatsword",
+      "greataxe"
+    ]
+  },
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "2.6×.",
+    "effects": [
+      {
+        "kind": "damage",
+        "multiplier": 2.6,
+        "damageType": "slash",
+        "target": "enemyRow",
+        "scalesWith": "strength"
+      },
+      {
+        "kind": "damage",
+        "multiplier": 2.6,
+        "damageType": "slash",
+        "target": "enemyRowBack",
+        "scalesWith": "strength"
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "reach"
+  ],
+  "xpTags": [
+    "strength"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 70
+  }
+}

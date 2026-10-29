@@ -535,5 +535,107 @@
         }
       }
     ]
+  },
+  "crab": {
+    "animation": "skeletal",
+    "fps": 30,
+    "clips": [
+      {
+        "name": "Idle",
+        "seconds": 2.0,
+        "loop": true,
+        "events": {}
+      },
+      {
+        "name": "Move",
+        "seconds": 0.4,
+        "loop": true,
+        "events": {},
+        "speed": 1.4
+      },
+      {
+        "name": "Attack1",
+        "seconds": 0.9333,
+        "loop": false,
+        "events": {
+          "hit": 0.4
+        }
+      },
+      {
+        "name": "Attack2",
+        "seconds": 1.2,
+        "loop": false,
+        "events": {
+          "release": 0.5
+        }
+      },
+      {
+        "name": "Hit",
+        "seconds": 0.5,
+        "loop": false,
+        "events": {}
+      },
+      {
+        "name": "Death",
+        "seconds": 1.6,
+        "loop": false,
+        "events": {
+          "down": 0.58
+        }
+      }
+    ],
+    "rig": "Rig",
+    "bones": 44
+  },
+  "imp": {
+    "animation": "skeletal",
+    "fps": 30,
+    "clips": [
+      {
+        "name": "Idle",
+        "seconds": 2.0,
+        "loop": true,
+        "events": {}
+      },
+      {
+        "name": "Move",
+        "seconds": 0.5,
+        "loop": true,
+        "events": {},
+        "speed": 1.32
+      },
+      {
+        "name": "Attack1",
+        "seconds": 0.9,
+        "loop": false,
+        "events": {
+          "hit": 0.38
+        }
+      },
+      {
+        "name": "Attack2",
+        "seconds": 1.1,
+        "loop": false,
+        "events": {
+          "release": 0.46
+        }
+      },
+      {
+        "name": "Hit",
+        "seconds": 0.5,
+        "loop": false,
+        "events": {}
+      },
+      {
+        "name": "Death",
+        "seconds": 1.6,
+        "loop": false,
+        "events": {
+          "down": 0.62
+        }
+      }
+    ],
+    "rig": "Rig",
+    "bones": 34
   }
 }

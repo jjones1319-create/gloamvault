@@ -4,7 +4,7 @@
   "school": "iron-dance",
   "tier": 3,
   "name": "Crescent Flurry",
-  "description": "Two hits of 0.6× Slash to every front-row enemy (1.2× each).",
+  "description": "Two hits of 0.45× Slash to every front-row enemy (0.9× each).",
   "type": "active",
   "cost": 20,
   "weight": 800,
@@ -12,14 +12,14 @@
   "effects": [
     {
       "kind": "damage",
-      "multiplier": 0.6,
+      "multiplier": 0.45,
       "damageType": "slash",
       "target": "enemyRow",
       "scalesWith": "strength"
     },
     {
       "kind": "damage",
-      "multiplier": 0.6,
+      "multiplier": 0.45,
       "damageType": "slash",
       "target": "enemyRow",
       "scalesWith": "strength"
@@ -40,22 +40,22 @@
     "effects": [
       {
         "kind": "damage",
-        "multiplier": 0.6,
+        "multiplier": 0.45,
         "damageType": "slash",
         "target": "enemyRow",
         "scalesWith": "strength",
-        "note": "Mastery restates every hit: three of 0.6× to each"
+        "note": "Mastery restates every hit: three of 0.45× to each"
       },
       {
         "kind": "damage",
-        "multiplier": 0.6,
+        "multiplier": 0.45,
         "damageType": "slash",
         "target": "enemyRow",
         "scalesWith": "strength"
       },
       {
         "kind": "damage",
-        "multiplier": 0.6,
+        "multiplier": 0.45,
         "damageType": "slash",
         "target": "enemyRow",
         "scalesWith": "strength"

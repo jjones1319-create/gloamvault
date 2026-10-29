@@ -1,0 +1,54 @@
+{
+  "id": "warden-warden-of-the-pass",
+  "classId": "warden",
+  "school": "vanguard",
+  "tier": 5,
+  "name": "Warden of the Pass",
+  "description": "For 3 turns, every single-target enemy blow aimed at an ally in your row is taken by you and countered at 1.5×.",
+  "type": "active",
+  "cost": 45,
+  "weight": 1000,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "intercept-row-and-counter",
+      "multiplier": 1.5,
+      "duration": 3,
+      "target": "self",
+      "note": "single-target blows on allies in your row land on you; you answer each attacker at multiplier×"
+    }
+  ],
+  "prerequisiteId": "warden-bannerhold",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Counters at 2.0×.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "intercept-row-and-counter",
+        "multiplier": 2,
+        "duration": 3,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "shield",
+    "taunt"
+  ],
+  "xpTags": [
+    "endurance",
+    "strength"
+  ],
+  "aiHints": {
+    "role": "defend",
+    "priority": 65
+  }
+}

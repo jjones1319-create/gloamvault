@@ -1,0 +1,43 @@
+{
+  "id": "sextons-bell",
+  "name": "Sexton's Bell",
+  "slot": null,
+  "kind": "stone",
+  "grade": "E",
+  "materialLadder": null,
+  "materialRung": null,
+  "weaponType": null,
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {},
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 1,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 4,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1,
+  "value": 19,
+  "classLock": [],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "stone-sextons-bell-01",
+    "tintPrimary": "#b08d57",
+    "tintSecondary": "#2b2b2b",
+    "trimMetal": "none"
+  }
+}

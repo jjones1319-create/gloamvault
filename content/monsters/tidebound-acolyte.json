@@ -1,0 +1,166 @@
+{
+  "id": "tidebound-acolyte",
+  "name": "Tidebound Acolyte",
+  "familyId": "tidebound",
+  "dungeonId": "gravehollow-keep",
+  "zoneId": "the-drowned-vault",
+  "role": "fodder",
+  "size": "medium",
+  "rows": [
+    "back"
+  ],
+  "levelBand": {
+    "min": 11,
+    "max": 11
+  },
+  "multipliers": {
+    "hp": 0.8,
+    "attack": 1.1,
+    "defense": 0.7
+  },
+  "speed": 100,
+  "xpClass": 1,
+  "goldMultiplier": 1.2,
+  "ambushModifier": 5,
+  "attacks": [
+    {
+      "id": "brine-lash",
+      "name": "Brine Lash",
+      "damageType": "frost",
+      "weight": 1000,
+      "multiplier": 1,
+      "target": "enemy",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "chill",
+          "duration": 2
+        }
+      ],
+      "aiWeight": 55,
+      "tell": null
+    },
+    {
+      "id": "hymn-of-the-deep",
+      "name": "Hymn of the Deep",
+      "damageType": "frost",
+      "weight": 1000,
+      "multiplier": 0,
+      "target": "allAllies",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "fortify",
+          "duration": 2,
+          "target": "allAllies",
+          "note": "all Tidebound (06: those in the front; the hymn carries to the whole procession)"
+        }
+      ],
+      "aiWeight": 30,
+      "tell": null
+    },
+    {
+      "id": "salt-flask",
+      "name": "Salt Flask",
+      "damageType": "frost",
+      "weight": 800,
+      "multiplier": 0.6,
+      "target": "enemy",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "slow",
+          "duration": 1
+        }
+      ],
+      "aiWeight": 15,
+      "tell": null
+    }
+  ],
+  "resist": [
+    "frost"
+  ],
+  "weak": [
+    "lightning"
+  ],
+  "immune": [],
+  "statusImmune": [],
+  "behavior": {
+    "rules": [
+      {
+        "if": "round = 1",
+        "then": "hymn-of-the-deep"
+      },
+      {
+        "if": "lashes the hero already Chilled (a second Chill is Freeze)",
+        "then": "brine-lash"
+      }
+    ],
+    "fleesAtPercent": 0
+  },
+  "parts": {
+    "common": {
+      "materialId": "silk",
+      "chance": 35,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "rare": {
+      "itemId": "brine-pearl",
+      "chance": 4,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "breakLimb": {
+      "name": "conch",
+      "effect": {
+        "kind": "custom",
+        "customId": "lose-status-attacks",
+        "status": "fortify",
+        "note": "no Hymn"
+      }
+    }
+  },
+  "monsterTechniqueSkillIds": [],
+  "elitePool": [
+    "shielded",
+    "vampiric",
+    "shackler",
+    "rabid",
+    "spiteful",
+    "warded",
+    "thorned",
+    "regenerating",
+    "mirrored",
+    "commander",
+    "leech",
+    "nullifier"
+  ],
+  "boss": null,
+  "hunter": null,
+  "visual": {
+    "baseMesh": "humanoid",
+    "scale": 1,
+    "variantOf": "grinning-cutpurse",
+    "palette": [
+      "#7f8a8c",
+      "#3f8f7a",
+      "#f0ece4"
+    ],
+    "reads200px": true,
+    "animations": [
+      "Idle",
+      "Move",
+      "Attack1",
+      "Attack2",
+      "Hit",
+      "Death",
+      "Cast"
+    ],
+    "triBudget": 3500
+  }
+}

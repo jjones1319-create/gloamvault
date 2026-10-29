@@ -1,0 +1,46 @@
+{
+  "id": "warden-warhorn",
+  "classId": "warden",
+  "school": "warcry",
+  "tier": 4,
+  "name": "Warhorn",
+  "description": "Haste (×1.5 Speed) 2 turns on every ally.",
+  "type": "active",
+  "cost": 32,
+  "weight": 1000,
+  "target": "allAllies",
+  "effects": [
+    {
+      "kind": "applyStatus",
+      "status": "haste",
+      "duration": 2
+    }
+  ],
+  "prerequisiteId": "warden-stand-fast",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Also +10 Momentum each.",
+    "effects": [
+      {
+        "kind": "momentum",
+        "amount": 10
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "buff"
+  ],
+  "xpTags": [
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 65
+  }
+}

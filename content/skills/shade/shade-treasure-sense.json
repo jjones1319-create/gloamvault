@@ -1,0 +1,64 @@
+{
+  "id": "shade-treasure-sense",
+  "classId": "shade",
+  "school": "larceny",
+  "tier": 4,
+  "name": "Treasure Sense",
+  "description": "Detection +4 for secrets and hidden treasure; the party finds +10% gold.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "treasure-detection-bonus",
+      "amount": 4,
+      "target": "self",
+      "note": "+amount Detection for secrets and hidden treasure (delve side)"
+    },
+    {
+      "kind": "custom",
+      "customId": "gold-found-percent",
+      "percent": 10,
+      "target": "self",
+      "note": "the party finds +percent% gold (delve.ts reads it)"
+    }
+  ],
+  "prerequisiteId": "shade-saboteur",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "+6 / +20%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "treasure-detection-bonus",
+        "amount": 6,
+        "target": "self"
+      },
+      {
+        "kind": "custom",
+        "customId": "gold-found-percent",
+        "percent": 20,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "utility",
+    "scouting",
+    "field"
+  ],
+  "xpTags": [
+    "perception"
+  ],
+  "aiHints": {
+    "role": "utility",
+    "priority": 0
+  }
+}

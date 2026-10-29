@@ -1,0 +1,82 @@
+{
+  "id": "warden-skewer",
+  "classId": "warden",
+  "school": "vanguard",
+  "tier": 5,
+  "name": "Skewer",
+  "description": "3.0× Pierce to one enemy in any row and 1.5× to the enemy behind it in the other row; Bleed 3 turns on both.",
+  "type": "active",
+  "cost": 40,
+  "weight": 1400,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 3,
+      "damageType": "pierce",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "bleed",
+      "duration": 3
+    },
+    {
+      "kind": "damage",
+      "multiplier": 1.5,
+      "damageType": "pierce",
+      "target": "enemyRowBack",
+      "scalesWith": "strength",
+      "note": "the other row (the sheet's 'the enemy behind it'; D-073: the whole other row until a narrower target exists)"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "bleed",
+      "duration": 3,
+      "target": "enemyRowBack"
+    }
+  ],
+  "prerequisiteId": "warden-sentinels-sweep",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "requirements": {
+    "weaponTypes": [
+      "spear"
+    ]
+  },
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "3.5× / 2.0×.",
+    "effects": [
+      {
+        "kind": "damage",
+        "multiplier": 3.5,
+        "damageType": "pierce",
+        "scalesWith": "strength"
+      },
+      {
+        "kind": "damage",
+        "multiplier": 2,
+        "damageType": "pierce",
+        "target": "enemyRowBack",
+        "scalesWith": "strength"
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "aoe",
+    "dot",
+    "reach"
+  ],
+  "xpTags": [
+    "strength"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 75
+  }
+}

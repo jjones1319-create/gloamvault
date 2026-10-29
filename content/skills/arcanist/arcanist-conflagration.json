@@ -1,0 +1,51 @@
+{
+  "id": "arcanist-conflagration",
+  "classId": "arcanist",
+  "school": "evocation",
+  "tier": 5,
+  "name": "Conflagration",
+  "description": "Burn and Shock you apply last +1 turn. Burn already stacks on a target (up to three, each stack a full tick), which covers the stacking.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "status-duration-bonus",
+      "status": "burn",
+      "amount": 1,
+      "target": "self",
+      "note": "`status` the holder applies lasts +amount turns (one line per status)"
+    },
+    {
+      "kind": "custom",
+      "customId": "status-duration-bonus",
+      "status": "shock",
+      "amount": 1,
+      "target": "self"
+    }
+  ],
+  "prerequisiteId": "arcanist-stormcall",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Stack three times: Burn’s own record already allows three stacks (03 §3.5), so the Mastery adds nothing further.",
+    "effects": []
+  },
+  "tags": [
+    "buff",
+    "dot"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 0
+  }
+}

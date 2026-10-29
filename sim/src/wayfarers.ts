@@ -65,7 +65,7 @@ export interface WayfarerDraw {
  * D (a ≥ C forced on the `plusOneWithin`-th chest without one, a ≥ B on the `plusTwoWithin`-th, D-091), then a
  * wayfarer of that grade uniformly. Null when the whole cast is already with the player.
  */
-export function drawWayfarer(content: Content, rng: Rng, chest: ChestDef, bandGrade: Grade, pity: ChestPityState, owned: ReadonlySet<string>): WayfarerDraw | null {
+export function drawWayfarer(content: Content, rng: Rng, chest: ChestDef, bandGrade: Grade, pity: ChestPityState, owned: ReadonlySet<string>, pityAdvance = 1): WayfarerDraw | null {
   const pool = wayfarerPool(content, owned)
   if (pool.length === 0) return null
   const table = tableFor(chest, bandGrade)
@@ -74,8 +74,9 @@ export function drawWayfarer(content: Content, rng: Rng, chest: ChestDef, bandGr
   // A cast grade the table never names (or a table with nobody left) still draws: evenly among the grades left.
   const choices = live.length > 0 ? live : WAYFARER_GRADES.filter(has).map((g) => [g, 1] as [WayfarerGrade, number])
   let grade = rng.weighted(choices, ([, w]) => w)[0]
-  const plusOne = pity.plusOneCounter + 1
-  const plusTwo = pity.plusTwoCounter + 1
+  // A Grand Wayfarer Chest advances the shared counters as a Grand gear chest does (08 §10.1: by 3; chests.ts passes it).
+  const plusOne = pity.plusOneCounter + pityAdvance
+  const plusTwo = pity.plusTwoCounter + pityAdvance
   let offset = WAYFARER_GRADES.indexOf(grade)
   let pityGrade = false
   const forceAtLeast = (min: number): void => {

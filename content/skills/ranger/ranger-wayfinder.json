@@ -1,0 +1,71 @@
+{
+  "id": "ranger-wayfinder",
+  "classId": "ranger",
+  "school": "pathfinder",
+  "tier": 4,
+  "name": "Wayfinder",
+  "description": "Cartography +2; the floor's hunter arrives at 50 ticks instead of 40; secret rooms +10% per floor.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "field-skill-bonus-cartography",
+      "amount": 2,
+      "target": "self",
+      "note": "adds amount to the Cartography rank (delve side)"
+    },
+    {
+      "kind": "custom",
+      "customId": "hunter-arrival-ticks",
+      "amount": 50,
+      "target": "self",
+      "note": "the hunter arrives at amount floor-clock ticks (delve side)"
+    },
+    {
+      "kind": "custom",
+      "customId": "secret-chance-percent",
+      "percent": 10,
+      "target": "self",
+      "note": "a floor holds a secret room percent% more often (delve side)"
+    }
+  ],
+  "prerequisiteId": "ranger-scout-ahead",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Hunter at 60; secrets +15%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "hunter-arrival-ticks",
+        "amount": 60,
+        "target": "self"
+      },
+      {
+        "kind": "custom",
+        "customId": "secret-chance-percent",
+        "percent": 15,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "scouting",
+    "utility",
+    "field"
+  ],
+  "xpTags": [
+    "perception"
+  ],
+  "aiHints": {
+    "role": "utility",
+    "priority": 0
+  }
+}

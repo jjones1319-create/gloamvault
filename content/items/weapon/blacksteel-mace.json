@@ -1,0 +1,59 @@
+{
+  "id": "blacksteel-mace",
+  "name": "Blacksteel Mace",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "B",
+  "materialLadder": "metal",
+  "materialRung": 4,
+  "weaponType": "mace",
+  "armorFamily": null,
+  "hands": 1,
+  "damageType": "blunt",
+  "weight": 1000,
+  "baseStats": {
+    "attackPhys": 40
+  },
+  "requirements": {
+    "strength": 15,
+    "wisdom": 0
+  },
+  "affixSlots": 2,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 7,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 3.26,
+  "value": 1000,
+  "classLock": [
+    "warden",
+    "mender"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": {
+    "text": "5% Daze on hit",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "daze",
+        "chance": 5,
+        "target": "enemy",
+        "note": "on hit"
+      }
+    ]
+  },
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-mace-01",
+    "tintPrimary": "#2f3136",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "blacksteel"
+  }
+}

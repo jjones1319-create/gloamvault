@@ -1,0 +1,57 @@
+{
+  "id": "shade-deaths-whisper",
+  "classId": "shade",
+  "school": "shadow",
+  "tier": 5,
+  "name": "Death’s Whisper",
+  "description": "Your Crit Rate cap is 55%; a crit from Veil applies Fear 1 turn to every other enemy.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "crit-cap-raise",
+      "amount": 55,
+      "target": "self",
+      "note": "the Crit Rate cap becomes amount% (stub: a stats.ts joint)"
+    },
+    {
+      "kind": "custom",
+      "customId": "fear-others-on-veil-crit",
+      "duration": 1,
+      "target": "self",
+      "note": "a crit from Veil Fears every other enemy for `duration` turns"
+    }
+  ],
+  "prerequisiteId": "shade-second-shadow",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Fear 2 turns.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "fear-others-on-veil-crit",
+        "duration": 2,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "control"
+  ],
+  "xpTags": [
+    "perception"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 0
+  }
+}

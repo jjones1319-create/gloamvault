@@ -1,0 +1,48 @@
+{
+  "id": "adamantine-sabre",
+  "name": "Adamantine Sabre",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "S",
+  "materialLadder": "metal",
+  "materialRung": 6,
+  "weaponType": "sword",
+  "armorFamily": null,
+  "hands": 1,
+  "damageType": "slash",
+  "weight": 1000,
+  "baseStats": {
+    "attackPhys": 66,
+    "critRate": 3
+  },
+  "requirements": {
+    "strength": 15,
+    "wisdom": 0
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 9,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 5.09,
+  "value": 2500,
+  "classLock": [
+    "blade"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-sabre-01",
+    "tintPrimary": "#4f6f7f",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "adamantine"
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "id": "arcanist-stormcall",
+  "classId": "arcanist",
+  "school": "evocation",
+  "tier": 4,
+  "name": "Stormcall",
+  "description": "1.3× Lightning to every enemy in both rows; every target already Shocked is pushed back 200 energy; you gain Haste 1 turn.",
+  "type": "active",
+  "cost": 32,
+  "weight": 1000,
+  "target": "allEnemies",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "timeline-if-status",
+      "status": "shock",
+      "energy": -200,
+      "note": "a target holding `status` before this cast moves `energy` on the timeline (read before the hit)"
+    },
+    {
+      "kind": "damage",
+      "multiplier": 1.3,
+      "damageType": "lightning"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "haste",
+      "duration": 1,
+      "target": "self"
+    }
+  ],
+  "prerequisiteId": "arcanist-thunderhead",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Pushback 300.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "timeline-if-status",
+        "status": "shock",
+        "energy": -300
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "control",
+    "buff"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 75
+  }
+}

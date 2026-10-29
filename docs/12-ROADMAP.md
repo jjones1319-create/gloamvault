@@ -104,7 +104,7 @@ If a Claude Code session ends mid-segment, James pastes the **Continue** prompt;
 | P4 | a full Cellars delve with boxes and capsules; town; chests |
 | P5 | his hero, in 3D, in the viewer, in every class and species |
 | P6 | the Cellars, Crypts and Vault in 3D with every monster |
-| P7 | the Hollow King beaten; a +N Skysteel-promoted sword; a Tier IV Insight |
+| P7 | the Hollow King beaten; a +N Skysteel-promoted sword (a boss's A-grade Skysteel sword raised +N with Gravehollow's Honing Oil — D-120); a Tier IV Insight |
 | P8 | music, tutorial, polish — "the game" |
 | P9 | a delve with a friend over the internet |
 | P10 | two new dungeons |

@@ -1,0 +1,61 @@
+{
+  "id": "arcanist-hags-cauldron",
+  "classId": "arcanist",
+  "school": "evocation",
+  "tier": 4,
+  "name": "Hag’s Cauldron",
+  "description": "2.6× Fire to one enemy in either row; Poison 3 turns (ignores armor); Weaken 2 turns. Heavy cast. Monster technique: learned only by witnessing a Brine Hag use it.",
+  "type": "active",
+  "cost": 30,
+  "weight": 1400,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 2.6,
+      "damageType": "fire"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "poison",
+      "duration": 3,
+      "note": "Poison ignores Defense by its own record (03 §3.5)"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "weaken",
+      "duration": 2
+    }
+  ],
+  "prerequisiteId": "arcanist-overcharge",
+  "isUltimate": false,
+  "monsterTechniqueOf": "brine-hag",
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "3.0×.",
+    "effects": [
+      {
+        "kind": "damage",
+        "multiplier": 3,
+        "damageType": "fire"
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "dot",
+    "debuff",
+    "reach"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 75
+  }
+}

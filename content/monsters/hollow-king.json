@@ -1,0 +1,692 @@
+{
+  "id": "hollow-king",
+  "name": "the Hollow King",
+  "familyId": "tidebound",
+  "dungeonId": "gravehollow-keep",
+  "zoneId": "the-drowned-vault",
+  "role": "boss",
+  "size": "large",
+  "rows": [
+    "front"
+  ],
+  "levelBand": {
+    "min": 13,
+    "max": 13
+  },
+  "multipliers": {
+    "hp": 5,
+    "attack": 0.9,
+    "defense": 1.8
+  },
+  "speed": 100,
+  "xpClass": 25,
+  "goldMultiplier": 25,
+  "ambushModifier": 0,
+  "attacks": [
+    {
+      "id": "hollow-blade",
+      "name": "Hollow Blade",
+      "damageType": "shadow",
+      "weight": 1400,
+      "multiplier": 1.8,
+      "target": "enemy",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "curse",
+          "duration": 2
+        }
+      ],
+      "aiWeight": 35,
+      "tell": null
+    },
+    {
+      "id": "hollow-gaze",
+      "name": "Hollow Gaze",
+      "damageType": "shadow",
+      "weight": 1000,
+      "multiplier": 1.2,
+      "target": "enemy",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "fear",
+          "duration": 2
+        }
+      ],
+      "aiWeight": 25,
+      "tell": null
+    },
+    {
+      "id": "court-call",
+      "name": "Court Call",
+      "damageType": "shadow",
+      "weight": 1000,
+      "multiplier": 0,
+      "target": "self",
+      "effects": [],
+      "aiWeight": 25,
+      "tell": null
+    },
+    {
+      "id": "snuff",
+      "name": "Snuff",
+      "damageType": "shadow",
+      "weight": 800,
+      "multiplier": 0,
+      "target": "self",
+      "effects": [],
+      "aiWeight": 0,
+      "tell": null
+    },
+    {
+      "id": "hollow-blade-2",
+      "name": "Hollow Blade",
+      "damageType": "shadow",
+      "weight": 1400,
+      "multiplier": 1.8,
+      "target": "enemy",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "curse",
+          "duration": 2
+        }
+      ],
+      "aiWeight": 30,
+      "tell": null
+    },
+    {
+      "id": "drowned-crown",
+      "name": "Drowned Crown",
+      "damageType": "frost",
+      "weight": 1400,
+      "multiplier": 1.4,
+      "target": "allEnemies",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "chill",
+          "duration": 2
+        }
+      ],
+      "aiWeight": 25,
+      "tell": null
+    },
+    {
+      "id": "verdict-of-the-hollow",
+      "name": "Verdict of the Hollow",
+      "damageType": "shadow",
+      "weight": 1400,
+      "multiplier": 2.2,
+      "target": "enemy",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "mark",
+          "duration": 3
+        }
+      ],
+      "aiWeight": 20,
+      "tell": "He points at one hero for a turn.",
+      "hint": "King pointing",
+      "aim": "mostMomentum"
+    },
+    {
+      "id": "grave-grip",
+      "name": "Grave Grip",
+      "damageType": "frost",
+      "weight": 1000,
+      "multiplier": 0,
+      "target": "enemy",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "grab",
+          "note": "06: Grab a Marked or Chilled hero, 2 turns (the boss's Grab cap is 2 of his turns, 06 §7)"
+        }
+      ],
+      "aiWeight": 15,
+      "tell": "His gauntlet opens toward the Marked or the frozen.",
+      "hint": "Hand reaching",
+      "aim": "markedOrChilled"
+    },
+    {
+      "id": "undertow",
+      "name": "Undertow",
+      "damageType": "frost",
+      "weight": 1400,
+      "multiplier": 1.3,
+      "target": "allEnemies",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "chill",
+          "duration": 2
+        },
+        {
+          "kind": "rowSwap",
+          "target": "partyBack",
+          "note": "pulls the back row forward"
+        }
+      ],
+      "aiWeight": 30,
+      "tell": null
+    },
+    {
+      "id": "hollow-blade-3",
+      "name": "Hollow Blade",
+      "damageType": "shadow",
+      "weight": 1400,
+      "multiplier": 1.8,
+      "target": "enemy",
+      "effects": [
+        {
+          "kind": "damage",
+          "multiplier": 1.8,
+          "damageType": "shadow",
+          "note": "06 phase 3: Hollow Blade (×2 hits)"
+        },
+        {
+          "kind": "applyStatus",
+          "status": "curse",
+          "duration": 2
+        }
+      ],
+      "aiWeight": 30,
+      "tell": null
+    },
+    {
+      "id": "hollow-gaze-3",
+      "name": "Hollow Gaze",
+      "damageType": "shadow",
+      "weight": 1000,
+      "multiplier": 1.2,
+      "target": "allEnemies",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "fear",
+          "duration": 2
+        }
+      ],
+      "aiWeight": 25,
+      "tell": null
+    },
+    {
+      "id": "grave-grip-3",
+      "name": "Grave Grip",
+      "damageType": "frost",
+      "weight": 1000,
+      "multiplier": 0,
+      "target": "enemy",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "grab"
+        }
+      ],
+      "aiWeight": 15,
+      "tell": "His gauntlet opens toward the Marked or the frozen.",
+      "hint": "Hand reaching",
+      "aim": "markedOrChilled"
+    }
+  ],
+  "resist": [
+    "frost",
+    "shadow"
+  ],
+  "weak": [
+    "lightning"
+  ],
+  "immune": [],
+  "statusImmune": [],
+  "behavior": {
+    "rules": [
+      {
+        "if": "round = 1 and phase = 1",
+        "then": "hollow-gaze"
+      }
+    ],
+    "fleesAtPercent": 0
+  },
+  "parts": {
+    "common": {
+      "materialId": "steel",
+      "chance": 35,
+      "quantity": {
+        "min": 1,
+        "max": 2
+      }
+    },
+    "rare": {
+      "itemId": "brine-pearl",
+      "chance": 4,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "breakLimb": null
+  },
+  "monsterTechniqueSkillIds": [],
+  "elitePool": [],
+  "boss": {
+    "phases": [
+      {
+        "atHpPercent": 100,
+        "name": "the Seated King",
+        "attacks": [
+          "hollow-blade",
+          "hollow-gaze",
+          "court-call",
+          "snuff"
+        ],
+        "adds": [],
+        "arenaRule": "On his throne, out of melee reach (reach, ranged and spells only); Taunt works this phase only. The Keep remembers: each phase change snuffs 25 light; a Torch relights one of the four braziers (+25), once per brazier per phase. The tide pulls every 3 rounds (water lines the floor): swap rows on it."
+      },
+      {
+        "atHpPercent": 60,
+        "name": "the Guard Wakes",
+        "attacks": [
+          "hollow-blade-2",
+          "drowned-crown",
+          "verdict-of-the-hollow",
+          "grave-grip",
+          "snuff"
+        ],
+        "adds": [
+          {
+            "monsterId": "skeleton-footman",
+            "count": 2,
+            "row": "front"
+          },
+          {
+            "monsterId": "wraith",
+            "count": 1,
+            "row": "back"
+          }
+        ],
+        "arenaRule": "The throne rises; he stands and descends (Huge). The gallery lamps flare and a Silence pulse hits every caster every 3 rounds. The Crypts answer, re-called once at 40%.",
+        "size": "huge",
+        "light": {
+          "add": -25
+        }
+      },
+      {
+        "atHpPercent": 25,
+        "name": "the Tide Comes In",
+        "attacks": [
+          "undertow",
+          "hollow-blade-3",
+          "hollow-gaze-3",
+          "grave-grip-3"
+        ],
+        "adds": [
+          {
+            "monsterId": "deep-tentacle",
+            "count": 2,
+            "row": "front"
+          }
+        ],
+        "arenaRule": "Speed 120; the water reaches the fourth step and the tide pulls every 2 rounds. Naesa's shade at 10%; the dungeon's three hunters return at phase rounds +2, +4, +6, never one the party killed this delve.",
+        "speed": 120,
+        "tide": 4,
+        "light": {
+          "add": -25
+        }
+      }
+    ],
+    "everyKill": [
+      {
+        "kind": "material",
+        "id": "steel",
+        "amount": 6,
+        "note": "08 §11: Steel ×12 + Silk ×12 + Iron ×12 on the first kill, half after"
+      },
+      {
+        "kind": "material",
+        "id": "silk",
+        "amount": 6
+      },
+      {
+        "kind": "material",
+        "id": "iron",
+        "amount": 6
+      },
+      {
+        "kind": "item",
+        "id": "whetstone",
+        "amount": 3
+      },
+      {
+        "kind": "shard",
+        "amount": 1,
+        "chance": 10,
+        "note": "08 §11: after the first kill a Divine Shard 10%. His three God items (1% / 2% Hard / 4% Dread) wait for Phase 11's God items (Proposed)."
+      }
+    ],
+    "firstKill": [
+      {
+        "kind": "material",
+        "id": "steel",
+        "amount": 6
+      },
+      {
+        "kind": "material",
+        "id": "silk",
+        "amount": 6
+      },
+      {
+        "kind": "material",
+        "id": "iron",
+        "amount": 6
+      },
+      {
+        "kind": "gold",
+        "amount": 600,
+        "note": "06 'gold ×25 (×3 first kill)': the fight's own gold is 08 §11's 300; the first kill adds twice that"
+      },
+      {
+        "kind": "shard",
+        "amount": 1,
+        "note": "one Divine Shard"
+      },
+      {
+        "kind": "item",
+        "grade": "S"
+      },
+      {
+        "kind": "tome",
+        "tier": 4,
+        "note": "a Tier IV Tome (bag draw)"
+      },
+      {
+        "kind": "item",
+        "id": "the-hollow-coin",
+        "note": "the Relic (08 §3): once per floor, re-roll this fight's item drop after the fight"
+      },
+      {
+        "kind": "item",
+        "id": "grand-chest-key",
+        "amount": 2
+      },
+      {
+        "kind": "luck",
+        "amount": 1,
+        "note": "D-037: +1 permanent Luck for the heroes standing at a final boss's first kill (at most +4, one per dungeon)"
+      },
+      {
+        "kind": "title",
+        "id": "hollow-crowned"
+      },
+      {
+        "kind": "waystone",
+        "id": "the-drowned-vault",
+        "note": "the Throne Waystone lights the Fungal Deep's lamp on the map (its unlockedBy reads this kill); no Throne delve (D-099)"
+      }
+    ],
+    "immunities": [
+      "fear",
+      "petrify",
+      "grab",
+      "web",
+      "root"
+    ],
+    "cannotFlee": true,
+    "arena": {
+      "room": "vlt-t-throne",
+      "tells": [
+        {
+          "id": "tide-pulling",
+          "hint": "Tide pulling",
+          "cue": "water lining the floor"
+        },
+        {
+          "id": "lamps-flaring",
+          "hint": "Lamps flaring",
+          "cue": "the gallery lamps flaring"
+        },
+        {
+          "id": "hunter-returning",
+          "hint": "Hunter returning",
+          "cue": "a hunter's ring at the water's edge"
+        }
+      ],
+      "rules": [
+        {
+          "kind": "outOfReach",
+          "phases": [
+            1
+          ],
+          "note": "07 §2.8: on the throne, reach, ranged and spells only (never a lock: with no such hero in the party, melee reaches him)"
+        },
+        {
+          "kind": "braziers",
+          "count": 4,
+          "amount": 25
+        },
+        {
+          "kind": "lightBand",
+          "bands": [
+            "shadowy",
+            "dark",
+            "pitch"
+          ],
+          "attacks": [
+            "hollow-gaze"
+          ],
+          "params": {
+            "reachBackRow": true
+          },
+          "note": "06 phase 1: the Gaze takes the back row in Shadowy or darker"
+        },
+        {
+          "kind": "lightBand",
+          "bands": [
+            "dark",
+            "pitch"
+          ],
+          "attacks": [
+            "hollow-gaze"
+          ],
+          "params": {
+            "critBonus": 20
+          }
+        },
+        {
+          "kind": "lightBand",
+          "bands": [
+            "radiant"
+          ],
+          "params": {
+            "shadowPercent": -25,
+            "addsStatus": "fear"
+          },
+          "note": "06 §3.4: in Radiant his Shadow attacks are ×0.75 and his adds Fear"
+        },
+        {
+          "kind": "pull",
+          "every": 3,
+          "fastEvery": 2,
+          "fastFromPhase": 3,
+          "tell": "tide-pulling",
+          "params": {
+            "frontStatus": "slow",
+            "frontDuration": 1,
+            "backStatus": "chill",
+            "backDuration": 2,
+            "bladeAttack": "hollow-blade,hollow-blade-2,hollow-blade-3",
+            "bladePercent": 50
+          }
+        },
+        {
+          "kind": "call",
+          "attack": "court-call",
+          "adds": [
+            {
+              "monsterId": "giant-rat",
+              "count": 2,
+              "row": "front"
+            },
+            {
+              "monsterId": "grinning-crossbowman",
+              "count": 1,
+              "row": "back"
+            }
+          ],
+          "params": {
+            "refill": true
+          }
+        },
+        {
+          "kind": "pulse",
+          "phases": [
+            2
+          ],
+          "every": 3,
+          "tell": "lamps-flaring",
+          "status": "silence",
+          "duration": 1
+        },
+        {
+          "kind": "addAt",
+          "phases": [
+            2
+          ],
+          "atHpPercent": 40,
+          "adds": [
+            {
+              "monsterId": "skeleton-footman",
+              "count": 2,
+              "row": "front"
+            },
+            {
+              "monsterId": "wraith",
+              "count": 1,
+              "row": "back"
+            }
+          ],
+          "params": {
+            "missingOnly": true,
+            "group": "phase-2",
+            "cause": "recall"
+          }
+        },
+        {
+          "kind": "addAt",
+          "phases": [
+            3
+          ],
+          "atHpPercent": 10,
+          "adds": [
+            {
+              "monsterId": "vault-lantern",
+              "count": 1,
+              "row": "back"
+            }
+          ],
+          "params": {
+            "name": "Sister Naesa's shade",
+            "hp": 1,
+            "cause": "shade"
+          }
+        },
+        {
+          "kind": "hunters",
+          "phases": [
+            3
+          ],
+          "rounds": [
+            2,
+            4,
+            6
+          ],
+          "monsters": [
+            "old-gnaw",
+            "wardens-hound",
+            "vault-leech"
+          ],
+          "tell": "hunter-returning"
+        }
+      ]
+    },
+    "parts": [
+      {
+        "id": "crown",
+        "name": "crown",
+        "hpPercent": 8,
+        "damageTypes": [
+          "holy",
+          "blunt"
+        ],
+        "crit": false,
+        "effect": {
+          "removeStatuses": {
+            "hollow-gaze": [
+              "fear"
+            ],
+            "hollow-gaze-3": [
+              "fear"
+            ]
+          }
+        }
+      },
+      {
+        "id": "sword-arm",
+        "name": "sword arm",
+        "hpPercent": 10,
+        "damageTypes": [
+          "slash"
+        ],
+        "crit": false,
+        "effect": {
+          "attackMultiplier": {
+            "hollow-blade": 1.3,
+            "hollow-blade-2": 1.3,
+            "hollow-blade-3": 1.3
+          }
+        }
+      },
+      {
+        "id": "throne-chain",
+        "name": "throne's chain",
+        "hpPercent": 5,
+        "damageTypes": [
+          "lightning"
+        ],
+        "crit": false,
+        "effect": {
+          "stopTide": true
+        }
+      }
+    ]
+  },
+  "hunter": null,
+  "visual": {
+    "baseMesh": "hollow-king",
+    "scale": 2,
+    "variantOf": null,
+    "palette": [
+      "#1f2226",
+      "#e0703a",
+      "#5fc8ff"
+    ],
+    "reads200px": true,
+    "animations": [
+      "Idle",
+      "Move",
+      "Attack1",
+      "Attack2",
+      "Hit",
+      "Death",
+      "Attack3",
+      "Verdict",
+      "Grip",
+      "Undertow",
+      "Snuff",
+      "Rise"
+    ],
+    "triBudget": 16000
+  }
+}

@@ -1,0 +1,161 @@
+{
+  "id": "bursting-corpse",
+  "name": "Bursting Corpse",
+  "familyId": "restless-dead",
+  "dungeonId": "gravehollow-keep",
+  "zoneId": "the-crypts",
+  "role": "fodder",
+  "size": "medium",
+  "rows": [
+    "front"
+  ],
+  "levelBand": {
+    "min": 5,
+    "max": 8
+  },
+  "multipliers": {
+    "hp": 1,
+    "attack": 0.9,
+    "defense": 0.5
+  },
+  "speed": 75,
+  "xpClass": 1,
+  "goldMultiplier": 1,
+  "ambushModifier": -5,
+  "attacks": [
+    {
+      "id": "claw",
+      "name": "Claw",
+      "damageType": "slash",
+      "weight": 1000,
+      "multiplier": 0.9,
+      "target": "enemyFront",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "poison",
+          "duration": 2
+        }
+      ],
+      "aiWeight": 60,
+      "tell": null
+    },
+    {
+      "id": "burst",
+      "name": "Burst",
+      "damageType": "poison",
+      "weight": 1000,
+      "multiplier": 1.5,
+      "target": "partyFront",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "poison",
+          "duration": 3
+        },
+        {
+          "kind": "custom",
+          "customId": "kills-self",
+          "note": "the corpse is gone after the burst"
+        }
+      ],
+      "aiWeight": 40,
+      "tell": "It swells, its belly glowing green.",
+      "hint": "Corpse swelling"
+    }
+  ],
+  "resist": [
+    "pierce",
+    "shadow"
+  ],
+  "weak": [
+    "fire",
+    "holy"
+  ],
+  "immune": [],
+  "statusImmune": [
+    "poison",
+    "fear"
+  ],
+  "behavior": {
+    "rules": [
+      {
+        "if": "self hp < 50%",
+        "then": "burst"
+      },
+      {
+        "if": "walks to the front — kill it from range or Fire it (a Fire kill prevents the Burst)",
+        "then": "claw"
+      }
+    ],
+    "fleesAtPercent": 0
+  },
+  "parts": {
+    "common": {
+      "materialId": "linen",
+      "chance": 35,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "rare": {
+      "itemId": "grave-candle",
+      "chance": 4,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "breakLimb": {
+      "name": "belly",
+      "effect": {
+        "kind": "custom",
+        "customId": "burst-now",
+        "multiplier": 0.75,
+        "status": "poison",
+        "duration": 3,
+        "note": "it bursts now at half strength (Burst ×1.5 × 0.5)"
+      }
+    }
+  },
+  "monsterTechniqueSkillIds": [],
+  "elitePool": [
+    "shielded",
+    "vampiric",
+    "shackler",
+    "rabid",
+    "spiteful",
+    "warded",
+    "thorned",
+    "regenerating",
+    "mirrored",
+    "commander",
+    "leech",
+    "nullifier"
+  ],
+  "boss": null,
+  "hunter": null,
+  "visual": {
+    "baseMesh": "zombie",
+    "scale": 1,
+    "variantOf": "shambling-corpse",
+    "palette": [
+      "#6e4f6b",
+      "#8cff5a",
+      "#e3d8bd"
+    ],
+    "reads200px": true,
+    "animations": [
+      "Idle",
+      "Move",
+      "Attack1",
+      "Attack2",
+      "Hit",
+      "Death",
+      "Swell",
+      "Burst"
+    ],
+    "triBudget": 3000
+  }
+}

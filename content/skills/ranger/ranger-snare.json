@@ -4,7 +4,7 @@
   "school": "trapper",
   "tier": 1,
   "name": "Snare",
-  "description": "0.8× Pierce to one enemy in any row; Root 2 turns (it cannot swap rows or flee); 1 arrow.",
+  "description": "1.2× Pierce to one enemy in any row; Root 2 turns (it cannot swap rows or flee); 1 arrow.",
   "type": "active",
   "cost": 10,
   "weight": 1000,
@@ -12,7 +12,7 @@
   "effects": [
     {
       "kind": "damage",
-      "multiplier": 0.8,
+      "multiplier": 1.2,
       "damageType": "pierce",
       "scalesWith": "strength"
     },

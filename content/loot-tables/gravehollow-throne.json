@@ -1,0 +1,63 @@
+{
+  "id": "gravehollow-throne",
+  "dungeonId": "gravehollow-keep",
+  "name": "Gravehollow Keep — the Hollow King's floor (F8)",
+  "floorBand": {
+    "min": 8,
+    "max": 8
+  },
+  "monsterLevels": {
+    "min": 13,
+    "max": 13
+  },
+  "goldRange": {
+    "min": 27,
+    "max": 40
+  },
+  "itemChance": 50,
+  "gradeShape": {
+    "centreGrade": "C",
+    "centre": 56,
+    "minus1": 25,
+    "plus1": 14,
+    "plus2": 4,
+    "plus3": 1
+  },
+  "partChance": {
+    "common": 35,
+    "rare": 4
+  },
+  "stoneChance": 8,
+  "consumableDrop": {
+    "chance": 50,
+    "itemIds": [
+      "medium-hp-potion",
+      "haste-tonic"
+    ]
+  },
+  "treasureRoom": {
+    "goldPiles": {
+      "min": 2,
+      "max": 4
+    },
+    "goldFightsWorth": 2,
+    "smallChestChance": 100,
+    "largeChestChance": 20,
+    "largeLockedChance": 40,
+    "trappedChance": 20,
+    "trapId": "hags-snare",
+    "consumableBundle": 3,
+    "hiddenFind": {
+      "itemAtPlusOneChance": 90,
+      "skeletonKeyChance": 10
+    }
+  },
+  "darknessItemBonus": {
+    "radiant": 0,
+    "dim": 10,
+    "shadowy": 25,
+    "dark": 50,
+    "pitch": 75
+  },
+  "bossFirstKill": "hollow-king"
+}

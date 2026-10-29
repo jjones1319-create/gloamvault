@@ -1,0 +1,209 @@
+{
+  "id": "deep-maw",
+  "name": "Deep Maw",
+  "familyId": "tidebound",
+  "dungeonId": "gravehollow-keep",
+  "zoneId": "the-drowned-vault",
+  "role": "monster",
+  "size": "huge",
+  "rows": [
+    "front"
+  ],
+  "levelBand": {
+    "min": 11,
+    "max": 11
+  },
+  "multipliers": {
+    "hp": 6,
+    "attack": 1.5,
+    "defense": 1.2
+  },
+  "speed": 80,
+  "xpClass": 6,
+  "goldMultiplier": 5,
+  "ambushModifier": 5,
+  "attacks": [
+    {
+      "id": "undertow",
+      "name": "Undertow",
+      "damageType": "frost",
+      "weight": 1400,
+      "multiplier": 1.2,
+      "target": "allEnemies",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "chill",
+          "duration": 2
+        },
+        {
+          "kind": "applyStatus",
+          "status": "slow",
+          "duration": 1,
+          "target": "partyFront",
+          "note": "front-row heroes also Slow (1)"
+        }
+      ],
+      "aiWeight": 30,
+      "tell": "The water drops away from the walls.",
+      "hint": "Water dropping"
+    },
+    {
+      "id": "tentacle-ring",
+      "name": "Tentacle Ring",
+      "damageType": "blunt",
+      "weight": 1000,
+      "multiplier": 0.9,
+      "target": "partyFront",
+      "effects": [],
+      "aiWeight": 30,
+      "tell": null
+    },
+    {
+      "id": "swallow",
+      "name": "Swallow",
+      "damageType": "frost",
+      "weight": 1000,
+      "multiplier": 0,
+      "target": "enemyFront",
+      "effects": [
+        {
+          "kind": "custom",
+          "customId": "apply-if-chill",
+          "status": "grab",
+          "note": "only a Chilled front hero"
+        },
+        {
+          "kind": "custom",
+          "customId": "hold-rider",
+          "multiplier": 0.5,
+          "damageType": "frost",
+          "note": "×0.5 Frost on the swallowed hero each Maw turn"
+        },
+        {
+          "kind": "custom",
+          "customId": "allies-focus-grabbed",
+          "target": "self"
+        }
+      ],
+      "aiWeight": 25,
+      "tell": "The throat opens wide.",
+      "hint": "Throat opening"
+    },
+    {
+      "id": "spawn",
+      "name": "Spawn",
+      "damageType": "frost",
+      "weight": 1000,
+      "multiplier": 0,
+      "target": "self",
+      "effects": [
+        {
+          "kind": "summon",
+          "summonId": "deep-tentacle",
+          "target": "summon"
+        },
+        {
+          "kind": "custom",
+          "customId": "brood-call",
+          "percent": 60,
+          "note": "the new tentacle rises at ×0.6 HP"
+        }
+      ],
+      "aiWeight": 15,
+      "tell": null
+    }
+  ],
+  "resist": [
+    "frost",
+    "pierce"
+  ],
+  "weak": [
+    "lightning",
+    "slash"
+  ],
+  "immune": [],
+  "statusImmune": [
+    "fear",
+    "grab",
+    "web",
+    "root",
+    "petrify",
+    "blind",
+    "taunt"
+  ],
+  "behavior": {
+    "rules": [
+      {
+        "if": "round = 3",
+        "then": "undertow"
+      },
+      {
+        "if": "round = 6",
+        "then": "undertow"
+      },
+      {
+        "if": "round = 9",
+        "then": "undertow"
+      },
+      {
+        "if": "enemy status chill and enemy not status grab",
+        "then": "swallow"
+      }
+    ],
+    "fleesAtPercent": 0
+  },
+  "parts": {
+    "common": {
+      "materialId": "steel",
+      "chance": 35,
+      "quantity": {
+        "min": 2,
+        "max": 2
+      }
+    },
+    "rare": {
+      "itemId": "maw-pearl",
+      "chance": 4,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "breakLimb": {
+      "name": "a ring tentacle",
+      "effect": {
+        "kind": "debuffStat",
+        "stat": "attackPhys",
+        "percent": -20,
+        "note": "one of its five tentacles lost: Tentacle Ring loses a hit (read as Attack −20%)"
+      }
+    }
+  },
+  "monsterTechniqueSkillIds": [],
+  "elitePool": [],
+  "boss": null,
+  "hunter": null,
+  "visual": {
+    "baseMesh": "tentacle",
+    "scale": 1,
+    "variantOf": "deep-tentacle",
+    "palette": [
+      "#4b6e52",
+      "#e3a3ad",
+      "#16181b"
+    ],
+    "reads200px": true,
+    "animations": [
+      "Idle",
+      "Attack1",
+      "Attack2",
+      "Hit",
+      "Death",
+      "Undertow",
+      "Swallow",
+      "Spawn"
+    ],
+    "triBudget": 8000
+  }
+}

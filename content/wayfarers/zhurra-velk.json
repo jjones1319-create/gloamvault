@@ -1,0 +1,26 @@
+{
+  "id": "zhurra-velk",
+  "name": "Zhurra Velk",
+  "speciesId": "orc",
+  "classId": "shade",
+  "grade": "S",
+  "freePoints": {
+    "agility": 3,
+    "strength": 3,
+    "perception": 2,
+    "luck": 2
+  },
+  "starterSkillIds": [
+    "shade-veil",
+    "shade-backstab",
+    "shade-toxic-jab"
+  ],
+  "aiRule": null,
+  "bio": "The loudest family in the clans raised the quietest daughter, and she has made a living of it.",
+  "look": {
+    "frame": "slight",
+    "skin": 2,
+    "face": 2,
+    "hair": 0
+  }
+}

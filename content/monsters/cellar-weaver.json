@@ -39,7 +39,8 @@
         }
       ],
       "aiWeight": 50,
-      "tell": "The Weaver draws a thread taut."
+      "tell": "The Weaver draws a thread taut.",
+      "hint": "Weaver spinning"
     },
     {
       "id": "bite",
@@ -93,10 +94,6 @@
       {
         "if": "a hero is Webbed in the back row",
         "then": "reel"
-      },
-      {
-        "if": "always",
-        "then": "bite"
       }
     ],
     "fleesAtPercent": 0

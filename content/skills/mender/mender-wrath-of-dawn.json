@@ -1,0 +1,65 @@
+{
+  "id": "mender-wrath-of-dawn",
+  "classId": "mender",
+  "school": "sanctity",
+  "tier": 5,
+  "name": "Wrath of Dawn",
+  "description": "2.2× Holy to every enemy in both rows with the Smite mark; Blind 2 turns; Undead and Shadow enemies are also Stunned 1 turn. Heavy cast.",
+  "type": "active",
+  "cost": 50,
+  "weight": 1400,
+  "target": "allEnemies",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 2.2,
+      "damageType": "holy"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "smite"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "blind",
+      "duration": 2
+    },
+    {
+      "kind": "custom",
+      "customId": "apply-if-undead-or-shadow",
+      "status": "stun",
+      "duration": 1,
+      "note": "applies `status` for `duration` only to Undead- or Shadow-family targets"
+    }
+  ],
+  "prerequisiteId": "mender-exorcism",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "2.5× each.",
+    "effects": [
+      {
+        "kind": "damage",
+        "multiplier": 2.5,
+        "damageType": "holy"
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "control",
+    "debuff"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 85
+  }
+}

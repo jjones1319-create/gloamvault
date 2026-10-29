@@ -1,0 +1,43 @@
+{
+  "id": "ironwood",
+  "name": "Ironwood",
+  "slot": null,
+  "kind": "material",
+  "grade": "B",
+  "materialLadder": "wood",
+  "materialRung": 4,
+  "weaponType": null,
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {},
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 2,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 7,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1,
+  "value": 100,
+  "classLock": [],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "material-plank-ironwood-01",
+    "tintPrimary": "#4a3b2f",
+    "tintSecondary": "#2b2b2b",
+    "trimMetal": "none"
+  }
+}

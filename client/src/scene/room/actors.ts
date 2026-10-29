@@ -34,6 +34,8 @@ export interface ActorModel {
   setTint(c: THREE.Color): void
   setFlash(c: THREE.Color | null, intensity?: number): void
   setOpacity(o: number): void
+  /** A tell's shape, 0 at rest to 1 at full (the Bursting Corpse's swell, monsters/wear.ts); absent without one. */
+  setTell?(k: number): void
   dispose(): void
 }
 
@@ -68,6 +70,8 @@ export interface ActorState {
   dead?: boolean
   /** A body the party carries, not in this fight: no HP bar. */
   body?: boolean
+  /** A telegraphed attack is wound up (the sim's `monster.windup`): its model shows the tell (a swelling belly). */
+  tell?: boolean
 }
 
 export interface ActorInput {
@@ -79,6 +83,8 @@ export interface ActorInput {
    * already in the sim's HP): a new bar starts there, and the sim's word follows once the beats have played.
    */
   shownHp?: number
+  /** Already on its mark when the fight begins (a boss on his throne or dais, room/arena.ts): it does not walk in. */
+  stand?: boolean
 }
 
 export interface SetOptions {
@@ -127,6 +133,8 @@ interface View {
   dyingMs: number
   /** Fleeing out of the room. */
   fleeing: boolean
+  /** How far its tell shows (0–1), eased toward the state's `tell`. */
+  tell: number
 }
 
 const STATUS_TINT: Record<string, number> = {
@@ -222,6 +230,9 @@ const STRIKE_LEAD_S = 0.12
 const APPROACH_M = 2.2
 /** A fallen monster stays down this long after its Death clip ends, then fades. */
 const DEATH_REST_MS = 650
+/** A tell's shape grows over this long once its wind-up shows (the turn before the blow), and goes in this long. */
+const TELL_RISE_MS = 900
+const TELL_FALL_MS = 300
 
 export class ActorLayer {
   readonly group = new THREE.Group()
@@ -352,6 +363,7 @@ export class ActorLayer {
       modelDown: false,
       dyingMs: 0,
       fleeing: false,
+      tell: s.tell ? 1 : 0,
     }
     if (s.gone) mat.transparent = true
     this.views.set(input.look.id, view)
@@ -379,6 +391,7 @@ export class ActorLayer {
         if (view.lieTarget >= 0.5) this.setModelDown(view, true, true)
         // A model that arrives mid-walk walks the rest of the way.
         if (view.target.distanceTo(view.pos) > 0.005) view.moving = false
+        model.setTell?.(view.tell)
         model.update(0)
         this.pose(view)
         this.onChange?.()
@@ -409,6 +422,7 @@ export class ActorLayer {
     to.state = { ...from.state }
     to.dyingMs = from.dyingMs
     to.fleeing = from.fleeing
+    to.tell = from.tell
     if (to.fade < 1 || to.fadeTarget < 1) to.mat.transparent = true
   }
 
@@ -491,7 +505,7 @@ export class ActorLayer {
           // Born behind the sim: the sim's HP waits for the beats.
           states.set(l.id, input.state)
         }
-        if (!was && opts.showBars && !this.reduceMotion && !input.state.gone && (l.kind === 'monster' || l.kind === 'summon') && l.side === 'enemy') {
+        if (!was && opts.showBars && !this.reduceMotion && !input.state.gone && !input.stand && (l.kind === 'monster' || l.kind === 'summon') && l.side === 'enemy') {
           // Phase 6: a monster joining a fight walks in to its mark (its Move), from a little behind it.
           const back = APPROACH_M * Math.max(1, l.height / 1.8)
           view.pos.set(input.mark.x - Math.sin(input.mark.yaw) * back, input.mark.y ?? 0, input.mark.z - Math.cos(input.mark.yaw) * back)
@@ -603,6 +617,8 @@ export class ActorLayer {
     view.shakeT = 0
     view.dodgeT = 0
     view.hopT = 0
+    view.tell = view.state.tell && !view.state.gone ? 1 : 0
+    view.model?.setTell?.(view.tell)
     view.pos.copy(view.target)
     this.pose(view)
   }
@@ -774,6 +790,14 @@ export class ActorLayer {
           view.mat.needsUpdate = true
         }
       }
+      // A tell's shape (the Bursting Corpse's belly) swells over its wind-up and throbs while it holds; it goes with the blow.
+      const tellTo = view.state.tell && !view.state.gone ? 1 : 0
+      const throb = 0.97 + 0.03 * Math.sin(time * 0.009)
+      if (view.tell !== tellTo) {
+        view.tell = tellTo > view.tell ? Math.min(tellTo, view.tell + dt / TELL_RISE_MS) : Math.max(tellTo, view.tell - dt / TELL_FALL_MS)
+        busy = true
+        view.model?.setTell?.(view.tell >= 1 ? throb : view.tell)
+      } else if (view.tell >= 1) view.model?.setTell?.(throb)
       view.model?.update(dt)
       let dy = view.yaw - view.root.rotation.y
       dy = Math.atan2(Math.sin(dy), Math.cos(dy))

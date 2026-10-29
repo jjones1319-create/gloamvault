@@ -1,0 +1,49 @@
+{
+  "id": "tidebound-reavers-mitts-a",
+  "name": "Tidebound Reaver's Mitts",
+  "slot": "gloves",
+  "kind": "armor",
+  "grade": "A",
+  "materialLadder": "metal",
+  "materialRung": 5,
+  "weaponType": null,
+  "armorFamily": "mail",
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "defense": 4,
+    "hp": 9,
+    "critRate": 2
+  },
+  "requirements": {
+    "strength": 13,
+    "wisdom": 0
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 8,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 3.05,
+  "value": 800,
+  "classLock": [
+    "blade"
+  ],
+  "setId": "tidebound-reavers-mail",
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "armor-mail-gloves-01",
+    "tintPrimary": "#1e3a4a",
+    "tintSecondary": "#9ec5e0",
+    "trimMetal": "steel"
+  }
+}

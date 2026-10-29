@@ -4,7 +4,7 @@
   "school": "iron-dance",
   "tier": 1,
   "name": "Twin Cut",
-  "description": "Two hits of 0.6× Slash (1.2× in all) on a front-row enemy; +5 extra Momentum.",
+  "description": "Two hits of 0.5× Slash (1.0× in all) on a front-row enemy; +5 extra Momentum.",
   "type": "active",
   "cost": 9,
   "weight": 800,
@@ -12,13 +12,13 @@
   "effects": [
     {
       "kind": "damage",
-      "multiplier": 0.6,
+      "multiplier": 0.5,
       "damageType": "slash",
       "scalesWith": "strength"
     },
     {
       "kind": "damage",
-      "multiplier": 0.6,
+      "multiplier": 0.5,
       "damageType": "slash",
       "scalesWith": "strength"
     },
@@ -40,24 +40,24 @@
     "costPerRank": -2
   },
   "mastery": {
-    "text": "A third hit at 0.4×.",
+    "text": "A third hit at 0.35×.",
     "effects": [
       {
         "kind": "damage",
-        "multiplier": 0.6,
+        "multiplier": 0.5,
         "damageType": "slash",
         "scalesWith": "strength",
-        "note": "Mastery restates every hit: two of 0.6× and a third of 0.4×"
+        "note": "Mastery restates every hit: two of 0.5× and a third of 0.35×"
       },
       {
         "kind": "damage",
-        "multiplier": 0.6,
+        "multiplier": 0.5,
         "damageType": "slash",
         "scalesWith": "strength"
       },
       {
         "kind": "damage",
-        "multiplier": 0.4,
+        "multiplier": 0.35,
         "damageType": "slash",
         "scalesWith": "strength"
       }

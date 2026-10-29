@@ -1,7 +1,8 @@
 /**
  * `npm run check:build` (part of `npm run verify`, after `build`): the bundle and precache budgets of
  * 10-TECH-PLAN §7 read from dist/:
- *   - app JavaScript (every dist/assets/*.js, gzipped) ≤ 600 KB
+ *   - app code (every dist/assets/*.js but the content chunk, gzipped) ≤ 600 KB, and the content data (the
+ *     content-*.js chunk the game's JSON compiles to) ≤ 300 KB on its own budget (D-129: content grows with every dungeon)
  *   - the service-worker precache ≤ 8 MB, and no 3D model (models/) is precached
  *   - the manifest is landscape, fullscreen-capable, and its id / scope / start_url are the GitHub Pages base
  * Runs on Node 24 directly.
@@ -13,6 +14,7 @@ import { gzipSync } from 'node:zlib'
 const DIST = 'dist'
 const BASE = '/gloamvault/'
 const JS_LIMIT = 600 * 1024
+const CONTENT_LIMIT = 300 * 1024
 const PRECACHE_LIMIT = 8 * 1024 * 1024
 
 let failures = 0
@@ -31,15 +33,18 @@ if (!existsSync(DIST)) {
 const assets = join(DIST, 'assets')
 const jsFiles = existsSync(assets) ? readdirSync(assets).filter((f) => f.endsWith('.js')) : []
 let jsBytes = 0
+let contentBytes = 0
 const perChunk: string[] = []
 for (const f of jsFiles) {
   const gz = gzipSync(readFileSync(join(assets, f))).length
-  jsBytes += gz
+  if (f.startsWith('content-')) contentBytes += gz
+  else jsBytes += gz
   perChunk.push(`  ${f.padEnd(34)} ${kb(gz).padStart(10)}`)
 }
-console.log(`app JS gzipped: ${kb(jsBytes)} in ${jsFiles.length} chunks (limit ${kb(JS_LIMIT)})`)
+console.log(`app code gzipped: ${kb(jsBytes)}; content data ${kb(contentBytes)}; ${jsFiles.length} chunks (limits ${kb(JS_LIMIT)} and ${kb(CONTENT_LIMIT)})`)
 console.log(perChunk.join('\n'))
-if (jsBytes > JS_LIMIT) fail(`app JS is ${kb(jsBytes)} gzipped, over ${kb(JS_LIMIT)}`)
+if (jsBytes > JS_LIMIT) fail(`app code is ${kb(jsBytes)} gzipped, over ${kb(JS_LIMIT)}`)
+if (contentBytes > CONTENT_LIMIT) fail(`content data is ${kb(contentBytes)} gzipped, over ${kb(CONTENT_LIMIT)}`)
 
 // 2. The precache list that vite-plugin-pwa (generateSW) wrote into sw.js.
 const sw = join(DIST, 'sw.js')

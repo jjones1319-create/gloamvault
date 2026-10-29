@@ -1,0 +1,64 @@
+{
+  "id": "mender-banishment",
+  "classId": "mender",
+  "school": "sanctity",
+  "tier": 5,
+  "name": "Banishment",
+  "description": "3.6× Holy to one enemy in either row; a non-boss Undead or Shadow target left under 35% HP is banished (removed, counted as a kill); a living target is Feared 2 turns.",
+  "type": "active",
+  "cost": 42,
+  "weight": 1000,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 3.6,
+      "damageType": "holy"
+    },
+    {
+      "kind": "custom",
+      "customId": "destroy-below-hp",
+      "percent": 35,
+      "damageType": "holy",
+      "note": "after the hit, a non-boss Undead- or Shadow-family target under percent% HP is removed — a kill"
+    },
+    {
+      "kind": "custom",
+      "customId": "apply-if-living",
+      "status": "fear",
+      "duration": 2,
+      "note": "applies `status` for `duration` only to targets that are neither Undead nor Shadow family"
+    }
+  ],
+  "prerequisiteId": "mender-dread-hymn",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Under 50%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "destroy-below-hp",
+        "percent": 50,
+        "damageType": "holy"
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "reach",
+    "control"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 80
+  }
+}

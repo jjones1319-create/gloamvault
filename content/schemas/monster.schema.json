@@ -159,8 +159,19 @@
         "effects": { "$ref": "common.schema.json#/$defs/effectList", "description": "Lines beyond the hit itself (statuses, timeline pushes, summons)." },
         "aiWeight": { "$ref": "common.schema.json#/$defs/percent", "description": "Relative pick weight among the attacks available (the phase's list for a boss) when no behavior rule chooses; 06's lines sum to 100 per phase, but the sim normalises." },
         "tell": {
-          "description": "The one-line warning shown the turn before a telegraphed move (06 §8.10); null for an untelegraphed one.",
+          "description": "The one-line warning shown the turn before a telegraphed move (06 §8.10); null for an untelegraphed one. A telegraphed attack is wound up on the monster's turn and lands on its next (sim/src/arena.ts).",
           "anyOf": [{ "type": "string", "minLength": 1 }, { "type": "null" }]
+        },
+        "hint": {
+          "type": "string",
+          "description": "The tell's two-word hint the HUD shows the first time it fires ('Netter reloading'; 06 §8.10, D-099). Optional; the attack's name stands in.",
+          "minLength": 3,
+          "maxLength": 32
+        },
+        "aim": {
+          "type": "string",
+          "enum": ["lowestHp", "mostMomentum", "lowestStrength", "marked", "markedOrChilled", "backRow", "mostGold", "fullestPool", "caster"],
+          "description": "Whom a single-target attack picks among the heroes it can reach (06's 'on the hero with the lowest HP %', 'the most Momentum', 'the lowest Strength'). Optional; absent: the monster's behaviour and hooks choose."
         }
       },
       "required": ["id", "name", "damageType", "weight", "multiplier", "target", "effects", "aiWeight", "tell"],
@@ -207,9 +218,28 @@
                 }
               },
               "arenaRule": {
-                "description": "A sentence the sim implements by customId-style name, e.g. 'the floor floods: back row takes 5% max HP per round'; null when none.",
+                "description": "07 §2.8's arena rule for the phase in words (the HUD's line); the sim runs the arena from boss.arena.rules and the phase fields below. Null when none.",
                 "anyOf": [{ "type": "string", "minLength": 1 }, { "type": "null" }]
-              }
+              },
+              "name": { "type": "string", "minLength": 1, "description": "06's name for the phase ('the Captain's Table')." },
+              "light": {
+                "type": "object",
+                "description": "The arena light when the phase begins (07 §2.8): set to a value (Vexa's phase 2: 40) or stepped by an amount (the Warden's lantern −20, the King's snuff −25).",
+                "properties": {
+                  "set": { "type": "integer", "minimum": 0, "maximum": 100 },
+                  "add": { "type": "integer", "minimum": -100, "maximum": 100 }
+                },
+                "minProperties": 1,
+                "maxProperties": 1,
+                "additionalProperties": false
+              },
+              "speed": { "type": "integer", "minimum": 40, "maximum": 300, "description": "The boss's Speed from this phase on (06 §3.4: the King's phase 3, 120)." },
+              "row": { "type": "string", "enum": ["front", "back"], "description": "The row the boss moves to when the phase begins (Vexa steps down, Naesa walks into the water, the King descends)." },
+              "size": { "$ref": "common.schema.json#/$defs/size", "description": "The boss's size from this phase on (Naesa Medium → Large, the King Large → Huge)." },
+              "opener": { "$ref": "common.schema.json#/$defs/id", "description": "An attack id: the boss's first move of the phase (Vexa kicks the barricade over); its tell, if any, still shows first." },
+              "tide": { "type": "integer", "minimum": 0, "maximum": 8, "description": "The arena's water jumps to at least this step when the phase begins (Naesa's phase 2: 3; the throne's phase 3: 4)." },
+              "statusImmune": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/status" }, "uniqueItems": true, "description": "Statuses the boss shrugs off from this phase on (06 §3.4's phase 3: Petrify, Grab, Fear)." },
+              "hooks": { "$ref": "common.schema.json#/$defs/effectList", "description": "Custom lines installed on the boss when the phase begins (Naesa's Silence aura)." }
             },
             "required": ["atHpPercent", "attacks", "adds", "arenaRule"],
             "additionalProperties": false
@@ -231,9 +261,117 @@
           "items": { "$ref": "common.schema.json#/$defs/status" },
           "uniqueItems": true
         },
-        "cannotFlee": { "type": "boolean", "description": "Always true for bosses (§12.1); kept explicit so the sim reads one field." }
+        "cannotFlee": { "type": "boolean", "description": "Always true for bosses (§12.1); kept explicit so the sim reads one field." },
+        "arena": { "$ref": "#/$defs/arena" },
+        "parts": {
+          "type": "array",
+          "description": "The boss's breakable parts (06 §3 'Part-breaks'): each breaks once, on one blow of at least hpPercent of the boss's max HP of one of its damage types (any when empty), a critical hit when crit. The monster's parts.breakLimb stays the single-limb rule of everything else.",
+          "items": { "$ref": "#/$defs/bossPart" },
+          "maxItems": 4
+        }
       },
       "required": ["phases", "everyKill", "firstKill", "immunities", "cannotFlee"],
+      "additionalProperties": false
+    },
+    "arena": {
+      "type": "object",
+      "description": "A boss's arena (07 §2.8 owns the room, the arena rule, add timing, the tells and the light): the room template, 07's tells table rows with their two-word hints (D-099), and the rules the sim runs (sim/src/arena.ts; content/README.md 'Boss arenas').",
+      "properties": {
+        "room": { "$ref": "common.schema.json#/$defs/id", "description": "The room template id (cel-t-tap-room, cry-t-wardens-vigil, vlt-t-drowned-chapel, vlt-t-throne)." },
+        "tells": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "$ref": "common.schema.json#/$defs/id" },
+              "hint": { "type": "string", "minLength": 3, "maxLength": 32, "description": "Two words (D-099)." },
+              "cue": { "type": "string", "minLength": 1, "description": "07 §2.8's cue, one turn before what it warns of." }
+            },
+            "required": ["id", "hint", "cue"],
+            "additionalProperties": false
+          }
+        },
+        "rules": { "type": "array", "items": { "$ref": "#/$defs/arenaRule" } }
+      },
+      "required": ["room", "tells", "rules"],
+      "additionalProperties": false
+    },
+    "arenaRule": {
+      "type": "object",
+      "description": "One arena rule from the closed vocabulary sim/src/arena.ts implements (content/README.md 'Boss arenas' lists each kind's fields); every number is the arena's own.",
+      "properties": {
+        "kind": { "type": "string", "enum": ["lightsOut", "flank", "barricade", "reenter", "frenzy", "oath", "candles", "piles", "call", "heel", "tide", "outOfReach", "braziers", "lightBand", "pull", "pulse", "addAt", "hunters"] },
+        "phases": { "type": "array", "items": { "type": "integer", "minimum": 1, "maximum": 3 }, "uniqueItems": true, "minItems": 1, "description": "The phases it runs in; absent: every phase." },
+        "tell": { "$ref": "common.schema.json#/$defs/id", "description": "An id of arena.tells shown the round before the rule fires." },
+        "every": { "type": "integer", "minimum": 1, "maximum": 20, "description": "A clock: fires every N rounds of its phase." },
+        "fastEvery": { "type": "integer", "minimum": 1, "maximum": 20 },
+        "fastBelowHpPercent": { "$ref": "common.schema.json#/$defs/percent" },
+        "fastFromPhase": { "type": "integer", "minimum": 1, "maximum": 3 },
+        "amount": { "type": "integer", "minimum": -100, "maximum": 100, "description": "A light step." },
+        "percent": { "type": "integer", "minimum": -100, "maximum": 1000 },
+        "bands": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/lightBand" }, "uniqueItems": true, "minItems": 1 },
+        "count": { "type": "integer", "minimum": 1, "maximum": 20 },
+        "hits": { "type": "integer", "minimum": 1, "maximum": 10 },
+        "max": { "type": "integer", "minimum": 1, "maximum": 8 },
+        "attack": { "$ref": "common.schema.json#/$defs/id" },
+        "attacks": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/id" }, "uniqueItems": true },
+        "monsters": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/id" }, "uniqueItems": true },
+        "adds": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "monsterId": { "$ref": "common.schema.json#/$defs/id" },
+              "count": { "type": "integer", "minimum": 1 },
+              "row": { "type": "string", "enum": ["front", "back"] }
+            },
+            "required": ["monsterId", "count", "row"],
+            "additionalProperties": false
+          }
+        },
+        "status": { "$ref": "common.schema.json#/$defs/status" },
+        "duration": { "type": "integer", "minimum": 1, "maximum": 10 },
+        "damageTypes": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/damageType" }, "uniqueItems": true },
+        "attribute": { "$ref": "common.schema.json#/$defs/attribute" },
+        "min": { "type": "integer", "minimum": 1, "maximum": 100 },
+        "atHpPercent": { "$ref": "common.schema.json#/$defs/percent" },
+        "rounds": { "type": "array", "items": { "type": "integer", "minimum": 1, "maximum": 30 }, "minItems": 1 },
+        "afterRounds": { "type": "integer", "minimum": 1, "maximum": 20 },
+        "params": {
+          "type": "object",
+          "description": "A rule's named knobs (hpPercent, accuracy, critBonus, chainPercent, grab …; content/README.md).",
+          "additionalProperties": { "anyOf": [{ "type": "number" }, { "type": "string", "minLength": 1, "maxLength": 80 }, { "type": "boolean" }] }
+        },
+        "note": { "type": "string" }
+      },
+      "required": ["kind"],
+      "additionalProperties": false
+    },
+    "bossPart": {
+      "type": "object",
+      "properties": {
+        "id": { "$ref": "common.schema.json#/$defs/id" },
+        "name": { "type": "string", "minLength": 1 },
+        "hpPercent": { "type": "integer", "minimum": 1, "maximum": 50, "description": "One blow of at least this % of the boss's max HP (06: 'Blunt, 6 % HP')." },
+        "damageTypes": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/damageType" }, "uniqueItems": true, "description": "The blow's damage types; empty: any hit on the prop." },
+        "crit": { "type": "boolean", "description": "Only a critical hit breaks it (06: the coin, 'a Pierce crit')." },
+        "fromPhase": { "type": "integer", "minimum": 1, "maximum": 3, "description": "It exists from this phase on (Naesa's arms, phase 2)." },
+        "effect": {
+          "type": "object",
+          "description": "What breaking it costs the boss (sim/src/arena.ts).",
+          "properties": {
+            "removeAttacks": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/id" }, "uniqueItems": true },
+            "attackMultiplier": { "type": "object", "additionalProperties": { "type": "number", "minimum": 0 } },
+            "removeStatuses": { "type": "object", "additionalProperties": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/status" }, "uniqueItems": true } },
+            "stopLight": { "type": "boolean" },
+            "stopTide": { "type": "boolean" },
+            "line": { "$ref": "common.schema.json#/$defs/effect" }
+          },
+          "minProperties": 1,
+          "additionalProperties": false
+        }
+      },
+      "required": ["id", "name", "hpPercent", "damageTypes", "crit", "effect"],
       "additionalProperties": false
     },
     "hunter": {

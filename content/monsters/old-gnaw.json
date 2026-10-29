@@ -54,7 +54,8 @@
         }
       ],
       "aiWeight": 30,
-      "tell": "Old Gnaw gathers its haunches."
+      "tell": "Old Gnaw gathers its haunches.",
+      "hint": "Gnaw crouching"
     },
     {
       "id": "bolt-hole",
@@ -101,10 +102,6 @@
       },
       {
         "if": "a hero carries more gold than the others (target: that hero)",
-        "then": "gnaw"
-      },
-      {
-        "if": "always",
         "then": "gnaw"
       }
     ],

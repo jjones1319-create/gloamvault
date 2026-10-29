@@ -72,6 +72,8 @@ function placeLines(c: Content, p: Profile): Record<PlaceId, string> {
   const cheapest = Math.min(...[...c.chests.keys()].map((id) => chestPrice(c, p, id)))
   const eggs = p.eggs.length
   const dead = p.dead.length
+  // 07 §7 (pass D): a finished contract waiting to be claimed is worth the walk.
+  const toClaim = [...(p.contracts?.dailies ?? []), ...(p.contracts?.weekly ? [p.contracts.weekly] : [])].filter((x) => !x.claimed && x.progress >= x.goal).length
   return {
     waystone: p.activeDelve ? 'Your delve waits' : `Enter on floor ${deepest}`,
     blacksmith: repairs > 0 ? `Repairs: ${repairs} gold` : 'Repair and upgrade',
@@ -79,7 +81,7 @@ function placeLines(c: Content, p: Profile): Record<PlaceId, string> {
     curio: Number.isFinite(cheapest) ? `Chests from ${cheapest} gold` : 'Chests for gold',
     stables: eggs > 0 ? `${eggs} egg${eggs === 1 ? '' : 's'} to hatch` : 'Pets and stances',
     bank: p.bank > 0 ? `${p.bank} gold safe` : 'Keep gold safe',
-    board: 'Contracts this week',
+    board: toClaim > 0 ? `${toClaim} contract${toClaim === 1 ? '' : 's'} to claim` : 'Dailies and the weekly',
     inn: canChooseHero(c, p) ? 'Choose a new hero' : `${p.heroes.length} / ${c.tuning.coop.rosterMax} heroes`,
     shrine: dead > 0 ? `${dead} lie${dead === 1 ? 's' : ''} here` : p.legacies.length > 0 ? `${p.legacies.length} legac${p.legacies.length === 1 ? 'y waits' : 'ies wait'}` : 'Raise or remember',
   }

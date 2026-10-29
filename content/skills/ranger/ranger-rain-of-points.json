@@ -1,0 +1,71 @@
+{
+  "id": "ranger-rain-of-points",
+  "classId": "ranger",
+  "school": "marksman",
+  "tier": 4,
+  "name": "Rain of Points",
+  "description": "1.5× Pierce to every enemy in both rows; Slow 1 turn; 5 arrows.",
+  "type": "active",
+  "cost": 35,
+  "weight": 1400,
+  "target": "allEnemies",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1.5,
+      "damageType": "pierce",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "slow",
+      "duration": 1
+    },
+    {
+      "kind": "custom",
+      "customId": "consume-ammo",
+      "amount": 5,
+      "target": "self",
+      "note": "5 arrows (or bolts)"
+    }
+  ],
+  "prerequisiteId": "ranger-volley",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "requirements": {
+    "weaponTypes": [
+      "bow",
+      "shortbow",
+      "longbow",
+      "crossbow"
+    ]
+  },
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "1.8×.",
+    "effects": [
+      {
+        "kind": "damage",
+        "multiplier": 1.8,
+        "damageType": "pierce",
+        "scalesWith": "strength"
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "reach",
+    "debuff"
+  ],
+  "xpTags": [
+    "perception",
+    "agility"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 60
+  }
+}

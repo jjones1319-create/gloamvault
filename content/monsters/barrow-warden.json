@@ -1,0 +1,455 @@
+{
+  "id": "barrow-warden",
+  "name": "the Barrow Warden",
+  "familyId": "restless-dead",
+  "dungeonId": "gravehollow-keep",
+  "zoneId": "the-crypts",
+  "role": "boss",
+  "size": "huge",
+  "rows": [
+    "front"
+  ],
+  "levelBand": {
+    "min": 8,
+    "max": 8
+  },
+  "multipliers": {
+    "hp": 5,
+    "attack": 0.75,
+    "defense": 1.6
+  },
+  "speed": 90,
+  "xpClass": 25,
+  "goldMultiplier": 10,
+  "ambushModifier": 0,
+  "attacks": [
+    {
+      "id": "wardens-blade",
+      "name": "Warden's Blade",
+      "damageType": "slash",
+      "weight": 1400,
+      "multiplier": 1.7,
+      "target": "enemy",
+      "effects": [],
+      "aiWeight": 40,
+      "tell": null
+    },
+    {
+      "id": "toll",
+      "name": "Toll",
+      "damageType": "blunt",
+      "weight": 1000,
+      "multiplier": 0,
+      "target": "self",
+      "effects": [],
+      "aiWeight": 30,
+      "tell": "He lifts the bell. Silence or Daze him to skip it.",
+      "hint": "Bell lifting"
+    },
+    {
+      "id": "bulwark",
+      "name": "Bulwark",
+      "damageType": "blunt",
+      "weight": 1000,
+      "multiplier": 0,
+      "target": "self",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "fortify",
+          "duration": 3,
+          "target": "self"
+        },
+        {
+          "kind": "taunt",
+          "target": "allEnemies",
+          "duration": 2,
+          "note": "06 'Taunt (2) on himself': every hero must strike him"
+        }
+      ],
+      "aiWeight": 30,
+      "tell": null
+    },
+    {
+      "id": "verdict",
+      "name": "Verdict",
+      "damageType": "shadow",
+      "weight": 1400,
+      "multiplier": 2,
+      "target": "enemy",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "mark",
+          "duration": 3
+        },
+        {
+          "kind": "custom",
+          "customId": "allies-focus-marked",
+          "target": "allAllies",
+          "note": "every undead targets the Marked hero"
+        }
+      ],
+      "aiWeight": 35,
+      "tell": "The lantern swings toward the hero for one turn: swap them back and Guard.",
+      "hint": "Lantern swinging",
+      "aim": "lowestHp"
+    },
+    {
+      "id": "wardens-blade-2",
+      "name": "Warden's Blade",
+      "damageType": "slash",
+      "weight": 1400,
+      "multiplier": 1.7,
+      "target": "enemy",
+      "effects": [],
+      "aiWeight": 35,
+      "tell": null
+    },
+    {
+      "id": "toll-2",
+      "name": "Toll",
+      "damageType": "blunt",
+      "weight": 1000,
+      "multiplier": 0,
+      "target": "self",
+      "effects": [],
+      "aiWeight": 15,
+      "tell": "He lifts the bell. Silence or Daze him to skip it.",
+      "hint": "Bell lifting"
+    },
+    {
+      "id": "grave-grip",
+      "name": "Grave Grip",
+      "damageType": "blunt",
+      "weight": 1000,
+      "multiplier": 0,
+      "target": "enemy",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "grab",
+          "note": "06: Grab the Marked hero, 2 turns (the boss's Grab cap is 2 of his turns, 06 §7)"
+        }
+      ],
+      "aiWeight": 15,
+      "tell": "His free hand opens toward the Marked hero.",
+      "hint": "Hand reaching",
+      "aim": "marked"
+    }
+  ],
+  "resist": [
+    "pierce"
+  ],
+  "weak": [
+    "blunt",
+    "holy"
+  ],
+  "immune": [],
+  "statusImmune": [
+    "poison",
+    "bleed"
+  ],
+  "behavior": {
+    "rules": [
+      {
+        "if": "round = 1 and phase = 1",
+        "then": "bulwark"
+      }
+    ],
+    "fleesAtPercent": 0
+  },
+  "parts": {
+    "common": {
+      "materialId": "bone-shard",
+      "chance": 35,
+      "quantity": {
+        "min": 1,
+        "max": 2
+      }
+    },
+    "rare": {
+      "itemId": "whetstone",
+      "chance": 4,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "breakLimb": null
+  },
+  "monsterTechniqueSkillIds": [],
+  "elitePool": [],
+  "boss": {
+    "phases": [
+      {
+        "atHpPercent": 100,
+        "name": "the Vigil",
+        "attacks": [
+          "wardens-blade",
+          "toll",
+          "bulwark"
+        ],
+        "adds": [
+          {
+            "monsterId": "skeleton-footman",
+            "count": 2,
+            "row": "front"
+          }
+        ],
+        "arenaRule": "The Warden's Oath: he never strikes a hero who has not struck him; the first to damage him holds his attention (Mark, 3 rounds, refreshed by each hit); a Warden-class Taunt is honoured absolutely. A candle goes out each round; at six out his lantern turns green and the secret doors open. His Toll raises 2 Footmen from the live bone piles (Holy or Fire, 3 hits, burns one out for good); his Hound stands at heel if it lives."
+      },
+      {
+        "atHpPercent": 50,
+        "name": "the Lantern Turns",
+        "attacks": [
+          "verdict",
+          "wardens-blade-2",
+          "toll-2",
+          "grave-grip"
+        ],
+        "adds": [],
+        "arenaRule": "The lantern turns Shadow (light −20) and 2 Wraiths drift in through the secret doors, if the candles have not opened them already; the lantern swinging toward a hero is Verdict's tell.",
+        "light": {
+          "add": -20
+        }
+      }
+    ],
+    "everyKill": [
+      {
+        "kind": "material",
+        "id": "iron",
+        "amount": 4,
+        "note": "08 §11: Iron ×8 + Wool ×8 + Bone Shards ×10 on the first kill, half after"
+      },
+      {
+        "kind": "material",
+        "id": "wool",
+        "amount": 4
+      },
+      {
+        "kind": "material",
+        "id": "bone-shard",
+        "amount": 5
+      },
+      {
+        "kind": "item",
+        "id": "whetstone",
+        "amount": 2
+      },
+      {
+        "kind": "item",
+        "grade": "A",
+        "chance": 10,
+        "note": "08 §11: after the first kill an A-grade item 10% (it also rolls on the first)"
+      }
+    ],
+    "firstKill": [
+      {
+        "kind": "material",
+        "id": "iron",
+        "amount": 4
+      },
+      {
+        "kind": "material",
+        "id": "wool",
+        "amount": 4
+      },
+      {
+        "kind": "material",
+        "id": "bone-shard",
+        "amount": 5
+      },
+      {
+        "kind": "gold",
+        "amount": 200,
+        "note": "06 'gold ×10 (×3 first kill)': the fight's own gold is 08 §11's 100; the first kill adds twice that"
+      },
+      {
+        "kind": "tome",
+        "tier": 3
+      },
+      {
+        "kind": "item",
+        "grade": "A",
+        "note": "06: one A-grade item (the zone-boss rule, 03 §6.2)"
+      },
+      {
+        "kind": "item",
+        "id": "the-barrow-bell",
+        "note": "the zone Relic (08 §3): once per fight, Taunt every enemy onto you for 2 rounds and Fortify 1 round"
+      },
+      {
+        "kind": "item",
+        "id": "grand-chest-key"
+      },
+      {
+        "kind": "title",
+        "id": "keepers-peace"
+      },
+      {
+        "kind": "waystone",
+        "id": "the-crypts",
+        "note": "the Crypt Waystone rises from the bier (07 §2.8)"
+      }
+    ],
+    "immunities": [
+      "fear",
+      "petrify",
+      "grab",
+      "web",
+      "root"
+    ],
+    "cannotFlee": true,
+    "arena": {
+      "room": "cry-t-wardens-vigil",
+      "tells": [
+        {
+          "id": "lantern-greening",
+          "hint": "Lantern greening",
+          "cue": "the sixth candle out, his lantern turning green"
+        }
+      ],
+      "rules": [
+        {
+          "kind": "oath",
+          "status": "mark",
+          "duration": 3,
+          "params": {
+            "tauntClass": "warden"
+          }
+        },
+        {
+          "kind": "candles",
+          "count": 12,
+          "tell": "lantern-greening",
+          "adds": [
+            {
+              "monsterId": "wraith",
+              "count": 2,
+              "row": "back"
+            }
+          ],
+          "params": {
+            "doorsAt": 6,
+            "doorsAtPhase": 2
+          },
+          "note": "07 §2.8: a candle goes out each round; at six out the secret doors open. The two Wraiths of 06's phase 2 come through them once — at the sixth candle or at phase 2, whichever is first (Proposed)."
+        },
+        {
+          "kind": "piles",
+          "count": 4,
+          "hits": 3,
+          "damageTypes": [
+            "holy",
+            "fire"
+          ]
+        },
+        {
+          "kind": "call",
+          "attack": "toll",
+          "adds": [
+            {
+              "monsterId": "skeleton-footman",
+              "count": 2,
+              "row": "front"
+            }
+          ],
+          "params": {
+            "fromPiles": true,
+            "refill": true
+          }
+        },
+        {
+          "kind": "call",
+          "attack": "toll-2",
+          "adds": [
+            {
+              "monsterId": "skeleton-footman",
+              "count": 2,
+              "row": "front"
+            }
+          ],
+          "params": {
+            "fromPiles": true,
+            "refill": true
+          }
+        },
+        {
+          "kind": "heel",
+          "phases": [
+            1
+          ],
+          "monsters": [
+            "wardens-hound"
+          ],
+          "params": {
+            "hpPercent": 20,
+            "row": "front"
+          }
+        }
+      ]
+    },
+    "parts": [
+      {
+        "id": "bell",
+        "name": "bell",
+        "hpPercent": 8,
+        "damageTypes": [
+          "blunt"
+        ],
+        "crit": false,
+        "effect": {
+          "removeAttacks": [
+            "toll",
+            "toll-2"
+          ]
+        }
+      },
+      {
+        "id": "lantern",
+        "name": "lantern",
+        "hpPercent": 5,
+        "damageTypes": [
+          "holy",
+          "fire"
+        ],
+        "crit": false,
+        "effect": {
+          "stopLight": true,
+          "removeStatuses": {
+            "verdict": [
+              "mark"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "hunter": null,
+  "visual": {
+    "baseMesh": "skeleton",
+    "scale": 1.75,
+    "variantOf": null,
+    "palette": [
+      "#2e2f35",
+      "#d8ccb2",
+      "#7dffb0"
+    ],
+    "reads200px": true,
+    "animations": [
+      "Idle",
+      "Move",
+      "Attack1",
+      "Attack2",
+      "Hit",
+      "Death",
+      "Toll",
+      "Bulwark",
+      "Verdict",
+      "Grip",
+      "PhaseTurn"
+    ],
+    "triBudget": 11000
+  }
+}

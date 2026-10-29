@@ -332,6 +332,18 @@
     "look": {
       "$ref": "common.schema.json#/$defs/heroLook",
       "description": "How the hero looks (Phase 5). Optional for records written before save 3; the save loader gives every hero one (a hash of the id) and createHero always writes one."
+    },
+    "quiver": {
+      "type": "object",
+      "description": "Arrows and bolts left by ammo item id (08 §4, D-099; Phase 7). Optional; a missing entry is a full quiver (tuning ammo.quiverMax).",
+      "propertyNames": {
+        "$ref": "common.schema.json#/$defs/id"
+      },
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 999
+      }
     }
   },
   "required": [

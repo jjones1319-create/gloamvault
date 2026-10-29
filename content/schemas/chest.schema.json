@@ -124,6 +124,10 @@
     "divineShardChance": {
       "$ref": "common.schema.json#/$defs/percent",
       "description": "Chance of a Divine Shard alongside the item (§8.3: Grand 5, Standard 0)."
+    },
+    "minBand": {
+      "$ref": "common.schema.json#/$defs/grade",
+      "description": "The lowest chest band the Curio Merchant sells it at (the Grand Wayfarer Chest: from band E, 'S-grade wayfarers for deeper bands'); absent means every band."
     }
   },
   "required": [

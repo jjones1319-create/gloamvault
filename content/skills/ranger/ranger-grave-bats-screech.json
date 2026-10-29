@@ -1,0 +1,62 @@
+{
+  "id": "ranger-grave-bats-screech",
+  "classId": "ranger",
+  "school": "pathfinder",
+  "tier": 4,
+  "name": "Grave Bat's Screech",
+  "description": "Fear 1 turn on every enemy (50% to Guard instead of acting) and Daze 30%; your pet's accumulator +300. Monster technique: learned only while a Grave Bat uses the move.",
+  "type": "active",
+  "cost": 28,
+  "weight": 1000,
+  "target": "allEnemies",
+  "effects": [
+    {
+      "kind": "applyStatus",
+      "status": "fear",
+      "duration": 1
+    },
+    {
+      "kind": "applyStatus",
+      "status": "daze",
+      "chance": 30
+    },
+    {
+      "kind": "timeline",
+      "energy": 300,
+      "target": "pet",
+      "note": "your pet acts sooner: +300 energy"
+    }
+  ],
+  "prerequisiteId": "ranger-ambush-sense",
+  "isUltimate": false,
+  "monsterTechniqueOf": "grave-bat",
+  "monsterTechniqueMoveIds": [
+    "shriek"
+  ],
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Daze 50%.",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "daze",
+        "chance": 50
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "control",
+    "debuff"
+  ],
+  "xpTags": [
+    "perception"
+  ],
+  "aiHints": {
+    "role": "control",
+    "priority": 65
+  }
+}

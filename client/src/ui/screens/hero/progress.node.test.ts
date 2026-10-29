@@ -44,9 +44,19 @@ describe('the hero screen reads the record', () => {
     expect(skillState(c, t, h, c.skills.get('warden-rallying-shout')!)).toMatchObject({ known: false, where: 'Skill Hall' })
     expect(skillState(c, t, h, c.skills.get('warden-challenge-all')!)).toMatchObject({ known: false, where: 'Opens at Lv 5' })
     const lv12 = heroAtLevel(c, t, h, 12)
-    expect(skillState(c, t, lv12, c.skills.get('warden-the-gate-holds')!)).toMatchObject({ known: false, where: 'Insight in the dungeon' })
+    expect(skillState(c, t, lv12, c.skills.get('warden-the-gate-holds')!)).toMatchObject({ known: false, where: 'A Skill Tome: bosses, Skill Tome chests' })
     expect(skillState(c, t, lv12, c.skills.get('warden-intercept')!)).toMatchObject({ where: 'Skill Hall' })
     expect(skillState(c, t, lv12, c.skills.get('warden-shove')!)).toMatchObject({ where: 'Skill Hall' })
+  })
+
+  it('skills, Phase 7: techniques by watching (with the count), Tier IV never sold, Tier V locked', () => {
+    const h = warden()
+    const stand = c.skills.get('warden-bone-knights-stand')!
+    expect(skillState(c, t, h, stand)).toMatchObject({ known: false, where: 'Watch a Bone Knight use Grave Guard' })
+    expect(skillState(c, t, { ...h, techniqueWitness: { [stand.id]: 3 } }, stand)).toMatchObject({ where: `Watch a Bone Knight use Grave Guard · seen 3 of ${t.techniques.guaranteedByUse}` })
+    expect(skillState(c, t, h, c.skills.get('warden-rampart')!)).toMatchObject({ known: false, where: 'Insight or a Skill Tome · Tier IV is for Lv 20' })
+    expect(skillState(c, t, heroAtLevel(c, t, h, 20), c.skills.get('warden-rampart')!)).toMatchObject({ where: 'Insight or a Skill Tome (never sold)' })
+    expect(skillState(c, t, h, c.skills.get('warden-aegis-of-the-keep')!)).toMatchObject({ known: false, locked: true, where: 'Locked: the endgame of later dungeons' })
   })
 
   it('the AI rule in plain words, and names the loadout does not carry', () => {

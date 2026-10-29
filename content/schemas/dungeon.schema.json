@@ -19,7 +19,7 @@
     },
     "levelRange": {
       "$ref": "common.schema.json#/$defs/intRange",
-      "description": "Monster levels from the first floor to the last (§11.4: Gravehollow L1–14)."
+      "description": "Monster levels from the first floor to the last (§11.2: Gravehollow L1–13, D-104)."
     },
     "unlockedBy": {
       "$ref": "common.schema.json#/$defs/nullableId",
@@ -116,7 +116,7 @@
   "$defs": {
     "zone": {
       "type": "object",
-      "description": "3–4 floors with one monster family, at most one hunter and one or more bosses (§1, §11.3; 07 §2.3). A zone that carries the dungeon's last floor lists its zone boss and the final boss; the throne floor may also be its own hunter-less zone.",
+      "description": "2–3 floors with one monster family, at most one hunter and one or more bosses (§1, §11.3; 07 §2.3). A zone that carries the dungeon's last floor lists its zone boss and the final boss in floor order (the Drowned Vault: Sister Naesa on F7, the Hollow King on F8). A zone whose waystone is true has its Waystone in the entry room of its first floor (07 §1.1: Gravehollow F1, F4, F7).",
       "properties": {
         "id": {
           "$ref": "common.schema.json#/$defs/id"
@@ -148,7 +148,7 @@
         },
         "hunterId": {
           "$ref": "common.schema.json#/$defs/nullableId",
-          "description": "Monster id with the hunter block; null for a zone with no hunter (the throne floor)."
+          "description": "Monster id with the hunter block; null for a zone with no hunter. A zone whose floors all carry a boss keeps its hunter here with hunterClock null on every floor (07 §2.9: the Vault Leech comes from the Leech Jar, never on a clock)."
         },
         "bossIds": {
           "type": "array",
@@ -161,11 +161,40 @@
         },
         "waystone": {
           "type": "boolean",
-          "description": "Whether beating the zone boss opens a Waystone to start later delves here."
+          "description": "The zone has a Waystone in the entry room of its first floor (07 §1.1): lit from the start on the first zone, by the previous zone's boss on the others; a party that has reached it may start a delve there (sim/src/town.ts waystoneFloors)."
         },
         "biomeKitId": {
           "$ref": "common.schema.json#/$defs/id",
           "description": "The art kit (tiles, props, lighting) the zone's templates use (07 §2.2)."
+        },
+        "joiners": {
+          "type": "array",
+          "description": "Rare monsters that join any fight of the zone at a chance (06 §3.3: a Pearl Ooze joins any Vault fight at 5%); not bosses, not hunters. Optional; absent means none.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "monsterId": {
+                "$ref": "common.schema.json#/$defs/id"
+              },
+              "chancePercent": {
+                "$ref": "common.schema.json#/$defs/percent",
+                "description": "Chance per fight (encounter, ambush or curio fight) that one joins."
+              },
+              "row": {
+                "type": "string",
+                "enum": [
+                  "front",
+                  "back"
+                ]
+              }
+            },
+            "required": [
+              "monsterId",
+              "chancePercent",
+              "row"
+            ],
+            "additionalProperties": false
+          }
         }
       },
       "required": [
@@ -238,7 +267,7 @@
         },
         "merchant": {
           "type": "boolean",
-          "description": "A Merchant room is placed; always true on the floor before a zone boss (§8.4)."
+          "description": "A Merchant room is placed; always true on the floor before a boss floor (§8.4, lint rule 13; 07 §2.7: Gravehollow F2, F5, F6, F7)."
         },
         "hunterClock": {
           "description": "Floor-clock ticks before the zone's hunter enters (§4.5: 40); null for no hunter (boss floors).",
@@ -452,6 +481,10 @@
                     },
                     "effect": {
                       "$ref": "common.schema.json#/$defs/effect"
+                    },
+                    "also": {
+                      "$ref": "common.schema.json#/$defs/effectList",
+                      "description": "More lines the outcome resolves after `effect`, in order (07 §2.4: \"0.06 R and the floor's hunter clock +10\"). Optional."
                     }
                   },
                   "required": [
@@ -509,7 +542,7 @@
         },
         "trigger": {
           "type": "string",
-          "description": "What fires it when unrevealed: enter (the room), step (a tile or the midline), open (a door, chest or niche), loot (picking up the room's treasure), time (standing in the room for a tick, or the light being low on entry).",
+          "description": "What fires it when unrevealed (07 §2.5; the sim's springTraps): enter (on entering the room), step (crossing the room: when the party leaves it), open (a door, the stairs or a niche: when the party goes through the door it blocks, takes the stairs, or opens a chest or curio here), loot (picking up the room's treasure: taking its gold or opening its chest), time (standing in the room: opening a chest or curio here, or the light being low on entering — see condition).",
           "enum": [
             "enter",
             "step",
@@ -583,7 +616,7 @@
         },
         "effects": {
           "type": "array",
-          "description": "What triggering it does, in order (a failed disarm fires them at half). Target defaults to the lowest-Perception hero; a line's target overrides (partyFront, allAllies, room).",
+          "description": "What triggering it does, in order (a failed disarm fires them at half). A line with no target falls on the trap's victim, the lowest-Perception hero; a line's target overrides (partyFront and partyBack are the heroes' rows, allAllies every hero, room the floor).",
           "items": {
             "$ref": "common.schema.json#/$defs/effect"
           },
@@ -596,6 +629,41 @@
         "disarmReward": {
           "$ref": "common.schema.json#/$defs/rewardList",
           "description": "What a successful disarm yields besides field-skill XP (07 §2.5: '2 Rawhide, 0.01 R' is a material line and a gold line)."
+        },
+        "placement": {
+          "type": "object",
+          "description": "Where the trap may be placed (07 §2.5: \"the midline of cry_t_catacomb_run\", \"entering a flooded cell\", \"picking up the room's treasure\"). Optional; absent means any room that rolls a trap.",
+          "properties": {
+            "templateIds": {
+              "$ref": "common.schema.json#/$defs/idList",
+              "description": "Only rooms built from these templates."
+            },
+            "roomKinds": {
+              "type": "array",
+              "items": {
+                "$ref": "common.schema.json#/$defs/roomKind"
+              },
+              "minItems": 1,
+              "uniqueItems": true,
+              "description": "Only rooms of these kinds."
+            }
+          },
+          "additionalProperties": false
+        },
+        "condition": {
+          "type": "object",
+          "description": "When an unrevealed trap fires at all (07 §2.5: the Drowning Bell only when the room is Shadowy or worse; the Warding Glyph only for a casting-class hero). Optional; absent means always.",
+          "properties": {
+            "lightBelow": {
+              "$ref": "common.schema.json#/$defs/percent",
+              "description": "Fires only while the party's light is below this (51 = Shadowy or worse)."
+            },
+            "partyClassIds": {
+              "$ref": "common.schema.json#/$defs/idList",
+              "description": "Fires only when the party holds a hero of one of these classes."
+            }
+          },
+          "additionalProperties": false
         }
       },
       "required": [
@@ -852,6 +920,36 @@
           "type": "integer",
           "description": "Extra Divine Shards on a final boss's first kill (07 §6.1 Dread: 1).",
           "minimum": 0
+        },
+        "wearPercent": {
+          "type": "integer",
+          "description": "Durability wear from use, in percent of Normal (07 §6.2 Brittle: 150). Multiplies with a preset.",
+          "minimum": 10,
+          "maximum": 1000
+        },
+        "revivesPerFloorDelta": {
+          "type": "integer",
+          "description": "Added to the revive budget the preset leaves, never below 0 (07 §6.2 Thin Line: −2).",
+          "minimum": -10,
+          "maximum": 10
+        },
+        "ambushBonusPercent": {
+          "type": "integer",
+          "description": "Percentage points added to the party's chance to be ambushed (07 §6.2 Loud Boots: 15).",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "lightPerNewRoom": {
+          "type": "integer",
+          "description": "The light a new room drains, replacing tuning's exploration.light.perNewRoom (07 §6.2 Long Night: −8).",
+          "minimum": -100,
+          "maximum": 0
+        },
+        "lockedChestPercent": {
+          "type": "integer",
+          "description": "A chest that would be unlocked locks this often (07 §6.2 Every Door Locked: 30).",
+          "minimum": 0,
+          "maximum": 100
         }
       },
       "additionalProperties": false
@@ -882,11 +980,15 @@
         },
         "ruleFlags": {
           "type": "array",
-          "description": "Rule flags the sim implements by name where a knob cannot say it ('no-minimap', 'no-retreat', 'twin-hunter', 'wear-x1.5'); empty when the knobs say everything.",
+          "description": "Rule flags the sim implements by name where a knob cannot say it (sim/src/pacts.ts PACT_RULE_FLAGS: 'loud-boots', 'every-door-locked', 'no-minimap', 'no-scouting', 'no-cartography', 'no-retreat', 'wipe-loses-waystone', 'twin-hunter'; lint rule 55); empty when the knobs say everything.",
           "items": {
             "$ref": "common.schema.json#/$defs/id"
           },
           "uniqueItems": true
+        },
+        "needsHunter": {
+          "type": "boolean",
+          "description": "The Pact changes the hunter (its clock or a second hunter): greyed out for a delve whose zone has no hunter clock (07 §6.2 \"No hunter, no hunter Pact\"); lint rule 55 checks it matches the knobs and flags."
         },
         "reward": {
           "type": "object",
@@ -1019,6 +1121,10 @@
               "$ref": "common.schema.json#/$defs/fieldSkill"
             }
           ]
+        },
+        "chestLocked": {
+          "type": "boolean",
+          "description": "The chest is locked (07 §2.6 Pearl Cache: Lockpicking vs the floor's trap band top or a Skeleton Key). Optional; absent means unlocked."
         }
       },
       "required": [

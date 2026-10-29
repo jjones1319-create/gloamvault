@@ -1,0 +1,60 @@
+{
+  "id": "ranger-hunters-cage",
+  "classId": "ranger",
+  "school": "trapper",
+  "tier": 5,
+  "name": "Hunter's Cage",
+  "description": "Grab one enemy in any row for 2 turns with a hold no damage breaks; Mark 2 turns; Weaken 2 turns. Bosses: 1 turn and no Weaken.",
+  "type": "active",
+  "cost": 50,
+  "weight": 1400,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "hunters-cage",
+      "status": "weaken",
+      "duration": 2,
+      "amount": 1,
+      "note": "an unbreakable Grab for duration turns (bosses: amount) and status for duration turns (never on a boss)"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "mark",
+      "duration": 2
+    }
+  ],
+  "prerequisiteId": "ranger-bear-jaw",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Bosses 2 turns.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "hunters-cage",
+        "status": "weaken",
+        "duration": 2,
+        "amount": 2
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "control",
+    "debuff",
+    "reach"
+  ],
+  "xpTags": [
+    "agility",
+    "perception"
+  ],
+  "aiHints": {
+    "role": "control",
+    "priority": 80
+  }
+}

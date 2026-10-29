@@ -1,0 +1,50 @@
+{
+  "id": "basilisk-scale-boots",
+  "name": "Basilisk Scale Boots",
+  "slot": "boots",
+  "kind": "armor",
+  "grade": "A",
+  "materialLadder": "hide",
+  "materialRung": 5,
+  "weaponType": null,
+  "armorFamily": "leather",
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "defense": 4,
+    "hp": 9,
+    "dodge": 3
+  },
+  "requirements": {
+    "strength": 11,
+    "wisdom": 0
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 8,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 2.44,
+  "value": 800,
+  "classLock": [
+    "ranger",
+    "shade"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "armor-leather-boots-01",
+    "tintPrimary": "#6b7d4f",
+    "tintSecondary": "#3b2a1e",
+    "trimMetal": "skysteel"
+  }
+}

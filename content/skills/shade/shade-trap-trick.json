@@ -4,7 +4,7 @@
   "school": "larceny",
   "tier": 2,
   "name": "Trap Trick",
-  "description": "In a corridor: pocket a trap you have disarmed (hold up to 2). In combat: throw a pocketed trap at any row for 1.2× Pierce and Root 1 turn.",
+  "description": "In a corridor: pocket a trap you have disarmed (hold up to 2). In combat: throw a pocketed trap at any row for 2.15× Pierce and Root 1 turn.",
   "type": "active",
   "cost": 12,
   "weight": 800,
@@ -19,7 +19,7 @@
     },
     {
       "kind": "damage",
-      "multiplier": 1.2,
+      "multiplier": 1.6,
       "damageType": "pierce"
     },
     {
@@ -36,7 +36,7 @@
     "costPerRank": -2
   },
   "mastery": {
-    "text": "Hold 3; thrown traps 1.6×.",
+    "text": "Hold 3; thrown traps 2.15×.",
     "effects": [
       {
         "kind": "custom",
@@ -46,7 +46,7 @@
       },
       {
         "kind": "damage",
-        "multiplier": 1.6,
+        "multiplier": 2.15,
         "damageType": "pierce"
       }
     ]

@@ -1,0 +1,49 @@
+{
+  "id": "barrow-wardens-gauntlets-b",
+  "name": "Barrow Warden's Gauntlets",
+  "slot": "gloves",
+  "kind": "armor",
+  "grade": "B",
+  "materialLadder": "metal",
+  "materialRung": 4,
+  "weaponType": null,
+  "armorFamily": "plate",
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "defense": 7,
+    "hp": 7,
+    "accuracy": 2
+  },
+  "requirements": {
+    "strength": 17,
+    "wisdom": 0
+  },
+  "affixSlots": 2,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 7,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 2.93,
+  "value": 500,
+  "classLock": [
+    "warden"
+  ],
+  "setId": "barrow-wardens-vigil",
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "armor-plate-gloves-01",
+    "tintPrimary": "#4a5148",
+    "tintSecondary": "#2f5e4a",
+    "trimMetal": "iron"
+  }
+}

@@ -4,7 +4,7 @@
   "school": "trapper",
   "tier": 2,
   "name": "Hamstring",
-  "description": "1.2× Pierce to one enemy in any row; Slow 2 turns; part-break: marks a leg, doubling that monster's rare-part roll; 1 arrow.",
+  "description": "1.8× Pierce to one enemy in any row; Slow 2 turns; part-break: marks a leg, doubling that monster's rare-part roll; 1 arrow.",
   "type": "active",
   "cost": 13,
   "weight": 1000,
@@ -12,7 +12,7 @@
   "effects": [
     {
       "kind": "damage",
-      "multiplier": 1.2,
+      "multiplier": 1.8,
       "damageType": "pierce",
       "scalesWith": "strength"
     },

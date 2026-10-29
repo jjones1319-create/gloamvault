@@ -1,0 +1,61 @@
+{
+  "id": "warden-unyielding-point",
+  "classId": "warden",
+  "school": "vanguard",
+  "tier": 4,
+  "name": "Unyielding Point",
+  "description": "Your counter-hits strike at 1.5× instead of 1.0× and can crit; you start every fight in Counter Stance.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "counter-hit-multiplier",
+      "multiplier": 1.5,
+      "target": "self",
+      "note": "counter-hits strike at multiplier× instead of 1.0× (they can crit)"
+    },
+    {
+      "kind": "custom",
+      "customId": "counter-stance-at-fight-start",
+      "multiplier": 1,
+      "amount": 1,
+      "target": "self",
+      "note": "Counter Stance (amount counters at multiplier×) from the fight’s start until your first turn"
+    }
+  ],
+  "prerequisiteId": "warden-spearwall",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Counter-hits also Root 1 turn.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "counter-hit-multiplier",
+        "multiplier": 1.5,
+        "status": "root",
+        "duration": 1,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "control"
+  ],
+  "xpTags": [
+    "strength",
+    "endurance"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 0
+  }
+}

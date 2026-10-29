@@ -1,0 +1,51 @@
+{
+  "id": "mender-trolls-regrowth",
+  "classId": "mender",
+  "school": "benediction",
+  "tier": 4,
+  "name": "Troll’s Regrowth",
+  "description": "Regen on your allies ticks twice per turn; any Fire damage on a holder removes its Regen, as it does the troll’s. Monster technique: learned only by witnessing a Warren Troll (the Fungal Deep) regenerate.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "regen-ticks-twice",
+      "percent": 100,
+      "target": "self",
+      "note": "while the holder stands, an ally’s Regen ticks a second time at that ally’s turn start, and a Fire hit on the ally removes its Regen at percent% (the Mastery sets 0)"
+    }
+  ],
+  "prerequisiteId": "mender-martyrs-grace",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "monsterTechniqueLater": "warren-troll",
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Fire no longer removes it.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "regen-ticks-twice",
+        "percent": 0,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "heal",
+    "buff"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "heal",
+    "priority": 0
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "id": "ranger-never-lost",
+  "classId": "ranger",
+  "school": "pathfinder",
+  "tier": 5,
+  "name": "Never Lost",
+  "description": "Party ambush chance −30%; room entries tick the floor clock half as often; Detection +5.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "party-ambush-modifier",
+      "amount": -30,
+      "target": "allAllies",
+      "note": "D-099: a −30 cap, not immunity — the party’s ambush roll shifted by amount points"
+    },
+    {
+      "kind": "custom",
+      "customId": "floor-clock-per-rooms",
+      "amount": 2,
+      "target": "self",
+      "note": "room entries tick the floor clock once per amount entries (delve side)"
+    },
+    {
+      "kind": "buffStat",
+      "stat": "detection",
+      "amount": 5
+    }
+  ],
+  "prerequisiteId": "ranger-rearguard",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "The party always surprises fodder-only encounters.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "surprise-fodder-encounters",
+        "target": "self",
+        "note": "an encounter of fodder only is always surprised (delve side)"
+      }
+    ]
+  },
+  "tags": [
+    "scouting",
+    "utility"
+  ],
+  "xpTags": [
+    "perception"
+  ],
+  "aiHints": {
+    "role": "utility",
+    "priority": 0
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "id": "wyvern-hide-boots",
+  "name": "Wyvern Hide Boots",
+  "slot": "boots",
+  "kind": "armor",
+  "grade": "B",
+  "materialLadder": "hide",
+  "materialRung": 4,
+  "weaponType": null,
+  "armorFamily": "leather",
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "defense": 3,
+    "hp": 7,
+    "dodge": 2
+  },
+  "requirements": {
+    "strength": 10,
+    "wisdom": 0
+  },
+  "affixSlots": 2,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 7,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1.95,
+  "value": 500,
+  "classLock": [
+    "ranger",
+    "shade"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "armor-leather-boots-01",
+    "tintPrimary": "#4d5e3a",
+    "tintSecondary": "#3b2a1e",
+    "trimMetal": "blacksteel"
+  }
+}

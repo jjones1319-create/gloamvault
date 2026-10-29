@@ -1,0 +1,59 @@
+{
+  "id": "warden-mountains-verdict",
+  "classId": "warden",
+  "school": "bulwark",
+  "tier": 5,
+  "name": "Mountain's Verdict",
+  "description": "3.2× Blunt to a front-row enemy; Petrify 1 turn (−1,000 energy) if the blow finds it below 30% HP (a boss is Dazed instead).",
+  "type": "active",
+  "cost": 40,
+  "weight": 1400,
+  "target": "enemyFront",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 3.2,
+      "damageType": "blunt",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "custom",
+      "customId": "status-below-hp-or-boss-daze",
+      "status": "petrify",
+      "duration": 1,
+      "percent": 30,
+      "note": "on a hit against a target under percent% HP; a boss or hunter takes Daze instead"
+    }
+  ],
+  "prerequisiteId": "warden-rolling-bastion",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Threshold 40%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "status-below-hp-or-boss-daze",
+        "status": "petrify",
+        "duration": 1,
+        "percent": 40
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "control"
+  ],
+  "xpTags": [
+    "strength",
+    "endurance"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 70
+  }
+}

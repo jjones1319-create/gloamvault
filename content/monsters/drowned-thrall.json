@@ -1,0 +1,149 @@
+{
+  "id": "drowned-thrall",
+  "name": "Drowned Thrall",
+  "familyId": "tidebound",
+  "dungeonId": "gravehollow-keep",
+  "zoneId": "the-drowned-vault",
+  "role": "fodder",
+  "size": "medium",
+  "rows": [
+    "front"
+  ],
+  "levelBand": {
+    "min": 11,
+    "max": 11
+  },
+  "multipliers": {
+    "hp": 1.3,
+    "attack": 1.1,
+    "defense": 0.7
+  },
+  "speed": 75,
+  "xpClass": 1,
+  "goldMultiplier": 1,
+  "ambushModifier": 5,
+  "attacks": [
+    {
+      "id": "waterlogged-fist",
+      "name": "Waterlogged Fist",
+      "damageType": "blunt",
+      "weight": 1000,
+      "multiplier": 1.1,
+      "target": "enemyFront",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "chill",
+          "duration": 2
+        }
+      ],
+      "aiWeight": 65,
+      "tell": null
+    },
+    {
+      "id": "cling",
+      "name": "Cling",
+      "damageType": "blunt",
+      "weight": 1000,
+      "multiplier": 0.5,
+      "target": "enemyFront",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "slow",
+          "duration": 2
+        }
+      ],
+      "aiWeight": 35,
+      "tell": null
+    }
+  ],
+  "resist": [
+    "frost",
+    "fire"
+  ],
+  "weak": [
+    "lightning",
+    "holy"
+  ],
+  "immune": [],
+  "statusImmune": [
+    "poison",
+    "fear",
+    "chill"
+  ],
+  "behavior": {
+    "rules": [
+      {
+        "if": "clings to the hero with the highest Speed and keeps attacking the hero it clung to",
+        "then": "cling"
+      }
+    ],
+    "fleesAtPercent": 0
+  },
+  "parts": {
+    "common": {
+      "materialId": "linen",
+      "chance": 35,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "rare": {
+      "materialId": "sharkskin",
+      "chance": 4,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "breakLimb": {
+      "name": "jaw",
+      "effect": {
+        "kind": "custom",
+        "customId": "lose-status-rider",
+        "status": "chill",
+        "note": "Chill lost"
+      }
+    }
+  },
+  "monsterTechniqueSkillIds": [],
+  "elitePool": [
+    "shielded",
+    "vampiric",
+    "shackler",
+    "rabid",
+    "spiteful",
+    "warded",
+    "thorned",
+    "regenerating",
+    "mirrored",
+    "commander",
+    "leech",
+    "nullifier"
+  ],
+  "boss": null,
+  "hunter": null,
+  "visual": {
+    "baseMesh": "zombie",
+    "scale": 1,
+    "variantOf": "shambling-corpse",
+    "palette": [
+      "#6f8494",
+      "#e9e6dc",
+      "#3f6b3a"
+    ],
+    "reads200px": true,
+    "animations": [
+      "Idle",
+      "Move",
+      "Attack1",
+      "Attack2",
+      "Hit",
+      "Death",
+      "Cling"
+    ],
+    "triBudget": 3000
+  }
+}

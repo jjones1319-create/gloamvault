@@ -4,7 +4,7 @@
   "school": "venom",
   "tier": 2,
   "name": "Festering Wound",
-  "description": "1.2× Pierce to a front-row enemy; if the target is Poisoned, also Weaken 2 turns.",
+  "description": "1.6× Pierce to a front-row enemy; if the target is Poisoned, also Weaken 2 turns.",
   "type": "active",
   "cost": 15,
   "weight": 800,
@@ -12,7 +12,7 @@
   "effects": [
     {
       "kind": "damage",
-      "multiplier": 1.2,
+      "multiplier": 1.6,
       "damageType": "pierce"
     },
     {

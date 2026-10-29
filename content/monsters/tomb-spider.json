@@ -1,0 +1,184 @@
+{
+  "id": "tomb-spider",
+  "name": "Tomb Spider",
+  "familyId": "restless-dead",
+  "dungeonId": "gravehollow-keep",
+  "zoneId": "the-crypts",
+  "role": "special",
+  "size": "large",
+  "rows": [
+    "front"
+  ],
+  "levelBand": {
+    "min": 7,
+    "max": 8
+  },
+  "multipliers": {
+    "hp": 1.8,
+    "attack": 1.2,
+    "defense": 1
+  },
+  "speed": 95,
+  "xpClass": 2,
+  "goldMultiplier": 1.8,
+  "ambushModifier": -5,
+  "attacks": [
+    {
+      "id": "shroud",
+      "name": "Shroud",
+      "damageType": "poison",
+      "weight": 1400,
+      "multiplier": 0,
+      "target": "partyBack",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "web",
+          "duration": 2,
+          "note": "every back-row hero"
+        }
+      ],
+      "aiWeight": 40,
+      "tell": "The spider rears, spinnerets wide.",
+      "hint": "Spider rearing"
+    },
+    {
+      "id": "fang",
+      "name": "Fang",
+      "damageType": "pierce",
+      "weight": 1000,
+      "multiplier": 1.3,
+      "target": "enemyFront",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "poison",
+          "duration": 3
+        }
+      ],
+      "aiWeight": 45,
+      "tell": null
+    },
+    {
+      "id": "cocoon",
+      "name": "Cocoon",
+      "damageType": "poison",
+      "weight": 1000,
+      "multiplier": 0,
+      "target": "enemy",
+      "effects": [
+        {
+          "kind": "custom",
+          "customId": "apply-if-web",
+          "status": "grab",
+          "note": "grabs a Webbed hero (counts as Web ending)"
+        },
+        {
+          "kind": "custom",
+          "customId": "allies-focus-grabbed",
+          "target": "self"
+        }
+      ],
+      "aiWeight": 15,
+      "tell": "The spider draws a shroud-line taut.",
+      "hint": "Shroud tightening"
+    }
+  ],
+  "resist": [
+    "pierce",
+    "poison",
+    "shadow"
+  ],
+  "weak": [
+    "fire",
+    "blunt"
+  ],
+  "immune": [],
+  "statusImmune": [
+    "poison",
+    "web"
+  ],
+  "behavior": {
+    "rules": [
+      {
+        "if": "round = 1",
+        "then": "shroud"
+      },
+      {
+        "if": "enemy status web and enemy not status grab",
+        "then": "cocoon"
+      },
+      {
+        "if": "Fire on the spider frees everyone it has Webbed",
+        "then": "fang"
+      }
+    ],
+    "fleesAtPercent": 0
+  },
+  "parts": {
+    "common": {
+      "materialId": "spidersilk",
+      "chance": 35,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "rare": {
+      "itemId": "tomb-spinneret",
+      "chance": 4,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "breakLimb": {
+      "name": "spinnerets",
+      "effect": {
+        "kind": "custom",
+        "customId": "cannot-web",
+        "note": "no Shroud"
+      }
+    }
+  },
+  "monsterTechniqueSkillIds": [],
+  "elitePool": [
+    "shielded",
+    "vampiric",
+    "shackler",
+    "rabid",
+    "spiteful",
+    "warded",
+    "thorned",
+    "regenerating",
+    "mirrored",
+    "commander",
+    "leech",
+    "nullifier"
+  ],
+  "boss": null,
+  "hunter": null,
+  "visual": {
+    "baseMesh": "spider",
+    "scale": 2.4,
+    "variantOf": "cellar-spider",
+    "palette": [
+      "#6f6f6a",
+      "#e3dccb",
+      "#f0a830"
+    ],
+    "reads200px": true,
+    "animations": [
+      "Idle",
+      "Move",
+      "Attack1",
+      "Attack2",
+      "Hit",
+      "Death",
+      "Rear",
+      "Shroud",
+      "Cocoon"
+    ],
+    "triBudget": 5000
+  }
+}

@@ -72,11 +72,13 @@ describe('grade shapes (03 §6.2, 08 §10–§11)', () => {
     expect(counts.B).toBeUndefined()
   })
 
-  it('bands by global floor', () => {
+  it('bands by global floor (08 R table at 8 Gravehollow floors, D-104: D 7–8 · C 9–13 …)', () => {
     expect(bandForFloor(1)).toMatchObject({ grade: 'F', r: 300 })
     expect(bandForFloor(3)).toMatchObject({ grade: 'F' })
     expect(bandForFloor(4)).toMatchObject({ grade: 'E', r: 480 })
-    expect(bandForFloor(10)).toMatchObject({ grade: 'D' })
+    expect(bandForFloor(8)).toMatchObject({ grade: 'D', r: 770 })
+    expect(bandForFloor(9)).toMatchObject({ grade: 'C', r: 1230 })
+    expect(bandForFloor(10)).toMatchObject({ grade: 'C' })
     expect(bandForFloor(40)).toMatchObject({ grade: 'SS' })
   })
 })

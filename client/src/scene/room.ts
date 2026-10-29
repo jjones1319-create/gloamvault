@@ -6,6 +6,7 @@ import type { Actor, FightState } from '../../../sim/src/fight-types.ts'
 import type { SceneCue } from './sceneBus.ts'
 import type { Stage } from './stage.ts'
 import { isMortal } from '../../../sim/src/delve.ts'
+import { isWaystoneFloor } from '../../../sim/src/explore.ts'
 import { hpBehind, resumeIndex, shownHp } from '../game/fightView.ts'
 import { hasModel } from './characters/assets.ts'
 import { buildCharacter } from './characters/factory.ts'
@@ -21,6 +22,7 @@ import { fitView, lerpFit, NO_INSETS, type Fit, type Insets } from './room/fit.t
 import { createKit, PALETTE, type Kit } from './room/kit.ts'
 import { approachFor, cameraRight, doorway, fightSideFormation, nudgeFormation, previousRoomId, roomFormation, roomFrame, type Approach, type DoorLike, type FormationActor, type Mark, type RoomLike, type Side } from './room/layout.ts'
 import { lightLook, type LightLook } from './room/look.ts'
+import { ArenaDressing, viewMark } from './room/arena.ts'
 import { VfxLayer } from './vfx/layer.ts'
 
 /**
@@ -57,13 +59,6 @@ const SPECIES_RADIUS: Readonly<Record<string, number>> = { dwarf: 0.34, orc: 0.3
 const LID_OPEN = -1.9
 /** The room viewer's party, in order (`&heroes=N`). */
 const VIEW_PARTY = ['warden', 'mender', 'ranger', 'arcanist']
-/**
- * Boss marks the room viewer honours ahead of Phase 7's arenas (the kit passes' notes): the Hollow King on his throne
- * platform, raised 2 m, facing the party; the kit's empty iron seat hidden while his own throne is drawn.
- */
-const VIEW_MARKS: Readonly<Record<string, { monster: string; at: [number, number, number]; skipParts: Record<string, string[]> }>> = {
-  'vlt-t-throne': { monster: 'hollow-king', at: [0, 2.0, -5.0], skipParts: { vlt_throne_hollow: ['seat'] } },
-}
 
 /** Floor points round a centre: the room view keeps this much of the room in frame round the party. */
 function ringAround(c: THREE.Vector3, r: number): THREE.Vector3[] {
@@ -121,6 +116,8 @@ interface RoomBuildInput {
   zone: KitZone
   openDoors: ReturnType<typeof doorway>[]
   isEntry: boolean
+  /** The entry of a zone's first floor holds its Waystone (07 §1.1); absent outside a delve (dress.ts). */
+  waystone?: boolean
   variation: number
   skipParts?: Readonly<Record<string, readonly string[]>>
 }
@@ -136,6 +133,10 @@ export class RoomScene {
   private lampTorch: [boolean, boolean] = [false, false]
   private readonly fog: THREE.FogExp2
   private readonly root = new THREE.Group()
+  /** The boss arena's dressing (room/arena.ts): its marks, candles, tide, braziers, throne. */
+  private readonly arena: ArenaDressing
+  /** Where a boss fight's boss stands, how tall and how dark (the second lamp lights him). */
+  private bossAt: { x: number; y: number; z: number; height: number; body: number } | null = null
   private readonly removeUpdater: () => void
   private readonly resizeObserver: ResizeObserver | null
   private room: StaticRoom | null = null
@@ -187,6 +188,8 @@ export class RoomScene {
     this.lamps = [new THREE.PointLight(PALETTE.fireLight, 20, 0, 1.6), new THREE.PointLight(PALETTE.torchLight, 20, 14, 1.5)]
     this.vfx = new VfxLayer()
     this.vfx.setReduceMotion(this.reduceMotion)
+    this.arena = new ArenaDressing(content, { reduceMotion: this.reduceMotion })
+    this.root.add(this.arena.group)
     scene.add(this.hemi, ...this.lamps, this.root, this.vfx.mesh)
     this.layer = new ActorLayer(this.kit, camera, this.vfx)
     this.layer.setReduceMotion(this.reduceMotion)
@@ -234,6 +237,7 @@ export class RoomScene {
     this.reduceMotion = on
     this.layer.setReduceMotion(on)
     this.vfx.setReduceMotion(on)
+    this.arena.setReduceMotion(on)
     if (on) {
       this.look = this.lookTarget
       this.applyLook()
@@ -309,7 +313,7 @@ export class RoomScene {
         this.veilTimer = null
         this.root.visible = true
       }, 1500)
-    const next = buildStaticRoom(this.kit, { room: input.room, kind: input.kind, template: input.template, templateId: input.templateId, openDoors: input.openDoors, isEntry: input.isEntry, variation: input.variation, env, ...(input.skipParts ? { skipParts: input.skipParts } : {}) })
+    const next = buildStaticRoom(this.kit, { room: input.room, kind: input.kind, template: input.template, templateId: input.templateId, openDoors: input.openDoors, isEntry: input.isEntry, ...(input.waystone !== undefined ? { waystone: input.waystone } : {}), variation: input.variation, env, ...(input.skipParts ? { skipParts: input.skipParts } : {}) })
     const old = this.room
     this.dynamic?.dispose()
     if (this.dynamic) this.root.remove(this.dynamic.group)
@@ -324,9 +328,9 @@ export class RoomScene {
     this.room = next
     this.root.add(next.group)
     this.zone = input.zone
+    this.arena.setRoom(next, { templateId: input.templateId, template: input.template, rotation: input.room.rotation, place: `${input.templateId}:${input.room.id}` })
     this.vfx.clear()
-    this.vfx.setFlames(next.flames)
-    this.vfx.setMotes(next.motes)
+    this.showFlames()
     roomInfo.value = { zone: input.zone, kit: next.kitShare, template: input.templateId, triangles: next.kit?.triangles ?? 0, drawCalls: next.kit?.drawCalls ?? 0 }
     this.placeCamera()
     return next
@@ -356,7 +360,7 @@ export class RoomScene {
     const key = `${place}:${openDoors.map((d) => d.to).join(',')}:${kitState}`
     let rebuilt = false
     if (key !== this.roomKey || !this.room) {
-      this.buildRoom({ room: g, kind: g.kind, template, templateId: g.templateId, zone, openDoors, isEntry: g.kind === 'entry', variation: g.variation })
+      this.buildRoom({ room: g, kind: g.kind, template, templateId: g.templateId, zone, openDoors, isEntry: g.kind === 'entry', waystone: g.kind === 'entry' && dungeon !== undefined && isWaystoneFloor(dungeon, floor.number), variation: g.variation })
       this.roomKey = key
       rebuilt = true
     }
@@ -370,6 +374,8 @@ export class RoomScene {
     const from = previousRoomId(state.log, floor.number, g.id)
     this.approach = approachFor(room.frame, openDoors, from, room.arrival, room.camDir)
     const fight = state.fight ?? fightOverride
+    // A boss arena's state (room/arena.ts): what changed in its candles, tide, braziers and marks.
+    const arena = this.arena.sync(fight)
     const wasMode = this.mode
     this.mode = fight ? 'fight' : 'room'
     const inputs = fight ? this.fightInputs(state, fight, room) : this.roomInputs(state, room)
@@ -399,15 +405,17 @@ export class RoomScene {
       partySpots: this.mode === 'room' ? partySpots : [],
       variation: g.variation,
     })
+    if (arena.flames) this.showFlames()
 
-    // Light and fog follow the party's light (03 §4.2).
-    this.lookTarget = lightLook(state.light)
+    // Light and fog follow the party's light (03 §4.2): in a fight, the fight's own (an arena's light steps, a Torch).
+    this.lookTarget = lightLook(fight ? fight.light : state.light)
     if (rebuilt || this.reduceMotion) this.look = this.lookTarget
     this.placeLights()
     this.applyLook()
 
-    // Re-frame on a new room or when a fight starts or ends; not every turn (a camera that zooms as foes fall is noise).
-    if (rebuilt || wasMode !== this.mode) this.refit(rebuilt)
+    // Re-frame on a new room or when a fight starts or ends, or a boss leaves his arena mark; not every turn (a camera
+    // that zooms as foes fall is noise).
+    if (rebuilt || wasMode !== this.mode || arena.marks) this.refit(rebuilt)
     else this.publishAnchors()
     if (rebuilt) this.onRoomBuilt?.()
   }
@@ -432,7 +440,16 @@ export class RoomScene {
       this.lidAngles.set(k, angle)
       this.poseLid(lid, this.reduceMotion ? (lid.open ? LID_OPEN : 0) : angle)
     }
-    this.vfx.setFlames([...room.flames, ...this.dynamic.flames])
+    this.showFlames()
+  }
+
+  /** The room's flames and motes as its arena shows them (the Vigil's candles out, the throne's braziers smouldering). */
+  private showFlames(): void {
+    const room = this.room
+    if (!room) return
+    this.vfx.setFlames(this.arena.flames([...room.flames, ...(this.dynamic?.flames ?? [])]))
+    // The arena's first: the layer keeps the first two dozen.
+    this.vfx.setMotes([...this.arena.motes(), ...room.motes])
   }
 
   private poseLid(lid: ChestLid, angle: number): void {
@@ -467,8 +484,9 @@ export class RoomScene {
     // A fight's dressing unless asked otherwise (or the template hosts no fight: a rest room, a stairwell).
     const kind = opts.kind ?? (t.kinds.includes('fight') ? 'fight' : t.kinds[0]) ?? 'fight'
     const kitState = envLibrary.peek(zone) ? 'kit' : 'grey'
-    const boss = VIEW_MARKS[t.id]
-    const seated = boss && opts.monsters.includes(boss.monster) ? boss : null
+    // A boss on his arena's phase-1 mark (room/arena.ts: the King on his throne, Vexa on her dais, Naesa at her altar),
+    // or an Elite room's first monster on the elite's (the Crypts chapel's altar step).
+    const seated = viewMark(t.id, opts.monsters, kind)
     const key = `view:${t.id}:${kind}:${kitState}:${seated ? 'boss' : ''}`
     if (key !== this.roomKey || !this.room) {
       this.buildRoom({ room, kind, template: t, templateId: t.id, zone, openDoors, isEntry: kind === 'entry', variation: 1, ...(seated ? { skipParts: seated.skipParts } : {}) })
@@ -488,11 +506,13 @@ export class RoomScene {
       const look = this.monsterLookFor(`${id}-${i + 1}`, id, 'enemy', def?.size ?? 'medium', def?.visual, def?.familyId ?? '', 'monster')
       looks.push({ look, line: def?.rows?.[0] === 'back' ? 'back' : 'front' })
     })
-    const formation = looks.map((l) => this.formationOf(l.look, l.line))
+    const seatedLook = seated ? looks.find((l) => l.look.id.startsWith(`${seated.monster}-`)) : undefined
+    const formation = looks.filter((l) => l !== seatedLook).map((l) => this.formationOf(l.look, l.line))
     const marks = nudgeFormation(fightSideFormation(built.frame, built.camDir, formation), new Map(formation.map((f) => [f.id, f.girth])), built.obstacles, built.frame, cameraRight(built.camDir), FIGHT_STEPS)
-    if (seated) {
-      const look = looks.find((l) => l.look.id.startsWith(`${seated.monster}-`))
-      if (look) marks.set(look.look.id, { x: seated.at[0], y: seated.at[1], z: seated.at[2], yaw: 0 })
+    this.bossAt = null
+    if (seated && seatedLook) {
+      marks.set(seatedLook.look.id, { x: seated.at[0], y: seated.at[1], z: seated.at[2], yaw: 0 })
+      this.bossAt = { x: seated.at[0], y: seated.at[1], z: seated.at[2], height: seatedLook.look.height, body: seatedLook.look.body }
     }
     const inputs: ActorInput[] = looks.map(({ look }) => ({ look, state: { hp: 1, maxHp: 1, down: false, gone: false }, mark: marks.get(look.id) ?? { x: 0, z: 0, yaw: 0 } }))
     this.mode = 'fight'
@@ -660,7 +680,8 @@ export class RoomScene {
         look = this.monsterLook(a)
         if (a.side === 'party') line = 'pet'
       }
-      entries.push({ look, line, state: { hp: a.hp, maxHp: a.maxHp, down: a.downed || a.fallen, gone: a.gone || a.fled }, shownHp: shownHp(a, behind) })
+      // A telegraphed attack wound up shows on the model (the Bursting Corpse swells).
+      entries.push({ look, line, state: { hp: a.hp, maxHp: a.maxHp, down: a.downed || a.fallen, gone: a.gone || a.fled, tell: !!a.monster?.windup }, shownHp: shownHp(a, behind) })
     }
     // Heroes who fell before this fight are not in it: the party keeps their bodies behind its lines (D-088).
     const mortal = isMortal(state)
@@ -668,14 +689,23 @@ export class RoomScene {
       if (!h.fallen || fight.actors.some((a) => a.id === `hero-${i}`)) return
       entries.push({ look: this.heroLook(state, i, `hero-${i}`, 'party'), line: 'pet', state: { hp: 0, maxHp: 1, down: true, gone: false, dead: mortal, body: true } })
     })
-    const formation = entries.map((e) => this.formationOf(e.look, e.line))
+    // A boss arena's marks (room/arena.ts) hold their actors (the King on his throne, an elite on the altar step); the
+    // rest stand in their lines without them.
+    const pins = this.arena.pins(fight)
+    const formation = entries.map((e) => this.formationOf(e.look, e.line)).filter((f) => !pins.has(f.id))
     // Phase 5: seen from the side — the party on the camera's left, the enemies on its right (layout.ts).
     const marks = this.clearOfFurniture(fightSideFormation(room.frame, room.camDir, formation), formation, room, FIGHT_STEPS, cameraRight(room.camDir))
+    for (const [id, m] of pins) marks.set(id, m)
+    const bossId = fight.arena?.bossActorId
+    const boss = bossId ? entries.find((e) => e.look.id === bossId && !e.state.gone) : undefined
+    const at = boss ? marks.get(boss.look.id) : undefined
+    this.bossAt = boss && at ? { x: at.x, y: at.y ?? 0, z: at.z, height: boss.look.height, body: boss.look.body } : null
     return entries.map(({ look, state: s, shownHp: hp }) => ({
       look,
       state: s,
       mark: marks.get(look.id) ?? ({ x: 0, z: 0, yaw: 0 } satisfies Mark),
       ...(hp !== undefined ? { shownHp: hp } : {}),
+      ...(pins.has(look.id) ? { stand: true } : {}),
     }))
   }
 
@@ -707,8 +737,12 @@ export class RoomScene {
     const room = this.room
     if (!room) return
     const party = this.layer.partyCentre() ?? new THREE.Vector3()
-    const fires: LightPoint[] = [...room.lights, ...(this.dynamic?.lights ?? [])]
+    // The arena's fires: no light from a candle that is out, a little from a smouldering brazier (room/arena.ts).
+    const fires: LightPoint[] = this.arena.lights([...room.lights, ...(this.dynamic?.lights ?? [])])
     fires.sort((a, b) => Math.hypot(a.x - party.x, a.z - party.z) - Math.hypot(b.x - party.x, b.z - party.z))
+    // A boss fight: the second lamp lights the boss from the camera's side, so his face reads on the phone.
+    const bossLamp = this.mode === 'fight' ? this.arena.bossLamp(this.bossAt) : null
+    if (bossLamp) fires.length = Math.min(fires.length, 1)
     this.lamps.forEach((lamp, i) => {
       const f = fires[i]
       if (f) {
@@ -728,6 +762,15 @@ export class RoomScene {
         this.lampTorch[i] = true
       }
     })
+    if (bossLamp) {
+      const lamp = this.lamps[1]
+      lamp.position.set(bossLamp.x, bossLamp.y, bossLamp.z)
+      lamp.color.setHex(bossLamp.color)
+      lamp.distance = 0
+      lamp.decay = 1.6
+      this.lampBase[1] = bossLamp.strength
+      this.lampTorch[1] = false
+    }
     // The zone's air: fog and ambient colours.
     const z = ZONE_LOOK[this.zone]
     this.fog.color.setHex(z.fog)
@@ -831,6 +874,7 @@ export class RoomScene {
   private frame(t: number, dt: number): void {
     this.layer.update(dt, t)
     this.vfx.update(dt)
+    this.arena.frame(dt)
     // The water's slow shimmer.
     for (const m of this.materials.values()) m.water.setTime(t / 1000)
     // Light eases toward the party's light; the fire flickers.
@@ -880,6 +924,7 @@ export class RoomScene {
     this.room?.dispose()
     this.layer.dispose()
     this.vfx.dispose()
+    this.arena.dispose()
     this.kit.dispose()
     for (const m of this.materials.values()) this.disposeMaterials(m)
     this.materials.clear()

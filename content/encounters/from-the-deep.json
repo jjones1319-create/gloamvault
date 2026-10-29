@@ -1,0 +1,25 @@
+{
+  "id": "from-the-deep",
+  "tableId": "vault-a",
+  "dungeonId": "gravehollow-keep",
+  "floorBand": {
+    "min": 7,
+    "max": 7
+  },
+  "name": "From the Deep",
+  "composition": [
+    {
+      "monsterId": "deep-tentacle",
+      "count": 2,
+      "row": "front"
+    },
+    {
+      "monsterId": "tidebound-drowner",
+      "count": 1,
+      "row": "front"
+    }
+  ],
+  "weight": 14,
+  "ambushModifier": 5,
+  "eliteAllowed": true
+}

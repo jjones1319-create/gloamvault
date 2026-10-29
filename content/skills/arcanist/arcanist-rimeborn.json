@@ -1,0 +1,81 @@
+{
+  "id": "arcanist-rimeborn",
+  "classId": "arcanist",
+  "school": "rime",
+  "tier": 5,
+  "name": "Rimeborn",
+  "description": "You are immune to Chill, Freeze and Slow; a melee attacker that hits you is Chilled 1 turn; Rime skills cost −20%.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "status-resist-bonus",
+      "status": "chill",
+      "percent": 100,
+      "target": "self",
+      "note": "immune: a passive resist of 100% to `status` all fight (statuses.ts resistChance reads it); one line per status"
+    },
+    {
+      "kind": "custom",
+      "customId": "status-resist-bonus",
+      "status": "freeze",
+      "percent": 100,
+      "target": "self"
+    },
+    {
+      "kind": "custom",
+      "customId": "status-resist-bonus",
+      "status": "slow",
+      "percent": 100,
+      "target": "self"
+    },
+    {
+      "kind": "custom",
+      "customId": "status-on-melee-attacker",
+      "status": "chill",
+      "duration": 1,
+      "target": "self",
+      "note": "a melee attacker whose hit lands on the holder gets `status` for `duration`"
+    },
+    {
+      "kind": "custom",
+      "customId": "school-cost-multiplier",
+      "percent": -20,
+      "target": "self",
+      "note": "Rime actives cost percent% (−20)"
+    }
+  ],
+  "prerequisiteId": "arcanist-deep-cold",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Cost −30%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "school-cost-multiplier",
+        "percent": -30,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "control"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 0
+  }
+}

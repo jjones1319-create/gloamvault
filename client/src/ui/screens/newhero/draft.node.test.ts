@@ -9,9 +9,11 @@ import {
   addPoint,
   canAddPoint,
   cleanName,
+  draftKit,
   eggOptions,
   firstSentence,
   furthestStep,
+  kitChoices,
   modParts,
   pointsSpent,
   provisionalHero,
@@ -119,5 +121,28 @@ describe('new hero: words', () => {
     expect(modParts(c.species.get('dwarf')!.attributeMods).map((m) => `${m.attr}${m.value}`)).toEqual(['endurance2', 'strength1', 'vitality1', 'agility-2'])
     expect(firstSentence(c.species.get('dwarf')!.creationBlurb)).toBe("Forge-row's finest.")
     expect(roleShort(c.classes.get('warden')!.role)).toBe('front-line tank')
+  })
+})
+
+describe('new hero: the second starter kit (D-099, 08 §12)', () => {
+  it('offers the Warden a spear kit and the Blade a greatsword kit, the default first', () => {
+    expect(kitChoices(c, 'warden').map((k) => k.id)).toEqual([null, 'spear'])
+    expect(kitChoices(c, 'blade').map((k) => k.id)).toEqual([null, 'greatsword'])
+    expect(kitChoices(c, 'mender').map((k) => k.id)).toEqual([null])
+    expect(draftKit(c, full({ kitId: 'nonsense' }))?.id).toBeNull()
+  })
+
+  it('the spear kit puts a spear in both hands and recommends skills the spear can use', () => {
+    const spear = kitChoices(c, 'warden').find((k) => k.id === 'spear')!
+    const hero = provisionalHero(c, full({ kitId: 'spear', skillIds: [...spear.starterSkillIds] }))!
+    expect(c.items.get(hero.equipment.mainHand!.itemId)?.weaponType).toBe('spear')
+    expect(hero.equipment.offHand).toBeNull()
+    expect(hero.skills.map((k) => k.skillId)).toContain('warden-reaching-thrust')
+  })
+
+  it('the greatsword kit puts a greatsword in the Blade’s hands', () => {
+    const gs = kitChoices(c, 'blade').find((k) => k.id === 'greatsword')!
+    const hero = provisionalHero(c, full({ classId: 'blade', kitId: 'greatsword', skillIds: [...gs.starterSkillIds], points: suggestPoints(t, c.classes.get('blade')) }))!
+    expect(c.items.get(hero.equipment.mainHand!.itemId)?.weaponType).toBe('greatsword')
   })
 })

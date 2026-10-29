@@ -1,0 +1,50 @@
+{
+  "id": "grinning-companys-hood-s",
+  "name": "Grinning Company's Hood",
+  "slot": "helmet",
+  "kind": "armor",
+  "grade": "S",
+  "materialLadder": "hide",
+  "materialRung": 6,
+  "weaponType": null,
+  "armorFamily": "leather",
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "defense": 6,
+    "hp": 24,
+    "detection": 6
+  },
+  "requirements": {
+    "strength": 12,
+    "wisdom": 0
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 9,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 3.05,
+  "value": 1750,
+  "classLock": [
+    "ranger",
+    "shade"
+  ],
+  "setId": "grinning-companys-cut",
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "armor-leather-helm-01",
+    "tintPrimary": "#9b1c1c",
+    "tintSecondary": "#f1ece4",
+    "trimMetal": "brass"
+  }
+}

@@ -4,7 +4,7 @@
   "school": "bloodletter",
   "tier": 1,
   "name": "Open Vein",
-  "description": "1.2× Slash to a front-row enemy; Bleed 3 turns.",
+  "description": "1.0× Slash to a front-row enemy; Bleed 3 turns.",
   "type": "active",
   "cost": 10,
   "weight": 1000,
@@ -12,7 +12,7 @@
   "effects": [
     {
       "kind": "damage",
-      "multiplier": 1.2,
+      "multiplier": 1,
       "damageType": "slash",
       "scalesWith": "strength"
     },

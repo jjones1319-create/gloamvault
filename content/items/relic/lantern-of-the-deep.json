@@ -42,7 +42,9 @@
       }
     ],
     "usesPerFight": 1,
-    "target": "room"
+    "target": "room",
+    "text": "Sets the light to Radiant for 3 rounds",
+    "instant": true
   },
   "consumable": null,
   "ammo": null,

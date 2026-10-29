@@ -1,0 +1,25 @@
+{
+  "id": "the-charnel-pit",
+  "tableId": "crypts-e",
+  "dungeonId": "gravehollow-keep",
+  "floorBand": {
+    "min": 5,
+    "max": 6
+  },
+  "name": "The Charnel Pit",
+  "composition": [
+    {
+      "monsterId": "charnel-hulk",
+      "count": 1,
+      "row": "front"
+    },
+    {
+      "monsterId": "shambling-corpse",
+      "count": 2,
+      "row": "front"
+    }
+  ],
+  "weight": 8,
+  "ambushModifier": -5,
+  "eliteAllowed": false
+}

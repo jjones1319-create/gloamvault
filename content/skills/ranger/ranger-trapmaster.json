@@ -1,0 +1,45 @@
+{
+  "id": "ranger-trapmaster",
+  "classId": "ranger",
+  "school": "trapper",
+  "tier": 5,
+  "name": "Trapmaster",
+  "description": "Once per turn, laying a field trap (Caltrop Toss, Tripwire, Bear Jaw, Killing Field) has weight 400 instead of its own; trap damage +30%.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "trapmaster",
+      "amount": 400,
+      "percent": 30,
+      "target": "self",
+      "note": "once per round a trap-laying skill weighs amount; Bear Jaw and Killing Field deal +percent%"
+    }
+  ],
+  "prerequisiteId": "ranger-dismantle",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Field holds three traps.",
+    "effects": []
+  },
+  "tags": [
+    "buff",
+    "utility"
+  ],
+  "xpTags": [
+    "agility",
+    "perception"
+  ],
+  "aiHints": {
+    "role": "control",
+    "priority": 0
+  }
+}

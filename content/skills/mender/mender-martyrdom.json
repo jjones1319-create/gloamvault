@@ -1,0 +1,54 @@
+{
+  "id": "mender-martyrdom",
+  "classId": "mender",
+  "school": "vigil",
+  "tier": 5,
+  "name": "Martyrdom",
+  "description": "Your Momentum drops to 0 and what you lose is split evenly among your allies; you gain a Shield of 30% of your max HP for 2 turns.",
+  "type": "active",
+  "cost": 40,
+  "weight": 800,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "momentum-split-to-allies",
+      "percent": 100,
+      "note": "the caster’s Momentum goes to 0; percent% of what it lost is split evenly (rounded down) among the other heroes"
+    },
+    {
+      "kind": "shield",
+      "percent": 30,
+      "duration": 2
+    }
+  ],
+  "prerequisiteId": "mender-grace",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Split 1.5× the amount.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "momentum-split-to-allies",
+        "percent": 150
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "momentum",
+    "shield"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 50
+  }
+}

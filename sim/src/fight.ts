@@ -1,10 +1,13 @@
 import { decide, decideAll, parseBehavior, parseRule, type Action, type Condition, type TargetSelector } from './ai.ts'
+import { basicReach, emptyQuiver, hasAmmoFor, spendAmmo } from './ammo.ts'
+import { arenaActionProblem, arenaActionWeight, arenaAfterTurn, arenaAttackReach, arenaAttackResolved, arenaExtraActions, arenaHeroAuto, arenaLegalActions, arenaNoteSwap, arenaRoundStart, arenaTorch, arenaTorchDone, arenaReachReason, arenaTurnStart, beginWindup, doArenaAction, freeBrazier, hasBraziers, initArena, isTorch, oathTarget, takeOpener, takeWindup, windupWeight, type ArenaSetup } from './arena.ts'
 import type { Content } from './content.ts'
 import { actorHands, requirementProblemFor } from './requirements.ts'
-import { alliesOf, applyLine, canAct, canFlee, canSwapRow, canUseSkills, enemiesOf, gainMomentum, heal, hookCtx, isActive, log, lowestHpPercent, reachableEnemies, releaseHolds, speedOf, statOf, type EffectContext, type LineSource } from './effects.ts'
+import { alliesOf, applyLine, canAct, canFlee, canSwapRow, canUseSkills, enemiesOf, gainMomentum, heal, hookCtx, isActive, isPhysical, log, lowestHpPercent, reachableEnemies, releaseHolds, speedOf, statOf, type EffectContext, type LineSource } from './effects.ts'
 import { activeHooks, dropTurnStartHooks } from './hooks.ts'
 import type { Actor, FightCommand, FightEvent, FightOptions, FightState, LegalFightAction, PendingAction, Side } from './fight-types.ts'
-import { buildMonsterActor } from './monsters.ts'
+import { buildMonsterActor, partyScale, scaledCount } from './monsters.ts'
+import { isInstantRelic, relicFightAction, usableRelic, useRelicInFight } from './relics.ts'
 import { Rng } from './rng.ts'
 import { customHandler } from './skills/custom/index.ts'
 import { linesAtRank } from './skill-lines.ts'
@@ -28,6 +31,8 @@ export interface FightSetup {
   light: number
   options: Partial<FightOptions> & { dungeonId: string; floor: number; floorLevel: number }
   rng: Rng
+  /** A boss fight's arena (07 §2.8; arena.ts); absent for every other fight. */
+  arena?: ArenaSetup
 }
 
 export function createFight(content: Content, t: Tuning, setup: FightSetup): FightState {
@@ -67,6 +72,8 @@ export function createFight(content: Content, t: Tuning, setup: FightSetup): Fig
   log(ctx, { kind: 'start', text: `Fight begins${setup.surprised === 'party' ? ' (the party is surprised)' : setup.surprised === 'enemy' ? ' (the party surprises the monsters)' : ''}` })
   // Passives, affixes and traits that act at the fight's start.
   for (const a of state.actors) for (const { status, hook, line } of activeHooks(content, a)) customHandler(line.customId ?? '')?.onFightStart?.(hookCtx(ctx, a, status, line, hook))
+  // A boss's arena (07 §2.8): its light, props, water, phase 1, the Hound at heel.
+  if (setup.arena) initArena(ctx, setup.arena)
   state.rng = rng.state
   return state
 }
@@ -123,6 +130,9 @@ export function turnForecast(content: Content, t: Tuning, state: FightState, cou
 function takeTurn(ctx: EffectContext, actor: Actor): void {
   const { state, t, rng } = ctx
   state.actingId = actor.id
+  // D-127 (Proposed): the actor's turn has come up, so a control push may land on it again (statuses.ts applyStatus).
+  if (actor.pushGuard) actor.pushGuard = false
+  if (state.arena) arenaTurnStart(ctx, actor)
   // A downed hero's turns count toward its revive window (§12.1).
   if (actor.downed) {
     actor.downedTurnsLeft -= 1
@@ -184,6 +194,8 @@ function takeTurn(ctx: EffectContext, actor: Actor): void {
   }
   const resolved = actor.kind === 'hero' ? decideHero(ctx, actor) : actor.kind === 'pet' ? decidePet(ctx, actor) : decideMonster(ctx, actor)
   execute(ctx, actor, resolved)
+  // Vexa under 20% attacks twice per turn (06 §3.1): the extra blow costs no weight.
+  if (resolved.kind === 'attack' && state.arena) for (let i = arenaExtraActions(ctx, actor); i > 0 && isActive(actor) && !state.over; i--) extraAttack(ctx, actor)
   endTurn(ctx, actor)
 }
 
@@ -229,8 +241,10 @@ function dealDot(ctx: EffectContext, actor: Actor, amount: number, damageType: E
   const { state, t } = ctx
   const source = byId(state, sourceId)
   const mitigated = ignoresDefense ? amount : roundHalfUp((amount * t.derived.defense.mitigationK) / (t.derived.defense.mitigationK + statOf(ctx, actor, 'defense')))
-  const dealt = Math.max(0, mitigated)
+  let dealt = Math.max(0, mitigated)
   const before = actor.hp
+  // fix: a damage-over-time tick asks the heroes' beforeDowned hooks too (Tier IV: Undying Rage; Tier V: the Oath of the Vault; Martyr's Grace, Unbreakable).
+  if (actor.side === 'party' && before > 0 && before - dealt <= 0 && survivesDot(ctx, actor, dealt, damageType, source)) dealt = before - 1
   actor.hp = Math.max(0, actor.hp - dealt)
   actor.tally.damageTaken += dealt
   if (source) source.tally.damageDealt += dealt
@@ -250,6 +264,13 @@ function dealDot(ctx: EffectContext, actor: Actor, amount: number, damageType: E
   return dealt
 }
 
+/** A hero's beforeDowned hooks asked about a lethal tick: a Last Stand holds at 1 HP (each handler consumes its own use). */
+function survivesDot(ctx: EffectContext, actor: Actor, amount: number, damageType: Effect['damageType'] & string, source: Actor | null): boolean {
+  const incoming = { amount, damageType, attacker: source, isSingleTarget: true, isDot: true, isUltimate: false, isMelee: false, physical: isPhysical(damageType) }
+  for (const { status, hook, line } of activeHooks(ctx.content, actor)) if (customHandler(line.customId ?? '')?.beforeDowned?.(hookCtx(ctx, actor, status, line, hook), incoming)) return true
+  return false
+}
+
 function markActed(ctx: EffectContext, actor: Actor): void {
   const { state } = ctx
   if (actor.kind !== 'hero') return
@@ -259,6 +280,7 @@ function markActed(ctx: EffectContext, actor: Actor): void {
     state.round += 1
     for (const h of heroes) h.actedThisRound = false
     log(ctx, { kind: 'round', text: `Round ${state.round}` })
+    if (state.arena) arenaRoundStart(ctx)
   }
 }
 
@@ -271,7 +293,8 @@ function endTurn(ctx: EffectContext, actor: Actor): void {
   actor.tally.actions += 1
   ctx.state.actingId = null
   markActed(ctx, actor)
-  bossPhases(ctx)
+  if (ctx.state.arena) arenaAfterTurn(ctx, actor)
+  else bossPhases(ctx)
 }
 
 function checkOver(ctx: EffectContext): void {
@@ -290,8 +313,13 @@ function checkOver(ctx: EffectContext): void {
     log(ctx, { kind: 'crewFlees', text: 'With the boss down, the rest of the crew breaks and runs' })
   }
   const enemies = state.actors.filter((a) => a.side === 'enemy' && onTimeline(a))
+  // D-127 (Proposed; 03 §12.2 "All heroes fallen = wipe"): rounds count heroes' turns (03 §3.6), so once every hero has
+  // fallen no round can close and the round cap could never end a fight a pet keeps going; it is lost. (A downed hero is
+  // still on the timeline: a pet may yet win while the heroes lie inside their revive window, 03 §12.1.)
+  const heroesLeft = state.actors.filter((a) => a.side === 'party' && a.kind === 'hero' && onTimeline(a))
   if (enemies.length === 0) finish(ctx, 'victory', 'every enemy is down')
   else if (heroesUp.length === 0) finish(ctx, 'defeat', 'every hero is down')
+  else if (heroesLeft.length === 0) finish(ctx, 'defeat', 'every hero has fallen')
   else if (state.round > state.options.roundCap) finish(ctx, 'cap', `the ${state.options.roundCap}-round cap`)
 }
 
@@ -317,6 +345,30 @@ export type ResolvedAction =
   | { kind: 'freeAlly'; target: Actor }
   | { kind: 'stance'; stance: Stance }
   | { kind: 'pass' }
+  /** A telegraphed attack's tell turn (06 §8.10): the blow lands on the monster's next turn. */
+  | { kind: 'windup'; attack: MonsterAttack; target: Actor | null }
+  | { kind: 'arena'; propId: string }
+  /** The worn relic's active (08 §3; relics.ts). */
+  | { kind: 'relic'; target: Actor | null }
+
+/** The weight a heavy cast will weigh, asked of the holder's hooks before its charge is declared (a pure query, `chargeWeight`: Grace, Sunflare). */
+function chargeWeightOf(ctx: EffectContext, actor: Actor, weight: number): number {
+  let w = weight
+  for (const { status, hook, line } of activeHooks(ctx.content, actor)) w = customHandler(line.customId ?? '')?.chargeWeight?.(hookCtx(ctx, actor, status, line, hook), w) ?? w
+  return w
+}
+
+/**
+ * Why a hero's active has nothing to do now (Tier IV, D-089): a revive with no one to raise — Breath of Life needs a
+ * downed ally, an all-downed revive (Rebirth) a downed or fallen one — or a skill already spent for this fight
+ * (`once:<skill>:<actor>`: Miracle; Quicksilver at its limit). Null when it may be used.
+ */
+function idleSkillReason(state: FightState, actor: Actor, skill: SkillDef): string | null {
+  if (state.flags[`once:${skill.id}:${actor.id}`] === true) return 'once per fight'
+  if (!skill.tags.includes('revive') || (skill.target !== 'downedAlly' && skill.target !== 'allDowned')) return null
+  const raisable = state.actors.some((a) => a.side === actor.side && ((a.downed && !a.fallen) || (skill.target === 'allDowned' && a.fallen && !a.gone && !a.fled)))
+  return raisable ? null : 'no one to raise'
+}
 
 function spendWeight(ctx: EffectContext, actor: Actor, weight: number): void {
   let w = weight
@@ -370,7 +422,8 @@ function execute(ctx: EffectContext, actor: Actor, action: ResolvedAction): void
       const weight = action.skill.weight ?? t.combat.weights.normal
       const pending: PendingAction = { kind: 'skill', skillId: action.skill.id, targetId: action.target?.id ?? null }
       // Heavy casts charge (D-029): declared now, resolved 400 energy later; Ultimates never charge.
-      if (!isUlt && weight === t.combat.weights.heavy && actor.poolKind === 'mana') {
+      // fix: a heavy cast its holder's hooks lighten (Tier IV: Grace; Tier V: Sunflare) is not heavy, so it does not charge.
+      if (!isUlt && weight === t.combat.weights.heavy && actor.poolKind === 'mana' && chargeWeightOf(ctx, actor, weight) >= t.combat.weights.heavy) {
         beginCharge(t, actor as never, weight)
         actor.charging = { weight, chargePaid: t.combat.charge.resolveAfterEnergy, action: pending }
         log(ctx, { kind: 'charge', actorId: actor.id, text: `${actor.name} begins to cast ${action.skill.name}` })
@@ -383,13 +436,30 @@ function execute(ctx: EffectContext, actor: Actor, action: ResolvedAction): void
     }
     case 'attack': {
       doMonsterAttack(ctx, actor, action.attack, action.target)
+      if (state.arena) arenaAttackResolved(ctx, actor, action.attack)
+      return
+    }
+    case 'windup': {
+      beginWindup(ctx, actor, action.attack, action.target)
+      spendWeight(ctx, actor, windupWeight(ctx))
+      return
+    }
+    case 'arena': {
+      doArenaAction(ctx, actor, action.propId)
+      gainMomentum(ctx, actor, t.derived.momentum.onAct)
+      spendWeight(ctx, actor, arenaActionWeight(ctx, actor, action.propId))
       return
     }
     case 'item': {
       doItem(ctx, actor, action.instanceId, action.target)
       return
     }
+    case 'relic': {
+      if (useRelicInFight(ctx, actor, action.target) === 'instant' && actor.kind === 'hero' && !ctx.state.over) execute(ctx, actor, decideHero(ctx, actor))
+      return
+    }
     case 'swapRow': {
+      if (state.arena) arenaNoteSwap(ctx, actor)
       actor.row = actor.row === 'front' ? 'back' : 'front'
       log(ctx, { kind: 'swapRow', actorId: actor.id, text: `${actor.name} moves to the ${actor.row} row` })
       spendWeight(ctx, actor, t.combat.weights.rowSwap)
@@ -481,18 +551,24 @@ function doBasic(ctx: EffectContext, actor: Actor, target: Actor): void {
   const { t, state } = ctx
   const w = actor.hero?.weapon
   const weight = w?.weight ?? t.combat.weights.normal
-  const source: LineSource = { kind: 'basic', id: 'basic', label: 'basic attack', isUltimate: false, neverMisses: false, effectPercent: 100, reach: w?.reach ?? false, ranged: w?.ranged ?? false, isMelee: !(w?.ranged ?? false) }
-  log(ctx, { kind: 'action', actorId: actor.id, targetId: target.id, text: `${actor.name} attacks ${target.name}` })
+  // Arrows (08 §4, D-099): an empty bow or crossbow bashes (Blunt, 30% Attack, front row only); a loaded one spends 1.
+  const bash = emptyQuiver(actor.hero)
+  const ranged = (w?.ranged ?? false) && !bash
+  const source: LineSource = { kind: 'basic', id: 'basic', label: bash ? 'Bash' : 'basic attack', isUltimate: false, neverMisses: false, effectPercent: 100, reach: !bash && (w?.reach ?? false), ranged, isMelee: !ranged }
+  log(ctx, { kind: 'action', actorId: actor.id, targetId: target.id, text: bash ? `${actor.name} bashes ${target.name} with the empty bow` : `${actor.name} attacks ${target.name}`, ...(bash ? { data: { bash: true } } : {}) })
   notifyAttacks(ctx, actor)
+  if (ranged) spendAmmo(actor, 1)
   const type = w?.damageType ?? 'pierce'
-  if (w?.dual) {
+  if (bash) {
+    applyLine(ctx, actor, { kind: 'damage', multiplier: t.ammo.emptyBash.multiplier, damageType: t.ammo.emptyBash.damageType as Effect['damageType'] }, 'enemy', target, source)
+  } else if (w?.dual) {
     // Paired light weapons: two strikes at 0.5× (08 §1, D-041).
     applyLine(ctx, actor, { kind: 'damage', multiplier: 0.5, damageType: type }, 'enemy', target, source)
     applyLine(ctx, actor, { kind: 'damage', multiplier: 0.5, damageType: type }, 'enemy', target, source)
   } else {
     applyLine(ctx, actor, { kind: 'damage', multiplier: 1 + (w?.offHandAttackPercent ?? 0) / 100, damageType: type }, 'enemy', target, source)
   }
-  for (const line of w?.onHit ?? []) applyLine(ctx, actor, line, 'enemy', target, source)
+  for (const line of bash ? [] : (w?.onHit ?? [])) applyLine(ctx, actor, line, 'enemy', target, source)
   // A basic attack restores 15% Stamina or 10% Mana (§2.2) and gains Momentum.
   if (actor.poolKind === 'stamina') actor.pool = clamp(actor.pool + roundHalfUp((actor.poolMax * t.derived.stamina.basicAttackRestorePercent) / 100), 0, actor.poolMax)
   else if (actor.poolKind === 'mana') actor.pool = clamp(actor.pool + roundHalfUp((actor.poolMax * t.derived.mana.basicAttackRestorePercent) / 100), 0, actor.poolMax)
@@ -502,7 +578,7 @@ function doBasic(ctx: EffectContext, actor: Actor, target: Actor): void {
     const enemyLevel = highestEnemyLevel(ctx, actor)
     const hit = state.log.slice(-3).some((e) => e.kind === 'damage' && e.actorId === actor.id)
     if (hit) {
-      state.xp.push({ actorId: actor.id, kind: 'attribute', id: w?.ranged ? 'perception' : 'strength', enemyLevel })
+      state.xp.push({ actorId: actor.id, kind: 'attribute', id: ranged ? 'perception' : 'strength', enemyLevel })
       state.xp.push({ actorId: actor.id, kind: 'attribute', id: 'agility', enemyLevel })
     }
     afterHeroHits(ctx, actor, 'mainHand')
@@ -531,7 +607,12 @@ function doItem(ctx: EffectContext, actor: Actor, instanceId: string, target: Ac
   }
   log(ctx, { kind: 'action', actorId: actor.id, targetId: target?.id, text: `${actor.name} uses ${def.name}` })
   const source: LineSource = { kind: 'item', id: def.id, label: def.name, isUltimate: false, neverMisses: true, effectPercent: 100, reach: false, ranged: true, isMelee: false }
-  for (const line of def.consumable.effects) applyLine(ctx, actor, line, def.consumable.target, target, source)
+  // A Torch in a boss arena (06 §3.4, 07 §2.8): the throne's braziers take it (+25 once each per phase); elsewhere its own light line.
+  const throughBrazier = ctx.state.arena ? arenaTorch(ctx, actor, def) : false
+  // A Torch is worth the delve's torchValue (07 §6.1: Dread +20, the Candle Pact +15), in a fight as between rooms.
+  const torchValue = ctx.state.options.torchValue
+  if (!throughBrazier) for (const line of def.consumable.effects) applyLine(ctx, actor, line.kind === 'light' && torchValue !== undefined ? { ...line, amount: torchValue } : line, def.consumable.target, target, source)
+  if (ctx.state.arena && !throughBrazier) arenaTorchDone(ctx, actor)
   // Spend one.
   if (inst.quantity > 1) h.bag = h.bag.map((i) => (i.instanceId === instanceId ? { ...i, quantity: i.quantity - 1 } : i))
   else h.bag = h.bag.filter((i) => i.instanceId !== instanceId)
@@ -582,8 +663,8 @@ function doMonsterAttack(ctx: EffectContext, actor: Actor, attack: MonsterAttack
 
 function resolveAttackLines(ctx: EffectContext, actor: Actor, attack: MonsterAttack, target: Actor | null): void {
   const { state } = ctx
-  const source: LineSource = { kind: 'attack', id: attack.id, label: attack.name, isUltimate: false, neverMisses: attack.multiplier === 0, effectPercent: 100, reach: attack.target === 'enemyBack' || attack.target === 'enemyRandom' || attack.target === 'allEnemies' || attack.target === 'enemyRow', ranged: actor.row === 'back', isMelee: actor.row === 'front' }
-  log(ctx, { kind: 'action', actorId: actor.id, targetId: target?.id, text: `${actor.name} uses ${attack.name}${target ? ` on ${target.name}` : ''}` })
+  const source: LineSource = { kind: 'attack', id: attack.id, label: attack.name, isUltimate: false, neverMisses: attack.multiplier === 0, effectPercent: 100, reach: attack.target === 'enemyBack' || attack.target === 'enemyRandom' || attack.target === 'allEnemies' || attack.target === 'enemyRow' || (state.arena ? arenaAttackReach(ctx, actor, attack) : false), ranged: actor.row === 'back', isMelee: actor.row === 'front' }
+  log(ctx, { kind: 'action', actorId: actor.id, targetId: target?.id, text: `${actor.name} uses ${attack.name}${target ? ` on ${target.name}` : ''}`, data: { attackId: attack.id } })
   notifyAttacks(ctx, actor)
   // Hitting a charging caster: the Grandia push (§3.1).
   if (attack.multiplier > 0) {
@@ -636,12 +717,27 @@ function pickArmorPiece(ctx: EffectContext): string {
 function spawnSummon(ctx: EffectContext, actor: Actor, monsterId: string): void {
   const def = ctx.content.monsters.get(monsterId)
   if (!def) return
+  // D-099: at most `pets.summonsPartyMax` summons stand with the party at once; a call past it fizzles.
+  if (actor.side === 'party' && partySummons(ctx.state) >= ctx.t.pets.summonsPartyMax.value) {
+    log(ctx, { kind: 'summonBlocked', actorId: actor.id, text: `${actor.name}'s call goes unanswered: the party already has ${ctx.t.pets.summonsPartyMax.value} summons` })
+    return
+  }
   const id = `${monsterId}-s${ctx.state.actors.length}`
   const summon = buildMonsterActor(ctx.content, ctx.t, def, { id, level: actor.level, row: def.rows[0] ?? 'front', hpPercent: 100, summonedBy: actor.id })
   summon.side = actor.side
   summon.energy = 0
   ctx.state.actors.push(summon)
   log(ctx, { kind: 'summon', actorId: actor.id, targetId: id, text: `${actor.name} summons ${summon.name}` })
+}
+
+/** Summons standing with the party now (D-099's cap counts the whole party's). */
+function partySummons(state: FightState): number {
+  return state.actors.filter((a) => a.kind === 'summon' && a.side === 'party' && !a.gone && !a.fallen && !a.fled).length
+}
+
+/** A skill that calls a summon (a `summon` line) cannot be used while the party is at the cap (D-099). */
+function summonCapReached(t: Tuning, state: FightState, skill: SkillDef): boolean {
+  return skill.effects.some((l) => l.kind === 'summon') && partySummons(state) >= t.pets.summonsPartyMax.value
 }
 
 /** Boss phases (03 §11.3, 06): when HP crosses the next threshold, switch attacks and bring the adds. */
@@ -659,12 +755,18 @@ function bossPhases(ctx: EffectContext): void {
     m.phaseIndex += 1
     m.attackIds = [...next.attacks]
     log(ctx, { kind: 'phase', actorId: boss.id, text: `${boss.name} enters phase ${m.phaseIndex + 1}`, data: { phase: m.phaseIndex + 1 } })
+    // D-128: a later phase's adds follow the count rule (06 §8.1) and the boss row, as the first phase's do (explore.ts
+    // spawnBossFight); they had come at full count and HP for any party.
+    const partySize = Number(ctx.state.arena?.flags.partySize ?? ctx.state.actors.filter((a) => a.side === 'party' && a.kind === 'hero').length)
+    const scale = partyScale(ctx.t, partySize, true)
+    const knob = Number(ctx.state.arena?.flags.enemyHpPercent ?? 100)
     for (const add of next.adds) {
       const addDef = ctx.content.monsters.get(add.monsterId)
       if (!addDef) continue
-      for (let i = 0; i < add.count; i++) {
+      const count = scaledCount(add.count, scale.countPercent, addDef.role)
+      for (let i = 0; i < count; i++) {
         const id = `${add.monsterId}-p${m.phaseIndex}-${i}`
-        const a = buildMonsterActor(ctx.content, ctx.t, addDef, { id, level: boss.level, row: add.row, hpPercent: 100 })
+        const a = buildMonsterActor(ctx.content, ctx.t, addDef, { id, level: boss.level, row: add.row, hpPercent: scale.hpPercent, enemyHpPercent: knob })
         a.energy = 0
         ctx.state.actors.push(a)
         log(ctx, { kind: 'summon', actorId: boss.id, targetId: id, text: `${a.name} joins the fight` })
@@ -700,6 +802,23 @@ function preferredEnemy(ctx: EffectContext, actor: Actor, candidates: Actor[]): 
 
 /* ---------- decisions ---------- */
 
+/**
+ * A boss fight's back-row threat (the Phase 7 balance pass, pass F): the back-row add, among the enemies this hero can
+ * reach, that has dealt more damage this fight than the boss. The hero AI turns on it before the boss: bows, spells and
+ * reach weapons at once, melee once the front is clear (reachableEnemies). Heroes only; null outside a boss fight.
+ */
+function backRowThreat(ctx: EffectContext, actor: Actor, enemies: Actor[]): Actor | null {
+  if (actor.kind !== 'hero') return null
+  const boss = enemiesOf(ctx.state, actor).find((e) => e.monster?.isBoss)
+  if (!boss) return null
+  let best: Actor | null = null
+  for (const e of enemies) {
+    if (e === boss || e.row !== 'back' || e.monster?.isBoss || e.tally.damageDealt <= boss.tally.damageDealt) continue
+    if (best === null || e.tally.damageDealt > best.tally.damageDealt) best = e
+  }
+  return best
+}
+
 function selectTarget(ctx: EffectContext, actor: Actor, sel: TargetSelector | undefined, reach: boolean): Actor | null {
   const { state, rng } = ctx
   const enemies = reachableEnemies(ctx, actor, reach)
@@ -707,7 +826,7 @@ function selectTarget(ctx: EffectContext, actor: Actor, sel: TargetSelector | un
   switch (sel) {
     case undefined:
     case 'nearest':
-      return preferredEnemy(ctx, actor, enemies) ?? enemies[0] ?? null
+      return preferredEnemy(ctx, actor, enemies) ?? backRowThreat(ctx, actor, enemies) ?? enemies[0] ?? null
     case 'self':
       return actor
     case 'lowest ally':
@@ -720,16 +839,16 @@ function selectTarget(ctx: EffectContext, actor: Actor, sel: TargetSelector | un
     case 'random ally':
       return allies.length ? rng.pick(allies) : null
     case 'front enemy':
-      return enemies.find((e) => e.row === 'front') ?? enemies[0] ?? null
+      return enemies.find((e) => e.row === 'front') ?? backRowThreat(ctx, actor, enemies) ?? enemies[0] ?? null
     case 'back enemy':
-      return enemies.find((e) => e.row === 'back') ?? enemies[0] ?? null
+      return backRowThreat(ctx, actor, enemies) ?? enemies.find((e) => e.row === 'back') ?? enemies[0] ?? null
     case 'random enemy':
       return enemies.length ? rng.pick(enemies) : null
     case 'weakest enemy':
     case 'lowest enemy':
-      return lowestHpPercent(enemies)
+      return backRowThreat(ctx, actor, enemies) ?? lowestHpPercent(enemies)
     case 'strongest enemy':
-      return enemies.reduce<Actor | null>((best, e) => (best === null || e.hp > best.hp ? e : best), null)
+      return backRowThreat(ctx, actor, enemies) ?? enemies.reduce<Actor | null>((best, e) => (best === null || e.hp > best.hp ? e : best), null)
     case 'fastest enemy':
       return enemies.reduce<Actor | null>((best, e) => (best === null || speedOf(ctx, e) > speedOf(ctx, best) ? e : best), null)
     case 'marked enemy':
@@ -805,6 +924,10 @@ function conditionValue(ctx: EffectContext, actor: Actor, c: Condition): number 
       return state.round
     case 'fight':
       return state.round
+    case 'phase':
+      return actor.monster?.isBoss ? actor.monster.phaseIndex + 1 : (state.arena?.phase ?? 1)
+    case 'tide':
+      return state.arena?.tide?.level ?? 0
   }
 }
 
@@ -828,6 +951,10 @@ function heroActionFrom(ctx: EffectContext, actor: Actor, action: Action, strict
     if (!canUseSkills(ctx, actor)) return false
     if (skill.type !== 'active') return false
     if (requirementProblemFor(skill, actorHands(h))) return false
+    // Arrows (08 §4) and the party's summon cap (D-099): a shot needs its arrows, a call a free place.
+    if (!hasAmmoFor(h, skill) || summonCapReached(ctx.t, ctx.state, skill)) return false
+    // Tier IV: Rebirth; Tier V: Miracle — never a revive with no one to raise, nor a once-per-fight skill already spent.
+    if (idleSkillReason(ctx.state, actor, skill)) return false
     const cost = skillCost(ctx.t, skill, h.ranks[skill.id] ?? 1)
     return actor.pool >= cost
   }
@@ -869,6 +996,8 @@ function heroActionFrom(ctx: EffectContext, actor: Actor, action: Action, strict
         return def?.consumable?.inCombat && action.ref && matchesName(def.id, def.name, action.ref)
       })
       if (inst) return { kind: 'item', instanceId: inst.instanceId, target: selectTarget(ctx, actor, action.target ?? 'self', true) }
+      const relic = usableRelic(actor)
+      if (relic && action.ref && matchesName(relic.def.id, relic.def.name, action.ref)) return { kind: 'relic', target: selectTarget(ctx, actor, action.target ?? 'self', true) }
       break
     }
     case 'swapRow':
@@ -890,7 +1019,8 @@ function heroActionFrom(ctx: EffectContext, actor: Actor, action: Action, strict
   }
   // A strict caller (rule fall-through) hears "cannot" for anything but an explicit basic attack.
   if (strict && action.verb !== 'basic') return null
-  const target = selectTarget(ctx, actor, action.verb === 'basic' ? action.target : undefined, reach)
+  // An empty bow bashes the front row only (08 §4).
+  const target = selectTarget(ctx, actor, action.verb === 'basic' ? action.target : undefined, basicReach(h))
   return target ? { kind: 'basic', target } : { kind: 'guard' }
 }
 
@@ -900,6 +1030,13 @@ function fleeAllowed(ctx: EffectContext, actor: Actor): boolean {
 }
 
 export function decideHero(ctx: EffectContext, actor: Actor): ResolvedAction {
+  // In a boss arena (07 §2.8): swap on the tide's tell, relight on the snuff, turn the wheel, burn a pile under the bell.
+  if (ctx.state.arena) {
+    const pick = arenaHeroAuto(ctx, actor)
+    if (pick?.kind === 'arena') return { kind: 'arena', propId: pick.propId }
+    if (pick?.kind === 'torch') return { kind: 'item', instanceId: pick.instanceId, target: actor }
+    if (pick?.kind === 'swapRow' && canSwapRow(ctx, actor)) return { kind: 'swapRow' }
+  }
   const rule = parseRule(actor.hero?.aiRule ?? '')
   // The first matching clause whose action can be carried out now wins (no potion left, no pool: the next clause);
   // a basic attack on the nearest enemy is the last resort (D-060, D-079).
@@ -922,19 +1059,28 @@ function decideMonster(ctx: EffectContext, actor: Actor): ResolvedAction {
     log(ctx, { kind: 'monsterFlee', actorId: actor.id, text: `${actor.name} flees` })
     return { kind: 'pass' }
   }
+  // A blow wound up last turn lands now (06 §8.10), unless a Daze or a Silence broke it off (07 §2.8).
+  const wound = takeWindup(ctx, actor)
+  if (wound === 'broken') return { kind: 'pass' }
+  if (wound) return { kind: 'attack', attack: wound.attack, target: windupTarget(ctx, actor, wound.attack, wound.targetId) }
   const available = m.attacks.filter((a) => m.attackIds.includes(a.id))
-  const rule = parseBehavior(m.behavior)
-  const action = decide(rule, { value: (c) => conditionValue(ctx, actor, c) })
-  let attack: MonsterAttack | null = null
-  if (action.verb === 'named' && action.ref) attack = available.find((a) => matchesName(a.id, a.name, action.ref ?? '')) ?? null
-  if (action.verb === 'guard') return { kind: 'guard' }
-  if (action.verb === 'swapRow') return { kind: 'swapRow' }
-  if (action.verb === 'flee') {
-    actor.gone = true
-    actor.fled = true
-    releaseHolds(ctx, actor)
-    log(ctx, { kind: 'monsterFlee', actorId: actor.id, text: `${actor.name} flees` })
-    return { kind: 'pass' }
+  // A phase's opener (Vexa kicks the barricade over) comes before the behaviour.
+  let attack: MonsterAttack | null = ctx.state.arena ? takeOpener(ctx, actor) : null
+  let selector: TargetSelector | undefined
+  if (!attack) {
+    const rule = parseBehavior(m.behavior)
+    const action = decide(rule, { value: (c) => conditionValue(ctx, actor, c) })
+    if (action.verb === 'named' && action.ref) attack = available.find((a) => matchesName(a.id, a.name, action.ref ?? '')) ?? null
+    if (action.verb === 'guard') return { kind: 'guard' }
+    if (action.verb === 'swapRow') return { kind: 'swapRow' }
+    if (action.verb === 'flee') {
+      actor.gone = true
+      actor.fled = true
+      releaseHolds(ctx, actor)
+      log(ctx, { kind: 'monsterFlee', actorId: actor.id, text: `${actor.name} flees` })
+      return { kind: 'pass' }
+    }
+    if (action.verb === 'named') selector = action.target
   }
   if (!attack) {
     if (available.length === 0) return { kind: 'pass' }
@@ -942,9 +1088,87 @@ function decideMonster(ctx: EffectContext, actor: Actor): ResolvedAction {
     const weighted = available.filter((a) => a.aiWeight > 0)
     attack = ctx.rng.weighted(weighted.length ? weighted : available, (a) => Math.max(0, a.aiWeight) || 1)
   }
-  const reach = attack.target !== 'enemyFront' && attack.target !== 'enemy' ? true : actor.row === 'back'
-  const target = selectTarget(ctx, actor, action.verb === 'named' ? action.target : undefined, reach)
+  let target = pickMonsterTarget(ctx, actor, attack, selector)
+  // The Warden's Oath (07 §2.8): he never strikes a hero who has not struck him; with nobody to strike, a move that strikes no one.
+  if (ctx.state.arena && SINGLE_TARGET.has(attack.target)) {
+    const oath = oathTarget(ctx, actor, reachableEnemies(ctx, actor, attackReach(ctx, actor, attack)), target)
+    if (oath === null) {
+      const calm = available.filter((a) => !ENEMY_TARGETS.has(a.target) && a.aiWeight > 0)
+      if (calm.length === 0) return { kind: 'guard' }
+      attack = ctx.rng.weighted(calm, (a) => Math.max(1, a.aiWeight))
+      target = pickMonsterTarget(ctx, actor, attack, undefined)
+    } else if (oath) target = oath
+  }
+  // A telegraphed attack (a tell) winds up this turn and lands on the next (06 §8.10).
+  if (attack.tell) return { kind: 'windup', attack, target }
   return { kind: 'attack', attack, target }
+}
+
+/** Single-target attack words, and every word that strikes the heroes (the Oath's tests). */
+const SINGLE_TARGET: ReadonlySet<string> = new Set(['enemy', 'enemyFront', 'enemyBack', 'enemyRandom'])
+const ENEMY_TARGETS: ReadonlySet<string> = new Set(['enemy', 'enemyFront', 'enemyBack', 'enemyRandom', 'allEnemies', 'enemyRow', 'enemyRowBack', 'partyFront', 'partyBack'])
+
+/** Whether a monster's attack reaches past the front row (its word, its row, the arena's light or flank). */
+function attackReach(ctx: EffectContext, actor: Actor, attack: MonsterAttack): boolean {
+  const own = attack.target !== 'enemyFront' && attack.target !== 'enemy' ? true : actor.row === 'back'
+  return own || (ctx.state.arena ? arenaAttackReach(ctx, actor, attack) : false)
+}
+
+/** A monster's target for an attack: its aim (06's "the hero with the lowest HP %"), the arena's back-row reach, its behaviour's selector. */
+function pickMonsterTarget(ctx: EffectContext, actor: Actor, attack: MonsterAttack, selector: TargetSelector | undefined): Actor | null {
+  const reach = attackReach(ctx, actor, attack)
+  const aim = attack.aim ?? (ctx.state.arena && arenaAttackReach(ctx, actor, attack) ? 'backRow' : undefined)
+  if (aim && SINGLE_TARGET.has(attack.target)) {
+    const aimed = aimTarget(ctx, aim, reachableEnemies(ctx, actor, reach))
+    if (aimed) return aimed
+  }
+  return selectTarget(ctx, actor, selector, reach)
+}
+
+/** 06's target phrases among the heroes a monster can reach (null: none fits; the caller falls back). */
+function aimTarget(ctx: EffectContext, aim: NonNullable<MonsterAttack['aim']>, pool: Actor[]): Actor | null {
+  if (pool.length === 0) return null
+  const best = (score: (a: Actor) => number) => pool.reduce<Actor | null>((b, a) => (b === null || score(a) > score(b) ? a : b), null)
+  const has = (a: Actor, s: string) => a.statuses.some((x) => x.id === s)
+  switch (aim) {
+    case 'lowestHp':
+      return lowestHpPercent(pool)
+    case 'mostMomentum':
+      return best((a) => a.momentum)
+    case 'lowestStrength':
+      return best((a) => -a.attributes.strength)
+    case 'marked':
+      return pool.find((a) => has(a, 'mark')) ?? null
+    case 'markedOrChilled':
+      return pool.find((a) => has(a, 'mark') || has(a, 'chill')) ?? null
+    case 'backRow':
+      return pool.find((a) => a.row === 'back') ?? null
+    case 'fullestPool':
+      return best((a) => (a.poolMax ? (a.pool * 100) / a.poolMax : 0))
+    case 'mostGold':
+      return null
+    case 'caster':
+      return pool.find((a) => a.poolKind === 'mana') ?? null
+  }
+  void ctx
+}
+
+/** The wound-up blow's target: the hero named at the tell while it can still be reached, else a fresh pick. */
+function windupTarget(ctx: EffectContext, actor: Actor, attack: MonsterAttack, targetId: string | null): Actor | null {
+  const named = byId(ctx.state, targetId)
+  if (named && isActive(named) && (!SINGLE_TARGET.has(attack.target) || reachableEnemies(ctx, actor, attackReach(ctx, actor, attack)).includes(named))) return named
+  return pickMonsterTarget(ctx, actor, attack, undefined)
+}
+
+/** Vexa's second blow of a frenzied turn (06 §3.1): an untelegraphed attack of her phase, no weight. */
+function extraAttack(ctx: EffectContext, actor: Actor): void {
+  const m = actor.monster
+  if (!m) return
+  const pool = m.attacks.filter((a) => m.attackIds.includes(a.id) && !a.tell && a.multiplier > 0)
+  if (pool.length === 0) return
+  const attack = ctx.rng.weighted(pool, (a) => Math.max(1, a.aiWeight))
+  resolveAttackLines(ctx, actor, attack, pickMonsterTarget(ctx, actor, attack, undefined))
+  arenaAttackResolved(ctx, actor, attack)
 }
 
 function decidePet(ctx: EffectContext, actor: Actor): ResolvedAction {
@@ -987,20 +1211,28 @@ export function legalFightActions(content: Content, t: Tuning, state: FightState
   const reach = h.weapon.reach || h.weapon.ranged
   const enemies = reachableEnemies(ctx, actor, reach)
   const out: LegalFightAction[] = []
-  out.push({ command: { kind: 'basic', targetId: enemies[0]?.id ?? '' }, label: 'Attack', targets: enemies.map((e) => e.id), enabled: enemies.length > 0, reason: enemies.length ? undefined : 'nothing in reach' })
+  // Arrows (08 §4, D-099): an empty bow's basic attack is a Bash at the front row.
+  const bash = emptyQuiver(h)
+  const basicTargets = bash ? reachableEnemies(ctx, actor, basicReach(h)) : enemies
+  out.push({ command: { kind: 'basic', targetId: basicTargets[0]?.id ?? '' }, label: bash ? 'Bash (no arrows)' : 'Attack', targets: basicTargets.map((e) => e.id), enabled: basicTargets.length > 0, reason: basicTargets.length ? undefined : (arenaReachReason(ctx) ?? 'nothing in reach') })
   const silenced = !canUseSkills(ctx, actor)
   h.actives.forEach((id, slot) => {
     const skill = id ? content.skills.get(id) : undefined
     if (!skill || skill.type !== 'active') return
     const cost = skillCost(t, skill, h.ranks[skill.id] ?? 1)
     const needsEnemy = skill.target.startsWith('enemy') || skill.target === 'allEnemies'
-    const targets = needsEnemy ? reachableEnemies(ctx, actor, reach || skill.tags.includes('reach')).map((e) => e.id) : skill.target === 'ally' || skill.target === 'allyLowest' ? alliesOf(state, actor).map((a) => a.id) : skill.target === 'downedAlly' ? state.actors.filter((a) => a.side === actor.side && a.downed).map((a) => a.id) : []
+    const targets = needsEnemy ? reachableEnemies(ctx, actor, reach || skill.tags.includes('reach')).map((e) => e.id) : skill.target === 'ally' || skill.target === 'allyLowest' ? alliesOf(state, actor).map((a) => a.id) : skill.target === 'downedAlly' ? state.actors.filter((a) => a.side === actor.side && a.downed).map((a) => a.id) : skill.target === 'allDowned' ? state.actors.filter((a) => a.side === actor.side && (a.downed || (a.fallen && !a.gone && !a.fled))).map((a) => a.id) : []
+    // Tier IV: Rebirth (its fallen raise honours the chosen target); Tier V: Miracle — idle revives and spent skills are not offered.
+    const idle = idleSkillReason(state, actor, skill)
     let reason: string | undefined
     const gear = requirementProblemFor(skill, actorHands(h))
     if (silenced) reason = 'silenced'
     else if (gear) reason = gear
     else if (actor.pool < cost) reason = `needs ${cost} ${actor.poolKind}`
-    else if (needsEnemy && targets.length === 0) reason = 'nothing in reach'
+    else if (!hasAmmoFor(h, skill)) reason = `needs more ${content.items.get(h.ammo?.itemId ?? '')?.name.toLowerCase() ?? 'arrows'}`
+    else if (summonCapReached(t, state, skill)) reason = `the party has ${t.pets.summonsPartyMax.value} summons`
+    else if (idle) reason = idle
+    else if (needsEnemy && targets.length === 0) reason = arenaReachReason(ctx) ?? 'nothing in reach'
     out.push({ command: { kind: 'skill', slot, targetId: targets[0] ?? null }, label: `${skill.name} (${cost})`, targets, enabled: !reason, reason })
   })
   if (h.ultimateId) {
@@ -1012,8 +1244,15 @@ export function legalFightActions(content: Content, t: Tuning, state: FightState
     const def = content.items.get(inst.itemId)
     if (!def?.consumable?.inCombat) continue
     const allies = alliesOf(state, actor).map((a) => a.id)
-    out.push({ command: { kind: 'item', instanceId: inst.instanceId, targetId: actor.id }, label: `${def.name} ×${inst.quantity}`, targets: def.consumable.target === 'self' ? [actor.id] : allies, enabled: true })
+    // The throne (06 §3.4): a Torch works only through a brazier not yet relit this phase.
+    const unlit = state.arena && isTorch(def) && hasBraziers(ctx) && !freeBrazier(ctx)
+    out.push({ command: { kind: 'item', instanceId: inst.instanceId, targetId: actor.id }, label: `${def.name} ×${inst.quantity}`, targets: def.consumable.target === 'self' ? [actor.id] : allies, enabled: !unlit, ...(unlit ? { reason: 'every brazier is lit this phase' } : {}) })
   }
+  // The worn relic's active (08 §3; relics.ts).
+  const relicLine = relicFightAction(state, actor)
+  if (relicLine) out.push(relicLine)
+  // A boss arena's interactables (07 §2.8): the kegs, the bone piles, the sluice wheel.
+  if (state.arena) out.push(...arenaLegalActions(ctx, actor))
   out.push({ command: { kind: 'swapRow' }, label: 'Swap row', targets: [], enabled: canSwapRow(ctx, actor), reason: canSwapRow(ctx, actor) ? undefined : 'rooted' })
   const held = alliesOf(state, actor).filter((a) => a.grabbedBy)
   if (held.length) out.push({ command: { kind: 'freeAlly', targetId: held[0]!.id }, label: 'Free ally', targets: held.map((a) => a.id), enabled: true })
@@ -1033,6 +1272,15 @@ export function applyFightCommand(content: Content, t: Tuning, state: FightState
   const ctx = makeCtx(content, t, state, rng)
   const resolved = resolveCommand(ctx, actor, command)
   state.pendingActorId = null
+  // An instant relic (08 §3) spends no weight and no turn: it resolves and the same hero chooses again.
+  const relicNow = resolved.kind === 'relic' ? usableRelic(actor) : null
+  if (relicNow && isInstantRelic(relicNow.def)) {
+    useRelicInFight(ctx, actor, resolved.kind === 'relic' ? resolved.target : null)
+    checkOver(ctx)
+    if (!state.over) state.pendingActorId = actor.id
+    state.rng = rng.state
+    return state
+  }
   execute(ctx, actor, resolved)
   endTurn(ctx, actor)
   checkOver(ctx)
@@ -1043,7 +1291,8 @@ export function applyFightCommand(content: Content, t: Tuning, state: FightState
 function resolveCommand(ctx: EffectContext, actor: Actor, command: FightCommand): ResolvedAction {
   const h = actor.hero
   if (!h) throw new Error('not a hero')
-  const reach = h.weapon.reach || h.weapon.ranged
+  // The basic attack's reach: an empty bow bashes the front row only (08 §4).
+  const reach = basicReach(h)
   const need = (id: string | null, allowNull: boolean): Actor | null => {
     const a = byId(ctx.state, id)
     if (!a && !allowNull) throw new Error(`unknown target ${id}`)
@@ -1066,6 +1315,8 @@ function resolveCommand(ctx: EffectContext, actor: Actor, command: FightCommand)
       if (gear) throw new Error(gear)
       const rank = h.ranks[skill.id] ?? 1
       if (actor.pool < skillCost(ctx.t, skill, rank)) throw new Error('not enough pool')
+      if (!hasAmmoFor(h, skill)) throw new Error('not enough arrows')
+      if (summonCapReached(ctx.t, ctx.state, skill)) throw new Error('the party is at its summon cap')
       return { kind: 'skill', skill, rank, target: need(command.targetId, true), slot: command.slot }
     }
     case 'ultimate': {
@@ -1078,6 +1329,9 @@ function resolveCommand(ctx: EffectContext, actor: Actor, command: FightCommand)
       return { kind: 'guard' }
     case 'item':
       return { kind: 'item', instanceId: command.instanceId, target: need(command.targetId, true) }
+    case 'relic':
+      if (!usableRelic(actor)) throw new Error('no relic use left this fight')
+      return { kind: 'relic', target: need(command.targetId, true) }
     case 'swapRow':
       if (!canSwapRow(ctx, actor)) throw new Error('rooted')
       return { kind: 'swapRow' }
@@ -1092,6 +1346,11 @@ function resolveCommand(ctx: EffectContext, actor: Actor, command: FightCommand)
     case 'stance':
       if (h.stanceChangeUsed) throw new Error('stance already changed this fight')
       return { kind: 'stance', stance: command.stance }
+    case 'arena': {
+      const problem = arenaActionProblem(ctx, actor, command.propId)
+      if (problem) throw new Error(problem)
+      return { kind: 'arena', propId: command.propId }
+    }
   }
 }
 

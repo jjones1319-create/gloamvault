@@ -1,0 +1,52 @@
+{
+  "id": "arcanist-paradox",
+  "classId": "arcanist",
+  "school": "arcana",
+  "tier": 5,
+  "name": "Paradox",
+  "description": "Your heavy casts weigh 1,000 and cannot be interrupted.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "heavy-casts-uninterrupted",
+      "amount": 1000,
+      "target": "self",
+      "note": "a stub until fight.ts lets a passive lift the charge (execute decides it by the skill’s own weight); Tier V is locked until Segment 3"
+    }
+  ],
+  "prerequisiteId": "arcanist-mass-haste",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Normal casts weigh 800.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "heavy-casts-uninterrupted",
+        "amount": 1000,
+        "percent": 80,
+        "target": "self",
+        "note": "percent 80: normal casts weigh 80% (800) too"
+      }
+    ]
+  },
+  "tags": [
+    "buff"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 0
+  }
+}

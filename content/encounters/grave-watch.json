@@ -1,0 +1,25 @@
+{
+  "id": "grave-watch",
+  "tableId": "crypts-a",
+  "dungeonId": "gravehollow-keep",
+  "floorBand": {
+    "min": 4,
+    "max": 5
+  },
+  "name": "Grave Watch",
+  "composition": [
+    {
+      "monsterId": "skeleton-footman",
+      "count": 3,
+      "row": "front"
+    },
+    {
+      "monsterId": "skeleton-archer",
+      "count": 1,
+      "row": "back"
+    }
+  ],
+  "weight": 20,
+  "ambushModifier": -5,
+  "eliteAllowed": true
+}

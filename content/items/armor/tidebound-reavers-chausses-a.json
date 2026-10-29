@@ -1,0 +1,49 @@
+{
+  "id": "tidebound-reavers-chausses-a",
+  "name": "Tidebound Reaver's Chausses",
+  "slot": "legs",
+  "kind": "armor",
+  "grade": "A",
+  "materialLadder": "metal",
+  "materialRung": 5,
+  "weaponType": null,
+  "armorFamily": "mail",
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "defense": 18,
+    "hp": 13,
+    "speed": 4
+  },
+  "requirements": {
+    "strength": 14,
+    "wisdom": 0
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 8,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 3.05,
+  "value": 1120,
+  "classLock": [
+    "blade"
+  ],
+  "setId": "tidebound-reavers-mail",
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "armor-mail-legs-01",
+    "tintPrimary": "#1e3a4a",
+    "tintSecondary": "#9ec5e0",
+    "trimMetal": "steel"
+  }
+}

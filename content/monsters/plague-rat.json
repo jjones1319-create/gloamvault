@@ -89,10 +89,6 @@
       {
         "if": "a hero without Poison is in reach",
         "then": "foul-bite"
-      },
-      {
-        "if": "always",
-        "then": "foul-bite"
       }
     ],
     "fleesAtPercent": 0

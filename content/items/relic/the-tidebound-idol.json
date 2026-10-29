@@ -1,0 +1,57 @@
+{
+  "id": "the-tidebound-idol",
+  "name": "The Tidebound Idol",
+  "slot": "relic",
+  "kind": "relic",
+  "grade": "C",
+  "materialLadder": null,
+  "materialRung": null,
+  "weaponType": null,
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": 600,
+  "baseStats": {},
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 2,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 6,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1,
+  "value": 720,
+  "classLock": [],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": {
+    "effects": [
+      {
+        "kind": "dispel",
+        "target": "allAllies",
+        "note": "on allies, dispel cleanses every debuff (sim/src/effects.ts)"
+      }
+    ],
+    "usesPerFight": 1,
+    "target": "allAllies",
+    "text": "Cleanses every debuff on the party"
+  },
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "relic-tidebound-idol-01",
+    "tintPrimary": "#1e3a4a",
+    "tintSecondary": "#9ec5e0",
+    "trimMetal": "brass"
+  },
+  "tags": [
+    "boss-only"
+  ]
+}

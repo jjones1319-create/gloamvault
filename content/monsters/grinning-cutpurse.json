@@ -89,10 +89,6 @@
       {
         "if": "a hero carries more gold than the others (the coin icon)",
         "then": "shank"
-      },
-      {
-        "if": "always",
-        "then": "shank"
       }
     ],
     "fleesAtPercent": 25

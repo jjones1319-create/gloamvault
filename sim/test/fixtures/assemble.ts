@@ -15,9 +15,13 @@ export const fixtureContentDir = path.join(repoRoot, 'sim', 'test', 'fixtures', 
 
 /**
  * Linter rules a fixture corpus cannot satisfy (content/README.md "Gating"): 4 (45 skills per class), 10 (every
- * role in a family), 14 (exactly twelve elite affixes). Every other rule applies to the fixture as written.
+ * role in a family), 14 (exactly twelve elite affixes). Phase 7's rules that read the whole game — the real tuning
+ * file names its Tome item, the D-099 limits' skills, merchant stock and the runner's classes (35, 36, 46, 63),
+ * the zone's levels and safe items (45, 46), tells with hints (53), a board of three dailies and a weekly (56) and an
+ * elite pool with all three classes (62) — and rule 48 (no trailing "always" gambit: the six fixture monsters keep
+ * theirs, so the Phase 2 delves and their pinned hashes do not move). Every other rule applies to the fixture as written.
  */
-export const FIXTURE_SKIP_RULES: readonly number[] = [4, 10, 14]
+export const FIXTURE_SKIP_RULES: readonly number[] = [4, 10, 14, 35, 36, 45, 46, 48, 53, 56, 62, 63]
 
 /**
  * Rule failures the fixture carries on purpose and the test asserts are the only ones. None since D-072: rule 11

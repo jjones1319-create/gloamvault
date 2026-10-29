@@ -43,7 +43,8 @@ if (!args.includes('--skip-build')) {
   await build({ configFile: 'vite.config.ts', logLevel: 'warn' })
 }
 const server = await preview({ configFile: 'vite.config.ts', preview: { port: PORT, strictPort: true, open: false }, logLevel: 'warn' })
-const url = `http://localhost:${PORT}${BASE}#autoplay=1&minutes=${minutes}`
+const startFloor = Math.max(1, Number(opt('floor', '1')) || 1)
+const url = `http://localhost:${PORT}${BASE}#autoplay=1&minutes=${minutes}${startFloor > 1 ? `&floor=${startFloor}` : ''}`
 console.log(`soak: ${minutes} min at ${url}`)
 
 let browser: Browser | null = null

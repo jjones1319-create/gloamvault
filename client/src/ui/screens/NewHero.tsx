@@ -98,6 +98,7 @@ export function NewHeroScreen() {
       classId: effective.classId,
       freePoints: effective.points,
       starterSkillIds: skills,
+      ...(effective.kitId ? { starterKitId: effective.kitId } : {}),
       eggPetId: firstHero ? effective.eggPetId : null,
       ...(petName && firstHero ? { petName } : {}),
       look: draftLook(c, effective),
@@ -158,7 +159,12 @@ export function NewHeroScreen() {
             selected={draft.classId}
             onPick={(id) => {
               if (id === draft.classId) return
-              set({ classId: id, skillIds: [...(c.classes.get(id)?.starterSkillIds ?? [])] })
+              set({ classId: id, kitId: null, skillIds: [...(c.classes.get(id)?.starterSkillIds ?? [])] })
+            }}
+            kit={draft.kitId}
+            onKit={(kit) => {
+              if (kit.id === draft.kitId) return
+              set({ kitId: kit.id, skillIds: [...kit.starterSkillIds] })
             }}
           />
         )}

@@ -1,0 +1,25 @@
+{
+  "id": "hags-salt-circle",
+  "tableId": "vault-a",
+  "dungeonId": "gravehollow-keep",
+  "floorBand": {
+    "min": 7,
+    "max": 7
+  },
+  "name": "Hag's Salt Circle",
+  "composition": [
+    {
+      "monsterId": "brine-hag",
+      "count": 1,
+      "row": "back"
+    },
+    {
+      "monsterId": "brine-ooze",
+      "count": 2,
+      "row": "front"
+    }
+  ],
+  "weight": 12,
+  "ambushModifier": 5,
+  "eliteAllowed": true
+}

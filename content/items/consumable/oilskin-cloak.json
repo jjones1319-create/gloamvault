@@ -1,0 +1,53 @@
+{
+  "id": "oilskin-cloak",
+  "name": "Oilskin Cloak",
+  "slot": null,
+  "kind": "consumable",
+  "grade": "F",
+  "materialLadder": null,
+  "materialRung": null,
+  "weaponType": null,
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": 600,
+  "baseStats": {},
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 0,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 3,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1,
+  "value": 6,
+  "classLock": [],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": {
+    "effects": [],
+    "stackMax": 5,
+    "target": "room",
+    "inCombat": false,
+    "text": "The Brine Pool: wade it dry, the coins for sure"
+  },
+  "ammo": null,
+  "visual": {
+    "meshId": "consumable-oilskin-cloak-01",
+    "tintPrimary": "#5c4a2e",
+    "tintSecondary": "#2b2b2b",
+    "trimMetal": "none"
+  },
+  "tags": [
+    "safe-item",
+    "zone:the-drowned-vault"
+  ]
+}

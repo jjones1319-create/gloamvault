@@ -1,0 +1,48 @@
+{
+  "id": "drowned-choirs-vestments",
+  "name": "Drowned Choir's Vestments",
+  "family": "robes",
+  "theme": "the Tidebound cult, the Drowned Vault",
+  "classIds": [
+    "arcanist"
+  ],
+  "pieces": [
+    "drowned-choirs-cowl",
+    "drowned-choirs-robe",
+    "drowned-choirs-leggings",
+    "drowned-choirs-slippers",
+    "drowned-choirs-wraps"
+  ],
+  "bonuses": {
+    "2": [
+      {
+        "kind": "buffStat",
+        "stat": "mana",
+        "amount": 10
+      },
+      {
+        "kind": "custom",
+        "customId": "element-damage-percent",
+        "damageType": "frost",
+        "percent": 5,
+        "target": "self"
+      }
+    ],
+    "4": [
+      {
+        "kind": "custom",
+        "customId": "frost-freezes-chilled",
+        "status": "freeze",
+        "target": "self",
+        "note": "a Chilled target hit by your Frost spell Freezes at once"
+      }
+    ]
+  },
+  "bonusText": {
+    "2": "+10 Mana; +5% Frost damage",
+    "4": "A Chilled target hit by your Frost spell Freezes at once"
+  },
+  "gradeMin": "D",
+  "gradeMax": "B",
+  "dropChance": 15
+}

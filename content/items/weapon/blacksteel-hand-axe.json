@@ -1,0 +1,50 @@
+{
+  "id": "blacksteel-hand-axe",
+  "name": "Blacksteel Hand Axe",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "B",
+  "materialLadder": "metal",
+  "materialRung": 4,
+  "weaponType": "axe",
+  "armorFamily": null,
+  "hands": 1,
+  "damageType": "slash",
+  "weight": 1000,
+  "baseStats": {
+    "attackPhys": 43,
+    "critDamage": 15,
+    "accuracy": -3
+  },
+  "requirements": {
+    "strength": 15,
+    "wisdom": 0
+  },
+  "affixSlots": 2,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 7,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 3.26,
+  "value": 1000,
+  "classLock": [
+    "warden",
+    "blade"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-hand-axe-01",
+    "tintPrimary": "#2f3136",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "blacksteel"
+  }
+}

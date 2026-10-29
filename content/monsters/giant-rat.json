@@ -101,10 +101,6 @@
       {
         "if": "a hero has the lowest HP % in the party",
         "then": "bite"
-      },
-      {
-        "if": "always",
-        "then": "bite"
       }
     ],
     "fleesAtPercent": 15

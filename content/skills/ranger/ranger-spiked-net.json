@@ -1,0 +1,60 @@
+{
+  "id": "ranger-spiked-net",
+  "classId": "ranger",
+  "school": "trapper",
+  "tier": 4,
+  "name": "Spiked Net",
+  "description": "Web 1 turn on every front-row enemy (it cannot act until the Web ends); 0.8× Pierce to each.",
+  "type": "active",
+  "cost": 32,
+  "weight": 1000,
+  "target": "enemyFront",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 0.8,
+      "damageType": "pierce",
+      "target": "enemyRow",
+      "scalesWith": "strength",
+      "note": "the whole enemy front row"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "web",
+      "duration": 1,
+      "target": "enemyRow"
+    }
+  ],
+  "prerequisiteId": "ranger-deep-tentacles-drag",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Also the back row at 50% chance.",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "web",
+        "chance": 50,
+        "duration": 1,
+        "target": "enemyRowBack",
+        "note": "the other row, at 50%"
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "control"
+  ],
+  "xpTags": [
+    "agility",
+    "perception"
+  ],
+  "aiHints": {
+    "role": "control",
+    "priority": 65
+  }
+}

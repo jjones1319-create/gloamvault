@@ -1,0 +1,57 @@
+{
+  "id": "emberheart-ring",
+  "name": "Emberheart Ring",
+  "slot": "ring",
+  "kind": "ring",
+  "grade": "A",
+  "materialLadder": null,
+  "materialRung": null,
+  "weaponType": null,
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {},
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 8,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1,
+  "value": 960,
+  "classLock": [],
+  "setId": null,
+  "unique": true,
+  "uniquePower": {
+    "text": "+10% Fire damage; +2 Vitality",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "element-damage-percent",
+        "damageType": "fire",
+        "percent": 10,
+        "target": "self"
+      }
+    ],
+    "attributes": {
+      "vitality": 2
+    }
+  },
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "ring-emberheart-01",
+    "tintPrimary": "#b45309",
+    "tintSecondary": "#dc2626",
+    "trimMetal": "skysteel"
+  }
+}

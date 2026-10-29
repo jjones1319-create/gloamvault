@@ -36,7 +36,8 @@
     "effects": [],
     "stackMax": 5,
     "target": "room",
-    "inCombat": false
+    "inCombat": false,
+    "text": "The Toll Shrine, the Sealed Sarcophagus and the Thrall's Cage: the good outcome, for sure"
   },
   "ammo": null,
   "visual": {

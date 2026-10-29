@@ -1,0 +1,53 @@
+{
+  "id": "warden-iron-vigil",
+  "classId": "warden",
+  "school": "bulwark",
+  "tier": 4,
+  "name": "Iron Vigil",
+  "description": "While any enemy is Taunted by you: +15% Defense, and +5 extra Momentum each time you are hit.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "taunting-defense-and-momentum",
+      "amount": 5,
+      "percent": 15,
+      "target": "self",
+      "note": "while an enemy holds your Taunt: Defense +percent%, +amount Momentum when hit"
+    }
+  ],
+  "prerequisiteId": "warden-unbreakable",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "+25% Defense.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "taunting-defense-and-momentum",
+        "amount": 5,
+        "percent": 25,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "taunt",
+    "momentum"
+  ],
+  "xpTags": [
+    "endurance"
+  ],
+  "aiHints": {
+    "role": "defend",
+    "priority": 0
+  }
+}

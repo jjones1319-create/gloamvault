@@ -1,0 +1,176 @@
+{
+  "id": "tidebound-drowner",
+  "name": "Tidebound Drowner",
+  "familyId": "tidebound",
+  "dungeonId": "gravehollow-keep",
+  "zoneId": "the-drowned-vault",
+  "role": "elite",
+  "size": "large",
+  "rows": [
+    "front"
+  ],
+  "levelBand": {
+    "min": 11,
+    "max": 13
+  },
+  "multipliers": {
+    "hp": 2.3,
+    "attack": 1.3,
+    "defense": 1.8
+  },
+  "speed": 85,
+  "xpClass": 3,
+  "goldMultiplier": 2.5,
+  "ambushModifier": 5,
+  "attacks": [
+    {
+      "id": "anchor-maul",
+      "name": "Anchor Maul",
+      "damageType": "blunt",
+      "weight": 1400,
+      "multiplier": 1.7,
+      "target": "enemyFront",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "daze",
+          "chance": 30
+        }
+      ],
+      "aiWeight": 50,
+      "tell": null
+    },
+    {
+      "id": "bell-toll",
+      "name": "Bell Toll",
+      "damageType": "blunt",
+      "weight": 1000,
+      "multiplier": 0.5,
+      "target": "partyFront",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "silence",
+          "duration": 1
+        }
+      ],
+      "aiWeight": 25,
+      "tell": "The Drowner strikes its own bell helm.",
+      "hint": "Bell tolling"
+    },
+    {
+      "id": "hold-under",
+      "name": "Hold Under",
+      "damageType": "blunt",
+      "weight": 1000,
+      "multiplier": 1,
+      "target": "enemyFront",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "grab",
+          "note": "released after 2 of its turns (06 §7)"
+        },
+        {
+          "kind": "custom",
+          "customId": "allies-focus-grabbed",
+          "target": "self"
+        }
+      ],
+      "aiWeight": 25,
+      "tell": "The Drowner reaches for a throat.",
+      "hint": "Drowner grappling"
+    }
+  ],
+  "resist": [
+    "slash",
+    "pierce",
+    "frost"
+  ],
+  "weak": [
+    "lightning",
+    "blunt"
+  ],
+  "immune": [],
+  "statusImmune": [
+    "chill",
+    "freeze"
+  ],
+  "behavior": {
+    "rules": [
+      {
+        "if": "tolls when a caster stands in the back row — holds under whoever is Chilled",
+        "then": "hold-under"
+      }
+    ],
+    "fleesAtPercent": 0
+  },
+  "parts": {
+    "common": {
+      "materialId": "steel",
+      "chance": 35,
+      "quantity": {
+        "min": 2,
+        "max": 2
+      }
+    },
+    "rare": {
+      "itemId": "diving-bell-plate",
+      "chance": 4,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "breakLimb": {
+      "name": "bell helm",
+      "effect": {
+        "kind": "custom",
+        "customId": "drowner-helm",
+        "status": "blind",
+        "duration": 2,
+        "note": "loses its Slash and Pierce resist, Blind (2)"
+      }
+    }
+  },
+  "monsterTechniqueSkillIds": [],
+  "elitePool": [
+    "shielded",
+    "vampiric",
+    "shackler",
+    "rabid",
+    "spiteful",
+    "warded",
+    "thorned",
+    "regenerating",
+    "mirrored",
+    "commander",
+    "leech",
+    "nullifier"
+  ],
+  "boss": null,
+  "hunter": null,
+  "visual": {
+    "baseMesh": "humanoid",
+    "scale": 1.3,
+    "variantOf": "grinning-cutpurse",
+    "palette": [
+      "#5f8f7a",
+      "#6d7277",
+      "#d8efe6"
+    ],
+    "reads200px": true,
+    "animations": [
+      "Idle",
+      "Move",
+      "Attack1",
+      "Attack2",
+      "Hit",
+      "Death",
+      "Maul",
+      "Toll",
+      "Hold"
+    ],
+    "triBudget": 5500
+  }
+}

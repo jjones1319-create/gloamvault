@@ -1,5 +1,6 @@
 import type { ComponentChildren } from 'preact'
 import { isMortal } from '../../../../../sim/src/delve.ts'
+import { isWaystoneFloor } from '../../../../../sim/src/explore.ts'
 import type { DelveCommand, LegalDelveAction } from '../../../../../sim/src/delve-types.ts'
 import { delvePartyLevel, floorThreat } from '../../../../../sim/src/threat.ts'
 import { content, delve, delveCommand, delveVersion, legalActions } from '../../../game/session.ts'
@@ -92,6 +93,11 @@ export function RoomPanel({ onItems, onPets }: { onItems: () => void; onPets: ()
     facts.push({ text: `${curio?.name ?? 'A curio'}${rs.curioUsed ? ': used' : ''}`, icon: 'curio' })
   }
   if (g.hasKey && !f.hasKey) facts.push({ text: "The floor's key is here", tone: 'good', icon: 'key' })
+  // The zone's Waystone (07 §1.1: F1, F4, F7; lit once a delve has come this far, town.ts litWaystones); Mourner's
+  // Candles' quiet rooms and a turned Sluice Wheel (07 §2.4) last the floor, so the panel says so.
+  if (g.kind === 'entry' && dungeon && isWaystoneFloor(dungeon, f.number)) facts.push({ text: "The zone's Waystone: a later delve can start on this floor", tone: 'good', icon: 'entry' })
+  if ((f.quietRooms ?? 0) > 0) facts.push({ text: `The candles burn: no ambush in the next ${f.quietRooms} new room${f.quietRooms === 1 ? '' : 's'}`, tone: 'good', icon: 'curio' })
+  if (f.sluiceDrained) facts.push({ text: 'The sluice is turned: the next flooded cell is drained', tone: 'good', icon: 'curio' })
   const secretDoor = g.doors.find((x) => x.secret)
   if (secretDoor && rs.secretRevealed && !f.rooms[secretDoor.to]?.visited) facts.push({ text: 'A secret door stands open', tone: 'good', icon: 'secret' })
   const hunter = f.hunter

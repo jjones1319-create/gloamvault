@@ -1,0 +1,48 @@
+{
+  "id": "adamantine-holy-symbol",
+  "name": "Adamantine Holy Symbol",
+  "slot": "offHand",
+  "kind": "focus",
+  "grade": "S",
+  "materialLadder": "metal",
+  "materialRung": 6,
+  "weaponType": "focus",
+  "armorFamily": null,
+  "hands": 1,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "attackSpell": 30,
+    "resistance": 3
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 14
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 9,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 5.09,
+  "value": 1500,
+  "classLock": [
+    "mender"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "focus-holy-symbol-01",
+    "tintPrimary": "#4f6f7f",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "adamantine"
+  }
+}

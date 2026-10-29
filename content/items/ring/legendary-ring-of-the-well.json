@@ -1,0 +1,46 @@
+{
+  "id": "legendary-ring-of-the-well",
+  "name": "Legendary Ring of the Well",
+  "slot": "ring",
+  "kind": "ring",
+  "grade": "S",
+  "materialLadder": null,
+  "materialRung": null,
+  "weaponType": null,
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "stamina": 30,
+    "mana": 30
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 9,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1,
+  "value": 1500,
+  "classLock": [],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "ring-well-01",
+    "tintPrimary": "#4f6f7f",
+    "tintSecondary": "#0f766e",
+    "trimMetal": "adamantine"
+  }
+}

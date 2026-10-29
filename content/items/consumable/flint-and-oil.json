@@ -42,7 +42,8 @@
     ],
     "stackMax": 5,
     "target": "room",
-    "inCombat": false
+    "inCombat": false,
+    "text": "The Lost Lantern: relight it, +25 light for sure"
   },
   "ammo": null,
   "visual": {
@@ -50,5 +51,9 @@
     "tintPrimary": "#5b5650",
     "tintSecondary": "#2b2b2b",
     "trimMetal": "none"
-  }
+  },
+  "tags": [
+    "safe-item",
+    "zone:the-cellars"
+  ]
 }

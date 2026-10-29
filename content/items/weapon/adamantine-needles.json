@@ -1,0 +1,58 @@
+{
+  "id": "adamantine-needles",
+  "name": "Adamantine Needles",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "S",
+  "materialLadder": "metal",
+  "materialRung": 6,
+  "weaponType": "throwingKnife",
+  "armorFamily": null,
+  "hands": 1,
+  "damageType": "pierce",
+  "weight": 800,
+  "baseStats": {
+    "attackPhys": 30
+  },
+  "requirements": {
+    "strength": 10,
+    "wisdom": 0
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 9,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 5.09,
+  "value": 2500,
+  "classLock": [
+    "shade"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": {
+    "text": "15% Poison on hit",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "poison",
+        "chance": 15,
+        "target": "enemy",
+        "note": "on hit"
+      }
+    ]
+  },
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-needles-01",
+    "tintPrimary": "#4f6f7f",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "adamantine"
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "id": "ebony-hand-crossbow",
+  "name": "Ebony Hand Crossbow",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "A",
+  "materialLadder": "wood",
+  "materialRung": 5,
+  "weaponType": "crossbow",
+  "armorFamily": null,
+  "hands": 1,
+  "damageType": "pierce",
+  "weight": 1000,
+  "baseStats": {
+    "attackPhys": 49
+  },
+  "requirements": {
+    "strength": 12,
+    "wisdom": 0
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 8,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 4.07,
+  "value": 1600,
+  "classLock": [
+    "ranger"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-hand-crossbow-01",
+    "tintPrimary": "#2a211c",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "skysteel"
+  }
+}

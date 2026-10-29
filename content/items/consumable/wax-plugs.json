@@ -1,0 +1,53 @@
+{
+  "id": "wax-plugs",
+  "name": "Wax Plugs",
+  "slot": null,
+  "kind": "consumable",
+  "grade": "F",
+  "materialLadder": null,
+  "materialRung": null,
+  "weaponType": null,
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": 600,
+  "baseStats": {},
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 0,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 3,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1,
+  "value": 6,
+  "classLock": [],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": {
+    "effects": [],
+    "stackMax": 5,
+    "target": "room",
+    "inCombat": false,
+    "text": "The Priestess's Hymnal: read it deaf, Silence immunity this floor for sure"
+  },
+  "ammo": null,
+  "visual": {
+    "meshId": "consumable-wax-plugs-01",
+    "tintPrimary": "#e8d9a0",
+    "tintSecondary": "#2b2b2b",
+    "trimMetal": "none"
+  },
+  "tags": [
+    "safe-item",
+    "zone:the-drowned-vault"
+  ]
+}

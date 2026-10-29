@@ -1,0 +1,59 @@
+{
+  "id": "warden-legends-voice",
+  "classId": "warden",
+  "school": "warcry",
+  "tier": 5,
+  "name": "Legend's Voice",
+  "description": "Momentum gain +25% for the whole party; your Ultimate also Weakens every enemy 2 turns.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "party-momentum-gain-percent",
+      "percent": 25,
+      "target": "self",
+      "note": "Momentum gain +percent% for every hero of the party while you stand"
+    },
+    {
+      "kind": "custom",
+      "customId": "ultimate-status-all-enemies",
+      "status": "weaken",
+      "duration": 2,
+      "target": "self",
+      "note": "after your Ultimate every enemy gains the status"
+    }
+  ],
+  "prerequisiteId": "warden-ironlung",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "+40%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "party-momentum-gain-percent",
+        "percent": 40,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "momentum",
+    "debuff"
+  ],
+  "xpTags": [
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 0
+  }
+}

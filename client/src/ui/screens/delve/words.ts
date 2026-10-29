@@ -184,15 +184,24 @@ const FIELD_SKILL_NAMES: Readonly<Record<string, string>> = {
   scouting: 'Scouting',
 }
 
+/**
+ * One of an item by name: "a Torch", "an Oilskin Cloak"; a pair, a plural or a stuff takes none ("Wax Plugs",
+ * "Flint & Oil", "Loaded Dice", "Holy Water", "Grave Salt").
+ */
+export function oneItem(name: string): string {
+  if (/ & |[^s]s$|(dice|water|salt|oil|grit)$/i.test(name)) return name
+  return `${/^[aeiou]/i.test(name) ? 'an' : 'a'} ${name}`
+}
+
 /** "needs a Torch", "needs Foraging rank 3", "needs Detection 14" — `itemName` turns an id into a name. */
 export function requirementWords(r: RequirementLike, itemName: (id: string) => string): string {
   switch (r.kind) {
     case 'item':
-      return `needs ${r.amount && r.amount > 1 ? `${r.amount}× ` : 'a '}${itemName(r.id ?? '')}`
+      return `needs ${r.amount && r.amount > 1 ? `${r.amount}× ${itemName(r.id ?? '')}` : oneItem(itemName(r.id ?? ''))}`
     case 'fieldSkillRank':
       return `needs ${FIELD_SKILL_NAMES[r.id ?? ''] ?? r.id} rank ${r.min ?? 1}`
     case 'attribute':
-      return `needs ${r.id ?? 'an attribute'} ${r.min ?? ''}`.trim()
+      return r.id ? `needs ${r.id[0]!.toUpperCase()}${r.id.slice(1)} ${r.min ?? ''}`.trim() : 'needs an attribute'
     case 'detection':
       return `needs Detection ${r.min ?? ''}`.trim()
     case 'gold':

@@ -4,7 +4,7 @@
   "school": "iron-dance",
   "tier": 2,
   "name": "Flurry",
-  "description": "Three hits of 0.55× Slash (1.65× in all) on a front-row enemy; each hit that lands +3 Momentum.",
+  "description": "Three hits of 0.4× Slash (1.2× in all) on a front-row enemy; each hit that lands +3 Momentum.",
   "type": "active",
   "cost": 14,
   "weight": 800,
@@ -12,19 +12,19 @@
   "effects": [
     {
       "kind": "damage",
-      "multiplier": 0.55,
+      "multiplier": 0.4,
       "damageType": "slash",
       "scalesWith": "strength"
     },
     {
       "kind": "damage",
-      "multiplier": 0.55,
+      "multiplier": 0.4,
       "damageType": "slash",
       "scalesWith": "strength"
     },
     {
       "kind": "damage",
-      "multiplier": 0.55,
+      "multiplier": 0.4,
       "damageType": "slash",
       "scalesWith": "strength"
     },
@@ -51,26 +51,26 @@
     "effects": [
       {
         "kind": "damage",
-        "multiplier": 0.55,
+        "multiplier": 0.4,
         "damageType": "slash",
         "scalesWith": "strength",
-        "note": "Mastery restates every hit: four of 0.55×"
+        "note": "Mastery restates every hit: four of 0.4×"
       },
       {
         "kind": "damage",
-        "multiplier": 0.55,
+        "multiplier": 0.4,
         "damageType": "slash",
         "scalesWith": "strength"
       },
       {
         "kind": "damage",
-        "multiplier": 0.55,
+        "multiplier": 0.4,
         "damageType": "slash",
         "scalesWith": "strength"
       },
       {
         "kind": "damage",
-        "multiplier": 0.55,
+        "multiplier": 0.4,
         "damageType": "slash",
         "scalesWith": "strength"
       }

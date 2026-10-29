@@ -1,0 +1,81 @@
+{
+  "id": "shade-severance",
+  "classId": "shade",
+  "school": "shadow",
+  "tier": 5,
+  "name": "Severance",
+  "description": "4.5× Pierce to one enemy in any row; below 35% HP, 6.0× with a guaranteed crit; if it kills, re-enter Veil for free.",
+  "type": "active",
+  "cost": 50,
+  "weight": 1000,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "guaranteed-crit-below-hp",
+      "percent": 35,
+      "target": "self",
+      "note": "D-099: against a target below percent% HP this action crits"
+    },
+    {
+      "kind": "damage",
+      "multiplier": 4.5,
+      "damageType": "pierce"
+    },
+    {
+      "kind": "custom",
+      "customId": "execute-multiplier",
+      "multiplier": 6,
+      "percent": 35,
+      "note": "D-099: below percent% HP the multiplier becomes 6.0 (no execute above 6.0×)"
+    },
+    {
+      "kind": "custom",
+      "customId": "veil-on-kill",
+      "duration": 2,
+      "target": "self",
+      "note": "a kill re-enters Veil for `duration` turns at no cost"
+    }
+  ],
+  "prerequisiteId": "shade-assassinate",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "requirements": {
+    "weaponTypes": [
+      "dagger"
+    ]
+  },
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Threshold 40%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "guaranteed-crit-below-hp",
+        "percent": 40,
+        "target": "self"
+      },
+      {
+        "kind": "custom",
+        "customId": "execute-multiplier",
+        "multiplier": 6,
+        "percent": 40
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "reach"
+  ],
+  "xpTags": [
+    "agility",
+    "perception"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 80
+  }
+}

@@ -4,7 +4,7 @@
   "school": "executioner",
   "tier": 3,
   "name": "Breaker's Arc",
-  "description": "2.0× Blunt to a front-row enemy — the flat and the pommel, the anti-Mail swing. Part-break: marks a limb, doubling that monster's rare-part roll. In the corridor, forces a door or chest at +5 to the Strength check.",
+  "description": "1.7× Blunt to a front-row enemy — the flat and the pommel, the anti-Mail swing. Part-break: marks a limb, doubling that monster's rare-part roll. In the corridor, forces a door or chest at +5 to the Strength check.",
   "type": "active",
   "cost": 26,
   "weight": 1400,
@@ -12,7 +12,7 @@
   "effects": [
     {
       "kind": "damage",
-      "multiplier": 2,
+      "multiplier": 1.7,
       "damageType": "blunt",
       "scalesWith": "strength"
     },

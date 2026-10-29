@@ -1,0 +1,57 @@
+{
+  "id": "shade-phantom-thief",
+  "classId": "shade",
+  "school": "larceny",
+  "tier": 5,
+  "name": "Phantom Thief",
+  "description": "Locked chests open without a check and their traps are disarmed; your Fortune cap is 35%; in-dungeon chests roll a grade up twice as often for you.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "phantom-thief-chests",
+      "percent": 200,
+      "target": "self",
+      "note": "locked chests open with no check and no trap; chests roll a grade up percent% as often (delve side)"
+    },
+    {
+      "kind": "custom",
+      "customId": "fortune-cap-raise",
+      "amount": 35,
+      "target": "self",
+      "note": "the Fortune cap becomes amount% (stub: a stats.ts joint)"
+    }
+  ],
+  "prerequisiteId": "shade-treasure-sense",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Also Skeleton Keys are never consumed.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "keys-never-consumed",
+        "target": "self",
+        "note": "Skeleton Keys are never used up (delve side)"
+      }
+    ]
+  },
+  "tags": [
+    "utility",
+    "field"
+  ],
+  "xpTags": [
+    "perception"
+  ],
+  "aiHints": {
+    "role": "utility",
+    "priority": 0
+  }
+}

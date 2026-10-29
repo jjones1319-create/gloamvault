@@ -1,0 +1,63 @@
+{
+  "id": "arcanist-sentinel-pulse",
+  "classId": "arcanist",
+  "school": "arcana",
+  "tier": 4,
+  "name": "Sentinel Pulse",
+  "description": "Every enemy loses every buff, then takes 1.2× Lightning; every ally gains a Shield of 10% of their max HP for 2 turns. Heavy cast. Monster technique: learned only by witnessing a Vault Sentinel use it.",
+  "type": "active",
+  "cost": 30,
+  "weight": 1400,
+  "target": "allEnemies",
+  "effects": [
+    {
+      "kind": "dispel",
+      "note": "on enemies: strips every buff (Fortify, Shield, Haste, Regen, Taunt) before the hit"
+    },
+    {
+      "kind": "damage",
+      "multiplier": 1.2,
+      "damageType": "lightning"
+    },
+    {
+      "kind": "shield",
+      "percent": 10,
+      "duration": 2,
+      "target": "allAllies",
+      "note": "percent of each ally’s own max HP"
+    }
+  ],
+  "prerequisiteId": "arcanist-dispel",
+  "isUltimate": false,
+  "monsterTechniqueOf": "vault-sentinel",
+  "monsterTechniqueMoveIds": [
+    "core-pulse"
+  ],
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "1.4× each.",
+    "effects": [
+      {
+        "kind": "damage",
+        "multiplier": 1.4,
+        "damageType": "lightning"
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "debuff",
+    "shield"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 70
+  }
+}

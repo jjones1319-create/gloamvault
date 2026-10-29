@@ -1,0 +1,56 @@
+{
+  "id": "shade-grand-larceny",
+  "classId": "shade",
+  "school": "larceny",
+  "tier": 4,
+  "name": "Grand Larceny",
+  "description": "Strip every buff from every enemy; each ally gains Shield = 5% of its max HP per buff stripped.",
+  "type": "active",
+  "cost": 28,
+  "weight": 800,
+  "target": "allEnemies",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "strip-buffs-shield-allies",
+      "percent": 5,
+      "status": "haste",
+      "amount": 0,
+      "target": "self",
+      "note": "strips every enemy buff; each ally gains Shield = percent% of its max HP per buff (`amount` 1: a stripped `status` becomes Slow)"
+    }
+  ],
+  "prerequisiteId": "shade-sleight",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Stripped Haste becomes Slow.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "strip-buffs-shield-allies",
+        "percent": 5,
+        "status": "haste",
+        "amount": 1,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "debuff",
+    "shield"
+  ],
+  "xpTags": [
+    "agility",
+    "perception"
+  ],
+  "aiHints": {
+    "role": "debuff",
+    "priority": 55
+  }
+}

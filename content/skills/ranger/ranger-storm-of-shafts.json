@@ -1,0 +1,96 @@
+{
+  "id": "ranger-storm-of-shafts",
+  "classId": "ranger",
+  "school": "marksman",
+  "tier": 5,
+  "name": "Storm of Shafts",
+  "description": "Three hits of 0.8× Pierce to every enemy in both rows (2.4× each); 9 arrows.",
+  "type": "active",
+  "cost": 50,
+  "weight": 1400,
+  "target": "allEnemies",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 0.8,
+      "damageType": "pierce",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "damage",
+      "multiplier": 0.8,
+      "damageType": "pierce",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "damage",
+      "multiplier": 0.8,
+      "damageType": "pierce",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "custom",
+      "customId": "consume-ammo",
+      "amount": 9,
+      "target": "self",
+      "note": "9 arrows (or bolts)"
+    }
+  ],
+  "prerequisiteId": "ranger-rain-of-points",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "requirements": {
+    "weaponTypes": [
+      "bow",
+      "shortbow",
+      "longbow",
+      "crossbow"
+    ]
+  },
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Four hits.",
+    "effects": [
+      {
+        "kind": "damage",
+        "multiplier": 0.8,
+        "damageType": "pierce",
+        "scalesWith": "strength",
+        "note": "Mastery restates every hit; the fourth is added"
+      },
+      {
+        "kind": "damage",
+        "multiplier": 0.8,
+        "damageType": "pierce",
+        "scalesWith": "strength"
+      },
+      {
+        "kind": "damage",
+        "multiplier": 0.8,
+        "damageType": "pierce",
+        "scalesWith": "strength"
+      },
+      {
+        "kind": "damage",
+        "multiplier": 0.8,
+        "damageType": "pierce",
+        "scalesWith": "strength"
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "reach"
+  ],
+  "xpTags": [
+    "perception",
+    "agility"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 70
+  }
+}

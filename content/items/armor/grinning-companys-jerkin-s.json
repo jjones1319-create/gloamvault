@@ -1,0 +1,50 @@
+{
+  "id": "grinning-companys-jerkin-s",
+  "name": "Grinning Company's Jerkin",
+  "slot": "chest",
+  "kind": "armor",
+  "grade": "S",
+  "materialLadder": "hide",
+  "materialRung": 6,
+  "weaponType": null,
+  "armorFamily": "leather",
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "defense": 24,
+    "hp": 36,
+    "dodge": 4
+  },
+  "requirements": {
+    "strength": 14,
+    "wisdom": 0
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 9,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 3.05,
+  "value": 2500,
+  "classLock": [
+    "ranger",
+    "shade"
+  ],
+  "setId": "grinning-companys-cut",
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "armor-leather-chest-01",
+    "tintPrimary": "#9b1c1c",
+    "tintSecondary": "#f1ece4",
+    "trimMetal": "brass"
+  }
+}

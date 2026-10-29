@@ -1,0 +1,194 @@
+{
+  "id": "vault-sentinel",
+  "name": "Vault Sentinel",
+  "familyId": "tidebound",
+  "dungeonId": "gravehollow-keep",
+  "zoneId": "the-drowned-vault",
+  "role": "elite",
+  "size": "large",
+  "rows": [
+    "front"
+  ],
+  "levelBand": {
+    "min": 11,
+    "max": 11
+  },
+  "multipliers": {
+    "hp": 2.6,
+    "attack": 1.2,
+    "defense": 2
+  },
+  "speed": 80,
+  "xpClass": 3,
+  "goldMultiplier": 2.5,
+  "ambushModifier": -15,
+  "attacks": [
+    {
+      "id": "halberd",
+      "name": "Halberd",
+      "damageType": "slash",
+      "weight": 1400,
+      "multiplier": 1.5,
+      "target": "enemy",
+      "effects": [],
+      "aiWeight": 45,
+      "tell": null
+    },
+    {
+      "id": "tide-ward",
+      "name": "Tide Ward",
+      "damageType": "frost",
+      "weight": 1000,
+      "multiplier": 0,
+      "target": "self",
+      "effects": [
+        {
+          "kind": "shield",
+          "percent": 25,
+          "target": "self",
+          "note": "Shield 25% of its max HP"
+        },
+        {
+          "kind": "applyStatus",
+          "status": "fortify",
+          "duration": 2,
+          "target": "allAllies",
+          "note": "Fortify (2) on the front"
+        }
+      ],
+      "aiWeight": 30,
+      "tell": null
+    },
+    {
+      "id": "core-pulse",
+      "name": "Core Pulse",
+      "damageType": "lightning",
+      "weight": 1400,
+      "multiplier": 1,
+      "target": "partyFront",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "shock",
+          "duration": 2
+        }
+      ],
+      "aiWeight": 25,
+      "tell": "The crystal in its chest glows white.",
+      "hint": "Core glowing"
+    }
+  ],
+  "resist": [
+    "slash",
+    "pierce",
+    "frost",
+    "fire"
+  ],
+  "weak": [
+    "lightning",
+    "blunt"
+  ],
+  "immune": [],
+  "statusImmune": [
+    "poison",
+    "bleed",
+    "fear",
+    "chill",
+    "freeze",
+    "grab",
+    "petrify"
+  ],
+  "behavior": {
+    "rules": [
+      {
+        "if": "round = 1",
+        "then": "tide-ward"
+      },
+      {
+        "if": "round = 5",
+        "then": "tide-ward"
+      },
+      {
+        "if": "round = 9",
+        "then": "tide-ward"
+      },
+      {
+        "if": "halberds the hero with the highest Attack",
+        "then": "halberd"
+      }
+    ],
+    "fleesAtPercent": 0
+  },
+  "parts": {
+    "common": {
+      "materialId": "steel",
+      "chance": 35,
+      "quantity": {
+        "min": 2,
+        "max": 2
+      }
+    },
+    "rare": {
+      "itemId": "sentinel-core",
+      "chance": 4,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "breakLimb": {
+      "name": "chest core",
+      "effect": {
+        "kind": "custom",
+        "customId": "lose-status-attacks",
+        "status": "fortify",
+        "damageType": "blunt",
+        "stat": "defense",
+        "percent": -40,
+        "note": "Blunt, 10% HP: no Tide Ward, Def ×1.2"
+      }
+    }
+  },
+  "monsterTechniqueSkillIds": [
+    "warden-sentinels-sweep",
+    "arcanist-sentinel-pulse"
+  ],
+  "elitePool": [
+    "shielded",
+    "vampiric",
+    "shackler",
+    "rabid",
+    "spiteful",
+    "warded",
+    "thorned",
+    "regenerating",
+    "mirrored",
+    "commander",
+    "leech",
+    "nullifier"
+  ],
+  "boss": null,
+  "hunter": null,
+  "visual": {
+    "baseMesh": "sentinel",
+    "scale": 1.3,
+    "variantOf": null,
+    "palette": [
+      "#4f9a86",
+      "#a8743a",
+      "#5fd0ff"
+    ],
+    "reads200px": true,
+    "animations": [
+      "Idle",
+      "Move",
+      "Attack1",
+      "Attack2",
+      "Hit",
+      "Death",
+      "Ward",
+      "Pulse"
+    ],
+    "triBudget": 5500
+  }
+}

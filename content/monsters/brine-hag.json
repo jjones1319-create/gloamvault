@@ -1,0 +1,188 @@
+{
+  "id": "brine-hag",
+  "name": "Brine Hag",
+  "familyId": "tidebound",
+  "dungeonId": "gravehollow-keep",
+  "zoneId": "the-drowned-vault",
+  "role": "special",
+  "size": "medium",
+  "rows": [
+    "back"
+  ],
+  "levelBand": {
+    "min": 11,
+    "max": 11
+  },
+  "multipliers": {
+    "hp": 1.3,
+    "attack": 1.3,
+    "defense": 0.7
+  },
+  "speed": 100,
+  "xpClass": 2,
+  "goldMultiplier": 2,
+  "ambushModifier": 5,
+  "attacks": [
+    {
+      "id": "salt-curse",
+      "name": "Salt Curse",
+      "damageType": "shadow",
+      "weight": 1000,
+      "multiplier": 0.6,
+      "target": "enemy",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "curse",
+          "duration": 3
+        }
+      ],
+      "aiWeight": 40,
+      "tell": null
+    },
+    {
+      "id": "salt-hex",
+      "name": "Salt Hex",
+      "damageType": "shadow",
+      "weight": 1400,
+      "multiplier": 0,
+      "target": "enemy",
+      "effects": [
+        {
+          "kind": "custom",
+          "customId": "apply-if-curse",
+          "status": "petrify",
+          "duration": 2,
+          "note": "Petrify a Cursed hero; fails on an un-Cursed one"
+        }
+      ],
+      "aiWeight": 30,
+      "tell": "The hag cackles, salt running from her fingers.",
+      "hint": "Hag cackling"
+    },
+    {
+      "id": "cackle",
+      "name": "Cackle",
+      "damageType": "shadow",
+      "weight": 800,
+      "multiplier": 0,
+      "target": "enemy",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "fear",
+          "duration": 1,
+          "note": "on the hero with the lowest Willpower"
+        }
+      ],
+      "aiWeight": 15,
+      "tell": null
+    },
+    {
+      "id": "brine-claw",
+      "name": "Brine Claw",
+      "damageType": "slash",
+      "weight": 800,
+      "multiplier": 0.9,
+      "target": "enemy",
+      "effects": [],
+      "aiWeight": 15,
+      "tell": null
+    }
+  ],
+  "resist": [
+    "frost",
+    "shadow"
+  ],
+  "weak": [
+    "lightning",
+    "holy"
+  ],
+  "immune": [],
+  "statusImmune": [
+    "fear",
+    "silence"
+  ],
+  "behavior": {
+    "rules": [
+      {
+        "if": "enemy status curse and enemy not status petrify",
+        "then": "salt-hex"
+      },
+      {
+        "if": "curses the healer first — Silencing her does nothing, Dazing or Blinding her skips the Hex",
+        "then": "salt-curse"
+      }
+    ],
+    "fleesAtPercent": 0
+  },
+  "parts": {
+    "common": {
+      "materialId": "silk",
+      "chance": 35,
+      "quantity": {
+        "min": 2,
+        "max": 2
+      }
+    },
+    "rare": {
+      "itemId": "hags-eye",
+      "chance": 4,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "breakLimb": {
+      "name": "salt-pouch",
+      "effect": {
+        "kind": "custom",
+        "customId": "lose-status-attacks",
+        "status": "petrify",
+        "note": "no Hex"
+      }
+    }
+  },
+  "monsterTechniqueSkillIds": [
+    "shade-hags-hex",
+    "arcanist-hags-cauldron"
+  ],
+  "elitePool": [
+    "shielded",
+    "vampiric",
+    "shackler",
+    "rabid",
+    "spiteful",
+    "warded",
+    "thorned",
+    "regenerating",
+    "mirrored",
+    "commander",
+    "leech",
+    "nullifier"
+  ],
+  "boss": null,
+  "hunter": null,
+  "visual": {
+    "baseMesh": "humanoid",
+    "scale": 1,
+    "variantOf": "grinning-cutpurse",
+    "palette": [
+      "#e3e6e0",
+      "#3a5a7a",
+      "#e8b4b8"
+    ],
+    "reads200px": true,
+    "animations": [
+      "Idle",
+      "Move",
+      "Attack1",
+      "Attack2",
+      "Hit",
+      "Death",
+      "Cast",
+      "Cackle"
+    ],
+    "triBudget": 4500
+  }
+}

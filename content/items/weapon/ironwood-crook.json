@@ -1,0 +1,48 @@
+{
+  "id": "ironwood-crook",
+  "name": "Ironwood Crook",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "B",
+  "materialLadder": "wood",
+  "materialRung": 4,
+  "weaponType": "staff",
+  "armorFamily": null,
+  "hands": 2,
+  "damageType": "holy",
+  "weight": 1000,
+  "baseStats": {
+    "attackSpell": 40,
+    "mana": 33
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 13
+  },
+  "affixSlots": 2,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 7,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 3.26,
+  "value": 1500,
+  "classLock": [
+    "mender"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-crook-01",
+    "tintPrimary": "#4a3b2f",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "blacksteel"
+  }
+}

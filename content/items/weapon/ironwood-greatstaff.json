@@ -1,0 +1,49 @@
+{
+  "id": "ironwood-greatstaff",
+  "name": "Ironwood Greatstaff",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "B",
+  "materialLadder": "wood",
+  "materialRung": 4,
+  "weaponType": "staff",
+  "armorFamily": null,
+  "hands": 2,
+  "damageType": "fire",
+  "weight": 1400,
+  "baseStats": {
+    "attackSpell": 59,
+    "mana": 66,
+    "speed": -3
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 21
+  },
+  "affixSlots": 2,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 7,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 3.26,
+  "value": 1500,
+  "classLock": [
+    "arcanist"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-greatstaff-01",
+    "tintPrimary": "#4a3b2f",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "blacksteel"
+  }
+}

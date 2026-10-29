@@ -2446,3 +2446,181 @@ arms — the C pass's skeletal `naesa-arm` attachment (06's design) is not wired
 ring going out, the Vault's tides, the chapel's raised EB2 mark and the arena marks; the throne fight's framing.
 Ten of the sixteen pets (the eggs of the later dungeons, and the Vault's Brine Crab and Vault Imp) are still capsules:
 the two Vault pets are modelled with the Vault content in Phase 7, the rest with their dungeons.
+
+## Phase 7 · Rounds — the passes (2026-10-28)
+
+Phase 7 is mostly sim and content; its one Blender pass built the two Drowned Vault pets that Phase 6 left as capsules (D-117). The pass log is merged here unchanged.
+
+### The pets pass E — the Brine Crab and the Vault Imp (Phase 7)
+
+*Phase 7, pets pass E (2026-10-28): the two Drowned Vault pets that still showed as capsules (D-117), `06` §9. Round by
+round in `art/LOG.md`'s format: what was built, which renders were read, the defects as a numbered list with their
+fixes, what is left. Scripts: `tools/blender/monsters/build_crab.py`, `build_imp.py` and `pet_lib.py` (new, this pass's
+own: what a pet base needs on top of pass A's `creature_lib.py`, which is unchanged). Renders:
+`art/renders/monsters/{crab,imp}/` (`cards.png` — Idle from 3/4, front, side and behind, Attack1 and Attack2 at their
+events; `card.png` and `card_200.png`, the 3/4 card and its 200-px read; `cards_200.png`; `clip_<Clip>.png`;
+`lineup.png`; `fight_view.png` / `fight_read.png`, the fight camera at the phone's canvas and its 240-px crop;
+`reimport.png`). Checks per clip and the re-import report: `art/build/monsters_{crab,imp}_checks.txt`; build logs
+`art/build/monsters_{crab,imp}_r<n>.log` and `_final.log`. All rounds rendered with `--quick` (8 samples).*
+
+#### How the two bases are built
+
+- **On pass A's kit.** Bodies are `creature_lib` implicit surfaces (metaball elements bound to bones, voxel-remeshed to
+  the budget, projected back onto the field, normals from its gradient, weights from each bone's share of the field);
+  attachments are lofts, cones, spheres and rings; each base has its own small rig (`CRig`) with the hero rig's axis
+  rules, legs solved by the two-bone IK, clips as pose tables sampled on every frame, `Root` the only bone with location
+  keys, loops closing exactly.
+- **The game's colours in the reviews.** `pet_lib.game_colors()` fills the 16 slots exactly as the client does
+  (`client/src/scene/monsters/manifest.ts → monsterPaletteHexes`: the content's three colours in 0–2, the accent again
+  in 10 and 14, the fixed ink / leather / metal / glow / bone …), so a pearl in the gem slot (14) glows in the render as
+  it glows in the game. Both pets put their pearls in slot 14 — the crab's pearl, the imp's eyes — which the client fills
+  with the content's accent and draws emissive; neither entry needs a `slots` override.
+- **The lineup is the shipped files.** Every other pet is read from its `.glb` and its manifest entry (parts, shapes,
+  scale, colours), posed at Idle frame 0, beside the 1.8 m hero silhouette — the sizes the game will show.
+- **The re-import check** imports the exported file into an empty scene (meshes, rig, every clip and its length, the
+  decoded slots), shows the pet from it at Idle, Attack1's event and Death's last frame (`reimport.png`); `inspect-glb.ts`
+  checks the COLOR_0 codes in the file itself.
+- **Floor clearance by measurement.** Lying poses are grounded on the torso; a claw, ear or tail that still dips is turned
+  (`pet_lib.clear_floor`, the crab's `clear_claws`, the imp's `clear_tail`) until its vertices clear the floor, and the
+  imp's feet get a "sole snap" after meshing (the remesh rounds thin feet off unpredictably).
+- **Sizes.** `06` §9's "crab base (new, 0.5 m)" and "imp base (new, 0.6 m)" are read as the pets' sizes, with each base
+  built at 1.0 (a 1.0 m-shell giant crab; a 1.0 m imp) and the pets at x0.5 and x0.6 — the same numbers as the client's
+  fallback `PET_SCALE` (`crab: 0.5, imp: 0.6`), so the pet is the right size even without its manifest entry.
+
+#### Phase 7 · Pets E · Crab round 1 — 2026-10-28 — the library and the first crab
+
+**Built.** `pet_lib.py` (the game palette, `PetBase(Monster)`: card sheet, lineup from the shipped files, clip checks over
+the body *and* the pet's parts, the `clips.json` / `manifest.json` entries merged under `creature_lib.merge_json`'s lock,
+the re-import check) and `build_crab.py`: 44 bones (Root · Body · Eye_L/R · per claw Claw_Arm / Fore / Hand / Finger ·
+per leg Coxa / Femur / Tibia / Tarsus — the spider's legs: a yawing coxa, a two-bone IK with the knee up, the dactyl to
+the floor); a metaball carapace with a thin flared rim, four teeth a side, two horns, eyes on stalks, an implicit
+arm-forearm-palm per claw with tube fingers (the left a crusher, x1.12), eight tube legs with pale knuckles; the part
+`crab_pearl` (a gem-slot pearl in a scalloped nacre collar); the six clips; export, tables, re-import.
+
+**Renders read:** all. It reads as a teal crab with a glowing pearl; the lineup puts it beside the Bone Pup in size; the
+GLB re-imports and poses as built.
+
+**Defects found and fixed (round 2):**
+1. The claws read as sausages — one long tube, the fingers fused into a club. → shorter arm and forearm, a big round palm,
+   a resting gape between the fingers.
+2. The legs were long and thin: a spider, not a crab. → stouter (radii x1.35), shorter, the knee lower (16°).
+3. The thin rim (a 4.5 cm disc) remeshed into a jagged fringe that read as fur. → removed; the shell is a domed ellipsoid
+   with front lobes.
+4. Death drove a claw 15 cm into the floor. → `clear_claws` raises each claw until it clears.
+5. Attack1's crusher swung down onto the floor at the hit. → it strikes forward at mid-height.
+6. The re-import report gave the clips' lengths at the wrong rate (the importer converts at the empty scene's 24 fps) and
+   its colour test tripped on the importer's own byte storage (504 values). → seconds at the import's rate; a histogram of
+   decoded slots, exactness left to `inspect-glb.ts`.
+
+#### Phase 7 · Pets E · Crab rounds 2–3 — 2026-10-28 — claws, legs, the shell's edge
+
+**Renders read:** all (round 2), the cards and Death (round 3). The shell and legs now read as a crab's.
+
+**Defects found and fixed:**
+1. (Round 2) The claws still did not read: the fingers short and seen end-on, the ink tips small dark boxes. → (round 3)
+   longer fingers, the claws raised and pointed inward.
+2. (Round 2) A plain teal blob of a shell. → (round 3) a two-tone shell (teal top, pale sides) — whose boundary, painted
+   face by face on the remeshed surface, came out ragged like torn paint. → (round 4) a clean pale lip (a flattened ring
+   tube) round the shell's widest edge instead, the pale paint only underneath; the teeth (three a side) pale and larger.
+3. (Round 3) More splay and roll in Death left the low side's legs 8 cm short of their marks (IK residual). → gentler
+   splay and roll.
+
+#### Phase 7 · Pets E · Crab rounds 4–5 — 2026-10-28 — the pincer
+
+**Renders read:** all. Round 4's claws opened in Idle but read as sock puppets: arm, forearm and palm blended into one
+tube and the gap between thick fingers closed under the outline.
+
+**Fixed in round 5:**
+1. A thin arm and wrist, then a distinctly swollen round palm.
+2. Thinner fingers bowed into a wide C, as long as the palm, **pale** (slot 1) with **dark tips** (the last 30 %, ink).
+3. The pincer's plane tilted 30° from the vertical toward outward-forward (the claw bones' Z follows it), so the C faces a
+   camera in front and above (the fight camera looks down about 30°).
+4. The pale palm-underside patches trimmed (n.z < −0.62).
+5. Death grounded on the whole mesh — a front femur had dipped 2.6 cm.
+
+Round 5's cards: the crusher reads as a pincer at the hit, both claws as raised pincers in Attack2, the C shows from
+the front.
+
+#### Phase 7 · Pets E · Crab final — 2026-10-28
+
+**Defects found and fixed:**
+1. Measured (`probe`: the torso's lowest point at Death's last frame): the whole-mesh grounding had left the dead
+   crab's shell 8 cm (4 cm at pet scale) up, propped on its legs — the 9° roll pushed the low side's femurs under the
+   floor. → a level body (pitch 0.5°, no roll), the dead feet pulled in (the knees ride higher) and the pose grounded on
+   the shell: the shell lies at 0.4 cm, nothing below 0.1 cm.
+2. The lineup's second label line (scale, triangles) fell below the floor. → one line.
+
+#### Phase 7 · Pets E · Imp round 1 — 2026-10-28 — the first imp
+
+**Built.** `build_imp.py`: 34 bones (Root · Hips · Spine · Chest · Neck · Head · Jaw · Ear_L/R · Tail_01..05 · per arm
+UpperArm / LowerArm / Hand / Fingers1 / Fingers2 / Thumb, the hand bones' Z toward the palm so +X curls on both sides ·
+per leg UpperLeg / LowerLeg / Foot / Toes, digitigrade, a two-bone IK with the knee forward); a metaball head and body
+(cranium, crown, cheeks, muzzle, slanted brows, pot belly, thin legs), a separate jaw resting a little open, arms as
+their own implicit meshes (so the hands cannot melt into the thighs), tube fingers and thumbs, big gem-slot eyes with
+ink sockets, fangs on both lips, fin-ears and a crest (spines and a scalloped membrane as thin closed slabs), an S-tail
+with a fin; the part `imp_satchel` (a leather pouch with a metal clasp on a strap round the chest); the six clips.
+
+**Before the first render (the checks):**
+1. The legs had a 2.3 cm IK residual even at rest: the hip lay at x 0.085, the other joints at 0.10, so the foot bones'
+   directions could not lie in the leg's plane. → every leg joint in one plane: residual 0.0.
+2. Death drove the tail 41 cm into the floor (on its back the S-tail points down) and then an ear fin 17 cm. → `clear_tail`
+   lifts the tail bone by bone; `pet_lib.clear_floor` turns each ear whichever way clears with the smaller turn.
+3. The feet hovered 2 cm, then (raised elements) sank 1.4 cm: the remesh rounds the thin feet off by a centimetre or two
+   either way. → element heights reset (final fix in round 2).
+
+**Renders read:** all. A white imp with glowing pearl eyes, a toothy grin, spiky fin-ears, a finned tail and a satchel;
+every clip reads (the hand-rub Idle, the scamper, the snatch, the hex, the flinch, the fall onto its back); it stands a
+third of a hero in the lineup. (A 32-minute gap between two strip renders in this run coincided with the session's
+usage-limit stop — the machine, not the build; every other render took about a second.)
+
+**Defects found and fixed (round 2):**
+1. The ink sockets were big patches — a skull or a panda, not an imp. → thin dark rims (1.22 x the eye's radius, facing
+   out).
+2. White pillar legs and paddle feet. → slimmer legs.
+3. The white hands vanished against the white belly. → hands, fingers, thumbs and feet in slot 1 (grey-beige "points",
+   like the fins).
+4. The brows did not read. → slot 1: a grey slanted brow over each eye.
+5. The fangs were long. → shorter.
+
+#### Phase 7 · Pets E · Imp rounds 2–3 — 2026-10-28 — the feet
+
+**Built (round 2):** the sole snap — after meshing, the vertices weighted to Foot / Toes move down by their weight share
+so the lowest sole point sits 4 mm above the floor (18.6–21.8 mm each build): every clip's feet at 0.3–0.4 cm.
+
+**Renders read:** all. The face now reads at 200 px (glowing eyes, dark rims, grey brows, the grin).
+
+**Defects found and fixed:**
+1. (Round 2) The feet read as tiny grey hooves on stilt shins. → (round 3) three longer, wider-spread toes with a grey web
+   between them (a newt-like Tidebound foot, a slab on the floor), thicker shins.
+2. (Round 3) In Death the arms stuck straight up — a white tangle. → (final) the arms laid out to the sides, one leg flat.
+
+#### Final state — 2026-10-28
+
+**Checks** (`art/build/monsters_{crab,imp}_checks.txt`; lowest point of the deformed body and the pet's part on any frame /
+worst IK residual / loop closure): crab — every clip ≥ 0.1 cm (Death's last frame: the shell at 0.4 cm), IK 0.0 cm, Idle
+and Move close at 0.000°, 0.0000 m; imp — every clip ≥ 0.3 cm (Death: the torso on the floor at 0.4 cm), IK 0.0 cm,
+loops close exactly. Location keys on `Root` only, both. `inspect-glb.ts`: both files, every mesh skinned, COLOR_0
+worst distance from a whole code 0.0000. Re-import: both meshes, the rig, six clips at their built lengths, the pet shown
+from the file at Idle, Attack1 and Death. `manifest.json` and `clips.json`: only `pet-brine-crab`, `pet-vault-imp`,
+`crab` and `imp` added (checked against `HEAD`: no other key changed).
+
+**Result:**
+- `crab.glb` 433 KB, 44 bones, 6 clips — Brine Crab pet x0.5: 3,518 triangles (`crab_body` 3,130 + `crab_pearl` 388);
+  a 0.5 m shell, 0.40 m to the top of the pearl, 0.76 m across the legs.
+- `imp.glb` 331 KB, 34 bones, 6 clips — Vault Imp pet x0.6: 3,276 triangles (`imp_body` 2,990 + `imp_satchel` 286);
+  0.56 m to the crown, 0.62 m to the crest, 0.44 m across the ears.
+
+**What a script did not reach / left as is (honest list):**
+1. The crab's shell top is plain teal (no pattern); its fingers are six-sided tubes, faceted at card size; the smaller
+   claw's pincer is partly behind the crusher from the 3/4 view.
+2. The crab dies belly-down with its legs splayed, not on its back — the pearl sits on top. It reads as collapsed.
+3. The pale patches under the crab's palms and the slot boundaries on remeshed surfaces are a little ragged up close
+   (per-face slots).
+4. At the fight camera both pets are small (as the Rat Prince is): the crab reads as a teal crab with a white light, the
+   imp as a white figure with two glowing eyes and fin-ears; the claws' pincers and the imp's grin are card-size reads.
+5. The dead imp, seen from low down, is a tangle of white limbs; from the fight camera it reads as fallen.
+6. The client plays Attack1 for every pet move (`fightAnims.ts`) and starts an attack 0.12 s before its event, so the
+   wind-ups (the crusher cocked open, the imp's crouch) mostly will not show in the game; Attack2 (Tide Shell, Hex) plays
+   only if the client asks for it (the entries' `clipMap` carries `Pinch`, `TideShell`, `Pilfer`, `Hex`).
+7. No Flee clip (`06` §9's pets do not flee).
+8. All review renders are `--quick` (8 samples).

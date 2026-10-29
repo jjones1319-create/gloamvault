@@ -1,0 +1,483 @@
+{
+  "id": "sister-naesa",
+  "name": "Sister Naesa, the Tidebound Priestess",
+  "familyId": "tidebound",
+  "dungeonId": "gravehollow-keep",
+  "zoneId": "the-drowned-vault",
+  "role": "boss",
+  "size": "medium",
+  "rows": [
+    "back",
+    "front"
+  ],
+  "levelBand": {
+    "min": 11,
+    "max": 11
+  },
+  "multipliers": {
+    "hp": 8,
+    "attack": 1.05,
+    "defense": 1.4
+  },
+  "speed": 105,
+  "xpClass": 25,
+  "goldMultiplier": 10,
+  "ambushModifier": 0,
+  "attacks": [
+    {
+      "id": "brine-lash",
+      "name": "Brine Lash",
+      "damageType": "frost",
+      "weight": 1000,
+      "multiplier": 1.3,
+      "target": "enemy",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "chill",
+          "duration": 2
+        }
+      ],
+      "aiWeight": 35,
+      "tell": null
+    },
+    {
+      "id": "hymn-of-the-deep",
+      "name": "Hymn of the Deep",
+      "damageType": "frost",
+      "weight": 1000,
+      "multiplier": 0,
+      "target": "allAllies",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "fortify",
+          "duration": 2
+        },
+        {
+          "kind": "applyStatus",
+          "status": "regen",
+          "duration": 2,
+          "percent": 5
+        }
+      ],
+      "aiWeight": 25,
+      "tell": "She begins the chant: a Daze or a Silence breaks it off.",
+      "hint": "Chant rising"
+    },
+    {
+      "id": "tidal-call",
+      "name": "Tidal Call",
+      "damageType": "frost",
+      "weight": 1400,
+      "multiplier": 0,
+      "target": "self",
+      "effects": [],
+      "aiWeight": 25,
+      "tell": "She raises the conch: Silence or Daze her, or Guard the weakest arm.",
+      "hint": "Conch raised"
+    },
+    {
+      "id": "drown",
+      "name": "Drown",
+      "damageType": "frost",
+      "weight": 1000,
+      "multiplier": 1,
+      "target": "enemy",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "silence",
+          "duration": 1
+        }
+      ],
+      "aiWeight": 15,
+      "tell": null,
+      "aim": "caster"
+    },
+    {
+      "id": "tentacle-lash",
+      "name": "Tentacle Lash",
+      "damageType": "blunt",
+      "weight": 1000,
+      "multiplier": 1.5,
+      "target": "partyFront",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "chill",
+          "duration": 2
+        }
+      ],
+      "aiWeight": 35,
+      "tell": null
+    },
+    {
+      "id": "embrace",
+      "name": "Embrace",
+      "damageType": "frost",
+      "weight": 1000,
+      "multiplier": 0.6,
+      "target": "enemy",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "grab",
+          "note": "06: Grab (2 turns), Frost ×0.5 per turn (the boss's Grab cap is 2 of her turns, 06 §7)"
+        },
+        {
+          "kind": "applyStatus",
+          "status": "chill",
+          "duration": 2
+        }
+      ],
+      "aiWeight": 30,
+      "tell": "Her arms coil back toward one hero.",
+      "hint": "Arms coiling"
+    },
+    {
+      "id": "undertow",
+      "name": "Undertow",
+      "damageType": "frost",
+      "weight": 1400,
+      "multiplier": 1,
+      "target": "allEnemies",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "chill",
+          "duration": 2
+        },
+        {
+          "kind": "rowSwap",
+          "target": "enemyBack",
+          "note": "pulls one back-row hero forward"
+        }
+      ],
+      "aiWeight": 20,
+      "tell": "The water drops for a turn.",
+      "hint": "Water dropping"
+    },
+    {
+      "id": "tidal-call-2",
+      "name": "Tidal Call",
+      "damageType": "frost",
+      "weight": 1400,
+      "multiplier": 0,
+      "target": "self",
+      "effects": [],
+      "aiWeight": 15,
+      "tell": "She raises the conch: Silence or Daze her, or Guard the weakest arm.",
+      "hint": "Conch raised"
+    }
+  ],
+  "resist": [
+    "frost"
+  ],
+  "weak": [
+    "lightning"
+  ],
+  "immune": [],
+  "statusImmune": [],
+  "behavior": {
+    "rules": [
+      {
+        "if": "round = 1 and phase = 1",
+        "then": "hymn-of-the-deep"
+      }
+    ],
+    "fleesAtPercent": 0
+  },
+  "parts": {
+    "common": {
+      "materialId": "steel",
+      "chance": 35,
+      "quantity": {
+        "min": 1,
+        "max": 2
+      }
+    },
+    "rare": {
+      "itemId": "brine-pearl",
+      "chance": 4,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "breakLimb": null
+  },
+  "monsterTechniqueSkillIds": [],
+  "elitePool": [],
+  "boss": {
+    "phases": [
+      {
+        "atHpPercent": 100,
+        "name": "the Altar",
+        "attacks": [
+          "brine-lash",
+          "hymn-of-the-deep",
+          "tidal-call",
+          "drown"
+        ],
+        "adds": [
+          {
+            "monsterId": "tidebound-acolyte",
+            "count": 2,
+            "row": "back"
+          },
+          {
+            "monsterId": "tidebound-blade",
+            "count": 1,
+            "row": "front"
+          }
+        ],
+        "arenaRule": "The Tide: the water rises a step every 3 rounds (the boom is the tell). Step 2: the back row wades (Slow). Step 3: every Lightning attack chains to both rows. Step 4: the three Deep Tentacles rise and Grab a front-row hero each. The sluice wheel (Strength 12) lowers it a step. Fallen adds re-enter once, 4 rounds after they fall."
+      },
+      {
+        "atHpPercent": 50,
+        "name": "the Ascension",
+        "attacks": [
+          "tentacle-lash",
+          "embrace",
+          "undertow",
+          "tidal-call-2"
+        ],
+        "adds": [],
+        "arenaRule": "She walks into the water (Large, the Silence aura: the hero she last hit is Silenced 1 turn) and the tide jumps to step 3; under 20% it rises every 2 rounds.",
+        "row": "front",
+        "size": "large",
+        "tide": 3,
+        "hooks": [
+          {
+            "kind": "custom",
+            "customId": "silence-aura",
+            "status": "silence",
+            "duration": 1,
+            "percent": 0,
+            "note": "06 §3.3: the hero she last hit is Silenced 1 turn (no regen penalty: percent 0)"
+          }
+        ]
+      }
+    ],
+    "everyKill": [
+      {
+        "kind": "material",
+        "id": "steel",
+        "amount": 5,
+        "note": "08 §11: Steel ×10 + Silk ×10 + Brine Pearl ×3 on the first kill, half after"
+      },
+      {
+        "kind": "material",
+        "id": "silk",
+        "amount": 5
+      },
+      {
+        "kind": "item",
+        "id": "brine-pearl",
+        "amount": 1
+      },
+      {
+        "kind": "item",
+        "id": "whetstone",
+        "amount": 3
+      },
+      {
+        "kind": "item",
+        "grade": "A",
+        "chance": 10,
+        "note": "08 §11: after the first kill an A-grade item 10% (it also rolls on the first)"
+      }
+    ],
+    "firstKill": [
+      {
+        "kind": "material",
+        "id": "steel",
+        "amount": 5
+      },
+      {
+        "kind": "material",
+        "id": "silk",
+        "amount": 5
+      },
+      {
+        "kind": "item",
+        "id": "brine-pearl",
+        "amount": 2
+      },
+      {
+        "kind": "gold",
+        "amount": 300,
+        "note": "06 'gold ×10 (×3 first kill)': the fight's own gold is 08 §11's 150; the first kill adds twice that"
+      },
+      {
+        "kind": "tome",
+        "tier": 3
+      },
+      {
+        "kind": "item",
+        "grade": "A"
+      },
+      {
+        "kind": "item",
+        "id": "the-tidebound-idol",
+        "note": "the zone Relic (08 §3): once per fight, cleanse every debuff on the party"
+      },
+      {
+        "kind": "item",
+        "id": "grand-chest-key"
+      },
+      {
+        "kind": "title",
+        "id": "tide-turner"
+      }
+    ],
+    "immunities": [
+      "fear",
+      "petrify",
+      "grab",
+      "web",
+      "root"
+    ],
+    "cannotFlee": true,
+    "arena": {
+      "room": "vlt-t-drowned-chapel",
+      "tells": [
+        {
+          "id": "tide-rising",
+          "hint": "Tide rising",
+          "cue": "the sub-bass boom"
+        }
+      ],
+      "rules": [
+        {
+          "kind": "tide",
+          "max": 4,
+          "every": 3,
+          "fastEvery": 2,
+          "fastBelowHpPercent": 20,
+          "tell": "tide-rising",
+          "status": "slow",
+          "duration": 1,
+          "attribute": "strength",
+          "min": 12,
+          "adds": [
+            {
+              "monsterId": "deep-tentacle",
+              "count": 3,
+              "row": "front"
+            }
+          ],
+          "params": {
+            "wadeAt": 2,
+            "chainAt": 3,
+            "chainPercent": 50,
+            "deepAt": 4
+          },
+          "note": "07 §2.8's tide 0–4. The chain: half the blow runs through the water into the struck one's side (Proposed)."
+        },
+        {
+          "kind": "reenter",
+          "phases": [
+            1
+          ],
+          "afterRounds": 4,
+          "params": {
+            "groups": "start"
+          }
+        },
+        {
+          "kind": "call",
+          "attack": "tidal-call",
+          "adds": [
+            {
+              "monsterId": "deep-tentacle",
+              "count": 1,
+              "row": "front"
+            }
+          ],
+          "params": {
+            "hpPercent": 50,
+            "grab": "lowestStrength",
+            "refill": true
+          }
+        },
+        {
+          "kind": "call",
+          "attack": "tidal-call-2",
+          "adds": [
+            {
+              "monsterId": "deep-tentacle",
+              "count": 1,
+              "row": "front"
+            }
+          ],
+          "params": {
+            "hpPercent": 50,
+            "grab": "lowestStrength",
+            "refill": true
+          }
+        }
+      ]
+    },
+    "parts": [
+      {
+        "id": "conch",
+        "name": "conch",
+        "hpPercent": 5,
+        "damageTypes": [],
+        "crit": false,
+        "effect": {
+          "removeAttacks": [
+            "tidal-call",
+            "tidal-call-2"
+          ]
+        }
+      },
+      {
+        "id": "tentacle-arm",
+        "name": "tentacle arm",
+        "hpPercent": 10,
+        "damageTypes": [
+          "slash"
+        ],
+        "crit": false,
+        "fromPhase": 2,
+        "effect": {
+          "removeAttacks": [
+            "embrace"
+          ],
+          "attackMultiplier": {
+            "tentacle-lash": 1
+          }
+        }
+      }
+    ]
+  },
+  "hunter": null,
+  "visual": {
+    "baseMesh": "humanoid",
+    "scale": 1,
+    "variantOf": null,
+    "palette": [
+      "#f2eee6",
+      "#3a5a7a",
+      "#4f7a4a"
+    ],
+    "reads200px": true,
+    "animations": [
+      "Idle",
+      "Move",
+      "Attack1",
+      "Attack2",
+      "Hit",
+      "Death",
+      "Cast",
+      "Call",
+      "Ascend",
+      "Embrace",
+      "Undertow"
+    ],
+    "triBudget": 12000
+  }
+}

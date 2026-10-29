@@ -1,0 +1,64 @@
+{
+  "id": "arcanist-winters-breath",
+  "classId": "arcanist",
+  "school": "rime",
+  "tier": 4,
+  "name": "Winter’s Breath",
+  "description": "1.3× Frost to every back-row enemy; Chill 2 turns; Slow 2 turns (the back row is where the casters stand).",
+  "type": "active",
+  "cost": 30,
+  "weight": 1000,
+  "target": "enemyBack",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1.3,
+      "damageType": "frost",
+      "target": "enemyRow",
+      "note": "the whole back row"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "chill",
+      "duration": 2,
+      "target": "enemyRow"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "slow",
+      "duration": 2,
+      "target": "enemyRow"
+    }
+  ],
+  "prerequisiteId": "arcanist-frozen-tomb",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Silence 1 turn as well.",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "silence",
+        "duration": 1,
+        "target": "enemyRow"
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "control",
+    "debuff",
+    "reach"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "control",
+    "priority": 65
+  }
+}

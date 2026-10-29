@@ -1,0 +1,25 @@
+{
+  "id": "ghoul-pack",
+  "tableId": "crypts-c",
+  "dungeonId": "gravehollow-keep",
+  "floorBand": {
+    "min": 5,
+    "max": 6
+  },
+  "name": "Ghoul Pack",
+  "composition": [
+    {
+      "monsterId": "ghoul",
+      "count": 2,
+      "row": "front"
+    },
+    {
+      "monsterId": "skeleton-archer",
+      "count": 2,
+      "row": "back"
+    }
+  ],
+  "weight": 15,
+  "ambushModifier": -5,
+  "eliteAllowed": true
+}

@@ -63,6 +63,35 @@
       "maxItems": 3,
       "uniqueItems": true
     },
+    "starterKitName": {
+      "type": "string",
+      "description": "What New hero calls the default kit when the class offers others (\"Sword and shield\").",
+      "minLength": 1,
+      "maxLength": 40
+    },
+    "starterKitOptions": {
+      "type": "array",
+      "description": "Other starter kits New hero offers beside starterKit (D-099: the Warden's spear kit, the Blade's greatsword kit; 08 §12). A kit replaces the whole starterKit list and names its own three recommended Tier I picks; a hero takes one kit.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "$ref": "common.schema.json#/$defs/id" },
+          "name": { "type": "string", "minLength": 1, "maxLength": 40 },
+          "description": { "type": "string", "minLength": 1 },
+          "starterKit": { "$ref": "common.schema.json#/$defs/idList", "description": "Item ids, as starterKit." },
+          "starterSkillIds": {
+            "type": "array",
+            "description": "The three Tier I picks this kit recommends (each must work with the kit).",
+            "items": { "$ref": "common.schema.json#/$defs/id" },
+            "minItems": 3,
+            "maxItems": 3,
+            "uniqueItems": true
+          }
+        },
+        "required": ["id", "name", "description", "starterKit", "starterSkillIds"],
+        "additionalProperties": false
+      }
+    },
     "fieldSkillAffinities": {
       "type": "array",
       "description": "Field skills the class is good at (§7.6: Shade → Lockpicking, Ranger → Trap Disarm, Mender → First Aid). The bonus is added to the field skill's rank for checks.",

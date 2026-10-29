@@ -68,7 +68,10 @@
       "rankBonus": 1
     }
   ],
-  "monsterTechniqueIds": [],
+  "monsterTechniqueIds": [
+    "ranger-deep-tentacles-drag",
+    "ranger-grave-bats-screech"
+  ],
   "aiRuleDefault": "IF self HP < 30% THEN item small hp potion on self; IF enemy status mark THEN aimed shot on marked enemy; ELSE hunters mark on strongest enemy",
   "visual": {
     "gearSetId": "ranger-rawhide-leather",

@@ -1,0 +1,48 @@
+{
+  "id": "shade-second-shadow",
+  "classId": "shade",
+  "school": "shadow",
+  "tier": 4,
+  "name": "Second Shadow",
+  "description": "Whenever an attack on you misses or is dodged, you gain Veil until your next action.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "veil-on-evade",
+      "target": "self",
+      "note": "a failed hit roll against the holder gives it Veil 1 turn"
+    }
+  ],
+  "prerequisiteId": "shade-killers-calm",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Also +10 Momentum each time.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "momentum-on-dodge",
+        "amount": 10,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff"
+  ],
+  "xpTags": [
+    "agility"
+  ],
+  "aiHints": {
+    "role": "defend",
+    "priority": 0
+  }
+}

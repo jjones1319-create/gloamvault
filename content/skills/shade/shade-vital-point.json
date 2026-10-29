@@ -4,7 +4,7 @@
   "school": "shadow",
   "tier": 3,
   "name": "Vital Point",
-  "description": "1.9× Pierce to a front-row enemy; against a target below 25% HP, 3.8×.",
+  "description": "2.55× Pierce to a front-row enemy; against a target below 25% HP, 5.15×.",
   "type": "active",
   "cost": 20,
   "weight": 800,
@@ -12,13 +12,13 @@
   "effects": [
     {
       "kind": "damage",
-      "multiplier": 1.9,
+      "multiplier": 2.55,
       "damageType": "pierce"
     },
     {
       "kind": "custom",
       "customId": "execute-multiplier",
-      "multiplier": 3.8,
+      "multiplier": 5.15,
       "percent": 25,
       "note": "when the target’s HP is below percent% of max, this skill’s damage multiplier becomes `multiplier` instead"
     }
@@ -41,7 +41,7 @@
       {
         "kind": "custom",
         "customId": "execute-multiplier",
-        "multiplier": 3.8,
+        "multiplier": 5.15,
         "percent": 30
       }
     ]

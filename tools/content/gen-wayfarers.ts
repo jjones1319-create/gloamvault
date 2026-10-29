@@ -4,7 +4,9 @@
  * and then the table), never the generated JSON.
  *
  * The Segment 1 cast: eighteen named wayfarers, three per class across the six species (each species three times),
- * graded D (6) · C (6) · B (4) · A (2). Creation points are 6 + 1 per grade above D, at most 3 on one attribute
+ * graded D (6) · C (6) · B (4) · A (2); Phase 7 adds six S-grade wayfarers, one per class and one per species, whom
+ * only the Grand Wayfarer Chest calls (content/chests/grand-wayfarer-chest.json, sold from band E: "S-grade wayfarers
+ * for deeper bands", 12 Phase 7). Creation points are 6 + 1 per grade above D, at most 3 on one attribute
  * (03 §2.3). An AI rule of null means the class's default rule; a wayfarer whose three skills differ from the
  * class's starter picks carries a rule that uses them (the grammar is sim/src/ai.ts). Each carries a look fitted to their
  * bio (Phase 5): the frame by the name (broad for the men, slight for the women), a skin tone and face preset of the
@@ -21,7 +23,7 @@ interface Row {
   name: string
   speciesId: string
   classId: string
-  grade: 'D' | 'C' | 'B' | 'A'
+  grade: 'D' | 'C' | 'B' | 'A' | 'S'
   freePoints: Partial<Record<Attribute, number>>
   starterSkillIds: [string, string, string]
   aiRule: string | null
@@ -254,6 +256,79 @@ export const CAST: readonly Row[] = [
     aiRule: `${POTION}; IF ally HP < 50% THEN mend on lowest ally; IF enemies count > 2 THEN radiance; ELSE smite front enemy`,
     bio: 'Traded the war-drum for the prayer-bell, and hits just as hard with either.',
     look: { frame: 'slight', skin: 1, face: 2, hair: 4 },
+  },
+  // S grade (Phase 7): one per class, one per species, the class's own starter picks (so the class default AI rule).
+  {
+    id: 'vorrin-scalehold',
+    name: 'Vorrin Scalehold',
+    speciesId: 'draconid',
+    classId: 'warden',
+    grade: 'S',
+    freePoints: { endurance: 3, vitality: 3, strength: 2, willpower: 2 },
+    starterSkillIds: ['warden-shield-slam', 'warden-provoke', 'warden-brace'],
+    aiRule: null,
+    bio: 'Held the bridge at Saltmere for a night and a day; the river remembers, and so does he.',
+    look: { frame: 'broad', skin: 2, face: 1, hair: 3 },
+  },
+  {
+    id: 'ysolde-marrick',
+    name: 'Ysolde Marrick',
+    speciesId: 'human',
+    classId: 'blade',
+    grade: 'S',
+    freePoints: { strength: 3, agility: 3, perception: 2, vitality: 2 },
+    starterSkillIds: ['blade-twin-cut', 'blade-open-vein', 'blade-flowing-guard'],
+    aiRule: null,
+    bio: 'Retired from the sword twice, and came back both times because nothing else felt like being awake.',
+    look: { frame: 'slight', skin: 0, face: 2, hair: 1 },
+  },
+  {
+    id: 'brenna-coalbrook',
+    name: 'Brenna Coalbrook',
+    speciesId: 'dwarf',
+    classId: 'ranger',
+    grade: 'S',
+    freePoints: { perception: 3, agility: 3, endurance: 2, strength: 2 },
+    starterSkillIds: ['ranger-aimed-shot', 'ranger-hunters-mark', 'ranger-keen-eyes'],
+    aiRule: null,
+    bio: "Hunts with the crossbow her grandfather built and the patience her grandmother taught.",
+    look: { frame: 'slight', skin: 1, face: 0, hair: 2 },
+  },
+  {
+    id: 'zhurra-velk',
+    name: 'Zhurra Velk',
+    speciesId: 'orc',
+    classId: 'shade',
+    grade: 'S',
+    freePoints: { agility: 3, strength: 3, perception: 2, luck: 2 },
+    starterSkillIds: ['shade-veil', 'shade-backstab', 'shade-toxic-jab'],
+    aiRule: null,
+    bio: 'The loudest family in the clans raised the quietest daughter, and she has made a living of it.',
+    look: { frame: 'slight', skin: 2, face: 2, hair: 0 },
+  },
+  {
+    id: 'ithiel-vantor',
+    name: 'Ithiel Vantor',
+    speciesId: 'elf',
+    classId: 'arcanist',
+    grade: 'S',
+    freePoints: { wisdom: 3, willpower: 3, perception: 2, luck: 2 },
+    starterSkillIds: ['arcanist-ember-lance', 'arcanist-frostbolt', 'arcanist-arcane-ward'],
+    aiRule: null,
+    bio: "Three hundred years of study, two hundred of them in the Ember Academy's library, and still taking notes.",
+    look: { frame: 'broad', skin: 0, face: 1, hair: 5 },
+  },
+  {
+    id: 'hazel-thimblewick',
+    name: 'Hazel Thimblewick',
+    speciesId: 'halfling',
+    classId: 'mender',
+    grade: 'S',
+    freePoints: { wisdom: 3, willpower: 3, luck: 2, vitality: 2 },
+    starterSkillIds: ['mender-mend', 'mender-smite', 'mender-cleanse'],
+    aiRule: null,
+    bio: 'Bakes bread, binds wounds and has buried no one in forty years of walking behind adventurers.',
+    look: { frame: 'slight', skin: 1, face: 1, hair: 5 },
   },
 ]
 

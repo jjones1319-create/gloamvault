@@ -1,0 +1,57 @@
+{
+  "id": "shade-widows-kiss",
+  "classId": "shade",
+  "school": "venom",
+  "tier": 5,
+  "name": "Widow’s Kiss",
+  "description": "3.0× Shadow to a front-row enemy; Petrify 1 turn (−1,000 energy) if the target is Poisoned; bosses: Stun 1 turn instead.",
+  "type": "active",
+  "cost": 40,
+  "weight": 800,
+  "target": "enemyFront",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 3,
+      "damageType": "shadow"
+    },
+    {
+      "kind": "custom",
+      "customId": "petrify-poisoned-stun-boss",
+      "status": "petrify",
+      "duration": 1,
+      "note": "`status` for `duration` on a Poisoned target (`amount` 1: any target); a boss is Stunned 1 turn instead"
+    }
+  ],
+  "prerequisiteId": "shade-black-mirror",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Petrify on any target.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "petrify-poisoned-stun-boss",
+        "status": "petrify",
+        "duration": 1,
+        "amount": 1
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "control"
+  ],
+  "xpTags": [
+    "agility",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 70
+  }
+}

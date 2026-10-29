@@ -1,0 +1,26 @@
+{
+  "id": "hazel-thimblewick",
+  "name": "Hazel Thimblewick",
+  "speciesId": "halfling",
+  "classId": "mender",
+  "grade": "S",
+  "freePoints": {
+    "wisdom": 3,
+    "willpower": 3,
+    "luck": 2,
+    "vitality": 2
+  },
+  "starterSkillIds": [
+    "mender-mend",
+    "mender-smite",
+    "mender-cleanse"
+  ],
+  "aiRule": null,
+  "bio": "Bakes bread, binds wounds and has buried no one in forty years of walking behind adventurers.",
+  "look": {
+    "frame": "slight",
+    "skin": 1,
+    "face": 1,
+    "hair": 5
+  }
+}

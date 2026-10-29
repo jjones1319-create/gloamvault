@@ -48,7 +48,8 @@
         }
       ],
       "aiWeight": 30,
-      "tell": "The Bruiser hefts the club overhead."
+      "tell": "The Bruiser hefts the club overhead.",
+      "hint": "Bruiser hefting"
     },
     {
       "id": "shove",
@@ -99,16 +100,12 @@
   "behavior": {
     "rules": [
       {
-        "if": "self's first turn",
+        "if": "round = 1",
         "then": "bellow"
       },
       {
         "if": "a hero has dealt self 20% or more of its max HP since its last turn (target: that hero)",
         "then": "skull-crack"
-      },
-      {
-        "if": "always",
-        "then": "club"
       }
     ],
     "fleesAtPercent": 0

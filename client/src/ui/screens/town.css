@@ -617,6 +617,17 @@ html[data-reduce-motion='1'] .tw-scene__window--flicker {
   border: 1px solid var(--line);
   background: var(--bg-raised);
 }
+/* Phase 7: what the Hall never sells (Tier IV, techniques, the Ultimate) shows where it comes from; Tier V is sealed. */
+.tw-skill--notsold {
+  border-style: dashed;
+}
+.tw-skill--sealed {
+  opacity: 0.5;
+}
+.tw-insight {
+  margin: 0 0 6px;
+  color: var(--ember);
+}
 .tw-skill--locked {
   opacity: 0.75;
 }
@@ -1397,4 +1408,149 @@ html[data-reduce-motion='1'] .tw-reveal * {
   .tw-bank {
     grid-template-columns: minmax(0, 1fr);
   }
+}
+
+/* ================= Waystone: difficulty and Pacts (07 §6; pass D) ================= */
+
+.tw-lock {
+  margin-left: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-dim);
+}
+.tw-pacts {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 8px;
+}
+.tw-pact {
+  min-height: 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 2px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--bg-raised);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.tw-pact--on {
+  border-color: var(--ember);
+  background: #2a1e14;
+  box-shadow: 0 0 0 1px var(--ember) inset;
+}
+.tw-pact--off {
+  opacity: 0.45;
+  cursor: default;
+}
+.tw-pact__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px;
+}
+.tw-pact__name {
+  font-weight: 700;
+}
+.tw-pact__weight {
+  color: var(--ember);
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+.tw-pact__effect {
+  font-size: var(--fs-small);
+  color: var(--ink-dim);
+  line-height: 1.25;
+}
+.tw-pact__reward {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--good);
+}
+
+/* ================= Quest Board: progress and claims (07 §7; pass D) ================= */
+
+.tw-progress {
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+.tw-progress__fill {
+  height: 100%;
+  background: var(--ember);
+}
+.tw-progress__fill--done {
+  background: var(--good);
+}
+.tw-contract__progress {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: var(--fs-small);
+  color: var(--ink-dim);
+}
+.tw-contract--done {
+  border-color: var(--good);
+}
+.tw-contract--claimed {
+  opacity: 0.6;
+}
+.tw-board__keys {
+  font-size: var(--fs-small);
+  color: var(--ink-dim);
+}
+
+/* ================= Lantern Inn: the "No striker" hint (D-099; pass D) ================= */
+
+.tw-hint {
+  margin: 6px 0 0;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #e6b54a;
+  background: rgba(230, 181, 74, 0.1);
+  color: #f3dca8;
+  font-size: var(--fs-small);
+  font-weight: 600;
+}
+
+/* ================= Stables: the trait's rank (03 §9; pass D) ================= */
+
+.tw-trait {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--fs-small);
+  color: var(--ink-dim);
+}
+.tw-trait .tw-progress {
+  flex: 0 1 120px;
+}
+
+/* The Waystone's party and Enter stay in view while the Pacts scroll (pass D). */
+.tw-waystone__go {
+  position: sticky;
+  top: 0;
+  align-self: start;
+}
+
+/* ================= Curio Merchant: chest keys (07 §7; pass B, Phase 7) ================= */
+.tw-chest__foot {
+  flex-wrap: wrap;
+}
+/* on a chest card the key takes its own row under Odds and Buy; on a wayfarer card it sits between them */
+.tw-chest__foot .btn.tw-chest__key {
+  order: 3;
+  flex: 1 0 100%;
+}
+.btn.tw-chest__key {
+  white-space: nowrap;
+}
+.tw-hint--top {
+  margin: 0 0 8px;
 }

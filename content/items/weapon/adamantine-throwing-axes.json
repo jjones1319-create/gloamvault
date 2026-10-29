@@ -1,0 +1,48 @@
+{
+  "id": "adamantine-throwing-axes",
+  "name": "Adamantine Throwing Axes",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "S",
+  "materialLadder": "metal",
+  "materialRung": 6,
+  "weaponType": "throwingKnife",
+  "armorFamily": null,
+  "hands": 1,
+  "damageType": "slash",
+  "weight": 1000,
+  "baseStats": {
+    "attackPhys": 54,
+    "critDamage": 10
+  },
+  "requirements": {
+    "strength": 14,
+    "wisdom": 0
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 9,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 5.09,
+  "value": 2500,
+  "classLock": [
+    "shade"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-throwing-axes-01",
+    "tintPrimary": "#4f6f7f",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "adamantine"
+  }
+}

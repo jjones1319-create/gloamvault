@@ -56,6 +56,32 @@
     "warden-provoke",
     "warden-brace"
   ],
+  "starterKitName": "Sword and shield",
+  "starterKitOptions": [
+    {
+      "id": "spear",
+      "name": "Spear",
+      "description": "A Copper Spear in both hands instead of the sword and buckler: reach into the back row from the front (the Vanguard school).",
+      "starterKit": [
+        "copper-spear",
+        "copper-helm",
+        "copper-breastplate",
+        "copper-greaves",
+        "copper-sabatons",
+        "copper-gauntlets",
+        "ring-of-vigor",
+        "small-hp-potion",
+        "torch",
+        "repair-kit",
+        "bandage"
+      ],
+      "starterSkillIds": [
+        "warden-reaching-thrust",
+        "warden-provoke",
+        "warden-brace"
+      ]
+    }
+  ],
   "fieldSkillAffinities": [
     {
       "fieldSkill": "fieldRepair",
@@ -66,7 +92,10 @@
       "rankBonus": 2
     }
   ],
-  "monsterTechniqueIds": [],
+  "monsterTechniqueIds": [
+    "warden-bone-knights-stand",
+    "warden-sentinels-sweep"
+  ],
   "aiRuleDefault": "IF self HP < 30% THEN item small hp potion on self; IF allies count > 1 AND ally HP < 40% THEN provoke; IF self HP < 60% AND self not status fortify THEN brace; ELSE shield slam front enemy",
   "visual": {
     "gearSetId": "warden-copper-plate",

@@ -62,7 +62,10 @@
       "rankBonus": 2
     }
   ],
-  "monsterTechniqueIds": [],
+  "monsterTechniqueIds": [
+    "arcanist-hags-cauldron",
+    "arcanist-sentinel-pulse"
+  ],
   "aiRuleDefault": "IF self HP < 30% THEN item small hp potion on self; IF ally HP < 50% THEN arcane ward on lowest ally; ELSE ember lance on weakest enemy",
   "visual": {
     "gearSetId": "arcanist-burlap-robes",

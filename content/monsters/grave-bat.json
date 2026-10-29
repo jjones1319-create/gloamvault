@@ -1,0 +1,155 @@
+{
+  "id": "grave-bat",
+  "name": "Grave Bat",
+  "familyId": "restless-dead",
+  "dungeonId": "gravehollow-keep",
+  "zoneId": "the-crypts",
+  "role": "fodder",
+  "size": "small",
+  "rows": [
+    "front",
+    "back"
+  ],
+  "levelBand": {
+    "min": 5,
+    "max": 8
+  },
+  "multipliers": {
+    "hp": 0.5,
+    "attack": 0.9,
+    "defense": 0.4
+  },
+  "speed": 135,
+  "xpClass": 1,
+  "goldMultiplier": 0.6,
+  "ambushModifier": 10,
+  "attacks": [
+    {
+      "id": "shriek",
+      "name": "Shriek",
+      "damageType": "blunt",
+      "weight": 800,
+      "multiplier": 0.4,
+      "target": "enemy",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "daze",
+          "note": "pushes the target back 500 on the strip"
+        }
+      ],
+      "aiWeight": 50,
+      "tell": null
+    },
+    {
+      "id": "blood-nip",
+      "name": "Blood Nip",
+      "damageType": "pierce",
+      "weight": 800,
+      "multiplier": 0.8,
+      "target": "enemy",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "bleed",
+          "duration": 2
+        },
+        {
+          "kind": "custom",
+          "customId": "heal-percent-of-damage-dealt",
+          "percent": 50,
+          "note": "heals the bat the Bleed amount: two ticks of 25% of the nip"
+        }
+      ],
+      "aiWeight": 50,
+      "tell": null
+    }
+  ],
+  "resist": [
+    "shadow"
+  ],
+  "weak": [
+    "fire",
+    "lightning"
+  ],
+  "immune": [],
+  "statusImmune": [
+    "fear",
+    "web"
+  ],
+  "behavior": {
+    "rules": [
+      {
+        "if": "flies to the row with the hero about to act next and Shrieks them — a Blinded bat attacks at random",
+        "then": "shriek"
+      }
+    ],
+    "fleesAtPercent": 0
+  },
+  "parts": {
+    "common": {
+      "materialId": "bat-wing",
+      "chance": 35,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "rare": {
+      "itemId": "crypt-bat-egg",
+      "chance": 4,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "breakLimb": {
+      "name": "wing",
+      "effect": {
+        "kind": "custom",
+        "customId": "set-speed",
+        "amount": 90,
+        "note": "Speed 90, grounded"
+      }
+    }
+  },
+  "monsterTechniqueSkillIds": [
+    "ranger-grave-bats-screech"
+  ],
+  "elitePool": [
+    "shielded",
+    "vampiric",
+    "shackler",
+    "rabid",
+    "spiteful",
+    "warded",
+    "thorned",
+    "regenerating",
+    "mirrored",
+    "commander",
+    "leech",
+    "nullifier"
+  ],
+  "boss": null,
+  "hunter": null,
+  "visual": {
+    "baseMesh": "bat",
+    "scale": 1,
+    "variantOf": null,
+    "palette": [
+      "#4a4f5c",
+      "#e6dcc4",
+      "#c8243a"
+    ],
+    "reads200px": true,
+    "animations": [
+      "Idle",
+      "Move",
+      "Attack1",
+      "Attack2",
+      "Hit",
+      "Death"
+    ],
+    "triBudget": 2000
+  }
+}

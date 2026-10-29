@@ -1,0 +1,54 @@
+{
+  "id": "mender-verdant-pulse",
+  "classId": "mender",
+  "school": "benediction",
+  "tier": 4,
+  "name": "Verdant Pulse",
+  "description": "Heal one ally for 45% of their max HP (× your healing power) and give them Regen 3 turns — the emergency button, at light weight.",
+  "type": "active",
+  "cost": 30,
+  "weight": 800,
+  "target": "ally",
+  "effects": [
+    {
+      "kind": "heal",
+      "percent": 45,
+      "scalesWith": "wisdom"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "regen",
+      "duration": 3,
+      "percent": 5,
+      "note": "the Regen magnitude 03 §3.5 gives (5% of max HP per turn)"
+    }
+  ],
+  "prerequisiteId": "mender-blessed-rain",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Heal 55%.",
+    "effects": [
+      {
+        "kind": "heal",
+        "percent": 55,
+        "scalesWith": "wisdom"
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "heal"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "heal",
+    "priority": 85
+  }
+}

@@ -63,7 +63,9 @@
       "rankBonus": 2
     }
   ],
-  "monsterTechniqueIds": [],
+  "monsterTechniqueIds": [
+    "mender-wraiths-lament"
+  ],
   "aiRuleDefault": "IF self HP < 30% THEN item small hp potion on self; IF ally HP < 50% THEN mend on lowest ally; ELSE smite front enemy",
   "visual": {
     "gearSetId": "mender-burlap-robes",

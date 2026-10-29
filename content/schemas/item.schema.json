@@ -255,6 +255,19 @@
             },
             "effects": {
               "$ref": "common.schema.json#/$defs/effectList"
+            },
+            "attributes": {
+              "type": "object",
+              "description": "A named unique's attribute lines (08 §7: the Emberheart Ring's '+2 Vitality'), which a buffStat line cannot name: added to the wearer's attributes while the item is not Broken.",
+              "propertyNames": {
+                "$ref": "common.schema.json#/$defs/attribute"
+              },
+              "additionalProperties": {
+                "type": "integer",
+                "minimum": -20,
+                "maximum": 20
+              },
+              "minProperties": 1
             }
           },
           "required": [
@@ -283,6 +296,29 @@
             },
             "target": {
               "$ref": "common.schema.json#/$defs/target"
+            },
+            "text": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "description": "08 §3's Effect column as the card prints it."
+            },
+            "instant": {
+              "type": "boolean",
+              "description": "08 §3 '(instant)': no Item action — the hero acts again; absent means an Item action (weight 600)."
+            },
+            "usesPerFloor": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "A once-per-floor relic (the Hollow Coin): uses per floor of a delve, on top of usesPerFight."
+            },
+            "timing": {
+              "type": "string",
+              "enum": [
+                "fight",
+                "afterFight"
+              ],
+              "description": "When it is used: in a fight (the default) or when a won fight is over (the Hollow Coin re-rolls the fight's item drop)."
             }
           },
           "required": [
@@ -316,6 +352,12 @@
             "inCombat": {
               "type": "boolean",
               "description": "Usable during a fight."
+            },
+            "text": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "description": "What the card says it is for: a safe item names the curio it answers (07 §2.4)."
             }
           },
           "required": [
@@ -376,6 +418,15 @@
         "trimMetal"
       ],
       "additionalProperties": false
+    },
+    "tags": {
+      "type": "array",
+      "description": "Optional tags (Phase 7): 'safe-item' with 'zone:<zoneId>' on the merchant's safe items (07 §2.7: he stocks two of the zone's); 'boss-only' on a boss's own relic (never a random drop or a chest's); 'chest-key:<tier>' on a key that opens one Curio Merchant chest of that tier free (07 §7); 'skeleton-key' on a key that opens a locked chest or door in the dungeon; 'regional' on a material that is a regional name of its rung (it counts for promotion; crates and salvage pay the rung's first name). Absent means none.",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9]+(-[a-z0-9]+)*(:[a-z0-9]+(-[a-z0-9]+)*)?$"
+      },
+      "uniqueItems": true
     }
   },
   "required": [
@@ -611,6 +662,10 @@
         },
         "maxDurability": {
           "$ref": "common.schema.json#/$defs/percent"
+        },
+        "skillId": {
+          "$ref": "common.schema.json#/$defs/id",
+          "description": "A Skill Tome (kind 'tome') only: the class skill it teaches (03 §7.5, 08 §4; Phase 7, pass A)."
         }
       },
       "required": [

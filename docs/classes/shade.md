@@ -1,6 +1,6 @@
 # Shade — class sheet
 
-*Last updated 2026-10-27 · rev. 2 (checkpoint 1: open questions answered by delegation — D-099) · rev. 1 2026-10-26 · numbers are tuning starting points*
+*Last updated 2026-10-28 · rev. 5 (Phase 7 joints: Treasure Sense read by the delve) · rev. 4 (Phase 7 class-damage pass: the tuned multipliers in §4 and "As tuned" under it) · rev. 3 (Phase 7: Tiers IV–V as built — §4's "As built" note; D-099's cap on Severance; the technique rule as accepted; §2 and §7's stale lines) · rev. 2 (checkpoint 1: open questions answered by delegation — D-099) · rev. 1 2026-10-26 · numbers are tuning starting points*
 
 *Every number below (costs, multipliers, durations, the Cellars monster stats in §8) is a starting point for the simulator and the balance runner, not a commitment. Rules referenced are `03-GAME-DESIGN.md` (§2 stats, §3 timeline, §4 exploring, §5 level-by-use, §6 gear, §7 skills, §8.3 chests). Status numbers quoted in skill lines (Bleed 25% of the applying hit per turn for 3 turns, ignores Defense · Poison 3% of max HP per turn, ignores Defense · Weaken −20% Attack · Fortify +20% Defense · Mark +20% damage taken · Slow ×0.67 Speed · Haste ×1.5 · Daze −500 energy · Petrify −1,000 energy · Curse −10% all stats) belong to `content/statuses/<id>.json` (`03` §3.5 is the table) and are repeated here only so the lines read on their own. **Veil** is a Shade-only state, not a global status: while Veiled the Shade cannot be chosen as the target of a single-target attack (AoE still hits), and its next attack is a backstab; Veil ends when the Shade attacks or after 2 turns.*
 
@@ -28,8 +28,8 @@ The Shade is the fastest thing on the party's side of the timeline (Speed 107 at
 | Pool | **Stamina** = 30 + 3 × End → **60** at End 10 |
 | Armor family | **Leather** (hide ladder Rawhide → Ancient Dragon Scale); speed penalty **−3**, relieved 1 point per Strength above the set's requirement, never below 0 (Crude Leather requires Str 10) |
 | Allowed weapons | **Dagger** (1h · Pierce · **light 800** · dual: basic attack strikes twice at 0.5× each) · **Short Sword** (1h · Slash · normal 1,000 · pairs with an off-hand dagger: basic at 1,000, 1.0× + 0.4×) · **Throwing Knives** (off-hand brace · Pierce · light 800 · either row · Attack 5 at F · retrieved after the fight, no ammo) |
-| Weapon handling (proposed, to confirm in `08-ITEMS.md`) | Dual daggers: weaponAttack = main + 0.5 × off. Shadow skills require a dagger in the main hand; Venom and Larceny work with any kit; "any row" skills throw a knife if the Shade is in the back row and stab if it is in the front |
-| Starter kit (F-grade, Crude; `08` §12) | Copper Dagger (Attack 8, req Str 6) · Copper Throwing Knives (off hand, Attack 7, req Str 5; adds 50%) · Rawhide Hood / Jerkin / Breeches / Boots / Gloves (Defense 1 / 4 / 3 / 1 / 1 = 10) · Ring of Shadows (+1% Dodge) · 2 Small HP Potions · 2 Torches · 1 Repair Kit · 1 Bandage · one F-grade pet egg. A second Copper Dagger (0.6 × 150 gold) is the first Blacksmith purchase for the dual build |
+| Weapon handling (as built, `08` §1) | Dual daggers: weaponAttack = main + 0.5 × off. Shadow skills require a dagger in the main hand; Venom and Larceny work with any kit; "any row" skills throw a knife if the Shade is in the back row and stab if it is in the front |
+| Starter kit (F-grade, Crude; `08` §12) | Copper Dagger (Attack 8, req Str 6) · Copper Throwing Knives (off hand, Attack 7, req Str 5; adds 50%) · Rawhide Hood / Jerkin / Breeches / Boots / Gloves (Defense 1 / 4 / 3 / 1 / 1 = 10) · Ring of Shadows (+1% Dodge) · 2 Small HP Potions · 2 Torches · 1 Repair Kit · 1 Bandage · one F-grade pet egg. The town sells no weapons: a second dagger for the dual build comes from a Weapon chest or a drop |
 | Derived at creation (class modifiers only, all else 10) | HP 103 · Attack **40** (8 + 3.5 + 2 × 10 + 2 × 4 spare Str over the Dagger's req 6) · Defense 20 (10 + 10) · Speed **107** (100 + 10 − 3) · Stamina 60 · Crit **6%** (x = 1 + 1) · Crit Damage 152% · Accuracy 91% · Dodge 2.2% (1.2% + 1% ring) · Variance floor 0.91 · Fortune 5.5% · Detection 11 · Carry 50 kg |
 | Recommended Tier I starter picks | **Veil** (Shadow) · **Backstab** (Shadow) · **Toxic Jab** (Venom) — the two-beat burst and a DoT that keeps working while the Shade is hiding. A loot-minded player takes **Pickpocket** instead of Toxic Jab |
 
@@ -54,7 +54,7 @@ The only Ultimate at light weight: the Shade acts again sooner than any other cl
 
 ## 4. The three schools
 
-*Reading the tables.* Cost is Stamina. Weight is energy subtracted after the action (light 800 · normal 1,000 · heavy 1,400). Multipliers are of Attack. "Front" = the enemy front row; "any row" = flank or throw. Each Tier II–V skill names exactly one Tier N−1 skill of its own school as prerequisite. Rank 1–10 grows by use (+4% effect, −2% cost per rank); Mastery is the rank-10 line. Insight sweet spots by tier (enemy level ≈ tier × 6): Tier II at L9–15 (the Crypts, the Vault), Tier III at L15–21 (the Fungal Deep), Tier IV at L21–27 (Emberforge). **Monster techniques** only Insight while the named monster uses the move; proposed flat 10% per witnessed use, pity at 10 (see §10).
+*Reading the tables.* Cost is Stamina. Weight is energy subtracted after the action (light 800 · normal 1,000 · heavy 1,400). Multipliers are of Attack. "Front" = the enemy front row; "any row" = flank or throw. Each Tier II–V skill names exactly one Tier N−1 skill of its own school as prerequisite. Rank 1–10 grows by use (+4% effect, −2% cost per rank); Mastery is the rank-10 line. Insight sweet spots by tier (enemy level ≈ tier × 6): Tier II at L9–15 (the Crypts, the Vault), Tier III at L15–21 (the Fungal Deep), Tier IV at L21–27 (Emberforge). **Monster techniques** are learned only by witnessing the named monster use the move: a flat 10% per witnessed use, certain by the 10th (D-028, D-099; the witness also needs the technique's prerequisite). They are never sold and never come in a Tome.
 
 ### 4.1 Shadow — stealth, execute, crit, backstab from the front row
 
@@ -63,19 +63,19 @@ The only Ultimate at light weight: the Shade acts again sooner than any other cl
 | Tier | Skill | Type | Cost | Weight | Target | Effect | Prerequisite | Mastery (rank 10 bonus) |
 |---|---|---|---|---|---|---|---|---|
 | I | Veil | Active | 10 | 800 | Self | Enter Veil (untargetable by single-target attacks, max 2 turns, ends when you attack); +10 Momentum | — | Costs 0 on your first action of a fight |
-| I | Backstab | Active | 12 | 800 | Single any row | 1.5× Pierce (flank: hits the back row from the front); from Veil ×2 and +30% Crit Rate | — | From Veil ×2.5 |
+| I | Backstab | Active | 12 | 800 | Single any row | 2.05× Pierce (flank: hits the back row from the front); from Veil ×2 and +30% Crit Rate | — | From Veil ×2.5 |
 | I | Cold Read | Passive | — | — | Passive | Crit Rate +5%; each crit you land +5 Momentum | — | +10% Crit Rate |
 | II | Shadowstep | Active | 12 | 800 | Self | Swap rows as part of the action and enter Veil for 1 turn | Veil | Veil 2 turns |
-| II | Throat Cut | Active | 15 | 800 | Single front | 1.3× Pierce; Silence 2 turns (no skills); +50% against a Dazed target | Backstab | Silence 3 turns |
+| II | Throat Cut | Active | 15 | 800 | Single front | 1.75× Pierce; Silence 2 turns (no skills); +50% against a Dazed target | Backstab | Silence 3 turns |
 | II | Opportunist | Passive | — | — | Passive | +15% damage against enemies under any status; your crits against such enemies Daze 20% | Cold Read | +25% / Daze 35% |
 | III | Wraith-step | Active | 22 | 800 | Self | **(monster technique: wraith)** Veil 2 turns that your own DoT ticks do not break; your next attack is Shadow element (applies Wither: −50% healing 2 turns) | Shadowstep | Also +15 Momentum |
-| III | Vital Point | Active | 20 | 800 | Single front | 1.9× Pierce; below 25% HP, 3.8× | Throat Cut | Threshold 30% |
+| III | Vital Point | Active | 20 | 800 | Single front | 2.55× Pierce; below 25% HP, 5.15× | Throat Cut | Threshold 30% |
 | III | Killer's Calm | Passive | — | — | Passive | Crit Damage +25%; your first crit each fight +20 Momentum | Opportunist | +40% Crit Damage |
 | IV | Phantom Twin | Active | 30 | 800 | Self | For 2 turns, the first single-target attack aimed at you each turn hits a decoy and misses; +15 Momentum | Wraith-step | 3 turns |
 | IV | Assassinate | Active | 35 | 1,000 | Single any row | 2.8× Pierce; from Veil: guaranteed crit and ignores 50% of the target's Defense (the anti-Plate strike) | Vital Point | Ignores 75% |
 | IV | Second Shadow | Passive | — | — | Passive | Whenever an attack on you misses or is dodged, you gain Veil until your next action | Killer's Calm | Also +10 Momentum each time |
 | V | Unseen Hand | Active | 40 | 800 | Party | Every ally is untargetable by single-target attacks for 1 turn (an AoE still lands); Taunts and Marks on allies are stripped | Phantom Twin | 2 turns |
-| V | Severance | Active | 50 | 1,000 | Single any row | 4.5× Pierce; below 35% HP, 9.0×; if it kills, re-enter Veil for free | Assassinate | Threshold 40% |
+| V | Severance | Active | 50 | 1,000 | Single any row | 4.5× Pierce; below 35% HP, 6.0× with a guaranteed crit (D-099: no execute above 6.0×); if it kills, re-enter Veil for free | Assassinate | Threshold 40% |
 | V | Death's Whisper | Passive | — | — | Passive | Your Crit Rate cap is 55%; a crit from Veil applies Fear 1 turn to every other enemy | Second Shadow | Fear 2 turns |
 
 ### 4.2 Venom — poison, debuffs, Shadow element
@@ -84,13 +84,13 @@ The only Ultimate at light weight: the Shade acts again sooner than any other cl
 
 | Tier | Skill | Type | Cost | Weight | Target | Effect | Prerequisite | Mastery (rank 10 bonus) |
 |---|---|---|---|---|---|---|---|---|
-| I | Toxic Jab | Active | 10 | 800 | Single front | 1.0× Pierce; Poison 3 turns (re-applying refreshes the duration) | — | Poison 4 turns |
+| I | Toxic Jab | Active | 10 | 800 | Single front | 1.35× Pierce; Poison 3 turns (re-applying refreshes the duration) | — | Poison 4 turns |
 | I | Crippling Dust | Active | 11 | 800 | Single any row | Blind 2 turns (−30% Accuracy) | — | Two targets |
 | I | Steeped Blades | Passive | — | — | Passive | Poison you apply lasts +1 turn and ticks +15% | — | +30% |
-| II | Festering Wound | Active | 15 | 800 | Single front | 1.2× Pierce; if the target is Poisoned, also Weaken 2 turns | Toxic Jab | Weaken 3 turns |
+| II | Festering Wound | Active | 15 | 800 | Single front | 1.6× Pierce; if the target is Poisoned, also Weaken 2 turns | Toxic Jab | Weaken 3 turns |
 | II | Choking Cloud | Active | 16 | 1,000 | Enemy back row | Poison 2 turns and Silence 1 turn on every back-row enemy | Crippling Dust | Also Blind 1 turn |
 | II | Envenom | Active | 12 | 800 | Self | Your next 3 hits apply Poison 3 turns; +5 Momentum | Steeped Blades | 5 hits |
-| III | Venom Burst | Active | 24 | 1,000 | Single any row | 1.6× Shadow; consumes the target's Poison and deals its remaining ticks ×1.5 at once | Festering Wound | ×2.0 |
+| III | Venom Burst | Active | 24 | 1,000 | Single any row | 2.15× Shadow; consumes the target's Poison and deals its remaining ticks ×1.5 at once | Festering Wound | ×2.0 |
 | III | Hag's Hex | Active | 22 | 1,000 | Single any row | **(monster technique: brine hag)** Curse 3 turns (−10% all stats) and Slow 2 turns | Choking Cloud | Curse −15% |
 | III | Shadow Oil | Active | 18 | 800 | Self | For 3 turns your attacks deal Shadow element (Wither: −50% healing) and +15% damage | Envenom | 4 turns, +20% |
 | IV | Plague Knife | Active | 30 | 800 | Single any row | 2.0× Pierce; Poison 4 turns; when a Poisoned target dies, its Poison spreads to every enemy in its row | Venom Burst | Spreads to both rows |
@@ -106,13 +106,13 @@ The only Ultimate at light weight: the Shade acts again sooner than any other cl
 
 | Tier | Skill | Type | Cost | Weight | Target | Effect | Prerequisite | Mastery (rank 10 bonus) |
 |---|---|---|---|---|---|---|---|---|
-| I | Pickpocket | Active | 8 | 800 | Single front | 0.6× Pierce; steal gold = 5 × enemy level (once per enemy) | — | 10 × level |
+| I | Pickpocket | Active | 8 | 800 | Single front | 0.8× Pierce; steal gold = 5 × enemy level (once per enemy) | — | 10 × level |
 | I | Light Fingers | Passive | — | — | Passive | Lockpicking +2; a locked chest you open rolls one grade up 10% of the time | — | Lockpicking +4; 20% |
 | I | Smoke Pellet | Active | 10 | 800 | Party | Every ally Dodge +15% for 1 turn; the party's Flee chance +25% this turn | — | 2 turns |
-| II | Filch | Active | 14 | 800 | Single front | 0.8× Pierce; steal a **common part** from a monster or a potion from a Grinning Company bandit (once per enemy) | Pickpocket | 25% chance of a rare part instead |
-| II | Trap Trick | Active | 12 | 800 | Single any row / corridor | Corridor: pocket a trap you have disarmed (hold up to 2). Combat: throw a pocketed trap — 1.2× Pierce and Root 1 turn | Light Fingers | Hold 3; thrown traps 1.6× |
+| II | Filch | Active | 14 | 800 | Single front | 1.1× Pierce; steal a **common part** from a monster or a potion from a Grinning Company bandit (once per enemy) | Pickpocket | 25% chance of a rare part instead |
+| II | Trap Trick | Active | 12 | 800 | Single any row / corridor | Corridor: pocket a trap you have disarmed (hold up to 2). Combat: throw a pocketed trap — 1.6× Pierce and Root 1 turn | Light Fingers | Hold 3; thrown traps 2.15× |
 | II | Vanish | Active | 15 | 800 | Self | Enter Veil and swap to the back row; your next Larceny skill costs 0 | Smoke Pellet | Also +10 Momentum |
-| III | Mug | Active | 20 | 800 | Single front | 1.8× Pierce; steal gold = 15 × enemy level; against a boss, steal a guaranteed common part | Filch | 25 × level |
+| III | Mug | Active | 20 | 800 | Single front | 2.45× Pierce; steal gold = 15 × enemy level; against a boss, steal a guaranteed common part | Filch | 25 × level |
 | III | Saboteur | Passive | — | — | Passive | Trap Disarm +2; every successful disarm pockets the trap (Trap Trick); pocketed traps deal +50% | Trap Trick | Disarm failures never trigger on you |
 | III | Sleight | Active | 18 | 800 | Single any row | Steal one buff from the target (Fortify, Haste, Shield or Regen) and give it to an ally of your choice | Vanish | Steal two |
 | IV | Heist | Active | 30 | 1,000 | Single front | 2.4× Pierce; the target's next part roll is made at ×2 (as a part-break); against bandits, steals their held item | Mug | Part roll ×3 |
@@ -121,6 +121,28 @@ The only Ultimate at light weight: the Shade acts again sooner than any other cl
 | V | King's Ransom | Active | 45 | 1,000 | Single front | 3.5× Pierce; steal gold = 50 × enemy level; against a boss, steal a guaranteed rare part | Heist | 80 × level |
 | V | Phantom Thief | Passive | — | — | Passive | Locked chests open without a check and their traps are disarmed; your Fortune cap is 35%; in-dungeon chests roll a grade up twice as often for you | Treasure Sense | Also Skeleton Keys are never consumed |
 | V | Vault Cracker | Active | 40 | 1,400 | Single any row / corridor | Corridor: open any locked door or chest with no check and no trap. Combat: 2.0× Pierce that ignores all Defense against constructs and armored elites (vault sentinels, bone knights, forge-golems) | Grand Larceny | 2.6× |
+
+**As built (Phase 7).** Tiers IV–V are content (`content/skills/shade/`, written by `tools/content/gen-class-shade.ts`). Tier V is written but locked until Segment 3's endgame (D-099: no Insight, no Tome, no Skill Hall); Tier IV comes from Insight, boss Tomes and Skill Tome chests, never the Hall. The readings where a row needed one:
+- **"From Veil"** (Assassinate, Death's Whisper) is read from the fight log or the turn start, because the fight ends Veil the moment the Shade attacks, before any line resolves.
+- **Assassinate**: from Veil the strike is a guaranteed crit that lands as if half the target's Defense were gone.
+- **Severance** (D-099): below 35% HP it is 6.0× with a guaranteed crit. A kill re-enters Veil for 2 turns.
+- **Second Shadow**: a failed hit roll against the Shade (a dodge, a Blind miss) Veils it for 1 turn, so its next strike counts as from Veil.
+- **Phantom Twin**: one decoy per turn, for the Shade's next 2 turns.
+- **Unseen Hand**: single-target blows on the party miss for 1 turn (an AoE still lands). A status-only move (a net, a hex) carries no blow and still lands.
+- **Plague Knife**: when the knife's target dies Poisoned, its Poison spreads to its row. A death by a Poison tick spreads at the Shade's next turn start.
+- **Black Mirror** and **Grand Larceny** strip every buff except Veil. Grand Larceny's Shield is one Shield per ally, sized by the whole haul.
+- **Nightshade Veins** pays Stamina for ticks of the Shade's own Poison. Under 20% HP the tick lands a second time.
+- **Widow's Kiss**: a boss's Stun becomes a Daze (`03`'s status table, as D-073 read Frozen Tomb's boss line).
+- **Heist**: a bandit's held item is a Small HP Potion, as Filch's is.
+- **Treasure Sense**: Detection +4 (Mastery +6) for secret doors and a treasure room's hidden find, never for traps, added to the party's best Detection as a pet's +5 is (a Phase 7 joint in the delve). Its +10% gold works through the gold-found line.
+- **Stubs** (each logs a `hookStub` the runner counts):
+  - the Crit Rate cap of Death's Whisper and the Fortune cap of Phantom Thief (a stat clamp no passive reaches yet);
+  - Toxicologist (the status rules);
+  - Phantom Thief's chest rules and its Mastery;
+  - Vault Cracker's corridor half (its combat strike works).
+
+
+**As tuned (Phase 7, the class-damage pass).** `tools/balance/class-damage.ts` measures each class alone against every zone’s standard monsters at its own level, as single-target damage per round (10 timeline ticks: one normal action of a Speed-100 hero), at levels 1, 5, 8 and 13; the brief is that no damage dealer outdoes another by more than about 1.5×. Before the pass the spread was 2.6× / 2.5× / 3.1× / 2.5×; after it, 1.41× / 1.28× / 1.49× / 1.49×. On the first numbers the Shade dealt about half of the Blade and the Arcanist at every level (L1 36, L13 79 against 193): daggers carry little Attack, the Shade's Strength barely grows, and the Crypts halve Pierce. Its Tier I–III damage multipliers are now ×1.35 (Backstab 2.05×, Toxic Jab 1.35×, Pickpocket 0.8×, Throat Cut 1.75×, Festering Wound 1.6×, Filch 1.1×, Trap Trick 1.6× (Mastery 2.15×), Vital Point 2.55× and 5.15× below 25% HP — still under D-099's 6.0× — Mug 2.45×, Venom Burst 2.15×); the tables above carry them. Tier IV–V keep the sheet's numbers until Dungeon 2 lets them be measured. §8's worked example keeps its original arithmetic.
 
 ---
 
@@ -159,7 +181,7 @@ The only Ultimate at light weight: the Shade acts again sooner than any other cl
 | **Vitality** | damage taken | moderate and spiky — the Shade is not hit often, but hard |
 | **Willpower** | resisting a status | moderate — Fear and Web checks on the front row |
 | **Endurance** | taking hits | slow |
-| **Luck** | not trainable; gear, blessings and the proposed +1 per final-boss first kill | — |
+| **Luck** | not trainable; gear, blessings and +1 per final boss's first kill, up to +4 (D-098) | — |
 
 **A level-20 Shade** (160 skill ranks, ~3,500 hits landed, ~60 finds) looks like: Str 14 · Agi **26** · Vit 14 · End 12 · Wis 11 · Per **22** · Will 14 · Luck 12 (one blessing). With two C-grade Steel Daggers (weaponAttack 14.7 + 7.4 = 22; Attack 22 + 2 × 14 + 2 × 4 spare Str = **58**), Speed 100 + 80 − 3 + 3 relief = **180** — 2.25 light actions for every normal action of a Speed-80 enemy. Crit 5% + 40 × 14 / 94 = 11% base, **16% with Cold Read, 46% from Veil** (cap 45% before Death's Whisper); Crit Damage 150 + 24 + 8 + 25 (Killer's Calm) = 207%. Dodge 30 × 17 / 77 = 6.6%. The level-20 Shade has 188 HP (30 + 7 × 14 + 60) and Defense 32; it lives by not being targeted, and its Veil → Assassinate opens a boss phase for 2.8× × 2 × 2.07 ≈ 11.6× Attack on a guaranteed crit.
 

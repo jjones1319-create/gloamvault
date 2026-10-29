@@ -1,0 +1,26 @@
+{
+  "id": "brenna-coalbrook",
+  "name": "Brenna Coalbrook",
+  "speciesId": "dwarf",
+  "classId": "ranger",
+  "grade": "S",
+  "freePoints": {
+    "perception": 3,
+    "agility": 3,
+    "endurance": 2,
+    "strength": 2
+  },
+  "starterSkillIds": [
+    "ranger-aimed-shot",
+    "ranger-hunters-mark",
+    "ranger-keen-eyes"
+  ],
+  "aiRule": null,
+  "bio": "Hunts with the crossbow her grandfather built and the patience her grandmother taught.",
+  "look": {
+    "frame": "slight",
+    "skin": 1,
+    "face": 0,
+    "hair": 2
+  }
+}

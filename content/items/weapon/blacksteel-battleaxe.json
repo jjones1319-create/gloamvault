@@ -1,0 +1,50 @@
+{
+  "id": "blacksteel-battleaxe",
+  "name": "Blacksteel Battleaxe",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "B",
+  "materialLadder": "metal",
+  "materialRung": 4,
+  "weaponType": "greataxe",
+  "armorFamily": null,
+  "hands": 2,
+  "damageType": "slash",
+  "weight": 1400,
+  "baseStats": {
+    "attackPhys": 73,
+    "critDamage": 25,
+    "accuracy": -3,
+    "speed": -5
+  },
+  "requirements": {
+    "strength": 24,
+    "wisdom": 0
+  },
+  "affixSlots": 2,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 7,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 3.26,
+  "value": 1500,
+  "classLock": [
+    "blade"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-battleaxe-01",
+    "tintPrimary": "#2f3136",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "blacksteel"
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "id": "warden-living-wall",
+  "classId": "warden",
+  "school": "bulwark",
+  "tier": 5,
+  "name": "Living Wall",
+  "description": "Block also applies to elemental attacks, at half your Block chance; every block gives you +5 Momentum.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "elemental-block-and-momentum",
+      "amount": 5,
+      "percent": 50,
+      "target": "self",
+      "note": "elemental hits are blocked at percent% of your Block chance; +amount Momentum per block"
+    }
+  ],
+  "prerequisiteId": "warden-iron-vigil",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Full Block chance against elements.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "elemental-block-and-momentum",
+        "amount": 5,
+        "percent": 100,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "shield",
+    "momentum"
+  ],
+  "xpTags": [
+    "endurance"
+  ],
+  "aiHints": {
+    "role": "defend",
+    "priority": 0
+  }
+}

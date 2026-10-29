@@ -2,7 +2,10 @@
  * tools/content/gen-class-mender.ts — writes content/classes/mender.json and content/skills/mender/*.json
  * from docs/classes/mender.md (§2 numbers, §3 the Ultimate, §4.1–§4.3 the three school tables, §5 affinities).
  *
- * Phase 3 (12-ROADMAP): Tiers I–III of every school (27 skills) plus the Ultimate. Tiers IV–V are not written yet.
+ * Phase 3 (12-ROADMAP) wrote Tiers I–III of every school (27 skills) plus the Ultimate; Phase 7 adds Tiers IV–V (18 more;
+ * Tier V is designed here and locked until Segment 3's endgame, D-099) and the checkpoint-1 Breath of Life (D-099: weight
+ * 1,000, so it is never charged or interrupted, at 28 Mana). The technique fields (Wraith's Lament; Troll's Regrowth,
+ * whose Warren Troll waits for the Fungal Deep) come from the library's TECHNIQUES table through writeClassRecords.
  * Every number is the sheet's; where a line cannot be said in the effect DSL it is a `custom` line whose `note`
  * states the hook's contract (content/README.md rule 31 wants a handler per customId in sim/src/skills/custom/).
  * Heals are `heal` by percent of the target's max HP with `scalesWith: wisdom` — D-062's +2% per point above 10 is
@@ -11,11 +14,8 @@
  *
  * Re-runnable: the same tables write the same files. Run: node tools/content/gen-class-mender.ts
  */
-import fs from 'node:fs'
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { writeClassRecords } from './gen-class-lib.ts'
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..')
 const CLASS_ID = 'mender'
 const RANK_SCALING = { effectPerRank: 4, costPerRank: -2 }
 
@@ -25,7 +25,7 @@ type Effect = Json & { kind: string }
 interface SkillSpec {
   id: string
   school: 'benediction' | 'sanctity' | 'vigil'
-  tier: 1 | 2 | 3
+  tier: 1 | 2 | 3 | 4 | 5
   name: string
   description: string
   type?: 'active' | 'passive'
@@ -181,9 +181,9 @@ const benediction: SkillSpec[] = [
     school: 'benediction',
     tier: 2,
     name: 'Breath of Life',
-    description: 'Revive a downed ally at 30% HP within the 3-turn window; the floor’s revive budget is not spent. Heavy cast.',
-    cost: 20,
-    weight: 1400,
+    description: 'Revive a downed ally at 30% HP within the 3-turn window; the floor’s revive budget is not spent. Normal weight: it is never charged, so a hit cannot interrupt it.',
+    cost: 28,
+    weight: 1000,
     target: 'downedAlly',
     effects: [{ kind: 'revive', percent: 30, note: 'in-fight revive within the window (03 §12.1); spends no floor revive budget' }],
     prerequisiteId: 'mender-soothing-word',
@@ -285,6 +285,118 @@ const benediction: SkillSpec[] = [
     xpTags: ['wisdom', 'willpower'],
     ai: { role: 'heal', priority: 95 },
   },
+
+  // Tier IV–V (Phase 7): docs/classes/mender.md §4.1. Rebirth and Miracle raise the dead in a fight (D-089); Tier V is
+  // designed here and locked until Segment 3 (D-099). Troll's Regrowth is a technique whose monster (the Fungal Deep's
+  // Warren Troll) is not in the game yet: the library marks it monsterTechniqueLater, so it cannot be learned.
+  {
+    id: 'mender-verdant-pulse',
+    school: 'benediction',
+    tier: 4,
+    name: 'Verdant Pulse',
+    description: 'Heal one ally for 45% of their max HP (× your healing power) and give them Regen 3 turns — the emergency button, at light weight.',
+    cost: 30,
+    weight: 800,
+    target: 'ally',
+    effects: [heal(45), { kind: 'applyStatus', status: 'regen', duration: 3, percent: 5, note: 'the Regen magnitude 03 §3.5 gives (5% of max HP per turn)' }],
+    prerequisiteId: 'mender-blessed-rain',
+    mastery: { text: 'Heal 55%.', effects: [heal(55)] },
+    tags: ['singleTarget', 'heal'],
+    xpTags: ['wisdom'],
+    ai: { role: 'heal', priority: 85 },
+  },
+  {
+    id: 'mender-rebirth',
+    school: 'benediction',
+    tier: 4,
+    name: 'Rebirth',
+    description: 'Revive every downed ally at 50% HP; once per fight it also raises one fallen hero (past the 3-turn window) at 50%. Heavy cast.',
+    cost: 40,
+    weight: 1400,
+    target: 'allDowned',
+    effects: [
+      { kind: 'revive', percent: 50, note: 'every downed ally, inside the 3-turn window (03 §12.1)' },
+      { kind: 'custom', customId: 'revive-fallen', percent: 50, amount: 1, target: 'self', note: 'raises up to `amount` fallen heroes per fight at percent% HP: the chosen target when it has fallen, else the first (D-089)' },
+    ],
+    prerequisiteId: 'mender-sanctuary',
+    mastery: { text: 'Fallen: twice per fight.', effects: [{ kind: 'custom', customId: 'revive-fallen', percent: 50, amount: 2, target: 'self' }] },
+    tags: ['aoe', 'revive', 'heal'],
+    xpTags: ['wisdom', 'willpower'],
+    ai: { role: 'heal', priority: 95 },
+  },
+  {
+    id: 'mender-trolls-regrowth',
+    school: 'benediction',
+    tier: 4,
+    name: 'Troll’s Regrowth',
+    description: 'Regen on your allies ticks twice per turn; any Fire damage on a holder removes its Regen, as it does the troll’s. Monster technique: learned only by witnessing a Warren Troll (the Fungal Deep) regenerate.',
+    type: 'passive',
+    effects: [
+      { kind: 'custom', customId: 'regen-ticks-twice', percent: 100, target: 'self', note: 'while the holder stands, an ally’s Regen ticks a second time at that ally’s turn start, and a Fire hit on the ally removes its Regen at percent% (the Mastery sets 0)' },
+    ],
+    prerequisiteId: 'mender-martyrs-grace',
+    mastery: { text: 'Fire no longer removes it.', effects: [{ kind: 'custom', customId: 'regen-ticks-twice', percent: 0, target: 'self' }] },
+    tags: ['heal', 'buff'],
+    xpTags: ['wisdom'],
+    ai: { role: 'heal', priority: 0 },
+  },
+  {
+    id: 'mender-miracle',
+    school: 'benediction',
+    tier: 5,
+    name: 'Miracle',
+    description: 'Every ally and pet is healed in full and loses every debuff; every downed and fallen ally is revived at 60% HP. Once per fight. Heavy cast.',
+    cost: 50,
+    weight: 1400,
+    target: 'allAllies',
+    effects: [
+      { kind: 'custom', customId: 'skill-once-per-fight', target: 'self', note: 'the skill works once per fight: a second cast in the same fight resolves nothing' },
+      heal(100, { note: 'a full heal: 100% × healing power, capped at max HP' }),
+      { kind: 'dispel', note: 'on allies: every debuff' },
+      { kind: 'revive', percent: 60, target: 'allDowned', note: 'every downed ally' },
+      { kind: 'custom', customId: 'revive-fallen', percent: 60, target: 'self', note: 'every fallen ally (no `amount`: no limit; the skill itself is once per fight)' },
+    ],
+    prerequisiteId: 'mender-rebirth',
+    mastery: { text: 'Allies also gain Fortify 2 turns.', effects: [{ kind: 'applyStatus', status: 'fortify', duration: 2 }] },
+    tags: ['aoe', 'heal', 'cleanse', 'revive'],
+    xpTags: ['wisdom', 'willpower'],
+    ai: { role: 'heal', priority: 98 },
+  },
+  {
+    id: 'mender-guardian-spirit',
+    school: 'benediction',
+    tier: 5,
+    name: 'Guardian Spirit',
+    description: 'For 3 turns, half of all the damage one ally takes is paid from your Mana at 2 Mana per HP instead of from their HP; when your Mana runs out the effect ends.',
+    cost: 42,
+    weight: 1000,
+    target: 'ally',
+    effects: [
+      { kind: 'custom', customId: 'damage-to-pool-redirect', percent: 50, amount: 2, duration: 3, note: 'for `duration` turns percent% of each hit on the target is paid from the caster’s pool at `amount` pool per HP; ends when the pool cannot pay' },
+    ],
+    prerequisiteId: 'mender-verdant-pulse',
+    mastery: { text: '1 Mana per HP.', effects: [{ kind: 'custom', customId: 'damage-to-pool-redirect', percent: 50, amount: 1, duration: 3 }] },
+    tags: ['singleTarget', 'shield', 'buff'],
+    xpTags: ['wisdom', 'willpower'],
+    ai: { role: 'defend', priority: 70 },
+  },
+  {
+    id: 'mender-everflow',
+    school: 'benediction',
+    tier: 5,
+    name: 'Everflow',
+    description: 'Your heals also restore 5% of the target’s pool; Regen on an ally below 50% HP does not count down.',
+    type: 'passive',
+    effects: [
+      { kind: 'custom', customId: 'heal-restores-pool', percent: 5, target: 'self', note: 'each heal the holder’s skill lands also restores percent% of the target’s pool (once per target per action)' },
+      { kind: 'custom', customId: 'regen-holds-below-hp', percent: 50, target: 'self', note: 'while the holder stands, an ally’s Regen does not count down while the ally is below percent% HP' },
+    ],
+    prerequisiteId: 'mender-verdant-pulse',
+    mastery: { text: 'Restore 8% pool.', effects: [{ kind: 'custom', customId: 'heal-restores-pool', percent: 8, target: 'self' }] },
+    tags: ['heal', 'buff'],
+    xpTags: ['wisdom'],
+    ai: { role: 'heal', priority: 0 },
+  },
 ]
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -296,16 +408,16 @@ const sanctity: SkillSpec[] = [
     school: 'sanctity',
     tier: 1,
     name: 'Smite',
-    description: '1.4× Holy to one enemy in either row; applies the Smite mark (+20% damage taken, +40% if Undead or Shadow, 2 turns).',
+    description: '1.2× Holy to one enemy in either row; applies the Smite mark (+20% damage taken, +40% if Undead or Shadow, 2 turns).',
     cost: 10,
     weight: 1000,
     target: 'enemy',
     effects: [
-      { kind: 'damage', multiplier: 1.4, damageType: 'holy' },
+      { kind: 'damage', multiplier: 1.2, damageType: 'holy' },
       { kind: 'applyStatus', status: 'smite' },
     ],
     prerequisiteId: null,
-    mastery: { text: '1.6×.', effects: [{ kind: 'damage', multiplier: 1.6, damageType: 'holy' }] },
+    mastery: { text: '1.35×.', effects: [{ kind: 'damage', multiplier: 1.35, damageType: 'holy' }] },
     tags: ['singleTarget', 'reach', 'debuff'],
     xpTags: ['wisdom', 'willpower'],
     ai: { role: 'attack', priority: 60 },
@@ -351,16 +463,16 @@ const sanctity: SkillSpec[] = [
     school: 'sanctity',
     tier: 2,
     name: 'Holy Lance',
-    description: '1.9× Holy to one enemy in either row; a target carrying the Smite mark is also Stunned 1 turn. Heavy cast.',
+    description: '1.6× Holy to one enemy in either row; a target carrying the Smite mark is also Stunned 1 turn. Heavy cast.',
     cost: 16,
     weight: 1400,
     target: 'enemy',
     effects: [
-      { kind: 'damage', multiplier: 1.9, damageType: 'holy' },
+      { kind: 'damage', multiplier: 1.6, damageType: 'holy' },
       { kind: 'custom', customId: 'apply-if-smite', status: 'stun', duration: 1, note: 'applies `status` for `duration` only to a target holding the Smite mark' },
     ],
     prerequisiteId: 'mender-smite',
-    mastery: { text: '2.1×.', effects: [{ kind: 'damage', multiplier: 2.1, damageType: 'holy' }] },
+    mastery: { text: '1.8×.', effects: [{ kind: 'damage', multiplier: 1.8, damageType: 'holy' }] },
     tags: ['singleTarget', 'reach', 'control'],
     xpTags: ['wisdom', 'willpower'],
     ai: { role: 'attack', priority: 65 },
@@ -408,12 +520,12 @@ const sanctity: SkillSpec[] = [
     school: 'sanctity',
     tier: 3,
     name: 'Judgement',
-    description: '2.3× Holy to one enemy in either row, +1% damage per 1% of the target’s missing HP (up to +50%). Heavy cast.',
+    description: '1.95× Holy to one enemy in either row, +1% damage per 1% of the target’s missing HP (up to +50%). Heavy cast.',
     cost: 26,
     weight: 1400,
     target: 'enemy',
     effects: [
-      { kind: 'damage', multiplier: 2.3, damageType: 'holy' },
+      { kind: 'damage', multiplier: 1.95, damageType: 'holy' },
       { kind: 'custom', customId: 'bonus-per-missing-hp', percent: 50, note: 'this skill’s damage is +1% per 1% of the target’s missing HP, capped at +percent%' },
     ],
     prerequisiteId: 'mender-holy-lance',
@@ -428,7 +540,7 @@ const sanctity: SkillSpec[] = [
     tier: 3,
     name: 'Wraith’s Lament',
     description:
-      '1.0× Shadow to every enemy in both rows; living targets get Fear 1 turn; Undead and Shadow targets are immune to the Fear and take Mark 2 turns instead. Monster technique: Insights only while a wraith uses it (the wraith arrives with the Crypts in Phase 7).',
+      '1.0× Shadow to every enemy in both rows; living targets get Fear 1 turn; Undead and Shadow targets are immune to the Fear and take Mark 2 turns instead. Monster technique: learned only by witnessing a Wraith use it.',
     cost: 22,
     weight: 1000,
     target: 'allEnemies',
@@ -467,6 +579,121 @@ const sanctity: SkillSpec[] = [
     tags: ['aoe', 'buff', 'control'],
     xpTags: ['wisdom', 'willpower'],
     ai: { role: 'buff', priority: 50 },
+  },
+
+  // Tier IV–V (Phase 7): docs/classes/mender.md §4.2.
+  {
+    id: 'mender-exorcism',
+    school: 'sanctity',
+    tier: 4,
+    name: 'Exorcism',
+    description: '1.5× Holy to every enemy in both rows; a non-boss Undead or Shadow target left under 20% HP is destroyed outright (loot and XP as a kill). Heavy cast.',
+    cost: 36,
+    weight: 1400,
+    target: 'allEnemies',
+    effects: [
+      { kind: 'damage', multiplier: 1.5, damageType: 'holy' },
+      { kind: 'custom', customId: 'destroy-below-hp', percent: 20, damageType: 'holy', note: 'after the hit, a non-boss Undead- or Shadow-family target under percent% HP is destroyed — a kill, loot and XP as any other' },
+    ],
+    prerequisiteId: 'mender-judgement',
+    mastery: { text: 'Under 25%.', effects: [{ kind: 'custom', customId: 'destroy-below-hp', percent: 25, damageType: 'holy' }] },
+    tags: ['aoe'],
+    xpTags: ['wisdom', 'willpower'],
+    ai: { role: 'attack', priority: 75 },
+  },
+  {
+    id: 'mender-dread-hymn',
+    school: 'sanctity',
+    tier: 4,
+    name: 'Dread Hymn',
+    description: 'Fear 2 turns and Slow 1 turn on every enemy.',
+    cost: 30,
+    weight: 1000,
+    target: 'allEnemies',
+    effects: [
+      { kind: 'applyStatus', status: 'fear', duration: 2 },
+      { kind: 'applyStatus', status: 'slow', duration: 1 },
+    ],
+    prerequisiteId: 'mender-hallowed-ground',
+    mastery: { text: 'Also Silence 1 turn on casters.', effects: [{ kind: 'custom', customId: 'apply-if-caster', status: 'silence', duration: 1, note: 'applies `status` for `duration` only if the target is a caster (a monster with a spell attack)' }] },
+    tags: ['aoe', 'control', 'debuff'],
+    xpTags: ['wisdom', 'willpower'],
+    ai: { role: 'control', priority: 65 },
+  },
+  {
+    id: 'mender-sanctified-weapon',
+    school: 'sanctity',
+    tier: 4,
+    name: 'Sanctified Weapon',
+    description: 'Every ally’s basic attack deals an extra 0.2× your spell Attack as Holy; your Holy skills ignore 20 Defense.',
+    type: 'passive',
+    effects: [
+      { kind: 'custom', customId: 'party-basic-extra-holy', multiplier: 0.2, damageType: 'holy', target: 'self', note: 'while the holder stands, every ally’s basic attack deals an extra multiplier × the holder’s spell Attack as damageType' },
+      { kind: 'custom', customId: 'defense-ignore-flat', amount: 20, damageType: 'holy', target: 'self', note: 'the holder’s damageType hits ignore `amount` of the target’s Defense' },
+    ],
+    prerequisiteId: 'mender-judgement',
+    mastery: { text: 'Extra 0.3×.', effects: [{ kind: 'custom', customId: 'party-basic-extra-holy', multiplier: 0.3, damageType: 'holy', target: 'self' }] },
+    tags: ['buff'],
+    xpTags: ['wisdom'],
+    ai: { role: 'buff', priority: 0 },
+  },
+  {
+    id: 'mender-wrath-of-dawn',
+    school: 'sanctity',
+    tier: 5,
+    name: 'Wrath of Dawn',
+    description: '2.2× Holy to every enemy in both rows with the Smite mark; Blind 2 turns; Undead and Shadow enemies are also Stunned 1 turn. Heavy cast.',
+    cost: 50,
+    weight: 1400,
+    target: 'allEnemies',
+    effects: [
+      { kind: 'damage', multiplier: 2.2, damageType: 'holy' },
+      { kind: 'applyStatus', status: 'smite' },
+      { kind: 'applyStatus', status: 'blind', duration: 2 },
+      { kind: 'custom', customId: 'apply-if-undead-or-shadow', status: 'stun', duration: 1, note: 'applies `status` for `duration` only to Undead- or Shadow-family targets' },
+    ],
+    prerequisiteId: 'mender-exorcism',
+    mastery: { text: '2.5× each.', effects: [{ kind: 'damage', multiplier: 2.5, damageType: 'holy' }] },
+    tags: ['aoe', 'control', 'debuff'],
+    xpTags: ['wisdom', 'willpower'],
+    ai: { role: 'attack', priority: 85 },
+  },
+  {
+    id: 'mender-banishment',
+    school: 'sanctity',
+    tier: 5,
+    name: 'Banishment',
+    description: '3.6× Holy to one enemy in either row; a non-boss Undead or Shadow target left under 35% HP is banished (removed, counted as a kill); a living target is Feared 2 turns.',
+    cost: 42,
+    weight: 1000,
+    target: 'enemy',
+    effects: [
+      { kind: 'damage', multiplier: 3.6, damageType: 'holy' },
+      { kind: 'custom', customId: 'destroy-below-hp', percent: 35, damageType: 'holy', note: 'after the hit, a non-boss Undead- or Shadow-family target under percent% HP is removed — a kill' },
+      { kind: 'custom', customId: 'apply-if-living', status: 'fear', duration: 2, note: 'applies `status` for `duration` only to targets that are neither Undead nor Shadow family' },
+    ],
+    prerequisiteId: 'mender-dread-hymn',
+    mastery: { text: 'Under 50%.', effects: [{ kind: 'custom', customId: 'destroy-below-hp', percent: 50, damageType: 'holy' }] },
+    tags: ['singleTarget', 'reach', 'control'],
+    xpTags: ['wisdom', 'willpower'],
+    ai: { role: 'attack', priority: 80 },
+  },
+  {
+    id: 'mender-saints-mantle',
+    school: 'sanctity',
+    tier: 5,
+    name: 'Saint’s Mantle',
+    description: 'When you are hit, the attacker takes 0.4× your spell Attack as Holy and is Feared 1 turn (once per enemy per turn); your Resistance +10%.',
+    type: 'passive',
+    effects: [
+      { kind: 'custom', customId: 'retaliate-on-hit', multiplier: 0.4, damageType: 'holy', status: 'fear', duration: 1, target: 'self', note: 'a hit that lands on the holder: the attacker takes multiplier × the holder’s spell Attack as damageType and `status` for `duration`, once per attacker per action' },
+      { kind: 'buffStat', stat: 'resistance', amount: 10 },
+    ],
+    prerequisiteId: 'mender-sanctified-weapon',
+    mastery: { text: '0.6× Holy.', effects: [{ kind: 'custom', customId: 'retaliate-on-hit', multiplier: 0.6, damageType: 'holy', status: 'fear', duration: 1, target: 'self' }] },
+    tags: ['buff', 'control'],
+    xpTags: ['wisdom', 'willpower'],
+    ai: { role: 'defend', priority: 0 },
   },
 ]
 
@@ -635,6 +862,128 @@ const vigil: SkillSpec[] = [
     xpTags: ['wisdom'],
     ai: { role: 'debuff', priority: 50 },
   },
+
+  // Tier IV–V (Phase 7): docs/classes/mender.md §4.3.
+  {
+    id: 'mender-indomitable',
+    school: 'vigil',
+    tier: 4,
+    name: 'Indomitable',
+    description: 'Every ally is immune to every debuff for 2 turns and gains Fortify 2 turns.',
+    cost: 34,
+    weight: 1000,
+    target: 'allAllies',
+    effects: [
+      { kind: 'custom', customId: 'immune-to-debuffs', duration: 2, note: 'the target cannot receive any debuff for `duration` turns' },
+      { kind: 'applyStatus', status: 'fortify', duration: 2 },
+    ],
+    prerequisiteId: 'mender-absolution',
+    mastery: { text: '3 turns.', effects: [{ kind: 'custom', customId: 'immune-to-debuffs', duration: 3 }, { kind: 'applyStatus', status: 'fortify', duration: 3 }] },
+    tags: ['aoe', 'buff', 'cleanse'],
+    xpTags: ['wisdom'],
+    ai: { role: 'buff', priority: 70 },
+  },
+  {
+    id: 'mender-grace',
+    school: 'vigil',
+    tier: 4,
+    name: 'Grace',
+    description: 'One ally’s next action costs no pool and weighs 800 whatever its own weight.',
+    cost: 30,
+    weight: 800,
+    target: 'ally',
+    effects: [
+      { kind: 'custom', customId: 'grace-next-action', amount: 1, note: 'the target’s next `amount` action(s) cost no pool and weigh 800; a heavy Mana cast still charges first (fight.ts decides the charge by the skill’s own weight)' },
+    ],
+    prerequisiteId: 'mender-hymn-of-momentum',
+    mastery: { text: 'The next two actions.', effects: [{ kind: 'custom', customId: 'grace-next-action', amount: 2 }] },
+    tags: ['singleTarget', 'buff'],
+    xpTags: ['wisdom'],
+    ai: { role: 'buff', priority: 55 },
+  },
+  {
+    id: 'mender-dawn-vigil',
+    school: 'vigil',
+    tier: 4,
+    name: 'Dawn Vigil',
+    description: 'Every ally starts each fight with +10 Momentum; for ambush rolls the party counts its light band one step brighter.',
+    type: 'passive',
+    effects: [
+      { kind: 'custom', customId: 'fight-start-momentum-allies', amount: 10, target: 'self', note: 'at the fight’s start every hero on the holder’s side gains +amount Momentum' },
+      { kind: 'custom', customId: 'party-ambush-light-shift', amount: 1, target: 'self', note: 'delve-side: the ambush roll reads the light band `amount` step(s) brighter; a stub until delve.ts reads it' },
+    ],
+    prerequisiteId: 'mender-beacon',
+    mastery: { text: '+15 Momentum.', effects: [{ kind: 'custom', customId: 'fight-start-momentum-allies', amount: 15, target: 'self' }] },
+    tags: ['buff', 'momentum', 'light'],
+    xpTags: ['wisdom'],
+    ai: { role: 'buff', priority: 0 },
+  },
+  {
+    id: 'mender-deliverance',
+    school: 'vigil',
+    tier: 5,
+    name: 'Deliverance',
+    description: 'Every ally loses every debuff and gains Fortify 3 turns, Haste 1 turn and +20 Momentum. Heavy cast.',
+    cost: 45,
+    weight: 1400,
+    target: 'allAllies',
+    effects: [
+      { kind: 'dispel', note: 'on allies: every debuff' },
+      { kind: 'applyStatus', status: 'fortify', duration: 3 },
+      { kind: 'applyStatus', status: 'haste', duration: 1 },
+      { kind: 'momentum', amount: 20 },
+    ],
+    prerequisiteId: 'mender-indomitable',
+    mastery: { text: 'Haste 2 turns.', effects: [{ kind: 'applyStatus', status: 'haste', duration: 2 }] },
+    tags: ['aoe', 'cleanse', 'buff', 'momentum'],
+    xpTags: ['wisdom', 'willpower'],
+    ai: { role: 'buff', priority: 80 },
+  },
+  {
+    id: 'mender-martyrdom',
+    school: 'vigil',
+    tier: 5,
+    name: 'Martyrdom',
+    description: 'Your Momentum drops to 0 and what you lose is split evenly among your allies; you gain a Shield of 30% of your max HP for 2 turns.',
+    cost: 40,
+    weight: 800,
+    target: 'self',
+    effects: [
+      { kind: 'custom', customId: 'momentum-split-to-allies', percent: 100, note: 'the caster’s Momentum goes to 0; percent% of what it lost is split evenly (rounded down) among the other heroes' },
+      { kind: 'shield', percent: 30, duration: 2 },
+    ],
+    prerequisiteId: 'mender-grace',
+    mastery: { text: 'Split 1.5× the amount.', effects: [{ kind: 'custom', customId: 'momentum-split-to-allies', percent: 150 }] },
+    tags: ['buff', 'momentum', 'shield'],
+    xpTags: ['wisdom'],
+    ai: { role: 'buff', priority: 50 },
+  },
+  {
+    id: 'mender-unwavering',
+    school: 'vigil',
+    tier: 5,
+    name: 'Unwavering',
+    description: 'While you are above 50% HP no ally can be Feared, Stunned or Petrified; you cannot be Silenced.',
+    type: 'passive',
+    effects: [
+      { kind: 'custom', customId: 'ally-control-immunity-above-hp', status: 'fear', percent: 50, target: 'self', note: 'while the holder is above percent% HP, no ally keeps `status` (one line per status): it is shed before it can cost a turn' },
+      { kind: 'custom', customId: 'ally-control-immunity-above-hp', status: 'stun', percent: 50, target: 'self' },
+      { kind: 'custom', customId: 'ally-control-immunity-above-hp', status: 'petrify', percent: 50, target: 'self' },
+      { kind: 'custom', customId: 'status-resist-bonus', status: 'silence', percent: 100, target: 'self', note: 'immune: a passive resist of 100% to `status` all fight (statuses.ts resistChance reads it)' },
+    ],
+    prerequisiteId: 'mender-dawn-vigil',
+    mastery: {
+      text: 'Threshold 25% HP.',
+      effects: [
+        { kind: 'custom', customId: 'ally-control-immunity-above-hp', status: 'fear', percent: 25, target: 'self' },
+        { kind: 'custom', customId: 'ally-control-immunity-above-hp', status: 'stun', percent: 25, target: 'self' },
+        { kind: 'custom', customId: 'ally-control-immunity-above-hp', status: 'petrify', percent: 25, target: 'self' },
+      ],
+    },
+    tags: ['buff', 'cleanse'],
+    xpTags: ['wisdom', 'willpower'],
+    ai: { role: 'buff', priority: 0 },
+  },
 ]
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -667,27 +1016,8 @@ function toRecord(s: SkillSpec): Json {
   return rec
 }
 
-function writeJson(file: string, value: Json): boolean {
-  const text = `${JSON.stringify(value, null, 2)}\n`
-  const before = fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : null
-  if (before === text) return false
-  fs.writeFileSync(file, text, 'utf8')
-  return true
-}
-
 const skills = [...benediction, ...sanctity, ...vigil]
-const skillDir = path.join(ROOT, 'content', 'skills', CLASS_ID)
-fs.mkdirSync(skillDir, { recursive: true })
-fs.mkdirSync(path.join(ROOT, 'content', 'classes'), { recursive: true })
-
-let changed = 0
-if (writeJson(path.join(ROOT, 'content', 'classes', `${CLASS_ID}.json`), classRecord)) changed++
-const written = new Set<string>()
-for (const s of skills) {
-  if (!s.id.startsWith(`${CLASS_ID}-`)) throw new Error(`skill id ${s.id} is not prefixed with ${CLASS_ID}-`)
-  if (written.has(s.id)) throw new Error(`duplicate skill id ${s.id}`)
-  written.add(s.id)
-  if (writeJson(path.join(skillDir, `${s.id}.json`), toRecord(s))) changed++
-}
-const stale = fs.readdirSync(skillDir).filter((f) => f.endsWith('.json') && !written.has(f.slice(0, -5)))
-process.stdout.write(`${CLASS_ID}: 1 class + ${skills.length} skills (${skills.filter((s) => s.isUltimate).length} Ultimate), ${changed} file(s) changed${stale.length ? `; stale files not written by this script: ${stale.join(', ')}` : ''}\n`)
+const r = writeClassRecords(CLASS_ID, classRecord, skills.map(toRecord))
+process.stdout.write(
+  `${CLASS_ID}: 1 class + ${skills.length} skills (${skills.filter((s) => s.isUltimate).length} Ultimate) — ${r.written} written, ${r.unchanged} unchanged${r.removed.length ? `, removed ${r.removed.join(', ')}` : ''}\n`,
+)

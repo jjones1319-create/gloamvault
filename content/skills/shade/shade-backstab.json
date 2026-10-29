@@ -4,7 +4,7 @@
   "school": "shadow",
   "tier": 1,
   "name": "Backstab",
-  "description": "1.5× Pierce to one enemy in any row (flank: the back row from the front). From Veil the hit is doubled and gets +30% Crit Rate.",
+  "description": "2.05× Pierce to one enemy in any row (flank: the back row from the front). From Veil the hit is doubled and gets +30% Crit Rate.",
   "type": "active",
   "cost": 12,
   "weight": 800,
@@ -12,7 +12,7 @@
   "effects": [
     {
       "kind": "damage",
-      "multiplier": 1.5,
+      "multiplier": 2.05,
       "damageType": "pierce"
     },
     {

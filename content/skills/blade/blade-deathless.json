@@ -1,0 +1,54 @@
+{
+  "id": "blade-deathless",
+  "classId": "blade",
+  "school": "bloodletter",
+  "tier": 5,
+  "name": "Deathless",
+  "description": "Pain Threshold’s bonuses are doubled; Undying Rage can save you twice per floor.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "deathless",
+      "duration": 2,
+      "amount": 2,
+      "percent": 100,
+      "target": "self",
+      "note": "D-099: Undying Rage amount times per floor (its Regen lasts duration turns); Pain Threshold's bonuses +percent%"
+    }
+  ],
+  "prerequisiteId": "blade-undying-rage",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Undying Rage’s Regen lasts 3 turns.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "deathless",
+        "duration": 3,
+        "amount": 2,
+        "percent": 100,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "heal"
+  ],
+  "xpTags": [
+    "vitality"
+  ],
+  "aiHints": {
+    "role": "defend",
+    "priority": 0
+  }
+}

@@ -4,7 +4,7 @@
   "school": "marksman",
   "tier": 3,
   "name": "Deadeye",
-  "description": "2.6× Pierce to one enemy in any row; a guaranteed crit against a Marked target; 1 arrow.",
+  "description": "2.85× Pierce to one enemy in any row; a guaranteed crit against a Marked target; 1 arrow.",
   "type": "active",
   "cost": 22,
   "weight": 1400,
@@ -19,7 +19,7 @@
     },
     {
       "kind": "damage",
-      "multiplier": 2.6,
+      "multiplier": 2.85,
       "damageType": "pierce",
       "scalesWith": "strength"
     },
@@ -47,11 +47,11 @@
     "costPerRank": -2
   },
   "mastery": {
-    "text": "3.0×.",
+    "text": "3.3×.",
     "effects": [
       {
         "kind": "damage",
-        "multiplier": 3,
+        "multiplier": 3.3,
         "damageType": "pierce",
         "scalesWith": "strength"
       }

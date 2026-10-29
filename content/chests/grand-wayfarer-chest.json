@@ -1,0 +1,28 @@
+{
+  "id": "grand-wayfarer-chest",
+  "name": "Grand Wayfarer Chest",
+  "kind": "wayfarer",
+  "tier": "grand",
+  "priceR": 5,
+  "subtypes": [],
+  "oddsByBand": [
+    {
+      "centreGrade": "D",
+      "table": {
+        "C": 45,
+        "B": 35,
+        "A": 15,
+        "S": 5
+      }
+    }
+  ],
+  "pity": {
+    "plusOneWithin": 10,
+    "plusTwoWithin": 40
+  },
+  "bagWithoutReplacement": false,
+  "tomeTiers": null,
+  "dupeRule": "none",
+  "divineShardChance": 0,
+  "minBand": "E"
+}

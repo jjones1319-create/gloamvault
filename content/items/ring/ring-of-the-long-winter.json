@@ -1,0 +1,56 @@
+{
+  "id": "ring-of-the-long-winter",
+  "name": "Ring of the Long Winter",
+  "slot": "ring",
+  "kind": "ring",
+  "grade": "S",
+  "materialLadder": null,
+  "materialRung": null,
+  "weaponType": null,
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {},
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 9,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1,
+  "value": 1500,
+  "classLock": [],
+  "setId": null,
+  "unique": true,
+  "uniquePower": {
+    "text": "+3 Luck; +10% gold found",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "gold-found-percent",
+        "percent": 10,
+        "target": "self"
+      }
+    ],
+    "attributes": {
+      "luck": 3
+    }
+  },
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "ring-long-winter-01",
+    "tintPrimary": "#c9d3e6",
+    "tintSecondary": "#60a5fa",
+    "trimMetal": "adamantine"
+  }
+}

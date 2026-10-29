@@ -1,0 +1,62 @@
+{
+  "id": "shade-vault-cracker",
+  "classId": "shade",
+  "school": "larceny",
+  "tier": 5,
+  "name": "Vault Cracker",
+  "description": "Corridor: open any locked door or chest with no check and no trap. Combat: 2.0× Pierce that ignores all Defense against constructs and armored elites (vault sentinels, bone knights, forge-golems).",
+  "type": "active",
+  "cost": 40,
+  "weight": 1400,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "corridor-open-locks",
+      "target": "room",
+      "note": "corridor use: any locked door or chest opens with no check and no trap (delve side)"
+    },
+    {
+      "kind": "custom",
+      "customId": "ignore-defense-vs-armored",
+      "percent": 100,
+      "target": "self",
+      "note": "this action ignores percent% of the Defense of constructs and elite-role monsters"
+    },
+    {
+      "kind": "damage",
+      "multiplier": 2,
+      "damageType": "pierce"
+    }
+  ],
+  "prerequisiteId": "shade-grand-larceny",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "2.6×.",
+    "effects": [
+      {
+        "kind": "damage",
+        "multiplier": 2.6,
+        "damageType": "pierce"
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "reach",
+    "utility"
+  ],
+  "xpTags": [
+    "agility",
+    "perception"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 55
+  }
+}

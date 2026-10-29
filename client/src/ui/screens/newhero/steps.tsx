@@ -22,7 +22,9 @@ import {
   STARTER_PICKS,
   baseAttribute,
   canAddPoint,
+  draftKit,
   eggOptions,
+  kitChoices,
   firstSentence,
   modParts,
   pointsSpent,
@@ -31,6 +33,7 @@ import {
   skillOptions,
   type Draft,
   type FreePoints,
+  type KitChoice,
 } from './draft.ts'
 
 /** The six steps of the new-hero screen (03 §2.3); NewHero.tsx owns the state and the Back / Next bar. */
@@ -125,7 +128,7 @@ function SpeciesDetail({ s }: { s: SpeciesDef }) {
 
 /* ---------- 2. class ---------- */
 
-export function ClassStep({ c, selected, onPick }: { c: Content; selected: string | null; onPick: (id: string) => void }) {
+export function ClassStep({ c, selected, onPick, kit, onKit }: { c: Content; selected: string | null; onPick: (id: string) => void; kit: string | null; onKit: (kit: KitChoice) => void }) {
   const sel = selected ? c.classes.get(selected) : undefined
   return (
     <>
@@ -140,7 +143,16 @@ export function ClassStep({ c, selected, onPick }: { c: Content; selected: strin
             </Tile>
           ))}
         </div>
-        <div class="nh-detail">{sel ? <ClassDetail k={sel} /> : <p class="nh-detail__empty">Tap a class to read about it.</p>}</div>
+        <div class="nh-detail">
+          {sel ? (
+            <>
+              <ClassDetail k={sel} />
+              <KitPicker c={c} k={sel} kit={kit} onKit={onKit} />
+            </>
+          ) : (
+            <p class="nh-detail__empty">Tap a class to read about it.</p>
+          )}
+        </div>
       </div>
     </>
   )
@@ -175,6 +187,35 @@ function ClassDetail({ k }: { k: ClassDef }) {
         </div>
       </div>
     </>
+  )
+}
+
+/**
+ * The starting kit (D-099, 08 §12): the town sells no weapons, so a class with a second build offers it here — the
+ * Warden's spear beside sword-and-shield, the Blade's greatsword beside the two blades. Picking a kit picks its three
+ * recommended skills too (the skills step can change them).
+ */
+function KitPicker({ c, k, kit, onKit }: { c: Content; k: ClassDef; kit: string | null; onKit: (kit: KitChoice) => void }) {
+  const kits = kitChoices(c, k.id)
+  if (kits.length < 2) return null
+  return (
+    <div class="nh-kits">
+      <h3 class="nh-detail__sub">Starting kit</h3>
+      <div class="nh-kits__row">
+        {kits.map((choice) => {
+          const weapons = choice.itemIds
+            .map((id) => c.items.get(id))
+            .filter((d) => d && (d.slot === 'mainHand' || d.slot === 'offHand'))
+            .map((d) => d!.name)
+            .join(' + ')
+          return (
+            <Tile key={choice.id ?? 'default'} title={choice.name} sub={weapons} selected={(choice.id ?? null) === (kit ?? null)} testid={`nh-kit-${choice.id ?? 'default'}`} onClick={() => onKit(choice)}>
+              {choice.description && <span class="nh-skill__desc">{choice.description}</span>}
+            </Tile>
+          )
+        })}
+      </div>
+    </div>
   )
 }
 
@@ -412,7 +453,7 @@ export function ReviewStep({ c, draft }: { c: Content; draft: Draft }) {
           </p>
           <p class="nh-card__line">
             <span class="nh-card__key">Gear</span>
-            {cls.starterKit
+            {(draftKit(c, draft)?.itemIds ?? cls.starterKit)
               .map((id) => c.items.get(id))
               .filter((d) => d && d.slot && d.slot !== 'pet')
               .map((d) => d!.name)

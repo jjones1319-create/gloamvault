@@ -1,0 +1,54 @@
+{
+  "id": "ranger-one-shot",
+  "classId": "ranger",
+  "school": "marksman",
+  "tier": 4,
+  "name": "One Shot",
+  "description": "A crit that leaves a fodder-role enemy below 25% HP kills it outright (never elites or bosses); Crit Damage +10%.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "one-shot-fodder",
+      "percent": 25,
+      "target": "self",
+      "note": "after each of your actions, a fodder enemy your crit left under percent% HP dies"
+    },
+    {
+      "kind": "buffStat",
+      "stat": "critDamage",
+      "amount": 10
+    }
+  ],
+  "prerequisiteId": "ranger-predators-patience",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Threshold 35%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "one-shot-fodder",
+        "percent": 35,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff"
+  ],
+  "xpTags": [
+    "perception"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 0
+  }
+}

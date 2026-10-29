@@ -5,6 +5,7 @@ import { content, delve, delveCommand, delveVersion, legalActions, toast } from 
 import { buzz } from '../../lib/haptics.ts'
 import { Modal } from '../../kit/kit.tsx'
 import { Icon } from './icons.tsx'
+import { blindView, isBlind } from './blindMap.ts'
 import { mapView, mapWindow, type MapRoomView, type MapView, type ThreatBandLike } from './mapLayout.ts'
 import { KIND_SHORT, THREAT_NAMES, THREAT_SHORT } from './words.ts'
 
@@ -115,11 +116,18 @@ export function Minimap() {
   void delveVersion.value
   const d = delve.value
   if (!d) return null
-  const view = mapView(d, legalActions.value, threatsOf(content.value, d))
+  // Pact: Blind Map — the map keeps no memory of the floor (07 §6.2; blindMap.ts).
+  const full = mapView(d, legalActions.value, threatsOf(content.value, d))
+  const view = isBlind(d.ruleFlags) ? blindView(full) : full
   const { x0, y0 } = mapWindow(view, MINI_COLS, MINI_ROWS)
   return (
     <div class="dv-minimap" data-testid="dv-minimap">
       <MapGrid view={view} cell={MAP_CELL} x0={x0} y0={y0} cols={MINI_COLS} rows={MINI_ROWS} testPrefix="dv-move-" />
+      {isBlind(d.ruleFlags) && (
+        <span class="dv-minimap__blind" data-testid="dv-blind-map">
+          Blind Map: only the doors out of this room
+        </span>
+      )}
     </div>
   )
 }
@@ -131,7 +139,9 @@ export function MapModal({ onClose }: { onClose: () => void }) {
   void delveVersion.value
   const d = delve.value
   if (!d) return null
-  const view = mapView(d, legalActions.value, threatsOf(content.value, d))
+  // Pact: Blind Map — the map keeps no memory of the floor (07 §6.2; blindMap.ts).
+  const full = mapView(d, legalActions.value, threatsOf(content.value, d))
+  const view = isBlind(d.ruleFlags) ? blindView(full) : full
   const shown = new Set(view.rooms.map((r) => r.kind).filter((k): k is string => k !== null))
   const bands = new Set(view.rooms.map((r) => r.threat).filter((b): b is ThreatBandLike => b !== null))
   return (

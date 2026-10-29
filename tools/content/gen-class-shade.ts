@@ -2,17 +2,19 @@
  * tools/content/gen-class-shade.ts — writes content/classes/shade.json and content/skills/shade/*.json
  * from docs/classes/shade.md (§2 numbers, §3 the Ultimate, §4.1–§4.3 the three school tables, §5 affinities).
  *
- * Phase 3 (12-ROADMAP): Tiers I–III of every school (27 skills) plus the Ultimate. Tiers IV–V are not written yet.
+ * Phase 3 (12-ROADMAP): Tiers I–III of every school (27 skills) plus the Ultimate. Phase 7 adds Tiers IV–V (Tier V is
+ * written but locked until Segment 3, D-099) with D-099's execute cap: Severance below 35% HP is 6.0× with a sure
+ * crit, not 9.0×. Readings (sheet rev. 3 "As built"): "from Veil" is read from the log or the turn start (attacking ends
+ * Veil before a line resolves); "ignores N% of Defense" is ignore-defense-percent before the damage line; a crit's
+ * follow-up (Death's Whisper) settles once the action resolved; Toxicologist, Phantom Thief's chest rules and Vault
+ * Cracker's corridor half are stubs until statuses.ts and the delve have their joints.
  * Every number is the sheet's; where a line cannot be said in the effect DSL it is a `custom` line whose `note`
  * states the hook's contract (content/README.md rule 31 wants a handler per customId in sim/src/skills/custom/).
  *
  * Re-runnable: the same tables write the same files. Run: node tools/content/gen-class-shade.ts
  */
-import fs from 'node:fs'
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { writeClassRecords } from './gen-class-lib.ts'
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..')
 const CLASS_ID = 'shade'
 const RANK_SCALING = { effectPerRank: 4, costPerRank: -2 }
 
@@ -22,7 +24,7 @@ type Effect = Json & { kind: string }
 interface SkillSpec {
   id: string
   school: 'shadow' | 'venom' | 'larceny'
-  tier: 1 | 2 | 3
+  tier: 1 | 2 | 3 | 4 | 5
   name: string
   description: string
   type?: 'active' | 'passive'
@@ -131,12 +133,12 @@ const shadow: SkillSpec[] = [
     school: 'shadow',
     tier: 1,
     name: 'Backstab',
-    description: '1.5× Pierce to one enemy in any row (flank: the back row from the front). From Veil the hit is doubled and gets +30% Crit Rate.',
+    description: '2.05× Pierce to one enemy in any row (flank: the back row from the front). From Veil the hit is doubled and gets +30% Crit Rate.',
     cost: 12,
     weight: 800,
     target: 'enemy',
     effects: [
-      { kind: 'damage', multiplier: 1.5, damageType: 'pierce' },
+      { kind: 'damage', multiplier: 2.05, damageType: 'pierce' },
       { kind: 'custom', customId: 'veil-strike-bonus', percent: 100, amount: 30, note: 'while Veiled: this skill’s damage +100% (×2) and Crit Rate +30 pp; the attack ends Veil as usual' },
     ],
     prerequisiteId: null,
@@ -196,12 +198,12 @@ const shadow: SkillSpec[] = [
     school: 'shadow',
     tier: 2,
     name: 'Throat Cut',
-    description: '1.3× Pierce to a front-row enemy; Silence 2 turns (no skills); +50% damage against a Dazed target.',
+    description: '1.75× Pierce to a front-row enemy; Silence 2 turns (no skills); +50% damage against a Dazed target.',
     cost: 15,
     weight: 800,
     target: 'enemyFront',
     effects: [
-      { kind: 'damage', multiplier: 1.3, damageType: 'pierce' },
+      { kind: 'damage', multiplier: 1.75, damageType: 'pierce' },
       { kind: 'applyStatus', status: 'silence', duration: 2 },
       { kind: 'custom', customId: 'damage-bonus-vs-status', status: 'daze', percent: 50, note: 'this skill’s damage is +percent% against a target under `status`' },
     ],
@@ -244,7 +246,7 @@ const shadow: SkillSpec[] = [
     tier: 3,
     name: 'Wraith-step',
     description:
-      'Veil 2 turns that your own Poison ticks do not break; your next attack is Shadow element and applies Wither (−50% healing) for 2 turns. Monster technique: Insights only while a wraith uses the move (the wraith arrives with the Crypts in Phase 7).',
+      'Veil 2 turns that your own Poison ticks do not break; your next attack is Shadow element and applies Wither (−50% healing) for 2 turns. Monster technique: learned only by witnessing a Wraith use it.',
     cost: 22,
     weight: 800,
     target: 'self',
@@ -267,19 +269,19 @@ const shadow: SkillSpec[] = [
     school: 'shadow',
     tier: 3,
     name: 'Vital Point',
-    description: '1.9× Pierce to a front-row enemy; against a target below 25% HP, 3.8×.',
+    description: '2.55× Pierce to a front-row enemy; against a target below 25% HP, 5.15×.',
     cost: 20,
     weight: 800,
     target: 'enemyFront',
     effects: [
-      { kind: 'damage', multiplier: 1.9, damageType: 'pierce' },
-      { kind: 'custom', customId: 'execute-multiplier', multiplier: 3.8, percent: 25, note: 'when the target’s HP is below percent% of max, this skill’s damage multiplier becomes `multiplier` instead' },
+      { kind: 'damage', multiplier: 2.55, damageType: 'pierce' },
+      { kind: 'custom', customId: 'execute-multiplier', multiplier: 5.15, percent: 25, note: 'when the target’s HP is below percent% of max, this skill’s damage multiplier becomes `multiplier` instead' },
     ],
     prerequisiteId: 'shade-throat-cut',
     requirements: DAGGER,
     mastery: {
       text: 'Threshold 30%.',
-      effects: [{ kind: 'custom', customId: 'execute-multiplier', multiplier: 3.8, percent: 30 }],
+      effects: [{ kind: 'custom', customId: 'execute-multiplier', multiplier: 5.15, percent: 30 }],
     },
     tags: ['singleTarget'],
     xpTags: ['agility', 'perception'],
@@ -339,6 +341,140 @@ const shadow: SkillSpec[] = [
     xpTags: ['agility', 'perception'],
     ai: { role: 'attack', priority: 95 },
   },
+  {
+    id: 'shade-phantom-twin',
+    school: 'shadow',
+    tier: 4,
+    name: 'Phantom Twin',
+    description: 'For 2 turns, the first single-target attack aimed at you each turn hits a decoy and misses; +15 Momentum.',
+    cost: 30,
+    weight: 800,
+    target: 'self',
+    effects: [
+      { kind: 'custom', customId: 'decoy-each-turn', duration: 2, target: 'self', note: 'for `duration` turns the first single-target attack on the holder each turn misses (a decoy)' },
+      { kind: 'momentum', amount: 15 },
+    ],
+    prerequisiteId: 'shade-wraith-step',
+    mastery: {
+      text: '3 turns.',
+      effects: [{ kind: 'custom', customId: 'decoy-each-turn', duration: 3, target: 'self' }],
+    },
+    tags: ['buff', 'momentum'],
+    xpTags: ['agility'],
+    ai: { role: 'defend', priority: 50 },
+  },
+  {
+    id: 'shade-assassinate',
+    school: 'shadow',
+    tier: 4,
+    name: 'Assassinate',
+    description: '2.8× Pierce to one enemy in any row; from Veil, a guaranteed crit that ignores 50% of the target’s Defense (the anti-Plate strike).',
+    cost: 35,
+    weight: 1000,
+    target: 'enemy',
+    effects: [
+      { kind: 'custom', customId: 'guaranteed-crit-from-status', status: 'veil', target: 'self', note: 'this action crits if the holder was in `status` as it began' },
+      { kind: 'custom', customId: 'ignore-defense-percent', percent: 50, status: 'veil', target: 'self', note: 'from `status`: this action ignores percent% of the target’s Defense' },
+      { kind: 'damage', multiplier: 2.8, damageType: 'pierce' },
+    ],
+    prerequisiteId: 'shade-vital-point',
+    requirements: DAGGER,
+    mastery: {
+      text: 'Ignores 75%.',
+      effects: [{ kind: 'custom', customId: 'ignore-defense-percent', percent: 75, status: 'veil', target: 'self' }],
+    },
+    tags: ['singleTarget', 'reach'],
+    xpTags: ['agility', 'perception'],
+    ai: { role: 'attack', priority: 75 },
+  },
+  {
+    id: 'shade-second-shadow',
+    school: 'shadow',
+    tier: 4,
+    name: 'Second Shadow',
+    description: 'Whenever an attack on you misses or is dodged, you gain Veil until your next action.',
+    type: 'passive',
+    effects: [{ kind: 'custom', customId: 'veil-on-evade', target: 'self', note: 'a failed hit roll against the holder gives it Veil 1 turn' }],
+    prerequisiteId: 'shade-killers-calm',
+    mastery: {
+      text: 'Also +10 Momentum each time.',
+      effects: [{ kind: 'custom', customId: 'momentum-on-dodge', amount: 10, target: 'self' }],
+    },
+    tags: ['buff'],
+    xpTags: ['agility'],
+    ai: { role: 'defend', priority: 0 },
+  },
+  {
+    id: 'shade-unseen-hand',
+    school: 'shadow',
+    tier: 5,
+    name: 'Unseen Hand',
+    description: 'Every ally is untargetable by single-target attacks for 1 turn (an AoE still lands); Taunts and Marks on allies are stripped.',
+    cost: 40,
+    weight: 800,
+    target: 'allAllies',
+    effects: [
+      { kind: 'custom', customId: 'single-target-misses-turns', duration: 1, note: 'for `duration` turns single-target attacks on the holder miss' },
+      { kind: 'removeStatus', status: 'taunt' },
+      { kind: 'removeStatus', status: 'mark' },
+    ],
+    prerequisiteId: 'shade-phantom-twin',
+    mastery: {
+      text: '2 turns.',
+      effects: [{ kind: 'custom', customId: 'single-target-misses-turns', duration: 2 }],
+    },
+    tags: ['aoe', 'buff', 'cleanse'],
+    xpTags: ['agility'],
+    ai: { role: 'defend', priority: 60 },
+  },
+  {
+    id: 'shade-severance',
+    school: 'shadow',
+    tier: 5,
+    name: 'Severance',
+    description: '4.5× Pierce to one enemy in any row; below 35% HP, 6.0× with a guaranteed crit; if it kills, re-enter Veil for free.',
+    cost: 50,
+    weight: 1000,
+    target: 'enemy',
+    effects: [
+      { kind: 'custom', customId: 'guaranteed-crit-below-hp', percent: 35, target: 'self', note: 'D-099: against a target below percent% HP this action crits' },
+      { kind: 'damage', multiplier: 4.5, damageType: 'pierce' },
+      { kind: 'custom', customId: 'execute-multiplier', multiplier: 6.0, percent: 35, note: 'D-099: below percent% HP the multiplier becomes 6.0 (no execute above 6.0×)' },
+      { kind: 'custom', customId: 'veil-on-kill', duration: 2, target: 'self', note: 'a kill re-enters Veil for `duration` turns at no cost' },
+    ],
+    prerequisiteId: 'shade-assassinate',
+    requirements: DAGGER,
+    mastery: {
+      text: 'Threshold 40%.',
+      effects: [
+        { kind: 'custom', customId: 'guaranteed-crit-below-hp', percent: 40, target: 'self' },
+        { kind: 'custom', customId: 'execute-multiplier', multiplier: 6.0, percent: 40 },
+      ],
+    },
+    tags: ['singleTarget', 'reach'],
+    xpTags: ['agility', 'perception'],
+    ai: { role: 'attack', priority: 80 },
+  },
+  {
+    id: 'shade-deaths-whisper',
+    school: 'shadow',
+    tier: 5,
+    name: 'Death’s Whisper',
+    description: 'Your Crit Rate cap is 55%; a crit from Veil applies Fear 1 turn to every other enemy.',
+    type: 'passive',
+    effects: [
+      { kind: 'custom', customId: 'crit-cap-raise', amount: 55, target: 'self', note: 'the Crit Rate cap becomes amount% (stub: a stats.ts joint)' },
+      { kind: 'custom', customId: 'fear-others-on-veil-crit', duration: 1, target: 'self', note: 'a crit from Veil Fears every other enemy for `duration` turns' },
+    ],
+    prerequisiteId: 'shade-second-shadow',
+    mastery: {
+      text: 'Fear 2 turns.',
+      effects: [{ kind: 'custom', customId: 'fear-others-on-veil-crit', duration: 2, target: 'self' }],
+    },
+    tags: ['buff', 'control'],
+    xpTags: ['perception'],
+    ai: { role: 'attack', priority: 0 },
+  },
 ]
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -350,12 +486,12 @@ const venom: SkillSpec[] = [
     school: 'venom',
     tier: 1,
     name: 'Toxic Jab',
-    description: '1.0× Pierce to a front-row enemy; Poison 3 turns (re-applying refreshes the duration).',
+    description: '1.35× Pierce to a front-row enemy; Poison 3 turns (re-applying refreshes the duration).',
     cost: 10,
     weight: 800,
     target: 'enemyFront',
     effects: [
-      { kind: 'damage', multiplier: 1.0, damageType: 'pierce' },
+      { kind: 'damage', multiplier: 1.35, damageType: 'pierce' },
       { kind: 'applyStatus', status: 'poison', duration: 3 },
     ],
     prerequisiteId: null,
@@ -411,12 +547,12 @@ const venom: SkillSpec[] = [
     school: 'venom',
     tier: 2,
     name: 'Festering Wound',
-    description: '1.2× Pierce to a front-row enemy; if the target is Poisoned, also Weaken 2 turns.',
+    description: '1.6× Pierce to a front-row enemy; if the target is Poisoned, also Weaken 2 turns.',
     cost: 15,
     weight: 800,
     target: 'enemyFront',
     effects: [
-      { kind: 'damage', multiplier: 1.2, damageType: 'pierce' },
+      { kind: 'damage', multiplier: 1.6, damageType: 'pierce' },
       { kind: 'custom', customId: 'apply-if-poison', status: 'weaken', duration: 2, note: 'applies `status` for `duration` only if the target holds Poison' },
     ],
     prerequisiteId: 'shade-toxic-jab',
@@ -477,12 +613,12 @@ const venom: SkillSpec[] = [
     school: 'venom',
     tier: 3,
     name: 'Venom Burst',
-    description: '1.6× Shadow to one enemy in any row; consumes the target’s Poison and deals its remaining ticks ×1.5 at once.',
+    description: '2.15× Shadow to one enemy in any row; consumes the target’s Poison and deals its remaining ticks ×1.5 at once.',
     cost: 24,
     weight: 1000,
     target: 'enemy',
     effects: [
-      { kind: 'damage', multiplier: 1.6, damageType: 'shadow' },
+      { kind: 'damage', multiplier: 2.15, damageType: 'shadow' },
       { kind: 'custom', customId: 'consume-dot-burst', status: 'poison', multiplier: 1.5, note: 'removes the target’s `status` DoT and deals its remaining ticks × multiplier at once (ignores Defense like the DoT)' },
     ],
     prerequisiteId: 'shade-festering-wound',
@@ -500,7 +636,7 @@ const venom: SkillSpec[] = [
     tier: 3,
     name: 'Hag’s Hex',
     description:
-      'Curse 3 turns (−10% all attributes) and Slow 2 turns on one enemy in any row. Monster technique: Insights only while a brine hag uses it (the brine hag arrives with the Drowned Vault in Phase 7).',
+      'Curse 3 turns (−10% all attributes) and Slow 2 turns on one enemy in any row. Monster technique: learned only by witnessing a Brine Hag use it.',
     cost: 22,
     weight: 1000,
     target: 'enemy',
@@ -538,6 +674,132 @@ const venom: SkillSpec[] = [
     xpTags: ['agility', 'willpower'],
     ai: { role: 'buff', priority: 50 },
   },
+  {
+    id: 'shade-plague-knife',
+    school: 'venom',
+    tier: 4,
+    name: 'Plague Knife',
+    description: '2.0× Pierce to one enemy in any row; Poison 4 turns; when a Poisoned target dies, its Poison spreads to every enemy in its row.',
+    cost: 30,
+    weight: 800,
+    target: 'enemy',
+    effects: [
+      { kind: 'damage', multiplier: 2.0, damageType: 'pierce' },
+      { kind: 'applyStatus', status: 'poison', duration: 4 },
+      { kind: 'custom', customId: 'poison-spreads-on-death', amount: 1, note: 'when the target dies Poisoned, its Poison spreads to its row (`amount` 2: both rows)' },
+    ],
+    prerequisiteId: 'shade-venom-burst',
+    mastery: {
+      text: 'Spreads to both rows.',
+      effects: [{ kind: 'custom', customId: 'poison-spreads-on-death', amount: 2 }],
+    },
+    tags: ['singleTarget', 'reach', 'dot'],
+    xpTags: ['agility', 'perception'],
+    ai: { role: 'attack', priority: 65 },
+  },
+  {
+    id: 'shade-black-mirror',
+    school: 'venom',
+    tier: 4,
+    name: 'Black Mirror',
+    description: 'Strip every buff from one enemy in any row (Fortify, Haste, Shield, Regen) and Curse it for 2 turns.',
+    cost: 28,
+    weight: 800,
+    target: 'enemy',
+    effects: [
+      { kind: 'custom', customId: 'strip-all-buffs', status: 'shield', amount: 0, note: 'strips every buff; with `amount` 1 the target’s `status` goes to the holder' },
+      { kind: 'applyStatus', status: 'curse', duration: 2 },
+    ],
+    prerequisiteId: 'shade-hags-hex',
+    mastery: {
+      text: 'Stolen Shield goes to you.',
+      effects: [{ kind: 'custom', customId: 'strip-all-buffs', status: 'shield', amount: 1 }],
+    },
+    tags: ['singleTarget', 'reach', 'debuff'],
+    xpTags: ['agility', 'willpower'],
+    ai: { role: 'debuff', priority: 55 },
+  },
+  {
+    id: 'shade-nightshade-veins',
+    school: 'venom',
+    tier: 4,
+    name: 'Nightshade Veins',
+    description: 'Each tick of your Poison on an enemy restores 3% of your Stamina; Poison on a target below 20% HP ticks double.',
+    type: 'passive',
+    effects: [
+      { kind: 'custom', customId: 'nightshade-veins', percent: 3, amount: 20, target: 'self', note: 'percent% of the pool per tick of your Poison; below `amount`% HP the tick lands twice' },
+    ],
+    prerequisiteId: 'shade-shadow-oil',
+    mastery: {
+      text: '5% Stamina.',
+      effects: [{ kind: 'custom', customId: 'nightshade-veins', percent: 5, amount: 20, target: 'self' }],
+    },
+    tags: ['buff', 'dot'],
+    xpTags: ['perception'],
+    ai: { role: 'attack', priority: 0 },
+  },
+  {
+    id: 'shade-miasma',
+    school: 'venom',
+    tier: 5,
+    name: 'Miasma',
+    description: '1.2× Shadow to every enemy in both rows; Poison 4 turns; Blind 1 turn.',
+    cost: 45,
+    weight: 1400,
+    target: 'allEnemies',
+    effects: [
+      { kind: 'damage', multiplier: 1.2, damageType: 'shadow' },
+      { kind: 'applyStatus', status: 'poison', duration: 4 },
+      { kind: 'applyStatus', status: 'blind', duration: 1 },
+    ],
+    prerequisiteId: 'shade-plague-knife',
+    mastery: {
+      text: '1.5×.',
+      effects: [{ kind: 'damage', multiplier: 1.5, damageType: 'shadow' }],
+    },
+    tags: ['aoe', 'dot', 'debuff'],
+    xpTags: ['agility', 'willpower'],
+    ai: { role: 'attack', priority: 65 },
+  },
+  {
+    id: 'shade-widows-kiss',
+    school: 'venom',
+    tier: 5,
+    name: 'Widow’s Kiss',
+    description: '3.0× Shadow to a front-row enemy; Petrify 1 turn (−1,000 energy) if the target is Poisoned; bosses: Stun 1 turn instead.',
+    cost: 40,
+    weight: 800,
+    target: 'enemyFront',
+    effects: [
+      { kind: 'damage', multiplier: 3.0, damageType: 'shadow' },
+      { kind: 'custom', customId: 'petrify-poisoned-stun-boss', status: 'petrify', duration: 1, note: '`status` for `duration` on a Poisoned target (`amount` 1: any target); a boss is Stunned 1 turn instead' },
+    ],
+    prerequisiteId: 'shade-black-mirror',
+    mastery: {
+      text: 'Petrify on any target.',
+      effects: [{ kind: 'custom', customId: 'petrify-poisoned-stun-boss', status: 'petrify', duration: 1, amount: 1 }],
+    },
+    tags: ['singleTarget', 'control'],
+    xpTags: ['agility', 'willpower'],
+    ai: { role: 'attack', priority: 70 },
+  },
+  {
+    id: 'shade-toxicologist',
+    school: 'venom',
+    tier: 5,
+    name: 'Toxicologist',
+    description: 'Your Poison can hold two separate lines on one target (two tick lines, two durations); your DoTs ignore Resistance.',
+    type: 'passive',
+    effects: [{ kind: 'custom', customId: 'toxicologist', amount: 2, target: 'self', note: '`amount` separate Poison lines per target; your DoTs skip the Resistance roll (stub: a statuses.ts joint)' }],
+    prerequisiteId: 'shade-nightshade-veins',
+    mastery: {
+      text: 'Three lines.',
+      effects: [{ kind: 'custom', customId: 'toxicologist', amount: 3, target: 'self' }],
+    },
+    tags: ['buff', 'dot'],
+    xpTags: ['perception'],
+    ai: { role: 'attack', priority: 0 },
+  },
 ]
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -549,12 +811,12 @@ const larceny: SkillSpec[] = [
     school: 'larceny',
     tier: 1,
     name: 'Pickpocket',
-    description: '0.6× Pierce to a front-row enemy and steal gold equal to 5 × its level (once per enemy).',
+    description: '0.8× Pierce to a front-row enemy and steal gold equal to 5 × its level (once per enemy).',
     cost: 8,
     weight: 800,
     target: 'enemyFront',
     effects: [
-      { kind: 'damage', multiplier: 0.6, damageType: 'pierce' },
+      { kind: 'damage', multiplier: 0.8, damageType: 'pierce' },
       { kind: 'custom', customId: 'steal-gold-per-level', amount: 5, note: 'steals gold = amount × the target’s level, once per enemy per fight; a steal over the room’s gold cap pays the cap' },
     ],
     prerequisiteId: null,
@@ -619,12 +881,12 @@ const larceny: SkillSpec[] = [
     school: 'larceny',
     tier: 2,
     name: 'Filch',
-    description: '0.8× Pierce to a front-row enemy; steal a common part from a monster, or a potion from a Grinning Company bandit (once per enemy).',
+    description: '1.1× Pierce to a front-row enemy; steal a common part from a monster, or a potion from a Grinning Company bandit (once per enemy).',
     cost: 14,
     weight: 800,
     target: 'enemyFront',
     effects: [
-      { kind: 'damage', multiplier: 0.8, damageType: 'pierce' },
+      { kind: 'damage', multiplier: 1.1, damageType: 'pierce' },
       { kind: 'custom', customId: 'steal-part', chance: 0, note: 'steals one common part from a monster (a potion from a bandit), once per enemy per fight; chance% of the time the part is a rare one instead' },
     ],
     prerequisiteId: 'shade-pickpocket',
@@ -641,21 +903,21 @@ const larceny: SkillSpec[] = [
     school: 'larceny',
     tier: 2,
     name: 'Trap Trick',
-    description: 'In a corridor: pocket a trap you have disarmed (hold up to 2). In combat: throw a pocketed trap at any row for 1.2× Pierce and Root 1 turn.',
+    description: 'In a corridor: pocket a trap you have disarmed (hold up to 2). In combat: throw a pocketed trap at any row for 2.15× Pierce and Root 1 turn.',
     cost: 12,
     weight: 800,
     target: 'enemy',
     effects: [
       { kind: 'custom', customId: 'pocket-trap', amount: 2, target: 'self', note: 'out of combat: pockets a trap the party disarmed, holding up to `amount`; in combat the skill throws one, and the lines below need a pocketed trap' },
-      { kind: 'damage', multiplier: 1.2, damageType: 'pierce' },
+      { kind: 'damage', multiplier: 1.6, damageType: 'pierce' },
       { kind: 'applyStatus', status: 'root', duration: 1 },
     ],
     prerequisiteId: 'shade-light-fingers',
     mastery: {
-      text: 'Hold 3; thrown traps 1.6×.',
+      text: 'Hold 3; thrown traps 2.15×.',
       effects: [
         { kind: 'custom', customId: 'pocket-trap', amount: 3, target: 'self' },
-        { kind: 'damage', multiplier: 1.6, damageType: 'pierce' },
+        { kind: 'damage', multiplier: 2.15, damageType: 'pierce' },
       ],
     },
     tags: ['singleTarget', 'reach', 'control', 'utility', 'field'],
@@ -690,12 +952,12 @@ const larceny: SkillSpec[] = [
     school: 'larceny',
     tier: 3,
     name: 'Mug',
-    description: '1.8× Pierce to a front-row enemy; steal gold equal to 15 × its level; against a boss, steal a guaranteed common part.',
+    description: '2.45× Pierce to a front-row enemy; steal gold equal to 15 × its level; against a boss, steal a guaranteed common part.',
     cost: 20,
     weight: 800,
     target: 'enemyFront',
     effects: [
-      { kind: 'damage', multiplier: 1.8, damageType: 'pierce' },
+      { kind: 'damage', multiplier: 2.45, damageType: 'pierce' },
       { kind: 'custom', customId: 'steal-gold-per-level', amount: 15 },
       { kind: 'custom', customId: 'steal-boss-part', note: 'against a boss: a guaranteed common part, once per fight' },
     ],
@@ -750,6 +1012,139 @@ const larceny: SkillSpec[] = [
     xpTags: ['agility', 'perception'],
     ai: { role: 'debuff', priority: 50 },
   },
+  {
+    id: 'shade-heist',
+    school: 'larceny',
+    tier: 4,
+    name: 'Heist',
+    description: '2.4× Pierce to a front-row enemy; its next part roll is made at ×2 (as a part-break); against a bandit, steals its held item.',
+    cost: 30,
+    weight: 1000,
+    target: 'enemyFront',
+    effects: [
+      { kind: 'damage', multiplier: 2.4, damageType: 'pierce' },
+      { kind: 'custom', customId: 'part-break', multiplier: 2, note: 'the target’s rare-part roll is multiplied by multiplier (03 §6.5)' },
+      { kind: 'custom', customId: 'steal-bandit-item', note: 'a bandit’s held item (a Small HP Potion), once per enemy' },
+    ],
+    prerequisiteId: 'shade-mug',
+    mastery: {
+      text: 'Part roll ×3.',
+      effects: [{ kind: 'custom', customId: 'part-break', multiplier: 3 }],
+    },
+    tags: ['singleTarget', 'utility'],
+    xpTags: ['agility', 'perception'],
+    ai: { role: 'attack', priority: 55 },
+  },
+  {
+    id: 'shade-treasure-sense',
+    school: 'larceny',
+    tier: 4,
+    name: 'Treasure Sense',
+    description: 'Detection +4 for secrets and hidden treasure; the party finds +10% gold.',
+    type: 'passive',
+    effects: [
+      { kind: 'custom', customId: 'treasure-detection-bonus', amount: 4, target: 'self', note: '+amount Detection for secrets and hidden treasure (delve side)' },
+      { kind: 'custom', customId: 'gold-found-percent', percent: 10, target: 'self', note: 'the party finds +percent% gold (delve.ts reads it)' },
+    ],
+    prerequisiteId: 'shade-saboteur',
+    mastery: {
+      text: '+6 / +20%.',
+      effects: [
+        { kind: 'custom', customId: 'treasure-detection-bonus', amount: 6, target: 'self' },
+        { kind: 'custom', customId: 'gold-found-percent', percent: 20, target: 'self' },
+      ],
+    },
+    tags: ['utility', 'scouting', 'field'],
+    xpTags: ['perception'],
+    ai: { role: 'utility', priority: 0 },
+  },
+  {
+    id: 'shade-grand-larceny',
+    school: 'larceny',
+    tier: 4,
+    name: 'Grand Larceny',
+    description: 'Strip every buff from every enemy; each ally gains Shield = 5% of its max HP per buff stripped.',
+    cost: 28,
+    weight: 800,
+    target: 'allEnemies',
+    effects: [
+      { kind: 'custom', customId: 'strip-buffs-shield-allies', percent: 5, status: 'haste', amount: 0, target: 'self', note: 'strips every enemy buff; each ally gains Shield = percent% of its max HP per buff (`amount` 1: a stripped `status` becomes Slow)' },
+    ],
+    prerequisiteId: 'shade-sleight',
+    mastery: {
+      text: 'Stripped Haste becomes Slow.',
+      effects: [{ kind: 'custom', customId: 'strip-buffs-shield-allies', percent: 5, status: 'haste', amount: 1, target: 'self' }],
+    },
+    tags: ['aoe', 'debuff', 'shield'],
+    xpTags: ['agility', 'perception'],
+    ai: { role: 'debuff', priority: 55 },
+  },
+  {
+    id: 'shade-kings-ransom',
+    school: 'larceny',
+    tier: 5,
+    name: 'King’s Ransom',
+    description: '3.5× Pierce to a front-row enemy; steal gold equal to 50 × its level; against a boss, steal a guaranteed rare part.',
+    cost: 45,
+    weight: 1000,
+    target: 'enemyFront',
+    effects: [
+      { kind: 'damage', multiplier: 3.5, damageType: 'pierce' },
+      { kind: 'custom', customId: 'steal-gold-per-level', amount: 50 },
+      { kind: 'custom', customId: 'steal-boss-rare-part', note: 'against a boss: a guaranteed rare part, once per fight' },
+    ],
+    prerequisiteId: 'shade-heist',
+    mastery: {
+      text: 'Steal 80 × level.',
+      effects: [{ kind: 'custom', customId: 'steal-gold-per-level', amount: 80 }],
+    },
+    tags: ['singleTarget', 'utility'],
+    xpTags: ['agility', 'perception'],
+    ai: { role: 'attack', priority: 60 },
+  },
+  {
+    id: 'shade-phantom-thief',
+    school: 'larceny',
+    tier: 5,
+    name: 'Phantom Thief',
+    description: 'Locked chests open without a check and their traps are disarmed; your Fortune cap is 35%; in-dungeon chests roll a grade up twice as often for you.',
+    type: 'passive',
+    effects: [
+      { kind: 'custom', customId: 'phantom-thief-chests', percent: 200, target: 'self', note: 'locked chests open with no check and no trap; chests roll a grade up percent% as often (delve side)' },
+      { kind: 'custom', customId: 'fortune-cap-raise', amount: 35, target: 'self', note: 'the Fortune cap becomes amount% (stub: a stats.ts joint)' },
+    ],
+    prerequisiteId: 'shade-treasure-sense',
+    mastery: {
+      text: 'Also Skeleton Keys are never consumed.',
+      effects: [{ kind: 'custom', customId: 'keys-never-consumed', target: 'self', note: 'Skeleton Keys are never used up (delve side)' }],
+    },
+    tags: ['utility', 'field'],
+    xpTags: ['perception'],
+    ai: { role: 'utility', priority: 0 },
+  },
+  {
+    id: 'shade-vault-cracker',
+    school: 'larceny',
+    tier: 5,
+    name: 'Vault Cracker',
+    description: 'Corridor: open any locked door or chest with no check and no trap. Combat: 2.0× Pierce that ignores all Defense against constructs and armored elites (vault sentinels, bone knights, forge-golems).',
+    cost: 40,
+    weight: 1400,
+    target: 'enemy',
+    effects: [
+      { kind: 'custom', customId: 'corridor-open-locks', target: 'room', note: 'corridor use: any locked door or chest opens with no check and no trap (delve side)' },
+      { kind: 'custom', customId: 'ignore-defense-vs-armored', percent: 100, target: 'self', note: 'this action ignores percent% of the Defense of constructs and elite-role monsters' },
+      { kind: 'damage', multiplier: 2.0, damageType: 'pierce' },
+    ],
+    prerequisiteId: 'shade-grand-larceny',
+    mastery: {
+      text: '2.6×.',
+      effects: [{ kind: 'damage', multiplier: 2.6, damageType: 'pierce' }],
+    },
+    tags: ['singleTarget', 'reach', 'utility'],
+    xpTags: ['agility', 'perception'],
+    ai: { role: 'attack', priority: 55 },
+  },
 ]
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -782,27 +1177,8 @@ function toRecord(s: SkillSpec): Json {
   return rec
 }
 
-function writeJson(file: string, value: Json): boolean {
-  const text = `${JSON.stringify(value, null, 2)}\n`
-  const before = fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : null
-  if (before === text) return false
-  fs.writeFileSync(file, text, 'utf8')
-  return true
-}
-
 const skills = [...shadow, ...venom, ...larceny]
-const skillDir = path.join(ROOT, 'content', 'skills', CLASS_ID)
-fs.mkdirSync(skillDir, { recursive: true })
-fs.mkdirSync(path.join(ROOT, 'content', 'classes'), { recursive: true })
-
-let changed = 0
-if (writeJson(path.join(ROOT, 'content', 'classes', `${CLASS_ID}.json`), classRecord)) changed++
-const written = new Set<string>()
-for (const s of skills) {
-  if (!s.id.startsWith(`${CLASS_ID}-`)) throw new Error(`skill id ${s.id} is not prefixed with ${CLASS_ID}-`)
-  if (written.has(s.id)) throw new Error(`duplicate skill id ${s.id}`)
-  written.add(s.id)
-  if (writeJson(path.join(skillDir, `${s.id}.json`), toRecord(s))) changed++
-}
-const stale = fs.readdirSync(skillDir).filter((f) => f.endsWith('.json') && !written.has(f.slice(0, -5)))
-process.stdout.write(`${CLASS_ID}: 1 class + ${skills.length} skills (${skills.filter((s) => s.isUltimate).length} Ultimate), ${changed} file(s) changed${stale.length ? `; stale files not written by this script: ${stale.join(', ')}` : ''}\n`)
+const r = writeClassRecords(CLASS_ID, classRecord, skills.map(toRecord))
+process.stdout.write(
+  `${CLASS_ID}: 1 class + ${skills.length} skills (${skills.filter((s) => s.isUltimate).length} Ultimate) — ${r.written} written, ${r.unchanged} unchanged${r.removed.length ? `, removed ${r.removed.join(', ')}` : ''}\n`,
+)

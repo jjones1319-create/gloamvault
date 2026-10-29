@@ -1,0 +1,49 @@
+{
+  "id": "blade-perfect-tempo",
+  "classId": "blade",
+  "school": "iron-dance",
+  "tier": 4,
+  "name": "Perfect Tempo",
+  "description": "Every third Iron Dance action in a fight costs no Stamina.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "school-every-nth-free",
+      "amount": 3,
+      "target": "self",
+      "note": "every amount-th active of the owner's school (Iron Dance) in a fight costs 0"
+    }
+  ],
+  "prerequisiteId": "blade-thousand-steps",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Every second.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "school-every-nth-free",
+        "amount": 2,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff"
+  ],
+  "xpTags": [
+    "agility"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 0
+  }
+}

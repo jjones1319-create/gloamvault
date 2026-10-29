@@ -1,0 +1,45 @@
+{
+  "id": "legendary-talisman-of-warding",
+  "name": "Legendary Talisman of Warding",
+  "slot": "talisman",
+  "kind": "talisman",
+  "grade": "S",
+  "materialLadder": null,
+  "materialRung": null,
+  "weaponType": null,
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "resistance": 18
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 9,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1,
+  "value": 2000,
+  "classLock": [],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "talisman-warding-01",
+    "tintPrimary": "#4f6f7f",
+    "tintSecondary": "#7c3aed",
+    "trimMetal": "adamantine"
+  }
+}

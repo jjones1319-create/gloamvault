@@ -1,0 +1,50 @@
+{
+  "id": "moonweave-leggings",
+  "name": "Moonweave Leggings",
+  "slot": "legs",
+  "kind": "armor",
+  "grade": "A",
+  "materialLadder": "cloth",
+  "materialRung": 5,
+  "weaponType": null,
+  "armorFamily": "robes",
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "defense": 4,
+    "hp": 9,
+    "speed": 4
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 8,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1.53,
+  "value": 1120,
+  "classLock": [
+    "arcanist",
+    "mender"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "armor-robes-legs-01",
+    "tintPrimary": "#c9d3e6",
+    "tintSecondary": "#3b3b3b",
+    "trimMetal": "skysteel"
+  }
+}

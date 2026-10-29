@@ -1,0 +1,49 @@
+{
+  "id": "elderwood-kite-shield",
+  "name": "Elderwood Kite Shield",
+  "slot": "offHand",
+  "kind": "shield",
+  "grade": "S",
+  "materialLadder": "wood",
+  "materialRung": 6,
+  "weaponType": "shieldKite",
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "block": 37,
+    "defense": 18,
+    "speed": -5
+  },
+  "requirements": {
+    "strength": 17,
+    "wisdom": 0
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 9,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 3.81,
+  "value": 2000,
+  "classLock": [
+    "warden"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "shield-kite-shield-01",
+    "tintPrimary": "#5e7a4a",
+    "tintSecondary": "#5b4a2f",
+    "trimMetal": "adamantine"
+  }
+}

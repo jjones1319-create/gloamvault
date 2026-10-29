@@ -1,0 +1,25 @@
+{
+  "id": "throne-antechamber",
+  "tableId": "vault-throne",
+  "dungeonId": "gravehollow-keep",
+  "floorBand": {
+    "min": 8,
+    "max": 8
+  },
+  "name": "From the Deep (the Antechamber)",
+  "composition": [
+    {
+      "monsterId": "deep-tentacle",
+      "count": 2,
+      "row": "front"
+    },
+    {
+      "monsterId": "tidebound-drowner",
+      "count": 2,
+      "row": "front"
+    }
+  ],
+  "weight": 10,
+  "ambushModifier": 5,
+  "eliteAllowed": false
+}

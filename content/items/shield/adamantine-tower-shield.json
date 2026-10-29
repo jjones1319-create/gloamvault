@@ -1,0 +1,49 @@
+{
+  "id": "adamantine-tower-shield",
+  "name": "Adamantine Tower Shield",
+  "slot": "offHand",
+  "kind": "shield",
+  "grade": "S",
+  "materialLadder": "metal",
+  "materialRung": 6,
+  "weaponType": "shieldTower",
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "block": 47,
+    "defense": 30,
+    "speed": -10
+  },
+  "requirements": {
+    "strength": 27,
+    "wisdom": 0
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 9,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 3.81,
+  "value": 2000,
+  "classLock": [
+    "warden"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "shield-tower-shield-01",
+    "tintPrimary": "#4f6f7f",
+    "tintSecondary": "#5b4a2f",
+    "trimMetal": "adamantine"
+  }
+}

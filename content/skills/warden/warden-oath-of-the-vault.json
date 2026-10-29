@@ -1,0 +1,66 @@
+{
+  "id": "warden-oath-of-the-vault",
+  "classId": "warden",
+  "school": "warcry",
+  "tier": 5,
+  "name": "Oath of the Vault",
+  "description": "For 3 turns each ally is saved once: the first blow that would drop them leaves them at 1 HP; allies gain Fortify. When the oath ends you take 15% of your max HP.",
+  "type": "active",
+  "cost": 50,
+  "weight": 1400,
+  "target": "allAllies",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "oath-of-the-vault",
+      "duration": 3,
+      "amount": 1,
+      "percent": 15,
+      "target": "allAllies",
+      "note": "D-099: amount save(s) per ally per cast; the oath lasts duration of your turns; at its end you pay percent% of your max HP"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "fortify",
+      "duration": 3
+    }
+  ],
+  "prerequisiteId": "warden-warhorn",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "4 turns; no self-damage.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "oath-of-the-vault",
+        "duration": 4,
+        "amount": 1,
+        "percent": 0,
+        "target": "allAllies"
+      },
+      {
+        "kind": "applyStatus",
+        "status": "fortify",
+        "duration": 4
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "buff",
+    "shield"
+  ],
+  "xpTags": [
+    "willpower",
+    "endurance"
+  ],
+  "aiHints": {
+    "role": "defend",
+    "priority": 75
+  }
+}

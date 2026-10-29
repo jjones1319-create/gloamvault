@@ -1,0 +1,50 @@
+{
+  "id": "phoenix-weave-slippers",
+  "name": "Phoenix Weave Slippers",
+  "slot": "boots",
+  "kind": "armor",
+  "grade": "S",
+  "materialLadder": "cloth",
+  "materialRung": 6,
+  "weaponType": null,
+  "armorFamily": "robes",
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "defense": 0,
+    "hp": 6,
+    "dodge": 3
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 9,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1.91,
+  "value": 1250,
+  "classLock": [
+    "arcanist",
+    "mender"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "armor-robes-boots-01",
+    "tintPrimary": "#d9541e",
+    "tintSecondary": "#3b3b3b",
+    "trimMetal": "adamantine"
+  }
+}

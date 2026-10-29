@@ -36,7 +36,8 @@
     "effects": [],
     "stackMax": 5,
     "target": "room",
-    "inCombat": false
+    "inCombat": false,
+    "text": "The Company's Dice Table: a sure win"
   },
   "ammo": null,
   "visual": {

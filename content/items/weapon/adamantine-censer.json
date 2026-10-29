@@ -1,0 +1,48 @@
+{
+  "id": "adamantine-censer",
+  "name": "Adamantine Censer",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "S",
+  "materialLadder": "metal",
+  "materialRung": 6,
+  "weaponType": "censer",
+  "armorFamily": null,
+  "hands": 1,
+  "damageType": "blunt",
+  "weight": 1000,
+  "baseStats": {
+    "attackPhys": 60,
+    "attackSpell": 60
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 15
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 9,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 5.09,
+  "value": 2500,
+  "classLock": [
+    "mender"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-censer-01",
+    "tintPrimary": "#4f6f7f",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "adamantine"
+  }
+}

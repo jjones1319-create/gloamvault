@@ -8,6 +8,7 @@ import { Btn, Empty, Grade, Meter, Section } from '../../kit/kit.tsx'
 import { buzz } from '../../lib/haptics.ts'
 import { STANCE_NAME, stanceLine } from './labels.ts'
 import { petActives } from './progress.ts'
+import { TraitRank } from '../town/Stables.tsx'
 
 /** Pet (03 §9): the hero's pet, its stance, the stables (swap) and the eggs (hatch). */
 export function PetTab({ c, p, hero }: { c: Content; p: Profile; hero: HeroRecord }) {
@@ -33,7 +34,11 @@ export function PetTab({ c, p, hero }: { c: Content; p: Profile; hero: HeroRecor
               </p>
               {pet.level < hero.level ? <Meter compact tone="xp" value={pet.xp} max={petLevelCost(pet.level + 1)} label="Pet XP" /> : <p class="hr-petcard__line hr-dim">Level with {hero.name}: grows when {hero.name} does.</p>}
               <p class="hr-petcard__line">
-                <b>{def.trait.name}</b> (rank {pet.traitRank}). {def.trait.description}
+                <b>{def.trait.name}</b>. {def.trait.description}
+              </p>
+              {/* 03 §9: the trait grows by use — its rank and the way to the next (pass D). */}
+              <p class="hr-petcard__line">
+                <TraitRank c={c} pet={pet} />
               </p>
               <ul class="hr-petcard__actives">
                 {petActives(c, t, def, pet).map((a) => (

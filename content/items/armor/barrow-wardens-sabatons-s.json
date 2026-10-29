@@ -1,0 +1,49 @@
+{
+  "id": "barrow-wardens-sabatons-s",
+  "name": "Barrow Warden's Sabatons",
+  "slot": "boots",
+  "kind": "armor",
+  "grade": "S",
+  "materialLadder": "metal",
+  "materialRung": 6,
+  "weaponType": null,
+  "armorFamily": "plate",
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "defense": 12,
+    "hp": 12,
+    "carry": 12
+  },
+  "requirements": {
+    "strength": 21,
+    "wisdom": 0
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 9,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 4.58,
+  "value": 1250,
+  "classLock": [
+    "warden"
+  ],
+  "setId": "barrow-wardens-vigil",
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "armor-plate-boots-01",
+    "tintPrimary": "#4a5148",
+    "tintSecondary": "#2f5e4a",
+    "trimMetal": "iron"
+  }
+}

@@ -80,10 +80,6 @@
       {
         "if": "self is in the back row (target: the hero with the lowest Perception)",
         "then": "drop"
-      },
-      {
-        "if": "always",
-        "then": "venom-bite"
       }
     ],
     "fleesAtPercent": 0

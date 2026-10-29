@@ -62,7 +62,10 @@
       "rankBonus": 2
     }
   ],
-  "monsterTechniqueIds": [],
+  "monsterTechniqueIds": [
+    "shade-hags-hex",
+    "shade-wraith-step"
+  ],
   "aiRuleDefault": "IF self HP < 30% THEN item small hp potion on self; IF self not status veil THEN veil; ELSE backstab on weakest enemy",
   "visual": {
     "gearSetId": "shade-rawhide-leather",

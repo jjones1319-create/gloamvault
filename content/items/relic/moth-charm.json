@@ -41,7 +41,8 @@
       }
     ],
     "usesPerFight": 1,
-    "target": "allEnemies"
+    "target": "allEnemies",
+    "text": "Blinds every enemy for 1 round"
   },
   "consumable": null,
   "ammo": null,

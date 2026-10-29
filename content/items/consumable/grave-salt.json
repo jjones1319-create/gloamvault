@@ -36,7 +36,8 @@
     "effects": [],
     "stackMax": 5,
     "target": "room",
-    "inCombat": false
+    "inCombat": false,
+    "text": "The Funeral Urns: gold from every urn, for sure"
   },
   "ammo": null,
   "visual": {
@@ -44,5 +45,9 @@
     "tintPrimary": "#9a9a9a",
     "tintSecondary": "#2b2b2b",
     "trimMetal": "none"
-  }
+  },
+  "tags": [
+    "safe-item",
+    "zone:the-crypts"
+  ]
 }

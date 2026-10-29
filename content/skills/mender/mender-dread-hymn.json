@@ -1,0 +1,56 @@
+{
+  "id": "mender-dread-hymn",
+  "classId": "mender",
+  "school": "sanctity",
+  "tier": 4,
+  "name": "Dread Hymn",
+  "description": "Fear 2 turns and Slow 1 turn on every enemy.",
+  "type": "active",
+  "cost": 30,
+  "weight": 1000,
+  "target": "allEnemies",
+  "effects": [
+    {
+      "kind": "applyStatus",
+      "status": "fear",
+      "duration": 2
+    },
+    {
+      "kind": "applyStatus",
+      "status": "slow",
+      "duration": 1
+    }
+  ],
+  "prerequisiteId": "mender-hallowed-ground",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Also Silence 1 turn on casters.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "apply-if-caster",
+        "status": "silence",
+        "duration": 1,
+        "note": "applies `status` for `duration` only if the target is a caster (a monster with a spell attack)"
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "control",
+    "debuff"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "control",
+    "priority": 65
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "id": "ranger-apex-hunter",
+  "classId": "ranger",
+  "school": "marksman",
+  "tier": 5,
+  "name": "Apex Hunter",
+  "description": "Marked enemies take +30% damage from the whole party (instead of the Mark's +20%); your Crit Rate cap is 55%.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "apex-mark-percent",
+      "percent": 30,
+      "target": "self",
+      "note": "every Marked enemy takes percent% from the party instead of the Mark’s own +20"
+    },
+    {
+      "kind": "custom",
+      "customId": "crit-cap-raise",
+      "amount": 55,
+      "target": "self",
+      "note": "the Crit Rate cap becomes amount% (stub: a stats.ts joint)"
+    }
+  ],
+  "prerequisiteId": "ranger-one-shot",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "+35%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "apex-mark-percent",
+        "percent": 35,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff"
+  ],
+  "xpTags": [
+    "perception"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 0
+  }
+}

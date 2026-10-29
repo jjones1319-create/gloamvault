@@ -1,0 +1,60 @@
+{
+  "id": "the-hollow-coin",
+  "name": "The Hollow Coin",
+  "slot": "relic",
+  "kind": "relic",
+  "grade": "C",
+  "materialLadder": null,
+  "materialRung": null,
+  "weaponType": null,
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {},
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 2,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 6,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1,
+  "value": 720,
+  "classLock": [],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": {
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "reroll-fight-drop",
+        "target": "self",
+        "note": "resolved by the delve after a won fight (sim/src/relics.ts)"
+      }
+    ],
+    "usesPerFight": 1,
+    "target": "self",
+    "text": "Re-rolls this fight's item drop after the fight, once per floor",
+    "usesPerFloor": 1,
+    "timing": "afterFight"
+  },
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "relic-hollow-coin-01",
+    "tintPrimary": "#3a3a3a",
+    "tintSecondary": "#c9a227",
+    "trimMetal": "brass"
+  },
+  "tags": [
+    "boss-only"
+  ]
+}

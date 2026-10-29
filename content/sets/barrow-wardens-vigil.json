@@ -1,0 +1,55 @@
+{
+  "id": "barrow-wardens-vigil",
+  "name": "Barrow Warden's Vigil",
+  "family": "plate",
+  "theme": "the Crypts, Gravehollow F4–6",
+  "classIds": [
+    "warden"
+  ],
+  "pieces": [
+    "barrow-wardens-helm",
+    "barrow-wardens-breastplate",
+    "barrow-wardens-greaves",
+    "barrow-wardens-sabatons",
+    "barrow-wardens-gauntlets"
+  ],
+  "bonuses": {
+    "2": [
+      {
+        "kind": "buffStat",
+        "stat": "defense",
+        "amount": 5
+      },
+      {
+        "kind": "custom",
+        "customId": "status-resist-bonus",
+        "status": "fear",
+        "percent": 10,
+        "target": "self"
+      },
+      {
+        "kind": "custom",
+        "customId": "status-resist-bonus",
+        "status": "curse",
+        "percent": 10,
+        "target": "self"
+      }
+    ],
+    "4": [
+      {
+        "kind": "custom",
+        "customId": "guard-taunts-and-fortifies",
+        "duration": 1,
+        "target": "self",
+        "note": "Guard also Taunts every enemy and grants Fortify 1 round"
+      }
+    ]
+  },
+  "bonusText": {
+    "2": "+5 Defense; +10% Resistance to Fear and Curse",
+    "4": "Guard also Taunts every enemy and grants Fortify 1 round"
+  },
+  "gradeMin": "D",
+  "gradeMax": "B",
+  "dropChance": 15
+}

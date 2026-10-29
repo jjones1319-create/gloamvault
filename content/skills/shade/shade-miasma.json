@@ -1,0 +1,59 @@
+{
+  "id": "shade-miasma",
+  "classId": "shade",
+  "school": "venom",
+  "tier": 5,
+  "name": "Miasma",
+  "description": "1.2× Shadow to every enemy in both rows; Poison 4 turns; Blind 1 turn.",
+  "type": "active",
+  "cost": 45,
+  "weight": 1400,
+  "target": "allEnemies",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1.2,
+      "damageType": "shadow"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "poison",
+      "duration": 4
+    },
+    {
+      "kind": "applyStatus",
+      "status": "blind",
+      "duration": 1
+    }
+  ],
+  "prerequisiteId": "shade-plague-knife",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "1.5×.",
+    "effects": [
+      {
+        "kind": "damage",
+        "multiplier": 1.5,
+        "damageType": "shadow"
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "dot",
+    "debuff"
+  ],
+  "xpTags": [
+    "agility",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 65
+  }
+}

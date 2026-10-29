@@ -1,0 +1,50 @@
+{
+  "id": "basilisk-scale-hood",
+  "name": "Basilisk Scale Hood",
+  "slot": "helmet",
+  "kind": "armor",
+  "grade": "A",
+  "materialLadder": "hide",
+  "materialRung": 5,
+  "weaponType": null,
+  "armorFamily": "leather",
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "defense": 4,
+    "hp": 18,
+    "detection": 4
+  },
+  "requirements": {
+    "strength": 11,
+    "wisdom": 0
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 8,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 2.44,
+  "value": 1120,
+  "classLock": [
+    "ranger",
+    "shade"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "armor-leather-helm-01",
+    "tintPrimary": "#6b7d4f",
+    "tintSecondary": "#3b2a1e",
+    "trimMetal": "skysteel"
+  }
+}

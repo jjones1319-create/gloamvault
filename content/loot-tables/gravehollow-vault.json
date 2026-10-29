@@ -1,0 +1,64 @@
+{
+  "id": "gravehollow-vault",
+  "dungeonId": "gravehollow-keep",
+  "name": "Gravehollow Keep — the Drowned Vault (F7)",
+  "floorBand": {
+    "min": 7,
+    "max": 7
+  },
+  "monsterLevels": {
+    "min": 11,
+    "max": 11
+  },
+  "goldRange": {
+    "min": 17,
+    "max": 33
+  },
+  "itemChance": 45,
+  "gradeShape": {
+    "centreGrade": "D",
+    "centre": 56,
+    "minus1": 25,
+    "plus1": 14,
+    "plus2": 4,
+    "plus3": 1
+  },
+  "partChance": {
+    "common": 35,
+    "rare": 4
+  },
+  "stoneChance": 8,
+  "consumableDrop": {
+    "chance": 45,
+    "itemIds": [
+      "medium-hp-potion",
+      "fortify-draught",
+      "bolts"
+    ]
+  },
+  "treasureRoom": {
+    "goldPiles": {
+      "min": 2,
+      "max": 4
+    },
+    "goldFightsWorth": 2,
+    "smallChestChance": 100,
+    "largeChestChance": 20,
+    "largeLockedChance": 40,
+    "trappedChance": 20,
+    "trapId": "hags-snare",
+    "consumableBundle": 3,
+    "hiddenFind": {
+      "itemAtPlusOneChance": 90,
+      "skeletonKeyChance": 10
+    }
+  },
+  "darknessItemBonus": {
+    "radiant": 0,
+    "dim": 10,
+    "shadowy": 25,
+    "dark": 50,
+    "pitch": 75
+  },
+  "bossFirstKill": "sister-naesa"
+}

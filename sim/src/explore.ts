@@ -1,9 +1,9 @@
 import type { Content } from './content.ts'
 import type { MerchantOffer, RoomState, TrapState } from './delve-types.ts'
-import { townPrice } from './economy.ts'
+import { buyPricePercent, townPrice } from './economy.ts'
 import type { Actor } from './fight-types.ts'
 import type { FloorGraph, FloorRoom } from './generator.ts'
-import { installHook } from './hooks.ts'
+import { armPassiveAttacks, installHook } from './hooks.ts'
 import { createItemInstance } from './items.ts'
 import { buildMonsterActor, monsterLevelOnFloor, partyScale, scaledCount } from './monsters.ts'
 import type { Rng } from './rng.ts'
@@ -16,13 +16,26 @@ import type { CurioDef, DungeonDef, EncounterDef, FloorDef, MonsterDef, TrapDef,
  * an encounter, a champion, traps, a curio or a merchant, and that spawn the monsters for a fight. Pure functions
  * over content and the seeded rng; the delve module owns the state machine.
  */
-export const EXPLORE_RULES = {
-  /** A non-fixed room's chance to hold one trap from the zone's pool (D-064). */
-  trapChancePercent: 25,
-  /** Traps in a trap gauntlet. */
-  gauntletTraps: { min: 2, max: 3 },
-  /** A Monster-role encounter at most once per floor (06 §8.2). */
-  monsterRoomsPerFloor: 1,
+/**
+ * The floors' own numbers live in tuning.json → `floors` (C1, Phase 7): a room's trap chance and a gauntlet's traps
+ * (D-064), one Monster room per floor (06 §8.2). These read them.
+ */
+function monsterRoomsPerFloor(content: Content): number {
+  return content.tuning.floors.monsterRoomsPerFloor.value
+}
+
+/** A floor whose entry room holds its zone's Waystone (07 §1.1: the first floor of a zone with `waystone`: F1, F4, F7). */
+export function isWaystoneFloor(dungeon: DungeonDef, floor: number): boolean {
+  return dungeon.zones.some((z) => z.waystone && z.floors.from === floor)
+}
+
+/**
+ * The floor before a dungeon's final boss: the next floor is the dungeon's last and carries a boss (07 §2.7: the
+ * Vault's raft on F7, the last merchant before the throne, stocks `merchant.beforeFinalBoss`).
+ */
+export function isBeforeFinalBoss(dungeon: DungeonDef, floor: number): boolean {
+  const last = Math.max(...dungeon.floors.map((f) => f.floor))
+  return floor + 1 === last && dungeon.floors.some((f) => f.floor === last && f.bossId !== null)
 }
 
 export function floorDef(dungeon: DungeonDef, floor: number): FloorDef {
@@ -73,15 +86,20 @@ export function isMonsterEncounter(content: Content, e: EncounterDef): boolean {
 export function pickEncounter(content: Content, rng: Rng, floor: FloorDef, dungeonId: string, previousId: string | null, monsterRoomsUsed: number, elite: boolean): EncounterDef | null {
   let pool = encountersFor(content, floor, dungeonId)
   if (elite) pool = pool.filter((e) => e.eliteAllowed && !isMonsterEncounter(content, e))
-  if (monsterRoomsUsed >= EXPLORE_RULES.monsterRoomsPerFloor) pool = pool.filter((e) => !isMonsterEncounter(content, e))
+  if (monsterRoomsUsed >= monsterRoomsPerFloor(content)) pool = pool.filter((e) => !isMonsterEncounter(content, e))
   const notPrevious = pool.filter((e) => e.id !== previousId)
   const candidates = notPrevious.length ? notPrevious : pool
   if (candidates.length === 0) return null
   return rng.weighted(candidates, (e) => e.weight)
 }
 
-/** 06 §8.2's role mix over a floor's encounters: ≥ 2 fodder-only packs, ≥ 1 with a Special, ≥ 1 role-Elite from F2, ≤ 1 Monster. */
-export function meetsRoleMix(content: Content, encounterIds: readonly string[], floor: number): boolean {
+/**
+ * 06 §8.2's role mix over a floor's encounters: ≥ 2 fodder-only packs, ≥ 1 with a Special, ≥ 1 role-Elite from F2,
+ * ≤ 1 Monster. With the floor's legal encounters (`pool`), a role none of them holds is not demanded (07 §2.3's F4 —
+ * Grave Watch, Belfry, Shamblers — holds no role-Elite; C1's reading, Phase 7): the generator would re-roll for
+ * nothing.
+ */
+export function meetsRoleMix(content: Content, encounterIds: readonly string[], floor: number, pool?: readonly EncounterDef[]): boolean {
   let fodderOnly = 0
   let special = 0
   let elite = 0
@@ -96,7 +114,9 @@ export function meetsRoleMix(content: Content, encounterIds: readonly string[], 
     if (roles.has('monster')) monster++
   }
   if (encounterIds.length < 3) return true
-  return fodderOnly >= 2 && special >= 1 && (floor < 2 || elite >= 1) && monster <= 1
+  const can = (role: string) => pool === undefined || pool.some((e) => encounterRoles(content, e).has(role))
+  const canFodderOnly = pool === undefined || pool.some((e) => { const r = encounterRoles(content, e); return r.size === 1 && r.has('fodder') })
+  return (fodderOnly >= 2 || !canFodderOnly) && (special >= 1 || !can('special')) && (floor < 2 || elite >= 1 || !can('elite')) && monster <= 1
 }
 
 /** Champion affixes for an Elite room (06 §2): count by floor, at most one defensive and one control. */
@@ -126,8 +146,12 @@ export interface SpawnOptions {
   championAffixIds?: string[]
 }
 
-/** The monster actors of an encounter at this party size (03 §11.2, 06 §8.1). */
-export function spawnEncounter(content: Content, t: Tuning, _rng: Rng, encounter: EncounterDef, opts: SpawnOptions): Actor[] {
+/**
+ * The monster actors of an encounter at this party size (03 §11.2, 06 §8.1), and the zone's rare joiners, each at its
+ * chance (06 §3.3: a Pearl Ooze joins any Vault fight at 5%; `zone.joiners`, drawn from `rng` only where a zone has
+ * them, so the Cellars' and the Crypts' draws are unchanged).
+ */
+export function spawnEncounter(content: Content, t: Tuning, rng: Rng, encounter: EncounterDef, opts: SpawnOptions): Actor[] {
   const scale = partyScale(t, opts.partySize)
   const actors: Actor[] = []
   let championGiven = false
@@ -158,6 +182,13 @@ export function spawnEncounter(content: Content, t: Tuning, _rng: Rng, encounter
         }),
       )
     }
+  }
+  const dungeon = content.dungeons.get(encounter.dungeonId)
+  const zone = dungeon?.zones.find((z) => encounter.floorBand.min >= z.floors.from && encounter.floorBand.min <= z.floors.to)
+  for (const j of zone?.joiners ?? []) {
+    const def = content.monsters.get(j.monsterId)
+    if (!def || !rng.pct(j.chancePercent)) continue
+    actors.push(buildMonsterActor(content, t, def, { id: `${def.id}-${actors.length}`, level: monsterLevelOnFloor(def, opts.level), row: j.row, hpPercent: scale.hpPercent, enemyHpPercent: opts.enemyHpPercent }))
   }
   // Champion affix effect lines (set-speed, attack +10%) at spawn; zero-weight trigger attacks arm their hooks.
   for (const a of actors) {
@@ -217,16 +248,11 @@ export function scaleComposition(content: Content, slots: readonly { monsterId: 
  * rather than stacks.
  */
 export function installPassiveAttackHooks(actor: Actor): void {
-  const m = actor.monster
-  if (!m) return
-  for (const attack of m.attacks) {
-    if (attack.aiWeight !== 0 || attack.multiplier !== 0) continue
-    for (const line of attack.effects) if (line.kind === 'custom' && line.customId) installHook(actor, line, actor.id, { sourceSkillId: attack.id })
-  }
+  armPassiveAttacks(actor)
 }
 
-export function spawnSingle(content: Content, t: Tuning, def: MonsterDef, opts: { id: string; level: number; partySize: number; enemyHpPercent: number; row?: 'front' | 'back' }): Actor {
-  const scale = partyScale(t, opts.partySize)
+export function spawnSingle(content: Content, t: Tuning, def: MonsterDef, opts: { id: string; level: number; partySize: number; enemyHpPercent: number; row?: 'front' | 'back'; boss?: boolean }): Actor {
+  const scale = partyScale(t, opts.partySize, opts.boss === true)
   const actor = buildMonsterActor(content, t, def, { id: opts.id, level: monsterLevelOnFloor(def, opts.level), row: opts.row ?? def.rows[0] ?? 'front', hpPercent: scale.hpPercent, enemyHpPercent: opts.enemyHpPercent })
   installPassiveAttackHooks(actor)
   return actor
@@ -247,14 +273,15 @@ export function spawnPack(content: Content, t: Tuning, def: MonsterDef, opts: { 
 
 /** The boss and its first-phase adds (06 §3; 07 §2.8 owns timing, read as "present at the start"). */
 export function spawnBossFight(content: Content, t: Tuning, boss: MonsterDef, opts: { level: number; partySize: number; enemyHpPercent: number }): Actor[] {
-  const actors = [spawnSingle(content, t, boss, { id: boss.id, level: opts.level, partySize: opts.partySize, enemyHpPercent: opts.enemyHpPercent, row: boss.rows[0] ?? 'back' })]
+  // D-128: the boss and its adds scale on the boss row (`partyScaling.boss`).
+  const actors = [spawnSingle(content, t, boss, { id: boss.id, level: opts.level, partySize: opts.partySize, enemyHpPercent: opts.enemyHpPercent, row: boss.rows[0] ?? 'back', boss: true })]
   const phase0 = boss.boss?.phases[0]
   for (const add of phase0?.adds ?? []) {
     const def = content.monsters.get(add.monsterId)
     if (!def) continue
     const scale = partyScale(t, opts.partySize)
     const count = scaledCount(add.count, scale.countPercent, def.role)
-    for (let i = 0; i < count; i++) actors.push(spawnSingle(content, t, def, { id: `${def.id}-add${i}`, level: opts.level, partySize: opts.partySize, enemyHpPercent: opts.enemyHpPercent, row: add.row }))
+    for (let i = 0; i < count; i++) actors.push(spawnSingle(content, t, def, { id: `${def.id}-add${i}`, level: opts.level, partySize: opts.partySize, enemyHpPercent: opts.enemyHpPercent, row: add.row, boss: true }))
   }
   return actors
 }
@@ -265,14 +292,25 @@ export function trapsForZone(dungeon: DungeonDef, zoneId: string, floor: FloorDe
   return dungeon.traps.filter((tr) => (tr.zoneId === null || tr.zoneId === zoneId) && tr.difficulty + difficultyBonus >= floor.trapBand.min && tr.difficulty + difficultyBonus <= floor.trapBand.max + difficultyBonus)
 }
 
+/** A trap may stand in a room when its `placement` allows the room's template and kind (07 §2.5: "the midline of cry_t_catacomb_run"). */
+export function trapFitsRoom(trap: TrapDef, room: { templateId: string; kind: string }): boolean {
+  const p = trap.placement
+  if (!p) return true
+  if (p.templateIds && !p.templateIds.includes(room.templateId)) return false
+  if (p.roomKinds && !(p.roomKinds as readonly string[]).includes(room.kind)) return false
+  return true
+}
+
 export function curiosForZone(dungeon: DungeonDef, zoneId: string): CurioDef[] {
   return dungeon.curios.filter((c) => c.zoneId === null || c.zoneId === zoneId)
 }
 
 /** Dresses a generated room: the encounter is the generator's; traps, curios and chests are rolled here (D-064). */
-export function dressRoom(_content: Content, rng: Rng, dungeon: DungeonDef, zone: ZoneDef, floor: FloorDef, room: FloorRoom, used: { curios: Set<string>; traps: string[] }, difficultyBonus: number): RoomState {
+export function dressRoom(content: Content, rng: Rng, dungeon: DungeonDef, zone: ZoneDef, floor: FloorDef, room: FloorRoom, used: { curios: Set<string>; traps: string[] }, difficultyBonus: number): RoomState {
+  const rules = content.tuning.floors
   const traps: TrapState[] = []
-  const pool = trapsForZone(dungeon, zone.id, floor, difficultyBonus)
+  // A trap that names where it stands (07 §2.5) only rolls in such a room (C1, Phase 7).
+  const pool = trapsForZone(dungeon, zone.id, floor, difficultyBonus).filter((tr) => trapFitsRoom(tr, room))
   const addTrap = () => {
     if (pool.length === 0) return
     const fresh = pool.filter((p) => !used.traps.includes(p.id))
@@ -282,9 +320,9 @@ export function dressRoom(_content: Content, rng: Rng, dungeon: DungeonDef, zone
     traps.push({ trapId: tr.id, revealed: false, disarmed: false, triggered: false, blocksDoorTo: blocks })
   }
   if (room.kind === 'trapGauntlet') {
-    const n = rng.range(EXPLORE_RULES.gauntletTraps.min, EXPLORE_RULES.gauntletTraps.max)
+    const n = rng.range(rules.gauntletTraps.min, rules.gauntletTraps.max)
     for (let i = 0; i < n; i++) addTrap()
-  } else if (room.kind !== 'entry' && room.kind !== 'boss' && room.kind !== 'rest' && rng.pct(EXPLORE_RULES.trapChancePercent)) addTrap()
+  } else if (room.kind !== 'entry' && room.kind !== 'boss' && room.kind !== 'rest' && rng.pct(rules.trapChancePercent.value)) addTrap()
 
   let curioId: string | null = null
   if (room.kind === 'curio') {
@@ -316,29 +354,47 @@ export function dressRoom(_content: Content, rng: Rng, dungeon: DungeonDef, zone
   }
 }
 
-/** Dunmore Quist's cart (07 §2.7): seeded stock at 1.5× town prices after Haggling. */
-export function merchantStock(content: Content, t: Tuning, rng: Rng, r: number, hagglingRank: number, floorCentreGrade: string, classIds: readonly string[]): MerchantOffer[] {
+/** What Dunmore Quist's cart is stocked from (07 §2.7). */
+export interface MerchantStockInput {
+  /** R at the floor's band (economy.ts rForFloor). */
+  r: number
+  /** The party's best Haggling rank. */
+  hagglingRank: number
+  /** The floor's centre grade (its loot table): the grade of the gear on the cart. */
+  centreGrade: string
+  /** The party's classes: a gear piece is for one of them. */
+  classIds: readonly string[]
+  /** The floor's zone: its safe items (items tagged `merchant.safeItems.tag` and `zone:<zoneId>`). */
+  zoneId: string
+  /** The last merchant before a final boss (07 §2.7, D-099: F7's raft stocks four Torches). */
+  beforeFinalBoss: boolean
+}
+
+/**
+ * Dunmore Quist's cart (07 §2.7): seeded stock from tuning.json → `merchant` (C1, Phase 7) — its fixed lines (Healing
+ * Draughts, Torches, Repair Kits, a Skeleton Key, arrows and bolts — D-099's "floor merchants stock arrows"), the four
+ * Torches before a final boss, two of the zone's safe items (by item tag, pass B), 2–3 gear pieces at the floor's
+ * centre grade for the party's classes, and a stone at its chance — at his markup (economy.merchantMarkup) after
+ * Haggling. An item the content lacks is left off the cart.
+ */
+export function merchantStock(content: Content, t: Tuning, rng: Rng, input: MerchantStockInput): MerchantOffer[] {
+  const m = t.merchant
+  const markup = roundHalfUp(t.economy.merchantMarkup * 100)
   const offers: MerchantOffer[] = []
   const add = (itemId: string, quantity: number, priceR: number) => {
-    if (!content.items.has(itemId)) return
-    offers.push({ itemId, quantity, price: townPrice(t, priceR, r, hagglingRank, roundHalfUp(t.economy.merchantMarkup * 100)), soldOut: false })
+    if (!content.items.has(itemId) || quantity <= 0) return
+    offers.push({ itemId, quantity, price: townPrice(t, priceR, input.r, input.hagglingRank, markup), soldOut: false })
   }
-  const find = (pred: (d: { id: string; kind: string; name: string }) => boolean) => [...content.items.values()].filter(pred)
-  const potion = find((d) => d.kind === 'consumable' && /potion|draught/i.test(d.name))[0]
-  if (potion) add(potion.id, 4, 0.03)
-  const torch = find((d) => d.kind === 'consumable' && /torch/i.test(d.name))[0]
-  if (torch) add(torch.id, 3, 0.02)
-  const kit = find((d) => d.kind === 'consumable' && /repair/i.test(d.name))[0]
-  if (kit) add(kit.id, 2, 0.08)
-  const key = find((d) => d.kind === 'key' && /skeleton/i.test(d.name))[0]
-  if (key) add(key.id, 1, 0.3)
-  const safe = find((d) => d.kind === 'consumable' && /flint|salt|candle|glass|cloak|plugs|rope|vial/i.test(d.name))
-  for (const s of rng.shuffle(safe).slice(0, 2)) add(s.id, 2, 0.05)
-  const gear = [...content.items.values()].filter((d) => d.grade === floorCentreGrade && ['weapon', 'armor', 'shield', 'focus'].includes(d.kind) && (d.classLock.length === 0 || d.classLock.some((c) => classIds.includes(c))))
-  for (const g of rng.shuffle(gear).slice(0, rng.range(2, 3))) offers.push({ itemId: g.id, quantity: 1, price: roundHalfUp((g.value * roundHalfUp(t.economy.merchantMarkup * 100) * 130) / 10_000), soldOut: false })
-  if (rng.pct(10)) {
-    const stone = find((d) => d.kind === 'stone')[0]
-    if (stone) add(stone.id, 1, 0.04)
+  for (const line of m.stock) add(line.itemId, input.beforeFinalBoss && line.itemId === m.beforeFinalBoss.itemId ? m.beforeFinalBoss.quantity : line.quantity, line.priceR)
+  const zoneTag = `${m.safeItems.zoneTagPrefix}${input.zoneId}`
+  const safe = [...content.items.values()].filter((d) => d.tags?.includes(m.safeItems.tag) === true && d.tags.includes(zoneTag))
+  for (const s of rng.shuffle(safe).slice(0, m.safeItems.lines)) add(s.id, m.safeItems.quantity, m.safeItems.priceR)
+  const gear = [...content.items.values()].filter((d) => d.grade === input.centreGrade && ['weapon', 'armor', 'shield', 'focus'].includes(d.kind) && (d.classLock.length === 0 || d.classLock.some((c) => input.classIds.includes(c))))
+  const buyPct = buyPricePercent(t, input.hagglingRank, markup)
+  for (const g of rng.shuffle(gear).slice(0, rng.range(m.gear.min, m.gear.max))) offers.push({ itemId: g.id, quantity: 1, price: roundHalfUp((g.value * buyPct) / 100), soldOut: false })
+  if (rng.pct(m.stoneChancePercent)) {
+    const stone = [...content.items.values()].find((d) => d.kind === 'stone')
+    if (stone) add(stone.id, 1, m.stonePriceR)
   }
   return offers
 }

@@ -1,0 +1,66 @@
+{
+  "id": "arcanist-sunflare",
+  "classId": "arcanist",
+  "school": "evocation",
+  "tier": 5,
+  "name": "Sunflare",
+  "description": "2.0× Fire to every enemy in both rows; Burn 4 turns; Blind 2 turns; your next action weighs 800 whatever its own weight. Heavy cast.",
+  "type": "active",
+  "cost": 48,
+  "weight": 1400,
+  "target": "allEnemies",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 2,
+      "damageType": "fire"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "burn",
+      "duration": 4
+    },
+    {
+      "kind": "applyStatus",
+      "status": "blind",
+      "duration": 2
+    },
+    {
+      "kind": "custom",
+      "customId": "next-action-weight",
+      "amount": 800,
+      "target": "self",
+      "note": "the caster’s next action weighs `amount`; a heavy Mana cast still charges first (fight.ts decides the charge by the skill’s own weight)"
+    }
+  ],
+  "prerequisiteId": "arcanist-pyroclasm",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Blind 3 turns.",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "blind",
+        "duration": 3
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "dot",
+    "debuff"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 85
+  }
+}

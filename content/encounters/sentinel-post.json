@@ -1,0 +1,25 @@
+{
+  "id": "sentinel-post",
+  "tableId": "vault-a",
+  "dungeonId": "gravehollow-keep",
+  "floorBand": {
+    "min": 7,
+    "max": 7
+  },
+  "name": "Sentinel Post",
+  "composition": [
+    {
+      "monsterId": "vault-sentinel",
+      "count": 1,
+      "row": "front"
+    },
+    {
+      "monsterId": "drowned-thrall",
+      "count": 2,
+      "row": "front"
+    }
+  ],
+  "weight": 12,
+  "ambushModifier": 5,
+  "eliteAllowed": true
+}

@@ -1,0 +1,25 @@
+{
+  "id": "spiders-larder",
+  "tableId": "crypts-c",
+  "dungeonId": "gravehollow-keep",
+  "floorBand": {
+    "min": 5,
+    "max": 6
+  },
+  "name": "Spider's Larder",
+  "composition": [
+    {
+      "monsterId": "tomb-spider",
+      "count": 1,
+      "row": "front"
+    },
+    {
+      "monsterId": "grave-bat",
+      "count": 2,
+      "row": "back"
+    }
+  ],
+  "weight": 12,
+  "ambushModifier": -5,
+  "eliteAllowed": true
+}

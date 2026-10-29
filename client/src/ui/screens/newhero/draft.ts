@@ -35,6 +35,8 @@ export interface Draft {
   /** Phase 5: body frame, skin tone, face preset, hair colour (indexes are clamped to the species at creation). */
   look: HeroLook
   skillIds: readonly string[]
+  /** The starter kit (D-099): null for the class's default kit, else one of its starterKitOptions ids. */
+  kitId: string | null
   eggPetId: string | null
   petName: string
   points: FreePoints
@@ -44,7 +46,7 @@ export interface Draft {
 /** The look a new hero starts from: the broad frame, the first tone and face, dark brown hair. */
 export const DEFAULT_LOOK: HeroLook = { frame: 'broad', skin: 0, face: 0, hair: 1 }
 
-export const EMPTY_DRAFT: Draft = { speciesId: null, classId: null, look: DEFAULT_LOOK, skillIds: [], eggPetId: null, petName: '', points: {}, name: '' }
+export const EMPTY_DRAFT: Draft = { speciesId: null, classId: null, look: DEFAULT_LOOK, skillIds: [], kitId: null, eggPetId: null, petName: '', points: {}, name: '' }
 
 /** The draft's look made valid for its species (a tone or preset the species lacks falls back to the first). */
 export function draftLook(content: Content, draft: Draft): HeroLook {
@@ -116,6 +118,31 @@ export function toggleSkill(picked: readonly string[], id: string): string[] | n
   if (picked.includes(id)) return picked.filter((x) => x !== id)
   if (picked.length >= STARTER_PICKS) return null
   return [...picked, id]
+}
+
+/* ---------- the starter kit (D-099) ---------- */
+
+export interface KitChoice {
+  /** null: the class's default kit. */
+  id: string | null
+  name: string
+  description: string
+  itemIds: readonly string[]
+  starterSkillIds: readonly string[]
+}
+
+/** The kits New hero offers for a class (D-099: the Warden's spear, the Blade's greatsword): the default first. */
+export function kitChoices(content: Content, classId: string | null): KitChoice[] {
+  const cls = classId ? content.classes.get(classId) : undefined
+  if (!cls) return []
+  const first: KitChoice = { id: null, name: cls.starterKitName ?? 'Standard kit', description: '', itemIds: cls.starterKit, starterSkillIds: cls.starterSkillIds }
+  return [first, ...(cls.starterKitOptions ?? []).map((k) => ({ id: k.id, name: k.name, description: k.description, itemIds: k.starterKit, starterSkillIds: k.starterSkillIds }))]
+}
+
+/** The draft's kit (the default when its id is not one of the class's). */
+export function draftKit(content: Content, draft: Draft): KitChoice | null {
+  const kits = kitChoices(content, draft.classId)
+  return kits.find((k) => k.id === draft.kitId) ?? kits[0] ?? null
 }
 
 /* ---------- eggs ---------- */
@@ -194,6 +221,7 @@ export function provisionalHero(content: Content, draft: Draft): HeroRecord | nu
       classId: draft.classId,
       freePoints: draft.points,
       starterSkillIds: skills,
+      ...(draft.kitId ? { starterKitId: draft.kitId } : {}),
       eggPetId: draft.eggPetId,
       look: draftLook(content, draft),
     })

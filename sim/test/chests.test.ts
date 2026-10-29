@@ -261,15 +261,15 @@ describe('the Tome bag (08 §10.2)', () => {
 
   it('an empty bag passes its weight up; the top tier’s leftover goes to the highest bag still holding something', () => {
     const up = open({ chest: tome, classId: 'warden', tomeBag: { '1': [], '2': [], '3': ['warden-f'] } }, 3)
-    expect(up.result).toEqual({ kind: 'tome', skillId: 'warden-f', tier: 3 })
+    expect(up.result).toMatchObject({ kind: 'tome', skillId: 'warden-f', tier: 3, inst: { itemId: 'skill-tome', skillId: 'warden-f' } })
     expect(up.tomeBag).toEqual({ '1': [], '2': [], '3': [] })
     const g = open({ chest: grandTome, classId: 'warden', heroSkillIds: new Set(['warden-d', 'warden-e', 'warden-f']) }, 3)
-    expect(g.result).toEqual({ kind: 'tome', skillId: 'warden-g', tier: 4 })
+    expect(g.result).toMatchObject({ kind: 'tome', skillId: 'warden-g', tier: 4, inst: { itemId: 'skill-tome', skillId: 'warden-g' } })
     const down = open({ chest: grandTome, classId: 'warden', heroSkillIds: new Set(['warden-g', 'warden-d', 'warden-e']) }, 3)
-    expect(down.result).toEqual({ kind: 'tome', skillId: 'warden-f', tier: 3 })
+    expect(down.result).toMatchObject({ kind: 'tome', skillId: 'warden-f', tier: 3, inst: { itemId: 'skill-tome', skillId: 'warden-f' } })
     // Skills learned elsewhere leave a carried bag; a carried bag never refills.
     const learned = open({ chest: tome, classId: 'warden', heroSkillIds: new Set(['warden-b']), tomeBag: { '1': ['warden-a', 'warden-b'], '2': [], '3': [] } }, 3)
-    expect(learned.result).toEqual({ kind: 'tome', skillId: 'warden-a', tier: 1 })
+    expect(learned.result).toMatchObject({ kind: 'tome', skillId: 'warden-a', tier: 1, inst: { itemId: 'skill-tome', skillId: 'warden-a' } })
     expect(learned.tomeBag).toEqual({ '1': [], '2': [], '3': [] })
     const spent = open({ chest: tome, classId: 'warden', tomeBag: { '1': [], '2': [], '3': [] } }, 3)
     expect(spent.result).toEqual({ kind: 'tomeOfPractice' })

@@ -1,0 +1,143 @@
+{
+  "id": "skeleton-footman",
+  "name": "Skeleton Footman",
+  "familyId": "restless-dead",
+  "dungeonId": "gravehollow-keep",
+  "zoneId": "the-crypts",
+  "role": "fodder",
+  "size": "medium",
+  "rows": [
+    "front"
+  ],
+  "levelBand": {
+    "min": 5,
+    "max": 8
+  },
+  "multipliers": {
+    "hp": 0.9,
+    "attack": 1,
+    "defense": 1
+  },
+  "speed": 95,
+  "xpClass": 1,
+  "goldMultiplier": 1,
+  "ambushModifier": -5,
+  "attacks": [
+    {
+      "id": "rusted-blade",
+      "name": "Rusted Blade",
+      "damageType": "slash",
+      "weight": 1000,
+      "multiplier": 1,
+      "target": "enemyFront",
+      "effects": [],
+      "aiWeight": 70,
+      "tell": null
+    },
+    {
+      "id": "shield-bash",
+      "name": "Shield Bash",
+      "damageType": "blunt",
+      "weight": 1000,
+      "multiplier": 0.6,
+      "target": "enemyFront",
+      "effects": [
+        {
+          "kind": "applyStatus",
+          "status": "daze",
+          "chance": 25
+        }
+      ],
+      "aiWeight": 30,
+      "tell": null
+    }
+  ],
+  "resist": [
+    "pierce",
+    "shadow"
+  ],
+  "weak": [
+    "blunt",
+    "holy"
+  ],
+  "immune": [],
+  "statusImmune": [
+    "poison",
+    "bleed",
+    "fear"
+  ],
+  "behavior": {
+    "rules": [
+      {
+        "if": "holds the front row and attacks the nearest hero — a killed Footman leaves a bone pile a Crypt Sexton can raise once",
+        "then": "rusted-blade"
+      }
+    ],
+    "fleesAtPercent": 0
+  },
+  "parts": {
+    "common": {
+      "materialId": "bone-shard",
+      "chance": 35,
+      "quantity": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "rare": {
+      "materialId": "bronze",
+      "chance": 4,
+      "quantity": {
+        "min": 2,
+        "max": 2
+      }
+    },
+    "breakLimb": {
+      "name": "shield arm",
+      "effect": {
+        "kind": "debuffStat",
+        "stat": "defense",
+        "percent": -40,
+        "note": "Def ×0.6 for the rest of the fight"
+      }
+    }
+  },
+  "monsterTechniqueSkillIds": [],
+  "elitePool": [
+    "shielded",
+    "vampiric",
+    "shackler",
+    "rabid",
+    "spiteful",
+    "warded",
+    "thorned",
+    "regenerating",
+    "mirrored",
+    "commander",
+    "leech",
+    "nullifier"
+  ],
+  "boss": null,
+  "hunter": null,
+  "visual": {
+    "baseMesh": "skeleton",
+    "scale": 1,
+    "variantOf": null,
+    "palette": [
+      "#d9cdb0",
+      "#5e7350",
+      "#8b4a2b"
+    ],
+    "reads200px": true,
+    "animations": [
+      "Idle",
+      "Move",
+      "Attack1",
+      "Attack2",
+      "Hit",
+      "Death",
+      "Rise"
+    ],
+    "triBudget": 3000
+  }
+}

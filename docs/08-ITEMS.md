@@ -1,6 +1,6 @@
 # 08 — Items, materials and chests
 
-*Last updated 2026-10-28 · rev. 4 (Phase 7 prep: Gravehollow at 8 floors — the floor numbers of the R table, the Vault's rows in §6, §8.3 and §11, the boss table — D-104) · rev. 3 (checkpoint 1: open questions answered by delegation; the Nightmare difficulty preset renamed Dread — D-095, D-099) · rev. 2 (§10.2 the Wayfarer Chest, D-091; §10.1 pity keys per chest family) · rev. 1 2026-10-26 · numbers are tuning starting points*
+*Last updated 2026-10-28 · rev. 5 (Phase 7 as built, pass B: grades B–S on every family; the Gravehollow sets with their bonuses applied; six named uniques; the six zone relics working; the five safe items and their tag; the Divine Shard; chest keys redeemable; the Grand Wayfarer Chest and six S-grade wayfarers; the loot tables of F4–8; the Torch in a fight — "As built (Phase 7)" notes below, Open questions 9–12) · rev. 4 (Phase 7 prep: Gravehollow at 8 floors — the floor numbers of the R table, the Vault's rows in §6, §8.3 and §11, the boss table — D-104) · rev. 3 (checkpoint 1: open questions answered by delegation; the Nightmare difficulty preset renamed Dread — D-095, D-099) · rev. 2 (§10.2 the Wayfarer Chest, D-091; §10.1 pity keys per chest family) · rev. 1 2026-10-26 · numbers are tuning starting points*
 
 **How to read this file.** Every base number is written **for grade F**; every grade multiplies it by the ladder (F ×1.00 · E ×1.35 · D ×1.80 · C ×2.45 · B ×3.30 · A ×4.45 · S ×6.00 · SS ×8.10 · God ×11.0), rounded half up to an integer after the multiply. Percentages (Block, Crit, Dodge) do **not** ride the ladder; they step by a fixed amount per grade where the table says so. Ordinary pieces are named `<Material> <Type>` — "Iron Longsword", "Wolf Hide Jerkin", "Oak Shortbow" — where the material is the rung of the item's ladder at its grade (§8); named uniques exist from B up (§7) and keep their own names. Grade index **g** runs F 0 … God 8 and is used in requirement formulas. Each table here becomes one folder under `content/items/<kind>/`, one record per `<id>.json` (`10-TECH-PLAN.md` §3 owns the layout); column headers are the field names. Rules live in the rulebook (`03-GAME-DESIGN.md` §2, §6, §8); this file is the content.
 
@@ -154,6 +154,8 @@ So a Metal weapon at D is an "Iron Longsword", a Wood bow at D an "Oak Shortbow"
 
 **Carry weight (kg)** by type, for the Carry formula: Dagger / Wand / Throwing 0.5 · Shortsword / Sabre / Hand Axe / Mace / Censer / Whip 1.5 · Longsword / Bearded Axe / Morningstar / Rod / Staff / Bow 2 · Spear / Pike / Trident 3 · Greatsword / Battleaxe / Crossbow / Greatstaff 4 · Zweihander / Arbalest 5 · Maul 6. Weight never changes with grade.
 
+**As built (Phase 7, pass B).** Every weapon, focus, armor, shield, ring and talisman family is content from F to S (`tools/content/gen-items.ts`, this file's numbers; the B–S rungs are Blacksteel · Skysteel · Adamantine, Wyvern Hide · Basilisk Scale · Drake Scale, Glyphweave · Moonweave · Phoenix Weave, Ironwood · Ebony · Elderwood): a Skysteel Longsword is Attack 53, Str 15, k 4.07, value 1,600. SS items are the chests' and the endgame's and God items Phase 11's (§7). The Beast Tamer's whips wait for the class (Segment 3).
+
 ---
 
 ## §2 Armor
@@ -201,6 +203,8 @@ Four families; the family is the material ladder (rulebook §6.1). **Speed penal
 | Wraps | 0 | 1 | +2% Accuracy | 0 | — | 0.5 |
 
 Set totals at F: Plate Def 20 / HP 24 · Mail 15 / 20 · Leather 10 / 15 · Robes 4 / 11. A full God Plate set is Def 220, which with Endurance 30 puts damage taken at 100 / (100 + 250) = 29%.
+
+**As built (Phase 7).** "Percentage secondaries … step +1 pp per grade from B upward (so a God Jerkin gives +6% Dodge)" is read so the Jerkin's sum holds: B keeps the F line and each grade above B adds a point (A +1, S +2 … God +4 = 6). `tuning.json → items.armorPercentStep`; lint rule 22 accepts the step (Proposed).
 
 ### Family grade ladder (Chest piece Defense)
 
@@ -290,6 +294,8 @@ Activating a Relic is an Item action (weight 600) unless **instant**. Numbers ri
 | Forge Sigil | Fortify (+20% Defense) on the party 3 rounds; +5% durability to every equipped item | once per floor | S | Forge-Tyrant |
 | Pale Mirror | The next enemy action aimed at you reflects back at its user (instant) | once per fight | SS | Pale Dragon, Grand chest pity |
 
+**As built (Phase 7, pass B).** The six relics of the Crypts and the Drowned Vault are content at their first grade, and their actives work in the sim (`sim/src/relics.ts`): **Hourglass Shard** (D, instant: the next action weighs 0, hook `next-action-weightless`) · **The Barrow Bell** (D: Taunt every enemy 2 rounds, Fortify 1) · **Candle of the Crypt** (D: Regen 5% of max HP for 3 on the party) · **The Brine Pearl** (C, instant: a Shield of 25% of the lowest ally's max HP) · **The Tidebound Idol** (C: cleanse the party) · **The Hollow Coin** (C: after a won fight, re-roll its gear drop, once per floor — the delve's `relic` command). In a fight a relic is a line of the Item sheet, once per fight: an Item action (weight 600), or, when instant, no turn at all (the hero chooses again). A hero AI rule can name it like an item ("item the barrow bell"). Readings (Proposed): the relic "Brine Pearl" is written **The Brine Pearl** to read apart from the Tidebound's rare part of the same name (§8.3); a boss's own relic (the Grinning Mask, the Barrow Bell, the Tidebound Idol, the Hollow Coin) carries the tag `boss-only` and comes only from its boss, never from a random roll or a chest; the Hollow Coin re-rolls a gear drop the fight made (no drop, nothing to re-roll), and the new roll stands.
+
 ---
 
 ## §4 Consumables
@@ -324,6 +330,8 @@ Using an item is weight 600 (rulebook §3.2). Potions are percentages so one tab
 **+N stones and gold, as a formula.** Taking an item from +(N−1) to +N costs `gold = value × 2% × N` and `stones = 1 (N ≤ 6) or 2 (N ≥ 7)` of the grade's stone family (Whetstone F–C · Honing Oil B–A · Star Grit S–God). So +1 is 2% of value and +10 is 20%; the whole road to +10 is 110% of value and 14 stones; the road to an F item's +3 is 12% of value and 3 Whetstones (18 gold and 3 stones on a 150-gold Longsword). Each +N adds +5% of the item's own base (rulebook §6.2) and never an affix line.
 
 **How a Ranger runs out.** A bow or crossbow consumes one unit per basic attack or shot skill (not per target). A delve is ~40 meaningful hits plus misses and multi-shot skills, about 60 shots, so a Ranger carries two stacks (4 kg) and tops up at the merchant or by Foraging. At 0 ammo the bow's basic attack becomes **Bash** (Blunt, 30% Attack, front row only) and shot skills are greyed; the ammo count sits on the weapon slot and turns amber at 20. Arrows do not wear the bow; the bow wears on draw at half rate (§9). Throwing knives are not ammo.
+
+**As built (Phase 7, pass B).** The **Torch** works in a fight: an Item action, +25 light (it relights an arena brazier, `07` §2.8). The **safe items** of `07` §2.4 are consumables a curio's choice consumes; the merchant's eight — Flint & Oil; Grave Salt, Candle of Vigil, **Reading Glass**, **Empty Vial**; **Oilskin Cloak**, **Wax Plugs**, **Rope & Hook** — carry the tags `safe-item` and `zone:<zone id>`, so Dunmore stocks "two of the zone's safe items" by tag (the cooking Salt is not one); each card names the curio it answers. Holy Water and the Loaded Dice are safe items too, never merchant stock. The **Divine Shard** is a material item (`divine-shard`, never sold; its forge is Phase 11). **Chest keys** (`standard-chest-key`, `grand-chest-key`, tags `chest-key:standard` / `chest-key:grand`) are counted in the profile's materials, where boss and contract rewards land; one opens one Curio Merchant chest of its tier free (§10). **Gear stones** dropped in a delve (Whetstone, Honing Oil, Star Grit) are counted in the materials the Blacksmith spends.
 
 ---
 
@@ -382,6 +390,8 @@ Using an item is weight 600 (rulebook §3.2). Potions are percentages so one tab
 
 **Roll rules.** Affix slots by grade: F 0 · E 1 · D 1 · C 2 · B 2 · A 3 · S 3 · SS 4 · God 4 (+ unique power). Slot split: 1 → either; 2 → 1 prefix + 1 suffix; 3 → 2 + 1 either way; 4 → 2 + 2. The same affix never appears twice on one item; an elemental prefix excludes a second element. A set piece (§6) spends one slot on its set line. **Lock and re-roll** at the blacksmith: lock one line (it keeps its exact number), re-roll every other line for **10% of item value + one stone** of the item's stone family; flat price, no ramp. Promotion (§8) keeps every line but re-rolls the number of one unlocked line at the new band. +N never touches affixes.
 
+**As built (Phase 7).** The pool's three bands already reach S (C–A, S–God), so grades B–S roll from it as written; a named unique spends one slot on its signature (§7), as a set piece does on its set line.
+
 ---
 
 ## §6 Sets
@@ -400,6 +410,8 @@ Set pieces drop as named family pieces ("Barrow Warden's Helm") with the set lin
 | Lanternkeeper's Habit | Robes | the Crypts | Mender | D–B | +10% healing; light falls 1 less per room | Holy spells grant Regen 2 rounds; Smite +15% |
 | Twin Serpents (ring pair: Ring of Venom + Ring of Antidote) | Rings | Fungal Deep slimes | any | C–A | +15% Poison damage; Poison immunity | — |
 | Sun and Moon (ring pair: Ring of Dawn + Ring of Dusk) | Rings | Emberforge / Frostmarch | Mender, Arcanist | A–S | +15% Holy and Shadow damage; Wither on your Shadow spells heals you 10% of damage | — |
+
+**As built (Phase 7, pass B).** Gravehollow's five sets are content — Grinning Company's Cut, Barrow Warden's Vigil, Tidebound Reaver's Mail (Blade; the Beast Tamer joins with the class), Drowned Choir's Vestments, Lanternkeeper's Habit — with their pieces at **every grade from the set's lowest to S**, so promotion keeps the set; a piece drops only inside the set's grades. The bonuses apply in the sim (`items.ts setBonusLoad`; the hero's stats and hooks, the delve's gold and light): distinct pieces worn and not Broken count; `buffStat` lines are stat lines, custom lines are hooks — the Vigil's Fear and Curse resistance, the Reaver's Poison resistance, the Choir's +5% Frost (`element-damage-percent`, shared with C1), the Company's gold found, the Lanternkeeper's healing and light, and five new hooks: `guard-taunts-and-fortifies`, `basic-attack-pool-restore-percent`, `haste-on-kill`, `frost-freezes-chilled`, `holy-spells-grant-regen`. The item card counts the pieces ("2 / 4") and shows which bonus is on. Readings (Proposed): the Vigil's Guard Taunts every enemy until their next turn; the Lanternkeeper's "Holy spells grant Regen 2 rounds" gives the lowest-HP ally Regen 5% for 2 turns after any skill with a Holy hit or a heal; "Smite +15%" is +15% on the wearer's hits on a Smitten target; a "Frost spell" is a skill's Frost hit; the Reaver's "+10% Stamina" is 10% of max Stamina once per basic attack.
 
 ---
 
@@ -439,6 +451,8 @@ Fixed signature line in one affix slot; the remaining slots roll normally. "Gran
 | Giantsbane Harness | Chest | Plate | +25% vs Giant; Fortify when you first drop below 50% HP each fight | Frostmarch frost giants' hunter |
 | Wyrmward Buckler | Off Hand | Buckler | Block also applies to spell and breath damage | Frostmarch wyrms (rare part); Grand chest |
 | Ring of the Long Winter | Ring | — | +3 Luck; +10% gold found | Grand chest pity; Frostmarch zone 2 boss |
+
+**As built (Phase 7, pass B).** Six named uniques ship: the B pair, **Lamplighter's Hood** and **Shieldbrother's Kite**, and the A and S uniques whose Source includes a Grand chest — the ones a Gravehollow boss's "one A-grade item" or "one S-grade item" can roll: **Cinderborn Talisman**, **Emberheart Ring**, **Wyrmward Buckler**, **Ring of the Long Winter**. The rest wait for their dungeons. Each is its family piece at its grade (or a trinket of its own) with the signature in one affix slot: a stat line, an attribute line (+2 Vitality, +3 Luck) or a hook (`light-decay-reduction`, `shield-lowest-ally-on-block`, `ultimate-applies-status`, `element-damage-percent`, `block-applies-to-spells`, `gold-found-percent`). Reading (Proposed): the Wyrmward Buckler rolls the wearer's Block against every non-physical direct hit and halves it on a success.
 
 ### SS — Mythic (gold; floors 35+)
 
@@ -561,6 +575,10 @@ Every monster family maps to one common part (35% per kill) and one rare part (4
 
 God-rung materials (Starmetal, Ancient Dragon Scale, Celestial Thread, Godwood) come only from final bosses on Hard or Dread (1–2 units) and from Divine Shard conversion (1 → 5 units of one God material). A Starmetal fall (a rare curio, 2% of floors from band A) gives 3 Starmetal.
 
+**As built (Phase 7, pass B).** The B, A and S rungs of the four ladders are material items, valued at a tenth of their grade value (B 100 · A 160 · S 250; never sold, §8.5 — Proposed). `06`'s regional names that count as a rung — *Cured Ghoulhide* (Boiled Leather, D), *Spidersilk* (Silk, C), *Sharkskin* (Wolf Hide, C) — are materials tagged `regional`: promotion takes them, while a crate, a salvage or a dupe pays the rung's first name. The Crypts' and the Vault's rare parts are stones at 0.04 R of their band: Knight's Gorget, Sexton's Bell, Grave Candle, Ghoul Claw, Wraith Ash, Tomb Spinneret, Hound's Collar; Brine Pearl, Tide Glass, Penance Chain, Diving Bell Plate, Sentinel Core (`07`'s Sentinel Plinth "Construct Core" — Proposed), Hag's Eye, Leech Heart and the SS-rated Maw Pearl (0.12 R). Bone Shards, Bat Wings, Deep Flesh, Brine Salt and the Mourner's Tear are materials that sell.
+
+**The P7 milestone** (`12` §4: "a +N Skysteel-promoted sword"; Proposed): Skysteel is the A rung and comes from Emberforge (§8.3), so in Gravehollow the milestone is an **A-grade (Skysteel) sword from a Gravehollow boss's A-grade reward** — the Barrow Warden's or Sister Naesa's first kill, a Warden's or Blade's roll — **raised to +8 with Honing Oil** (the B–A stone; Gravehollow gives it at the Embalmer's Table and the Warding Glyph, `07` §2.4–§2.5) and gold. A Steel sword can also climb to Blacksteel and Skysteel with their rungs, which Gravehollow does not drop.
+
 ### §8.4 Salvage returns
 
 Salvage (blacksmith, free) returns 25% of the cost to reach the item's grade, in its own material, rounded half up; an item destroyed by neglect (§9) returns 50%. Chest dupes auto-salvage at the 25% rate.
@@ -676,6 +694,8 @@ The band-B Standard line is the rulebook's (§8.3) B 56 · A 25 · S 14 · SS 5 
 | Material Crate | 0.3 R | 1.2 R | 6 / 20 units of the band rung, ladder of choice; rare part 10% / guaranteed; no pity (deterministic) |
 | Skill Tome | 0.8 R | 3 R | **the Tome bag:** one bag per class per tier holding every skill of that tier the player does not own; Standard picks a tier at I 50 / II 35 / III 15 then draws from that bag without replacement; Grand picks II 40 / III 40 / IV 20; an empty bag passes its weight to the next tier up; when every eligible bag is empty the chest gives a Tome of Practice (rank XP equal to one full rank for a chosen skill) and says so before purchase |
 
+**As built (Phase 7, pass B).** **Chest keys** open any Curio Merchant chest of their tier — gear, egg, crate, Tome or wayfarer — at the same odds and pity as buying it (`07` §7; `town.ts openChestWithKey`; Proposed: every kind, `tuning.json → chests.keyOpensKinds`). The **Grand Wayfarer Chest** (5 R, sold from chest band E — "S-grade wayfarers for deeper bands", `12` Phase 7) calls C 45 · B 35 · A 15 · **S 5** (the Grand shape one grade up from the Standard's D) on the shared pity counters, a Grand counting three; the Standard Wayfarer Chest keeps D-091's D 50 · C 30 · B 15 · A 5 at every band of Gravehollow. Six S-grade wayfarers join the cast, one per class and species (`04` §7). Proposed.
+
 ### §10.3 In-dungeon chests
 
 | Chest | Grade shape (relative to the floor's centre) | Locked | Trapped | Contents |
@@ -701,9 +721,11 @@ Gold is per fight, split at banking; R per delve at the band lands near the R ta
 | Floors | Monster levels | Centre | Gold per fight | Item chance | Grade shape | Part chance (per monster) | Consumable drop |
 |---|---|---|---|---|---|---|---|
 | 1–3 (the Cellars) | 1–4 | F | 10–20 | 35% | F 81 · E 14 · D 4 · C 1 | common 35% · rare 4% | 40%: potion S, torch, arrows, bandage |
-| 4–6 (the Crypts) | 5–8 | E | 16–32 | 40% | F 25 · E 56 · D 14 · C 4 · B 1 | 35% · 4% | 40%: potion S, Cleansing Salt, Repair Kit |
-| 7 (the Drowned Vault) | 11 | D | 25–50 | 45% | E 25 · D 56 · C 14 · B 4 · A 1 | 35% · 4% | 45%: potion M, Fortify, bolts |
-| 8 (the Hollow King's floor) | 13 | C | 40–60 | 50% | D 25 · C 56 · B 14 · A 4 · S 1 | 35% · 4% | 50%: potion M, Haste Tonic |
+| 4–6 (the Crypts) | 5–8 | E | 11–21 | 40% | F 25 · E 56 · D 14 · C 4 · B 1 | 35% · 4% | 40%: potion S, Cleansing Salt, Repair Kit |
+| 7 (the Drowned Vault) | 11 | D | 17–33 | 45% | E 25 · D 56 · C 14 · B 4 · A 1 | 35% · 4% | 45%: potion M, Fortify, bolts |
+| 8 (the Hollow King's floor) | 13 | C | 27–40 | 50% | D 25 · C 56 · B 14 · A 4 · S 1 | 35% · 4% | 50%: potion M, Haste Tonic |
+
+*As tuned (Phase 7 balance pass, D-128): the Crypts', Vault's and throne's gold per fight cut by a third (16–32 → 11–21, 25–50 → 17–33, 40–60 → 27–40) so a floor's gold lands inside `07` §2.3's band; parties of four still find about 1.4× a solo's gold per delve — a checkpoint-2 question (`docs/balance/2026-10-28-gravehollow-round2.md` §13).*
 
 **Treasure rooms** (7% of rooms): 2–4 gold piles worth two fights' gold, one guaranteed Small chest, a Large chest 20% (locked 40%, trapped 25%, §10.3), one consumable bundle (3 items of the floor's list), hidden treasure on a Detection find (an extra item at +1 shape or a Skeleton Key 10%). **Curios** pay by their own tables (`07-DUNGEONS.md`). **Darkness** multiplies item chance by the rulebook §4.2 light band bonus (+10% / +25% / +50% / +75%).
 
@@ -717,6 +739,8 @@ Gold is per fight, split at banking; R per delve at the band lands near the R ta
 | the Hollow King (F8) | 300 | the stack — Steel ×12 + Silk ×12 + Iron ×12 on the first kill, half after; 3 Whetstones; after the first kill: Crown / Signet / Last Lantern 1% (2% Hard, 4% Dread), a Divine Shard 10% | one Divine Shard; one S-grade item; a Tier IV Tome (bag draw); the Hollow Coin (C Relic); 2 Grand keys; +1 Luck (rulebook §2 open question) |
 | the Warden's Hound (hunter, any floor) | 1 fight's gold ×2 | a rare part of the floor's family; a Large chest | — |
 
+**As built (Phase 7, pass B).** The four tables are content: `gravehollow-cellars` (F1–3, Phase 3's), `gravehollow-crypts` (F4–6), `gravehollow-vault` (F7) and `gravehollow-throne` (F8), from the rows above; lint rule 27 checks each table's item and part chances against `tuning.json → items.lootItemChanceByCentre` and `equipment.parts`. Their strongrooms lock a Large chest 40% (the Small half that, §10.3) and trap 20%; the throne floor has no strongroom but the schema wants the block, so it carries the Vault's. A boss's "one A-grade item" and "one S-grade item" roll through `loot.ts rollRewardItem(content, rng, grade, classId)`: exactly that grade, set pieces and named uniques at their §10.1 shares, never a God item or another boss's relic.
+
 ---
 
 ## §12 Starter kits (all F-grade, Gravehollow's first-name materials)
@@ -727,11 +751,15 @@ Every kit — the Arcanist's and the Mender's included — also holds 2 Small HP
 |---|---|---|---|---|---|---|---|---|
 | Warden | Copper Shortsword | Pine Buckler | Copper Helm | Copper Breastplate | Copper Greaves | Copper Sabatons | Copper Gauntlets | Ring of Vigor |
 | Blade | Copper Longsword | Copper Dagger | Copper Coif | Copper Hauberk | Copper Chausses | Copper Treads | Copper Mitts | Ring of Might |
+| Warden · spear kit | Copper Spear (two hands) | — | Copper Helm | Copper Breastplate | Copper Greaves | Copper Sabatons | Copper Gauntlets | Ring of Vigor |
+| Blade · greatsword kit | Copper Greatsword (two hands) | — | Copper Coif | Copper Hauberk | Copper Chausses | Copper Treads | Copper Mitts | Ring of Might |
 | Ranger | Pine Shortbow (+100 arrows) | — | Rawhide Hood | Rawhide Jerkin | Rawhide Breeches | Rawhide Boots | Rawhide Gloves | Ring of the Hawk |
 | Shade | Copper Dagger | Copper Throwing Knives | Rawhide Hood | Rawhide Jerkin | Rawhide Breeches | Rawhide Boots | Rawhide Gloves | Ring of Shadows |
 | Arcanist | Pine Wand | Pine Orb | Burlap Cowl | Burlap Robe | Burlap Leggings | Burlap Slippers | Burlap Wraps | Ring of the Mind |
 | Mender | Copper Censer | Copper Holy Symbol | Burlap Cowl | Burlap Robe | Burlap Leggings | Burlap Slippers | Burlap Wraps | Ring of the Well |
 | Beast Tamer | Rawhide Whip | Pine Buckler | Copper Coif | Copper Hauberk | Copper Chausses | Copper Treads | Copper Mitts | Talisman of the Drum (F) |
+
+*As built (Phase 7, D-099).* The two kit rows after the Blade are the **second starter kits**: New hero offers the Warden a spear kit and the Blade a greatsword kit beside their default kits (`starterKitName` and `starterKitOptions` in the class JSON; lint rule 7 checks them), because the town sells no weapons. A kit comes with its own three starting skills — the spear Warden Reaching Thrust · Provoke · Brace (Shield Slam needs a shield), the greatsword Blade Cleaving Blow · Wind-up · Headsman's Eye — and the consumables above. A wayfarer arrives with the default kit.
 
 Plate and Mail at F are both Copper; the type word tells them apart ("Copper Helm" is Plate, "Copper Coif" is Mail). No kit has a Relic: the first Relic is the Cellars' Lantern of the Deep or Moth Charm, found, not given.
 
@@ -747,6 +775,10 @@ Plate and Mail at F are both Copper; the type word tells them apart ("Copper Hel
 6. ~~**Armor-less God pieces.** God armor adopting the wearer's family lets a Mender wear the Ancient Dragon's Mantle; is that the feel wanted, or should God armor pieces be family-locked (then eleven becomes more than eleven)?~~ *Checkpoint 1 (D-099): family-less, as written — any class may wear any God armor piece, and eleven stays eleven.*
 7. ~~**Beast Tamer weapons.** This file gives Beast Tamers one-handed swords and maces besides whips and spears so Daybreak Edge has a third class; `04-CLASSES.md` should confirm the list.~~ *Checkpoint 1 (D-099): the class sheet owns a class's weapons (`03` ownership table), so the Beast Tamer keeps its sheet's **whip and short spear**; this file's other Beast Tamer weapon rows and Daybreak Edge's third class are corrected when the class is built in Phase 11. A whip-and-spear Tamer reads as its own class rather than a second Warden.*
 8. ~~**Trinket wear.** Rings, Talismans and Relics wear only on a wipe here (−10%). Keep, or exempt trinkets from the wipe penalty entirely?~~ *Checkpoint 1 (D-099): keep, as built — trinkets wear only from a wipe's −10%, the same wear the bearers' gear takes under Mortal (D-088).*
+9. **Chest keys** (Phase 7): a Standard Key opens any Standard chest — gear, egg, crate, Tome or the Wayfarer Chest — and a Grand Key any Grand one. Right, or should keys open gear chests only? *Proposed: any chest of the tier (`07` §7 names no kind).*
+10. **S-grade wayfarers** come only from the Grand Wayfarer Chest (5 R, from chest band E); the Standard keeps D-091's odds through Gravehollow. Right, or should the Standard chest gain an S line at deeper bands? *Proposed: as built.*
+11. **A boss's own relic** (the Grinning Mask, the Barrow Bell, the Tidebound Idol, the Hollow Coin) comes only from its boss, while the Hourglass Shard, the Candle of the Crypt and the Brine Pearl roll anywhere at their grade, chests included. Keep, or tie each zone relic to its zone's floors? *Proposed: as built.*
+12. **The P7 milestone** reads "a +N Skysteel-promoted sword", but Skysteel is Emberforge's (§8.3): in Gravehollow the A-grade sword comes from a boss reward and is raised +N with Honing Oil. Is that the intent, or should Gravehollow drop a little Skysteel? *Proposed: as built.*
 
 ---
 

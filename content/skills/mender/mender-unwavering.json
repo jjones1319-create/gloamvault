@@ -1,0 +1,89 @@
+{
+  "id": "mender-unwavering",
+  "classId": "mender",
+  "school": "vigil",
+  "tier": 5,
+  "name": "Unwavering",
+  "description": "While you are above 50% HP no ally can be Feared, Stunned or Petrified; you cannot be Silenced.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "ally-control-immunity-above-hp",
+      "status": "fear",
+      "percent": 50,
+      "target": "self",
+      "note": "while the holder is above percent% HP, no ally keeps `status` (one line per status): it is shed before it can cost a turn"
+    },
+    {
+      "kind": "custom",
+      "customId": "ally-control-immunity-above-hp",
+      "status": "stun",
+      "percent": 50,
+      "target": "self"
+    },
+    {
+      "kind": "custom",
+      "customId": "ally-control-immunity-above-hp",
+      "status": "petrify",
+      "percent": 50,
+      "target": "self"
+    },
+    {
+      "kind": "custom",
+      "customId": "status-resist-bonus",
+      "status": "silence",
+      "percent": 100,
+      "target": "self",
+      "note": "immune: a passive resist of 100% to `status` all fight (statuses.ts resistChance reads it)"
+    }
+  ],
+  "prerequisiteId": "mender-dawn-vigil",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Threshold 25% HP.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "ally-control-immunity-above-hp",
+        "status": "fear",
+        "percent": 25,
+        "target": "self"
+      },
+      {
+        "kind": "custom",
+        "customId": "ally-control-immunity-above-hp",
+        "status": "stun",
+        "percent": 25,
+        "target": "self"
+      },
+      {
+        "kind": "custom",
+        "customId": "ally-control-immunity-above-hp",
+        "status": "petrify",
+        "percent": 25,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "cleanse"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 0
+  }
+}

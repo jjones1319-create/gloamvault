@@ -1,0 +1,47 @@
+{
+  "id": "ironwood-hand-crossbow",
+  "name": "Ironwood Hand Crossbow",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "B",
+  "materialLadder": "wood",
+  "materialRung": 4,
+  "weaponType": "crossbow",
+  "armorFamily": null,
+  "hands": 1,
+  "damageType": "pierce",
+  "weight": 1000,
+  "baseStats": {
+    "attackPhys": 36
+  },
+  "requirements": {
+    "strength": 11,
+    "wisdom": 0
+  },
+  "affixSlots": 2,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 7,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 3.26,
+  "value": 1000,
+  "classLock": [
+    "ranger"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-hand-crossbow-01",
+    "tintPrimary": "#4a3b2f",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "blacksteel"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "id": "belfry",
+  "tableId": "crypts-b",
+  "dungeonId": "gravehollow-keep",
+  "floorBand": {
+    "min": 4,
+    "max": 6
+  },
+  "name": "Belfry",
+  "composition": [
+    {
+      "monsterId": "grave-bat",
+      "count": 3,
+      "row": "front"
+    },
+    {
+      "monsterId": "wraith",
+      "count": 1,
+      "row": "back"
+    }
+  ],
+  "weight": 15,
+  "ambushModifier": -5,
+  "eliteAllowed": true
+}

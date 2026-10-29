@@ -1,0 +1,30 @@
+{
+  "id": "penance",
+  "tableId": "vault-a",
+  "dungeonId": "gravehollow-keep",
+  "floorBand": {
+    "min": 7,
+    "max": 7
+  },
+  "name": "Penance",
+  "composition": [
+    {
+      "monsterId": "tidebound-flagellant",
+      "count": 1,
+      "row": "front"
+    },
+    {
+      "monsterId": "tidebound-blade",
+      "count": 2,
+      "row": "front"
+    },
+    {
+      "monsterId": "tidebound-acolyte",
+      "count": 1,
+      "row": "back"
+    }
+  ],
+  "weight": 15,
+  "ambushModifier": 5,
+  "eliteAllowed": true
+}

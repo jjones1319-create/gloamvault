@@ -1,0 +1,55 @@
+{
+  "id": "warden-bannerhold",
+  "classId": "warden",
+  "school": "vanguard",
+  "tier": 4,
+  "name": "Bannerhold",
+  "description": "Every ally gains +10 Speed for 3 turns and +20 Momentum now.",
+  "type": "active",
+  "cost": 30,
+  "weight": 1000,
+  "target": "allAllies",
+  "effects": [
+    {
+      "kind": "buffStat",
+      "duration": 3,
+      "stat": "speed",
+      "amount": 10
+    },
+    {
+      "kind": "momentum",
+      "amount": 20
+    }
+  ],
+  "prerequisiteId": "warden-phalanx",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "+15 Speed.",
+    "effects": [
+      {
+        "kind": "buffStat",
+        "duration": 3,
+        "stat": "speed",
+        "amount": 15
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "buff",
+    "momentum"
+  ],
+  "xpTags": [
+    "endurance",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 60
+  }
+}

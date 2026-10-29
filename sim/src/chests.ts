@@ -1,8 +1,9 @@
 import type { Content } from './content.ts'
-import { createItemInstance, salvage, sameItemType } from './items.ts'
+import { createItemInstance, rungMaterial, salvage, sameItemType } from './items.ts'
 import { pickGearItem, type ItemFilter } from './loot.ts'
 import type { Rng } from './rng.ts'
 import { roundHalfUp } from './stats.ts'
+import { createTome, tomeCandidates } from './tomes.ts'
 import type { Tuning } from './tuning.ts'
 import { drawWayfarer } from './wayfarers.ts'
 import type { ChestDef, ChestOdds, IntRange, ItemDef, ItemInstance, LootTableDef } from './types/content.ts'
@@ -37,6 +38,40 @@ export interface ChestPityState {
 }
 
 export const EMPTY_PITY: ChestPityState = { plusOneCounter: 0, plusTwoCounter: 0 }
+
+// ---------------------------------------------------------------------------------------------------------------
+// Chest keys and where a chest is sold (07 §7; pass B, Phase 7)
+// ---------------------------------------------------------------------------------------------------------------
+
+/** The chest tier a key item opens (its `chest-key:<tier>` tag), or null for a Skeleton Key or any other item. */
+export function keyTierOf(def: ItemDef): 'standard' | 'grand' | null {
+  for (const tag of def.tags ?? []) {
+    if (tag === 'chest-key:standard') return 'standard'
+    if (tag === 'chest-key:grand') return 'grand'
+  }
+  return null
+}
+
+/**
+ * The key item that opens one chest of a tier free (07 §7: "A Standard Key opens one Standard chest free; a Grand Key
+ * one Grand chest"): the item tagged `chest-key:<tier>` (`standard-chest-key`, `grand-chest-key`). A contract's
+ * `keys[]` and a boss's key reward add one to `profile.materials[<this id>]`, where the keys are counted.
+ */
+export function chestKeyItemId(content: Content, tier: 'standard' | 'grand'): string | null {
+  for (const def of content.itemsByKind.get('key') ?? []) if (keyTierOf(def) === tier) return def.id
+  return null
+}
+
+/** True when a key of the chest's tier may open it (tuning.json → chests.keyOpensKinds: every kind, as read). */
+export function keyOpens(t: Tuning, chest: ChestDef): boolean {
+  const kinds: readonly string[] = t.chests?.keyOpensKinds ?? ['gear', 'petEgg', 'materialCrate', 'skillTome', 'wayfarer']
+  return kinds.includes(chest.kind)
+}
+
+/** True when the Curio Merchant sells the chest at this band (a chest's `minBand`: the Grand Wayfarer Chest from band E). */
+export function chestOnSale(chest: ChestDef, bandGrade: Grade): boolean {
+  return chest.minBand === undefined || gradeIndex(bandGrade) >= gradeIndex(chest.minBand)
+}
 
 /** The Tome bag per class: tier (as a string key) → the skill ids still in the bag. */
 export type TomeBagState = Readonly<Record<string, readonly string[]>>
@@ -207,7 +242,8 @@ export type ChestResult =
   | { kind: 'bondStar'; petId: string; grade: Grade }
   | { kind: 'materials'; materialId: string; units: number; rarePart: ItemInstance | null; rarePartWon: boolean }
   | { kind: 'shard'; amount: number }
-  | { kind: 'tome'; skillId: string; tier: number }
+  /** A Skill Tome of the skill drawn (Phase 7: an item for the armory, read in town by a hero of the class). */
+  | { kind: 'tome'; skillId: string; tier: number; inst: ItemInstance }
   | { kind: 'tomeOfPractice' }
   /** A Wayfarer Chest's writ (D-091); `heroId` is filled in by the town when the hero joins the roster. */
   | { kind: 'wayfarer'; wayfarerId: string; grade: Grade; pityGrade: boolean; heroId: string }
@@ -346,7 +382,8 @@ export function rarePartPool(content: Content, bandGrade: Grade): string[] {
 function openCrate(content: Content, t: Tuning, rng: Rng, input: TownChestInput): ChestResult {
   const ladder = input.materialLadder ?? 'metal'
   const rung = gradeIndex(input.bandGrade)
-  const material = (content.itemsByKind.get('material') ?? []).find((m) => m.materialLadder === ladder && m.materialRung === rung)
+  // The rung's first name (Sharkskin counts as Wolf Hide for promotion, but a crate pays Wolf Hide; items.ts rungMaterial).
+  const material = rungMaterial(content, ladder, rung) ?? undefined
   if (material === undefined) throw new Error(`chests: no ${ladder} material item at rung ${rung} (band ${input.bandGrade})`)
   const grand = input.chest.tier === 'grand'
   const units = grand ? CHEST_RULES.crateUnits.grand : CHEST_RULES.crateUnits.standard
@@ -359,13 +396,13 @@ function openCrate(content: Content, t: Tuning, rng: Rng, input: TownChestInput)
   return { kind: 'materials', materialId: material.id, units, rarePart, rarePartWon }
 }
 
-/** A fresh bag per tier: every skill of the class at that tier the hero does not own, in id order. */
+/**
+ * A fresh bag per tier: every skill of the class at that tier a Tome may carry that the hero does not own, in id order
+ * (08 §10.2; Phase 7: never a monster technique, never Tier V — tomes.ts isTomeSkill).
+ */
 export function buildTomeBag(content: Content, classId: string, tiers: IntRange, heroSkillIds: ReadonlySet<string> | undefined): TomeBagState {
   const bag: Record<string, string[]> = {}
-  const skills = content.skillsByClass.get(classId) ?? []
-  for (let tier = tiers.min; tier <= tiers.max; tier++) {
-    bag[String(tier)] = skills.filter((s) => s.tier === tier && !(heroSkillIds?.has(s.id) ?? false)).map((s) => s.id)
-  }
+  for (let tier = tiers.min; tier <= tiers.max; tier++) bag[String(tier)] = tomeCandidates(content, classId, tier, heroSkillIds ?? new Set())
   return bag
 }
 
@@ -413,7 +450,7 @@ function openTome(content: Content, t: Tuning, rng: Rng, input: TownChestInput):
   const ids = bag[key] ?? []
   const skillId = rng.pick(ids)
   bag[key] = ids.filter((id) => id !== skillId)
-  return { result: { kind: 'tome', skillId, tier: Number(key) }, tomeBag: bag }
+  return { result: { kind: 'tome', skillId, tier: Number(key), inst: createTome(content, rng, skillId) }, tomeBag: bag }
 }
 
 /** Opens one town chest. Deterministic from the stream; the save keeps the returned pity and bag. */
@@ -437,7 +474,7 @@ export function openTownChest(content: Content, t: Tuning, rng: Rng, input: Town
       return { result, pity: input.pity, tomeBag, odds: [] }
     }
     case 'wayfarer': {
-      const draw = drawWayfarer(content, rng, chest, input.bandGrade, input.pity, input.ownedWayfarerIds ?? new Set())
+      const draw = drawWayfarer(content, rng, chest, input.bandGrade, input.pity, input.ownedWayfarerIds ?? new Set(), chest.tier === 'grand' ? CHEST_RULES.grandPityAdvance : 1)
       if (!draw) return { result: { kind: 'nobodyLeft' }, pity: input.pity, tomeBag: null, odds: [] }
       return { result: { kind: 'wayfarer', wayfarerId: draw.wayfarerId, grade: draw.grade, pityGrade: draw.pityGrade, heroId: '' }, pity: draw.pity, tomeBag: null, odds: [] }
     }

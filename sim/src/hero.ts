@@ -1,7 +1,7 @@
 import type { Content } from './content.ts'
 import type { Actor, EquippedItem, FightRow, HeroActorData, HeroEquipment } from './fight-types.ts'
 import { installHook } from './hooks.ts'
-import { canHoldOffHand, createItemInstance, effectiveItemStats } from './items.ts'
+import { canHoldOffHand, createItemInstance, effectiveItemStats, setBonusLoad } from './items.ts'
 import { clampLook, defaultLook } from './look.ts'
 import type { Rng } from './rng.ts'
 import { linesAtRank, rankEffectPercent } from './skill-lines.ts'
@@ -48,8 +48,10 @@ export interface CreateHeroInput {
   freePoints?: Partial<Record<Attribute, number>>
   /** Points beyond the six: a wayfarer's grade (D-091, +1 per grade above D). */
   bonusFreePoints?: number
-  /** Three Tier I skills; the class's recommended three when omitted. */
+  /** Three Tier I skills; the chosen kit's recommended three (else the class's) when omitted. */
   starterSkillIds?: readonly string[]
+  /** One of the class's starterKitOptions (D-099: the Warden's spear kit, the Blade's greatsword kit); the default kit when omitted or unknown. */
+  starterKitId?: string
   /** The creation egg (03 §2.3: one of three at F); null for none yet. */
   eggPetId?: string | null
   petName?: string
@@ -107,7 +109,8 @@ export function createHero(content: Content, t: Tuning, rng: Rng, input: CreateH
   const cls = requireClass(content, input.classId)
   const rules = speciesRules(species)
   const attributes = creationAttributes(t, species, cls, input.freePoints, Math.max(0, input.bonusFreePoints ?? 0))
-  const starters = input.starterSkillIds ?? cls.starterSkillIds
+  const kitOption = input.starterKitId ? cls.starterKitOptions?.find((k) => k.id === input.starterKitId) : undefined
+  const starters = input.starterSkillIds ?? kitOption?.starterSkillIds ?? cls.starterSkillIds
   if (starters.length !== 3) throw new Error('three starter skills')
   for (const id of starters) {
     const s = content.skills.get(id)
@@ -118,7 +121,7 @@ export function createHero(content: Content, t: Tuning, rng: Rng, input: CreateH
   const kitTable = t.equipment.starterKitQuantities as unknown as Record<string, number | string>
   const kitQuantities: Record<string, number> = {}
   for (const [k, v] of Object.entries(kitTable)) if (typeof v === 'number') kitQuantities[k] = v
-  for (const itemId of cls.starterKit) {
+  for (const itemId of kitOption?.starterKit ?? cls.starterKit) {
     const def = content.items.get(itemId)
     if (!def) throw new Error(`starter kit item ${itemId} is missing`)
     // The kit is a unique id list; 08 §12's "2 Small HP Potions, 2 Torches" come from tuning's quantities (D-069).
@@ -260,6 +263,12 @@ export function heroLoad(content: Content, t: Tuning, hero: HeroRecord): HeroLoa
   consider(equipment.ring[1] ?? null, 'ring')
   consider(equipped(content, eq.talisman), 'talisman')
   consider(equipped(content, eq.relic), 'relic')
+  // Set bonuses (08 §6; pass B, Phase 7): stat lines join the gear's, custom lines become hooks like a unique power's.
+  const sets = setBonusLoad(content, t, [eq.mainHand, eq.offHand, eq.helmet, eq.chest, eq.legs, eq.boots, eq.gloves, eq.ring[0], eq.ring[1], eq.talisman, eq.relic])
+  addInto(flat, sets.stats)
+  addInto(percent, sets.percentStats)
+  addInto(attributeBonus, sets.attributeBonuses)
+  for (const sl of sets.hookLines) hookLines.push({ line: sl.line, sourceId: sl.setId, itemId: sl.setId, slot: 'set' })
   if (hero.naturalArmor) flat.defense = (flat.defense ?? 0) + hero.naturalArmor.defense
 
   const mainStats = main ? effectiveItemStats(content, t, main.def, main.inst) : null
@@ -330,6 +339,11 @@ export interface BuildHeroOptions {
   hpPercent?: number
   poolPercent?: number
   aiRule?: string
+  /**
+   * Floor-limited passives (D-099: Undying Rage once per floor, Deathless twice): skill id → times its limited effect
+   * has fired earlier on this floor (progress.ts floorUsesFor). The passive's hook reads it as data.floorUsed.
+   */
+  floorUses?: Readonly<Record<string, number>>
 }
 
 export function buildHeroActor(content: Content, t: Tuning, hero: HeroRecord, opts: BuildHeroOptions): Actor {
@@ -407,7 +421,7 @@ export function buildHeroActor(content: Content, t: Tuning, hero: HeroRecord, op
     tally: { actions: 0, hitsLanded: 0, hitsTaken: 0, blocks: 0, damageDealt: 0, damageTaken: 0, healingDone: 0, kills: 0, skillUses: {} },
     hero: data,
   }
-  applyPassives(content, actor)
+  applyPassives(content, actor, opts.floorUses)
   // Worn gear's custom lines (Spined, of Renewal, a unique power) and the species' trait lines (Breath, Thick Hide) ride on the actor (D-071).
   for (const h of load.hookLines) installHook(actor, h.line, h.sourceId, { replace: false, data: { itemId: h.itemId, slot: h.slot } })
   for (const trait of species.traits) {
@@ -424,7 +438,7 @@ export function buildHeroActor(content: Content, t: Tuning, hero: HeroRecord, op
  * custom lines become persistent hooks (hooks.ts), both at the passive's rank. Other line kinds on a passive are
  * ignored here (a passive that applies a status is a design error the linter should catch).
  */
-export function applyPassives(content: Content, actor: Actor): void {
+export function applyPassives(content: Content, actor: Actor, floorUses: Readonly<Record<string, number>> = {}): void {
   const h = actor.hero
   if (!h) return
   for (const id of h.passives) {
@@ -435,7 +449,8 @@ export function applyPassives(content: Content, actor: Actor): void {
     const pct = rankEffectPercent(skill, rank)
     for (const line of linesAtRank(skill, rank)) {
       if ((line.kind === 'buffStat' || line.kind === 'debuffStat') && line.stat) actor.modifiers.push({ stat: line.stat, amount: roundHalfUp(((line.amount ?? 0) * pct) / 100), percent: roundHalfUp(((line.percent ?? 0) * pct) / 100), turnsLeft: 9999, sourceId: skill.id })
-      else if (line.kind === 'custom' && line.customId) installHook(actor, line, actor.id, { sourceSkillId: skill.id })
+      // replace: false — two passives (or two lines of one) may share a customId (Kindling and Permafrost's school-damage-percent) and both hold.
+      else if (line.kind === 'custom' && line.customId) installHook(actor, line, actor.id, { sourceSkillId: skill.id, replace: false, ...(floorUses[skill.id] ? { data: { floorUsed: floorUses[skill.id]! } } : {}) })
     }
   }
 }

@@ -1,0 +1,64 @@
+{
+  "id": "blade-red-tide",
+  "classId": "blade",
+  "school": "bloodletter",
+  "tier": 5,
+  "name": "Red Tide",
+  "description": "2.0× Slash to every enemy in both rows; Bleed 3 turns on each; heal 20% of the total damage.",
+  "type": "active",
+  "cost": 45,
+  "weight": 1400,
+  "target": "allEnemies",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 2,
+      "damageType": "slash",
+      "scalesWith": "strength"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "bleed",
+      "duration": 3
+    },
+    {
+      "kind": "custom",
+      "customId": "heal-percent-of-damage-dealt",
+      "percent": 20,
+      "target": "self",
+      "note": "heals the actor for percent of the damage this skill dealt"
+    }
+  ],
+  "prerequisiteId": "blade-exsanguinate",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "2.4×.",
+    "effects": [
+      {
+        "kind": "damage",
+        "multiplier": 2.4,
+        "damageType": "slash",
+        "scalesWith": "strength"
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "dot",
+    "heal",
+    "reach"
+  ],
+  "xpTags": [
+    "strength",
+    "agility"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 75
+  }
+}

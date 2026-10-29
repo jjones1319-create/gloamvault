@@ -1,0 +1,57 @@
+{
+  "id": "ranger-dismantle",
+  "classId": "ranger",
+  "school": "trapper",
+  "tier": 4,
+  "name": "Dismantle",
+  "description": "Your part-breaks drop a guaranteed common part; a failed Trap Disarm never triggers on you.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "dismantle-parts",
+      "chance": 0,
+      "target": "self",
+      "note": "a limb you break drops the monster’s common part (chance% a rare part too)"
+    },
+    {
+      "kind": "custom",
+      "customId": "disarm-failure-safe",
+      "target": "self",
+      "note": "a failed disarm by the holder never triggers the trap on the holder"
+    }
+  ],
+  "prerequisiteId": "ranger-snare-sense",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Part-breaks also roll a rare part at +10%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "dismantle-parts",
+        "chance": 10,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "utility",
+    "field"
+  ],
+  "xpTags": [
+    "agility",
+    "perception"
+  ],
+  "aiHints": {
+    "role": "utility",
+    "priority": 0
+  }
+}

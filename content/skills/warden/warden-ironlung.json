@@ -1,0 +1,57 @@
+{
+  "id": "warden-ironlung",
+  "classId": "warden",
+  "school": "warcry",
+  "tier": 4,
+  "name": "Ironlung",
+  "description": "Your shouts weigh 800 and give every ally +10 Momentum.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "school-action-weight",
+      "amount": 800,
+      "target": "self",
+      "note": "the owner's school's actives (Warcry: the shouts) weigh amount"
+    },
+    {
+      "kind": "custom",
+      "customId": "ally-momentum-on-shout",
+      "amount": 10,
+      "target": "self",
+      "note": "every shout gives every other ally amount Momentum"
+    }
+  ],
+  "prerequisiteId": "warden-voice-of-iron",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "+15 Momentum.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "ally-momentum-on-shout",
+        "amount": 15,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "momentum"
+  ],
+  "xpTags": [
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 0
+  }
+}

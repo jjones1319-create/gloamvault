@@ -1,0 +1,70 @@
+{
+  "id": "warden-rolling-bastion",
+  "classId": "warden",
+  "school": "bulwark",
+  "tier": 4,
+  "name": "Rolling Bastion",
+  "description": "Swap rows with the chosen ally as part of the action; both of you gain Fortify 2 turns; your next 2 physical hits taken are blocked automatically.",
+  "type": "active",
+  "cost": 28,
+  "weight": 1000,
+  "target": "ally",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "swap-rows-with-ally",
+      "target": "ally",
+      "note": "you and the chosen ally trade rows as part of the action (no 400-weight Swap row)"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "fortify",
+      "duration": 2,
+      "target": "ally"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "fortify",
+      "duration": 2,
+      "target": "self"
+    },
+    {
+      "kind": "custom",
+      "customId": "block-next-physical-hits",
+      "amount": 2,
+      "target": "self",
+      "note": "the next amount physical hits on you are blocked (halved) automatically, until spent"
+    }
+  ],
+  "prerequisiteId": "warden-crushing-rebuke",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Weight 800.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "this-action-weight",
+        "amount": 800,
+        "target": "self",
+        "note": "the action weighs amount instead of its 1,000"
+      }
+    ]
+  },
+  "tags": [
+    "mobility",
+    "buff",
+    "shield"
+  ],
+  "xpTags": [
+    "endurance"
+  ],
+  "aiHints": {
+    "role": "defend",
+    "priority": 50
+  }
+}

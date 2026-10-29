@@ -99,13 +99,13 @@ export function affixPoolFor(content: Content, def: ItemDef): AffixDef[] {
 }
 
 /**
- * Rolls the item's affix lines: `affixSlots` (one fewer for a set piece, README rule 20) weighted picks with no
- * repeats, the prefix/suffix split of 08 §5 (1 → either · 2 → 1 + 1 · 3 → 2 + 1 either way · 4 → 2 + 2, read as
+ * Rolls the item's affix lines: `affixSlots` (one fewer for a set piece, README rule 20, and for a named unique,
+ * whose signature fills one slot, 08 §7) weighted picks with no repeats, the prefix/suffix split of 08 §5 (1 → either · 2 → 1 + 1 · 3 → 2 + 1 either way · 4 → 2 + 2, read as
  * "at most ceil(n / 2) per position", relaxed only when the pool cannot fill it), one elemental prefix at most, and
  * each value uniform within the grade band's line.
  */
 export function rollAffixes(content: Content, rng: Rng, def: ItemDef): RolledAffix[] {
-  const slots = Math.max(0, def.affixSlots - (def.setId !== null ? 1 : 0))
+  const slots = Math.max(0, def.affixSlots - (def.setId !== null ? 1 : 0) - (def.unique && def.uniquePower !== null ? 1 : 0))
   const pool = affixPoolFor(content, def)
   if (slots === 0 || pool.length === 0) return []
   const positionCap = Math.ceil(slots / 2)
@@ -229,8 +229,102 @@ export function effectiveItemStats(content: Content, t: Tuning, def: ItemDef, in
       else out.onHit.push(eff)
     }
   }
-  if (def.uniquePower !== null) for (const eff of def.uniquePower.effects) eff.kind === 'custom' ? out.hookLines.push({ line: eff, affixId: null }) : out.onHit.push(eff)
+  if (def.uniquePower !== null) {
+    for (const eff of def.uniquePower.effects) {
+      // A signature's stat line ("+3 Detection", "+10% Momentum gain") is a line of the item, scaled by its wear band
+      // like an affix's; a custom line is a hook; anything else (a status on hit) rides the weapon's hits.
+      if ((eff.kind === 'buffStat' || eff.kind === 'debuffStat') && eff.stat !== undefined) {
+        const sign = eff.kind === 'debuffStat' ? -1 : 1
+        if (eff.amount !== undefined) out.stats[eff.stat] = (out.stats[eff.stat] ?? 0) + sign * scaleLine(eff.amount, band.statPercent)
+        if (eff.percent !== undefined) out.percentStats[eff.stat] = (out.percentStats[eff.stat] ?? 0) + sign * scaleLine(eff.percent, band.statPercent)
+      } else if (eff.kind === 'custom') out.hookLines.push({ line: eff, affixId: null })
+      else out.onHit.push(eff)
+    }
+    for (const [attr, v] of Object.entries(def.uniquePower.attributes ?? {}) as [Attribute, number][]) out.attributeBonuses[attr] = (out.attributeBonuses[attr] ?? 0) + scaleLine(v, band.statPercent)
+  }
   if (ATTACKING_KINDS.has(def.kind)) out.accuracyPenalty = band.accuracyPenalty
+  return out
+}
+
+// ---------------------------------------------------------------------------------------------------------------
+// Sets (03 §6.2, 08 §6; Phase 7: the bonuses apply)
+// ---------------------------------------------------------------------------------------------------------------
+
+export type SetBonusKey = '2' | '4'
+
+export interface SetProgress {
+  setId: string
+  /** Distinct pieces of the set worn and not Broken (a Broken item contributes nothing, 08 §9.2). */
+  worn: number
+  /** Pieces the set has: five armor pieces or two rings. */
+  pieces: number
+  /** The piece counts that switch a bonus on (tuning equipment.sets.bonusAt) the set has bonuses for, ascending. */
+  thresholds: number[]
+  /** The bonuses on now. */
+  active: SetBonusKey[]
+  /** The next count that switches a bonus on, or null when every bonus is on. */
+  next: number | null
+}
+
+export interface SetBonusLoad {
+  /** Flat stat lines of the active bonuses (a `buffStat` amount). */
+  stats: Partial<Record<DerivedStat, number>>
+  /** Percent stat lines of the active bonuses (a `buffStat` percent). */
+  percentStats: Partial<Record<DerivedStat, number>>
+  attributeBonuses: Partial<Record<Attribute, number>>
+  /** Custom lines of the active bonuses: persistent hooks on the wearer, and delve-side lines (gold found, light). */
+  hookLines: { line: Effect; setId: string }[]
+  progress: SetProgress[]
+}
+
+/**
+ * The sets a hero wears into (08 §6): each set's distinct pieces worn and not Broken — an armor slot counts once, a
+ * ring pair's two rings by their mesh — and the bonuses that count switches on. Promoted pieces keep their set
+ * (items.ts nextRungItem), so a set worn across grades still counts.
+ */
+export function setProgressOf(content: Content, t: Tuning, worn: readonly (ItemInstance | null)[]): SetProgress[] {
+  const bySet = new Map<string, Set<string>>()
+  for (const inst of worn) {
+    if (!inst) continue
+    const def = content.items.get(inst.itemId)
+    if (!def?.setId || inst.durability <= 0) continue
+    const key = def.slot === 'ring' ? `ring:${def.visual.meshId}` : (def.slot ?? def.id)
+    const set = bySet.get(def.setId) ?? new Set<string>()
+    set.add(key)
+    bySet.set(def.setId, set)
+  }
+  const at: readonly number[] = t.equipment.sets.bonusAt
+  const out: SetProgress[] = []
+  for (const [setId, keys] of [...bySet].sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))) {
+    const set = content.sets.get(setId)
+    if (!set) continue
+    const thresholds = at.filter((n) => set.bonuses[String(n) as SetBonusKey] !== undefined)
+    const active = thresholds.filter((n) => keys.size >= n).map((n) => String(n) as SetBonusKey)
+    out.push({ setId, worn: keys.size, pieces: set.pieces.length, thresholds, active, next: thresholds.find((n) => keys.size < n) ?? null })
+  }
+  return out
+}
+
+/**
+ * What the worn sets give (08 §6: "Bonuses do not ride the ladder"): a bonus's `buffStat`/`debuffStat` lines are
+ * flat or percent stat lines, its `custom` lines hooks on the wearer (hero.ts) and delve-side lines (delve.ts reads
+ * gold found and light from them). A line of any other kind is not a standing bonus and is left out.
+ */
+export function setBonusLoad(content: Content, t: Tuning, worn: readonly (ItemInstance | null)[]): SetBonusLoad {
+  const out: SetBonusLoad = { stats: {}, percentStats: {}, attributeBonuses: {}, hookLines: [], progress: setProgressOf(content, t, worn) }
+  for (const p of out.progress) {
+    const set = content.sets.get(p.setId)
+    if (!set) continue
+    for (const key of p.active) {
+      for (const line of set.bonuses[key] ?? []) {
+        if ((line.kind === 'buffStat' || line.kind === 'debuffStat') && line.stat !== undefined) {
+          const sign = line.kind === 'debuffStat' ? -1 : 1
+          if (line.amount !== undefined) out.stats[line.stat] = (out.stats[line.stat] ?? 0) + sign * line.amount
+          if (line.percent !== undefined) out.percentStats[line.stat] = (out.percentStats[line.stat] ?? 0) + sign * line.percent
+        } else if (line.kind === 'custom') out.hookLines.push({ line, setId: set.id })
+      }
+    }
+  }
   return out
 }
 
@@ -448,6 +542,16 @@ export function nextRungItem(content: Content, def: ItemDef): ItemDef | null {
     }
   }
   return byMesh ?? byType
+}
+
+/**
+ * The material a crate, a salvage or a dupe pays at a rung: its first name (08 §8.1: "Gravehollow uses the first name
+ * of each pair"), never a regional name (`tags: ['regional']`: Cured Ghoulhide, Spidersilk, Sharkskin) unless the rung
+ * has nothing else. Sorted-id order breaks a tie. null when the ladder has no material at that rung.
+ */
+export function rungMaterial(content: Content, ladder: MaterialLadder, rung: number): ItemDef | null {
+  const all = materialItemsAt(content, ladder, rung)
+  return all.find((m) => !(m.tags ?? []).includes('regional')) ?? all[0] ?? null
 }
 
 /** The material items of a ladder at a rung, in sorted-id order (regional variants share a rung). */

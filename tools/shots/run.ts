@@ -136,6 +136,13 @@ const SHOTS: Shot[] = [
   { name: 'delve-fight-swarm-perf', hash: '#delve=gravehollow&zone=1&seed=19&party=warden,blade,mender,arcanist&level=5&auto=1&species=dwarf,orc,elf,draconid', settings: PERF },
   { name: 'delve-fight-crew-perf', hash: '#delve=gravehollow&zone=3&seed=18&party=warden,blade,mender,arcanist&level=5&auto=1&species=dwarf,orc,elf,draconid', settings: PERF },
   { name: 'delve-fight-four-monsters-perf', hash: '#delve=gravehollow&zone=1&seed=3&party=warden,blade,mender,arcanist&level=5&auto=1&species=human,dwarf,elf,halfling', settings: PERF },
+  // Phase 7 — the three zones with the overlay (D-113's check): a Crypts and a Vault fight, and the three new bosses in
+  // their arenas (the room=boss link stands the party at the boss's door; auto=1 walks it in).
+  { name: 'delve-crypts-fight-perf', hash: '#delve=gravehollow&zone=2&seed=17&party=warden,blade,mender,arcanist&auto=1&species=dwarf,orc,elf,draconid', settings: PERF },
+  { name: 'delve-vault-fight-perf', hash: '#delve=gravehollow&zone=3&seed=17&party=warden,blade,mender,arcanist&auto=1&species=dwarf,orc,elf,draconid', settings: PERF },
+  { name: 'boss-warden-perf', hash: '#delve=gravehollow-keep&floor=6&seed=5&party=warden,blade,mender,arcanist&level=9&room=boss&auto=1&species=human,dwarf,elf,halfling', settings: PERF },
+  { name: 'boss-naesa-perf', hash: '#delve=gravehollow-keep&floor=7&seed=5&party=warden,blade,mender,arcanist&level=12&room=boss&auto=1&species=human,dwarf,elf,halfling', settings: PERF },
+  { name: 'boss-king-perf', hash: '#delve=gravehollow-keep&floor=8&seed=5&party=warden,blade,mender,arcanist&level=14&room=boss&auto=1&species=human,dwarf,elf,halfling', settings: PERF },
 ]
 
 const args = process.argv.slice(2)

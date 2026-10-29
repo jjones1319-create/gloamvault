@@ -1,0 +1,58 @@
+{
+  "id": "arcanist-font-of-mana",
+  "classId": "arcanist",
+  "school": "arcana",
+  "tier": 4,
+  "name": "Font of Mana",
+  "description": "Once per fight, when your Mana reaches 0 it refills to 50%; Fortune (the free-cast chance) +5 points.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "pool-refill-at-zero",
+      "percent": 50,
+      "amount": 1,
+      "target": "self",
+      "note": "`amount` time(s) per fight, when the holder’s pool reaches 0 it refills to percent% of max"
+    },
+    {
+      "kind": "buffStat",
+      "stat": "fortune",
+      "amount": 50,
+      "note": "Fortune is kept in tenths of a point (stats.ts): 50 = +5 points of free-cast chance"
+    }
+  ],
+  "prerequisiteId": "arcanist-lantern-of-the-mind",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Refill 70%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "pool-refill-at-zero",
+        "percent": 70,
+        "amount": 1,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "utility"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "utility",
+    "priority": 0
+  }
+}

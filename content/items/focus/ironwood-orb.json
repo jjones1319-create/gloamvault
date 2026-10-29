@@ -1,0 +1,48 @@
+{
+  "id": "ironwood-orb",
+  "name": "Ironwood Orb",
+  "slot": "offHand",
+  "kind": "focus",
+  "grade": "B",
+  "materialLadder": "wood",
+  "materialRung": 4,
+  "weaponType": "focus",
+  "armorFamily": null,
+  "hands": 1,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "attackSpell": 13,
+    "mana": 17
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 12
+  },
+  "affixSlots": 2,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 7,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 3.26,
+  "value": 600,
+  "classLock": [
+    "arcanist"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "focus-orb-01",
+    "tintPrimary": "#4a3b2f",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "blacksteel"
+  }
+}

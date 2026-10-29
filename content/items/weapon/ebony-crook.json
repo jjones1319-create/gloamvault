@@ -1,0 +1,48 @@
+{
+  "id": "ebony-crook",
+  "name": "Ebony Crook",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "A",
+  "materialLadder": "wood",
+  "materialRung": 5,
+  "weaponType": "staff",
+  "armorFamily": null,
+  "hands": 2,
+  "damageType": "holy",
+  "weight": 1000,
+  "baseStats": {
+    "attackSpell": 53,
+    "mana": 45
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 14
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 8,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 4.07,
+  "value": 2400,
+  "classLock": [
+    "mender"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-crook-01",
+    "tintPrimary": "#2a211c",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "skysteel"
+  }
+}

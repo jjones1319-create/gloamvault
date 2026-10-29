@@ -1,0 +1,53 @@
+{
+  "id": "blade-undying-rage",
+  "classId": "blade",
+  "school": "bloodletter",
+  "tier": 4,
+  "name": "Undying Rage",
+  "description": "Once per floor, a hit that would down you while Berserk leaves you at 1 HP with Regen 10% max HP for 2 turns.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "undying-rage",
+      "duration": 2,
+      "amount": 1,
+      "percent": 10,
+      "target": "self",
+      "note": "D-099: amount time(s) per floor; while Berserk, a downing blow leaves you at 1 HP with Regen percent% for duration turns"
+    }
+  ],
+  "prerequisiteId": "blade-berserk",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Works outside Berserk too.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "undying-rage-unbound",
+        "target": "self",
+        "note": "Undying Rage no longer needs Berserk"
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "heal"
+  ],
+  "xpTags": [
+    "vitality",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "defend",
+    "priority": 0
+  }
+}

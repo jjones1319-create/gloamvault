@@ -1,10 +1,11 @@
 import { batch, computed, signal } from '@preact/signals'
 import type { Content } from '../../../sim/src/content.ts'
+import { boardClock } from '../../../sim/src/contracts.ts'
 import { createDelve, legalDelveActions, replayDelve, runDelveAuto, stepDelve } from '../../../sim/src/delve.ts'
 import type { DelveCommand, DelveState, LegalDelveAction } from '../../../sim/src/delve-types.ts'
 import type { FightCommand } from '../../../sim/src/fight-types.ts'
 import { heroAtLevel } from '../../../sim/src/hero.ts'
-import type { DeathRule } from '../../../sim/src/types/enums.ts'
+import type { DeathRule, Difficulty } from '../../../sim/src/types/enums.ts'
 import { heroFromWayfarer } from '../../../sim/src/wayfarers.ts'
 import { Rng } from '../../../sim/src/rng.ts'
 import {
@@ -15,6 +16,7 @@ import {
   recordDelveCommand,
   settleDelve,
   startDelve,
+  syncQuestBoard,
   TownError,
   type DelveSummaryRecord,
   type Profile,
@@ -209,6 +211,27 @@ export function createHero(input: Omit<CreateHeroInput, 'id'>): string | null {
   return id
 }
 
+/* ---------- the Quest Board (07 §7) ---------- */
+
+/**
+ * The board's day and week from this device's clock (the sim never reads one): local wall time as UTC milliseconds,
+ * a day from 04:00, a week from Monday 04:00 (tuning contracts.resetHour / weekStartsOn).
+ */
+export function boardClockNow(c: Content, now: Date = new Date()): { day: number; week: number } {
+  return boardClock(c.tuning, now.getTime() - now.getTimezoneOffset() * 60_000)
+}
+
+/** Posts the Quest Board when a day or a week has turned over (saved); a no-op otherwise. */
+export function syncBoard(): void {
+  const c = content.value
+  const p = profile.value
+  if (!c || !p) return
+  const next = syncQuestBoard(c, p, boardClockNow(c))
+  if (next === p) return
+  profile.value = next
+  void save()
+}
+
 /* ---------- delves ---------- */
 
 export const legalActions = computed<LegalDelveAction[]>(() => {
@@ -267,7 +290,8 @@ export function finishDelve(): DelveSummaryRecord | null {
   const d = delve.value
   const p = profile.value
   if (!c || !d || !p || d.phase.kind !== 'over') return null
-  const r = settleDelve(c, p, d)
+  // 07 §7: the board is posted for today before the delve's progress lands on it.
+  const r = settleDelve(c, ephemeral.value ? p : syncQuestBoard(c, p, boardClockNow(c)), d)
   if (r.hall) {
     // D-095: the Nightmare ends. The save and its backups are erased (after any write still in flight, so nothing
     // brings it back) and the Hall keeps one line.
@@ -345,7 +369,14 @@ export interface DeepDelve {
   classes: string[]
   /** `&species=dwarf,elf`: each hero's species in party order (Human when missing or unknown). */
   species?: string[]
-  level: number
+  /** `&level=N`; absent: level 1, or the zone's recommended level under `zone`. */
+  level?: number
+  /**
+   * `&zone=N` (07 §8.3 link 1; C1, Phase 7): the dungeon's N-th zone — the delve starts on its first floor (Gravehollow:
+   * 1 → F1, 2 → F4, 3 → F7) with the heroes at its recommended level (07 §1: the first floor's monster level) unless
+   * `level` names one. `floor` is ignored when it is set.
+   */
+  zone?: number
   auto: boolean
   /** `&death=sheltered` (D-088); Mortal by default, like a new save. */
   deathRule?: DeathRule
@@ -353,6 +384,12 @@ export interface DeepDelve {
   learn?: string[]
   /** Play the whole delve with the scripted player (the end card shows). */
   toEnd?: boolean
+  /** `&difficulty=hard` (07 §8.3 link 2); Normal by default. */
+  difficulty?: Difficulty
+  /** `&pacts=candle,hungry-hunter` (07 §8.3 link 3): Pact ids, or the start of one ("candle" → candle-pact). */
+  pacts?: string[]
+  /** `&room=boss` (07 §8.3 links 2 and 7): the party at the boss's door with the floor behind it cleared; `auto=1` walks in. */
+  room?: 'boss'
 }
 
 /**
@@ -363,6 +400,12 @@ export interface DeepDelve {
 export async function startDeepDelve(d: DeepDelve): Promise<void> {
   const c = await loadGameContent()
   const dungeonId = c.dungeons.has(d.dungeonId) ? d.dungeonId : (c.dungeons.has(`${d.dungeonId}-keep`) ? `${d.dungeonId}-keep` : [...c.dungeons.keys()][0]!)
+  // 07 §8.3 link 1: `zone=N` is the N-th zone's first floor, at its recommended level unless the link names one.
+  const dungeonDef = c.dungeons.get(dungeonId)
+  const zones = [...(dungeonDef?.zones ?? [])].sort((a, b) => a.floors.from - b.floors.from)
+  const zone = d.zone !== undefined && zones.length > 0 ? zones[Math.min(zones.length, Math.max(1, d.zone)) - 1] : undefined
+  const floor = zone ? zone.floors.from : d.floor
+  const level = d.level ?? (zone ? (dungeonDef?.floors.find((f) => f.floor === floor)?.monsterLevel ?? 1) : 1)
   let p = newProfile(d.seed, d.deathRule ?? 'mortal')
   const egg = [...c.pets.values()].find((x) => x.creationChoice)
   d.classes.slice(0, 4).forEach((cls, i) => {
@@ -371,7 +414,7 @@ export async function startDeepDelve(d: DeepDelve): Promise<void> {
     p = addHero(c, p, { name: cls[0]!.toUpperCase() + cls.slice(1), speciesId, classId: cls, eggPetId: egg?.id ?? null }).profile
   })
   if (p.heroes.length === 0) p = addHero(c, p, { name: 'Warden', speciesId: 'human', classId: 'warden', eggPetId: egg?.id ?? null }).profile
-  if (d.level > 1) p = { ...p, heroes: p.heroes.map((h) => heroAtLevel(c, c.tuning, h, d.level)) }
+  if (level > 1) p = { ...p, heroes: p.heroes.map((h) => heroAtLevel(c, c.tuning, h, level)) }
   if (d.learn?.length) {
     p = {
       ...p,
@@ -383,8 +426,16 @@ export async function startDeepDelve(d: DeepDelve): Promise<void> {
   }
   // D-095: under Nightmare the first hero is the chosen one and leads.
   if (p.deathRule === 'nightmare' && p.heroes[0]) p = { ...p, chosenId: p.heroes[0].id }
-  const state = createDelve(c, { dungeonId, floor: d.floor, seed: d.seed, difficulty: 'normal', pactIds: [], auto: false, policy: 'textbook', deathRule: p.deathRule, ...(p.deathRule === 'nightmare' && p.chosenId ? { leaderId: p.chosenId } : {}) }, p.heroes)
-  if (d.toEnd) {
+  // 07 §8.3: a deep link may name the preset and the Pacts (`&difficulty=hard&pacts=candle,hungry-hunter`).
+  const pacts = c.dungeons.get(dungeonId)?.pacts ?? []
+  const pactIds = [...new Set((d.pacts ?? []).map((w) => pacts.find((x) => x.id === w)?.id ?? pacts.find((x) => x.id.startsWith(w))?.id).filter((id): id is string => id !== undefined))]
+  const state = createDelve(c, { dungeonId, floor, seed: d.seed, difficulty: d.difficulty ?? 'normal', pactIds, auto: false, policy: 'textbook', deathRule: p.deathRule, ...(p.deathRule === 'nightmare' && p.chosenId ? { leaderId: p.chosenId } : {}), bossKills: { ...p.progress.bossKills } }, p.heroes)
+  if (d.room === 'boss') standAtBossDoor(state)
+  if (d.room === 'boss' && d.auto) {
+    // The party walks into the arena: the boss fight starts (pass C2's link for the arena's shots).
+    const boss = state.floor.graph.rooms.find((r) => r.kind === 'boss')
+    if (boss) stepDelve(c, state, { kind: 'move', toRoomId: boss.id })
+  } else if (d.toEnd) {
     // `end=1`: the scripted player plays the whole delve, so the end card shows (for screenshots).
     runDelveAuto(c, state)
   } else if (d.auto) {
@@ -404,6 +455,23 @@ export async function startDeepDelve(d: DeepDelve): Promise<void> {
     delveVersion.value++
     sessionReady.value = true
   })
+}
+
+/** 07 §8.3 links 2 and 7: every room but the boss's visited and cleared, the party in the room at its door, the key in hand. */
+function standAtBossDoor(state: DelveState): void {
+  const boss = state.floor.graph.rooms.find((r) => r.kind === 'boss')
+  if (!boss) return
+  const door = state.floor.graph.rooms.find((r) => r.id !== boss.id && (r.doors.some((x) => x.to === boss.id) || boss.doors.some((x) => x.to === r.id)))
+  if (!door) return
+  for (const [id, rs] of Object.entries(state.floor.rooms)) {
+    if (id === boss.id) continue
+    rs.visited = true
+    rs.cleared = true
+    rs.scouted = true
+  }
+  state.floor.hasKey = true
+  state.floor.currentRoomId = door.id
+  state.phase = { kind: 'room' }
 }
 
 /**

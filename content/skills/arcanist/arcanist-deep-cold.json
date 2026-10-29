@@ -1,0 +1,57 @@
+{
+  "id": "arcanist-deep-cold",
+  "classId": "arcanist",
+  "school": "rime",
+  "tier": 4,
+  "name": "Deep Cold",
+  "description": "Every Freeze you cause lasts +1 turn; whenever an ally shatters a Frozen enemy, you restore 15% of max Mana.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "freeze-duration-bonus",
+      "amount": 1,
+      "target": "self",
+      "note": "a Freeze the holder causes (a Freeze line, or a Chill that becomes one) lasts +amount turns"
+    },
+    {
+      "kind": "custom",
+      "customId": "pool-on-party-shatter",
+      "percent": 15,
+      "target": "self",
+      "note": "whenever the holder or an ally shatters a Frozen enemy, the holder restores percent% of its max pool"
+    }
+  ],
+  "prerequisiteId": "arcanist-hoarfrost",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Restore 20%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "pool-on-party-shatter",
+        "percent": 20,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "control"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 0
+  }
+}

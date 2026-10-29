@@ -1,0 +1,50 @@
+{
+  "id": "grinning-companys-breeches-a",
+  "name": "Grinning Company's Breeches",
+  "slot": "legs",
+  "kind": "armor",
+  "grade": "A",
+  "materialLadder": "hide",
+  "materialRung": 5,
+  "weaponType": null,
+  "armorFamily": "leather",
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "defense": 13,
+    "hp": 9,
+    "speed": 9
+  },
+  "requirements": {
+    "strength": 12,
+    "wisdom": 0
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 8,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 2.44,
+  "value": 1120,
+  "classLock": [
+    "ranger",
+    "shade"
+  ],
+  "setId": "grinning-companys-cut",
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "armor-leather-legs-01",
+    "tintPrimary": "#9b1c1c",
+    "tintSecondary": "#f1ece4",
+    "trimMetal": "brass"
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "id": "tidebound-reavers-mail",
+  "name": "Tidebound Reaver's Mail",
+  "family": "mail",
+  "theme": "the Drowned Vault, Gravehollow F7–8",
+  "classIds": [
+    "blade"
+  ],
+  "pieces": [
+    "tidebound-reavers-coif",
+    "tidebound-reavers-hauberk",
+    "tidebound-reavers-chausses",
+    "tidebound-reavers-treads",
+    "tidebound-reavers-mitts"
+  ],
+  "bonuses": {
+    "2": [
+      {
+        "kind": "buffStat",
+        "stat": "speed",
+        "amount": 2
+      },
+      {
+        "kind": "custom",
+        "customId": "element-resist-percent",
+        "damageType": "poison",
+        "percent": 10,
+        "target": "self"
+      }
+    ],
+    "4": [
+      {
+        "kind": "custom",
+        "customId": "basic-attack-pool-restore-percent",
+        "percent": 10,
+        "target": "self",
+        "note": "basic attacks restore +10% Stamina"
+      },
+      {
+        "kind": "custom",
+        "customId": "haste-on-kill",
+        "status": "haste",
+        "duration": 1,
+        "target": "self",
+        "note": "Haste 1 round on a kill"
+      }
+    ]
+  },
+  "bonusText": {
+    "2": "+2 Speed; +10% Poison resistance",
+    "4": "Basic attacks restore +10% Stamina; Haste 1 round on a kill"
+  },
+  "gradeMin": "D",
+  "gradeMax": "B",
+  "dropChance": 15
+}

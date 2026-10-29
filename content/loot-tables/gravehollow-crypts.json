@@ -1,0 +1,64 @@
+{
+  "id": "gravehollow-crypts",
+  "dungeonId": "gravehollow-keep",
+  "name": "Gravehollow Keep — the Crypts (F4–6)",
+  "floorBand": {
+    "min": 4,
+    "max": 6
+  },
+  "monsterLevels": {
+    "min": 5,
+    "max": 8
+  },
+  "goldRange": {
+    "min": 11,
+    "max": 21
+  },
+  "itemChance": 40,
+  "gradeShape": {
+    "centreGrade": "E",
+    "centre": 56,
+    "minus1": 25,
+    "plus1": 14,
+    "plus2": 4,
+    "plus3": 1
+  },
+  "partChance": {
+    "common": 35,
+    "rare": 4
+  },
+  "stoneChance": 8,
+  "consumableDrop": {
+    "chance": 40,
+    "itemIds": [
+      "small-hp-potion",
+      "cleansing-salt",
+      "repair-kit"
+    ]
+  },
+  "treasureRoom": {
+    "goldPiles": {
+      "min": 2,
+      "max": 4
+    },
+    "goldFightsWorth": 2,
+    "smallChestChance": 100,
+    "largeChestChance": 20,
+    "largeLockedChance": 40,
+    "trappedChance": 20,
+    "trapId": "grave-breath-vent",
+    "consumableBundle": 3,
+    "hiddenFind": {
+      "itemAtPlusOneChance": 90,
+      "skeletonKeyChance": 10
+    }
+  },
+  "darknessItemBonus": {
+    "radiant": 0,
+    "dim": 10,
+    "shadowy": 25,
+    "dark": 50,
+    "pitch": 75
+  },
+  "bossFirstKill": "barrow-warden"
+}

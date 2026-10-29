@@ -1,0 +1,58 @@
+{
+  "id": "shade-kings-ransom",
+  "classId": "shade",
+  "school": "larceny",
+  "tier": 5,
+  "name": "King’s Ransom",
+  "description": "3.5× Pierce to a front-row enemy; steal gold equal to 50 × its level; against a boss, steal a guaranteed rare part.",
+  "type": "active",
+  "cost": 45,
+  "weight": 1000,
+  "target": "enemyFront",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 3.5,
+      "damageType": "pierce"
+    },
+    {
+      "kind": "custom",
+      "customId": "steal-gold-per-level",
+      "amount": 50
+    },
+    {
+      "kind": "custom",
+      "customId": "steal-boss-rare-part",
+      "note": "against a boss: a guaranteed rare part, once per fight"
+    }
+  ],
+  "prerequisiteId": "shade-heist",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Steal 80 × level.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "steal-gold-per-level",
+        "amount": 80
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "utility"
+  ],
+  "xpTags": [
+    "agility",
+    "perception"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 60
+  }
+}

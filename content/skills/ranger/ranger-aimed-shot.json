@@ -4,7 +4,7 @@
   "school": "marksman",
   "tier": 1,
   "name": "Aimed Shot",
-  "description": "1.4× Pierce to one enemy in any row; +10% Accuracy and +10% Crit Rate for this shot; 1 arrow.",
+  "description": "2.1× Pierce to one enemy in any row; +10% Accuracy and +10% Crit Rate for this shot; 1 arrow.",
   "type": "active",
   "cost": 10,
   "weight": 1000,
@@ -26,7 +26,7 @@
     },
     {
       "kind": "damage",
-      "multiplier": 1.4,
+      "multiplier": 2.1,
       "damageType": "pierce",
       "scalesWith": "strength"
     },

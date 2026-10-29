@@ -48,7 +48,15 @@
     "isUltimate": { "type": "boolean", "description": "The class's one Ultimate: Tier III, 100 Momentum, never misses (§7.1)." },
     "monsterTechniqueOf": {
       "$ref": "common.schema.json#/$defs/nullableId",
-      "description": "Monster id whose move this is; such a skill only Insights while that monster uses it (§7.5). null for ordinary skills."
+      "description": "Monster id whose move this is; such a skill is learned only by witnessing that monster use the move (§7.5, 09 §4: a flat chance per witnessed use, guaranteed by the Nth — tuning techniques). Never sold, never in a Tome. null for ordinary skills."
+    },
+    "monsterTechniqueMoveIds": {
+      "$ref": "common.schema.json#/$defs/idList",
+      "description": "The attack ids of monsterTechniqueOf that count as 'the move' (06 §3 'Technique:' lines read against the monster's attacks). Omitted: any attack of that monster counts. Only with a non-null monsterTechniqueOf."
+    },
+    "monsterTechniqueLater": {
+      "$ref": "common.schema.json#/$defs/id",
+      "description": "A technique whose monster (06's id) belongs to a dungeon not yet in the content (the Mender's Troll's Regrowth: the Fungal Deep's Warren Troll). The skill cannot be learned until it is linked through monsterTechniqueOf; monsterTechniqueOf stays null meanwhile."
     },
     "requirements": {
       "type": "object",

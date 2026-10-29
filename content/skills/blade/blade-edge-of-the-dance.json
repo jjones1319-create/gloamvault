@@ -1,0 +1,60 @@
+{
+  "id": "blade-edge-of-the-dance",
+  "classId": "blade",
+  "school": "iron-dance",
+  "tier": 5,
+  "name": "Edge of the Dance",
+  "description": "Your Dodge cap is 40%; every dodge is answered by a free 0.8× riposte.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "dodge-cap",
+      "amount": 40,
+      "target": "self",
+      "note": "your Dodge cap becomes amount% (a stub until the derived stats read loadout passives)"
+    },
+    {
+      "kind": "custom",
+      "customId": "riposte-every-dodge",
+      "multiplier": 0.8,
+      "damageType": "slash",
+      "target": "self",
+      "scalesWith": "strength",
+      "note": "every dodged attack is answered by a multiplier × Attack riposte"
+    }
+  ],
+  "prerequisiteId": "blade-perfect-tempo",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Riposte 1.2×.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "riposte-every-dodge",
+        "multiplier": 1.2,
+        "damageType": "slash",
+        "target": "self",
+        "scalesWith": "strength"
+      }
+    ]
+  },
+  "tags": [
+    "buff"
+  ],
+  "xpTags": [
+    "agility"
+  ],
+  "aiHints": {
+    "role": "defend",
+    "priority": 0
+  }
+}

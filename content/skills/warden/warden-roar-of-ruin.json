@@ -1,0 +1,58 @@
+{
+  "id": "warden-roar-of-ruin",
+  "classId": "warden",
+  "school": "warcry",
+  "tier": 5,
+  "name": "Roar of Ruin",
+  "description": "1.8× Blunt (sonic: it counts as physical and never misses) to every enemy; Stun 1 turn on Dazed targets.",
+  "type": "active",
+  "cost": 40,
+  "weight": 1000,
+  "target": "allEnemies",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1.8,
+      "damageType": "blunt",
+      "scalesWith": "strength",
+      "note": "an area line never misses"
+    },
+    {
+      "kind": "custom",
+      "customId": "status-if-recently-dazed",
+      "status": "stun",
+      "duration": 1,
+      "note": "on a target Dazed since its own last turn"
+    }
+  ],
+  "prerequisiteId": "warden-mocking-roar",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "2.2×.",
+    "effects": [
+      {
+        "kind": "damage",
+        "multiplier": 2.2,
+        "damageType": "blunt",
+        "scalesWith": "strength"
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "control"
+  ],
+  "xpTags": [
+    "willpower",
+    "strength"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 70
+  }
+}

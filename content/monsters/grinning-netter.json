@@ -44,7 +44,8 @@
         }
       ],
       "aiWeight": 50,
-      "tell": "The Netter gathers the next net."
+      "tell": "The Netter gathers the next net.",
+      "hint": "Netter reloading"
     },
     {
       "id": "gaff",
@@ -91,10 +92,6 @@
       },
       {
         "if": "a hero is Grabbed by self",
-        "then": "gaff"
-      },
-      {
-        "if": "always",
         "then": "gaff"
       }
     ],

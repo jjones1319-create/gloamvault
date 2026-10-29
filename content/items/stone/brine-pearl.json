@@ -1,0 +1,43 @@
+{
+  "id": "brine-pearl",
+  "name": "Brine Pearl",
+  "slot": null,
+  "kind": "stone",
+  "grade": "D",
+  "materialLadder": null,
+  "materialRung": null,
+  "weaponType": null,
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {},
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 1,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 5,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1,
+  "value": 31,
+  "classLock": [],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "stone-brine-pearl-01",
+    "tintPrimary": "#dfe7ea",
+    "tintSecondary": "#2b2b2b",
+    "trimMetal": "none"
+  }
+}

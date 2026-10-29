@@ -53,6 +53,32 @@
     "blade-open-vein",
     "blade-flowing-guard"
   ],
+  "starterKitName": "Sword and dagger",
+  "starterKitOptions": [
+    {
+      "id": "greatsword",
+      "name": "Greatsword",
+      "description": "A Copper Greatsword in both hands instead of the longsword and dagger: heavy swings, Cleave and the Executioner school.",
+      "starterKit": [
+        "copper-greatsword",
+        "copper-coif",
+        "copper-hauberk",
+        "copper-chausses",
+        "copper-treads",
+        "copper-mitts",
+        "ring-of-might",
+        "small-hp-potion",
+        "torch",
+        "repair-kit",
+        "bandage"
+      ],
+      "starterSkillIds": [
+        "blade-cleaving-blow",
+        "blade-wind-up",
+        "blade-headsmans-eye"
+      ]
+    }
+  ],
   "fieldSkillAffinities": [
     {
       "fieldSkill": "fieldRepair",
@@ -63,7 +89,10 @@
       "rankBonus": 2
     }
   ],
-  "monsterTechniqueIds": [],
+  "monsterTechniqueIds": [
+    "blade-bone-knights-cleave",
+    "blade-ghouls-grasp"
+  ],
   "aiRuleDefault": "IF self HP < 30% THEN item small hp potion on self; IF enemy status bleed THEN twin cut on weakest enemy; ELSE open vein on front enemy",
   "visual": {
     "gearSetId": "blade-copper-mail",

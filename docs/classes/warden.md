@@ -1,6 +1,6 @@
 # Warden — class sheet
 
-*Last updated 2026-10-27 · rev. 2 (checkpoint 1: open questions answered by delegation; the Nightmare preset renamed Dread — D-095, D-099) · rev. 1 2026-10-26 · numbers are tuning starting points*
+*Last updated 2026-10-28 · rev. 4 (Phase 7 joints: the Oath against damage over time) · rev. 3 (Phase 7: Tiers IV–V as built; the D-099 limits; the second starter kit; stale lines fixed) · rev. 2 2026-10-27 (checkpoint 1: open questions answered by delegation; the Nightmare preset renamed Dread — D-095, D-099) · rev. 1 2026-10-26 · numbers are tuning starting points*
 
 *Every number below (costs, multipliers, durations, the Cellars monster stats in §9) is a starting point for the simulator and the balance runner, not a commitment. Rules referenced are `03-GAME-DESIGN.md` (§2 stats, §3 timeline, §5 level-by-use, §6 gear, §7 skills). Status numbers quoted in skill lines (Bleed 25% of the applying hit per turn for 3 turns, ignores Defense · Poison 3% of max HP per turn, ignores Defense · Weaken −20% Attack · Fortify +20% Defense · Mark +20% damage taken · Slow ×0.67 Speed · Haste ×1.5 · Daze −500 energy · Petrify −1,000 energy) belong to `content/statuses/<id>.json` (`03` §3.5 is the table) and are repeated here only so the lines read on their own.*
 
@@ -28,11 +28,11 @@ The Warden is the wall the party stands behind. In plate, with a shield or a lon
 | Pool | **Stamina** = 30 + 3 × End → **66** at End 12 |
 | Armor family | **Plate** (metal ladder Copper → Starmetal); speed penalty **−20**, relieved 1 point per Strength point above the set's requirement (Crude Plate requires Str 10) |
 | Allowed weapons | Sword (1h · Slash · normal 1,000) · Mace (1h · Blunt · normal 1,000) · Axe (1h · Slash · normal 1,000 · +Crit Damage) · **Spear** (2h · Pierce · normal 1,000 · **reach**) · Off hand: Buckler (Block 15%, Str 6), Kite shield (Block 25%, −5 Speed, Str 11), Tower shield (Block 35%, −10 Speed, Str 15) — numbers per `08` §2.3 |
-| Starter kit (F-grade, Crude; `08` §12) | Copper Shortsword (Attack 10, req Str 8) · Pine Buckler (Block 15%) · Copper Helm / Breastplate / Greaves / Sabatons / Gauntlets (Defense 3 / 8 / 5 / 2 / 2 = 20) · Ring of Vigor (+6 HP) · 2 Small HP Potions · 2 Torches · 1 Repair Kit · 1 Bandage · one F-grade pet egg |
+| Starter kit (F-grade, Crude; `08` §12) | Copper Shortsword (Attack 10, req Str 8) · Pine Buckler (Block 15%) · Copper Helm / Breastplate / Greaves / Sabatons / Gauntlets (Defense 3 / 8 / 5 / 2 / 2 = 20) · Ring of Vigor (+6 HP) · 2 Small HP Potions · 2 Torches · 1 Repair Kit · 1 Bandage · one F-grade pet egg. **Spear kit** (New hero's second choice, D-099): a Copper Spear in both hands instead of the Shortsword and the Pine Buckler; the rest the same |
 | Derived at creation (class modifiers only, all else 10) | HP 116 (110 + 6 from the ring) · Attack 38 (10 + 2 × 11 + 2 × 3 spare Str over the Shortsword's req 8) · Defense 32 (20 + 12) · Speed **81** (100 − 20 + 1) · Stamina 66 · Crit 5% · Crit Damage 152% · Accuracy 90% · Dodge 0% · Resistance 1% · Carry 53 kg · Detection 10 |
-| Recommended Tier I starter picks | **Shield Slam** (Bulwark) · **Provoke** (Warcry) · **Brace** (Bulwark) — damage, targeting control, survival; swap Brace for **Reaching Thrust** if the player takes the spear |
+| Recommended Tier I starter picks | **Shield Slam** (Bulwark) · **Provoke** (Warcry) · **Brace** (Bulwark) — damage, targeting control, survival. The spear kit's picks are **Reaching Thrust** · **Provoke** · **Brace** (Shield Slam needs a shield) |
 
-Shield-and-sword is the default (the Kite shield is the first Blacksmith purchase for a shield Warden). Spear is a real second build from level 1 (Vanguard needs it), not a late unlock.
+Shield-and-sword is the default kit; a Kite shield is the first upgrade a shield Warden looks for, from a chest or a drop (the town sells no gear). The spear is a real second build from level 1 (Vanguard needs it), not a late unlock: New hero offers it as the spear kit (D-099).
 
 ---
 
@@ -53,7 +53,7 @@ The whole fight looks at the Warden for two turns, and the Warden is wrapped in 
 
 ## 4. The three schools
 
-*Reading the tables.* Cost is Stamina. Weight is energy subtracted after the action (light 800 · normal 1,000 · heavy 1,400). Multipliers are of Attack. "Front" = the enemy front row; "any row" = reach or shout. Each Tier II–V skill names exactly one Tier N−1 skill of its own school as prerequisite. Rank 1–10 grows by use (+4% effect, −2% cost per rank); Mastery is the rank-10 line. Insight sweet spots by tier (enemy level ≈ tier × 6): Tier II sparks best at L9–15 (the Crypts, the Vault), Tier III at L15–21 (the Fungal Deep), Tier IV at L21–27 (Emberforge). **Monster techniques** only Insight while the named monster uses the move in the fight; proposed flat 10% per witnessed use with pity at 10, not the S-curve (see §11).
+*Reading the tables.* Cost is Stamina. Weight is energy subtracted after the action (light 800 · normal 1,000 · heavy 1,400). Multipliers are of Attack. "Front" = the enemy front row; "any row" = reach or shout. Each Tier II–V skill names exactly one Tier N−1 skill of its own school as prerequisite. Rank 1–10 grows by use (+4% effect, −2% cost per rank); Mastery is the rank-10 line. Insight sweet spots by tier (enemy level ≈ tier × 6): Tier II sparks best at L9–15 (the Crypts, the Vault), Tier III at L15–21 (the Fungal Deep), Tier IV at L21–27 (Emberforge). **Monster techniques** are learned only by witnessing, not on the S-curve: each time the named monster uses the move in a fight, a hero who knows the technique's prerequisite rolls a flat 10%, and the 10th witnessed use is certain (D-028, D-099). A technique is never sold and never comes in a Tome.
 
 ### 4.1 Bulwark — shield, block, damage soak
 
@@ -118,8 +118,23 @@ The whole fight looks at the Warden for two turns, and the Warden is wrapped in 
 | IV | Warhorn | Active | 32 | 1,000 | Party | Haste (×1.5 Speed) 2 turns to every ally | Stand Fast | Also +10 Momentum each |
 | IV | Ironlung | Passive | — | — | Passive | Shouts have weight 800 and give every ally +10 Momentum | Voice of Iron | +15 Momentum |
 | V | Roar of Ruin | Active | 40 | 1,000 | All enemies | 1.8× Blunt (sonic, counts as physical, never misses) to every enemy; Stun 1 turn on Dazed targets | Mocking Roar | 2.2× |
-| V | Oath of the Vault | Active | 50 | 1,400 | Party | For 3 turns allies cannot drop below 1 HP and gain Fortify; when it ends you take 15% max HP | Warhorn | 4 turns; no self-damage |
+| V | Oath of the Vault | Active | 50 | 1,400 | Party | For 3 turns each ally is saved once: the first blow that would drop them leaves them at 1 HP (D-099: once per ally per cast); allies gain Fortify; when it ends you take 15% max HP | Warhorn | 4 turns; no self-damage |
 | V | Legend's Voice | Passive | — | — | Passive | Momentum gain +25% for the whole party; your Ultimate also Weakens every enemy 2 turns | Ironlung | +40% |
+
+**As built (Phase 7).** Tiers IV–V are in `content/skills/warden/` (`tools/content/gen-class-warden.ts`). Tier IV comes by Insight, boss Tomes and Skill Tome chests (Sentinel's Sweep only by witnessing a Vault Sentinel's Halberd); Tier V is written but locked until Segment 3 (D-099). Where a line needed a reading:
+- **Rolling Bastion**'s two blocks wait until spent (not "until your next turn" as Bone Knight's Stand's do) and, as every Block, halve physical hits only; its Mastery makes that one action weigh 800.
+- **Rampart**'s Shields cover the Warden too ("every ally" is the whole party, as The Gate Holds reads it).
+- **Iron Vigil** holds while any living enemy carries a Taunt the Warden applied; its +15% Defense counts on every hit taken.
+- **Mountain's Verdict** petrifies when its own blow finds the target under 30% HP; a hunter is Dazed like a boss.
+- **Aegis of the Keep** cuts each enemy blow on an ally by half and strikes the Warden for half the blow as it left the attacker, so the Warden's own Defense, Block and −30% apply to its share; DoT ticks are not redirected.
+- **Living Wall** rolls its elemental block itself (the fight rolls Block only on physical hits).
+- **Unyielding Point**'s 1.5× adds to Punish's +50% (a 2.0× counter with both); its opening Counter Stance lasts until the Warden's first turn.
+- **Immovable** resists Grab, Root, Web, Daze and Petrify (the two statuses whose only effect is push-back) and wards the allies standing in its row at each of the Warden's turns; a monster's plain shove on the timeline still lands (a logged stub: the fight has no target-side check on timeline lines yet).
+- **Warden of the Pass** takes over damaging single-target blows (a Grab aimed at the ally is not taken over, as Intercept).
+- **Ironlung**'s weight 800 and Momentum ride on every Warcry active (the shouts); the Warden's own shout Momentum stays Loud Voice's Mastery.
+- **Roar of Ruin** counts a target as Dazed while its push is owed: a Daze since its own last turn (Daze leaves no status).
+- **Oath of the Vault** saves each ally once per cast (D-099) and lasts the Warden's next three turns; the price is paid from HP and never drops the Warden below 1 HP. A Bleed or Poison tick that would drop a sworn ally is caught as a blow is (Phase 7 joint).
+- **Legend's Voice** reaches every enemy with its Weaken, hit by the Ultimate or not.
 
 ---
 

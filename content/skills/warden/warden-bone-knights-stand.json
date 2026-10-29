@@ -50,7 +50,10 @@
   ],
   "prerequisiteId": "warden-intercept",
   "isUltimate": false,
-  "monsterTechniqueOf": null,
+  "monsterTechniqueOf": "bone-knight",
+  "monsterTechniqueMoveIds": [
+    "grave-guard"
+  ],
   "rankScaling": {
     "effectPerRank": 4,
     "costPerRank": -2

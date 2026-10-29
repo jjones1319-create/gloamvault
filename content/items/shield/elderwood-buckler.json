@@ -1,0 +1,51 @@
+{
+  "id": "elderwood-buckler",
+  "name": "Elderwood Buckler",
+  "slot": "offHand",
+  "kind": "shield",
+  "grade": "S",
+  "materialLadder": "wood",
+  "materialRung": 6,
+  "weaponType": "shieldBuckler",
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "block": 27,
+    "defense": 6
+  },
+  "requirements": {
+    "strength": 12,
+    "wisdom": 0
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 9,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 3.81,
+  "value": 2000,
+  "classLock": [
+    "warden",
+    "blade",
+    "shade",
+    "mender"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "shield-buckler-01",
+    "tintPrimary": "#5e7a4a",
+    "tintSecondary": "#5b4a2f",
+    "trimMetal": "adamantine"
+  }
+}

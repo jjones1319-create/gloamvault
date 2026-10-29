@@ -1,0 +1,59 @@
+{
+  "id": "arcanist-nullfield",
+  "classId": "arcanist",
+  "school": "arcana",
+  "tier": 5,
+  "name": "Nullfield",
+  "description": "For 2 turns no enemy can use a skill: Silence 2 turns on every enemy (a boss holds it 1, as the status rules shorten its statuses); every Shield on an ally is doubled. Heavy cast.",
+  "type": "active",
+  "cost": 40,
+  "weight": 1400,
+  "target": "allEnemies",
+  "effects": [
+    {
+      "kind": "applyStatus",
+      "status": "silence",
+      "duration": 2,
+      "note": "statuses.ts shortens a boss’s or hunter’s statuses by 1: they hold 1"
+    },
+    {
+      "kind": "custom",
+      "customId": "double-ally-shields",
+      "percent": 100,
+      "target": "self",
+      "note": "every Shield on the caster’s side absorbs +percent% of what it has left"
+    }
+  ],
+  "prerequisiteId": "arcanist-font-of-mana",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Bosses 2 turns.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "apply-if-boss",
+        "status": "silence",
+        "duration": 3,
+        "note": "a boss or hunter gets `status` for `duration` (shortened by 1 as every boss status: 2)"
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "control",
+    "shield"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "control",
+    "priority": 75
+  }
+}

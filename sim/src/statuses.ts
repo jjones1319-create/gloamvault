@@ -130,7 +130,13 @@ export function applyStatus(content: Content, t: Tuning, rng: Rng, target: Actor
 
   // Instant statuses (Daze) only move the accumulator.
   const instant = def.durationDefault === null && (def.endsWhen ?? '').startsWith('instant')
-  if (def.appliesEnergyDelta) target.energy += def.appliesEnergyDelta
+  // D-127 (Proposed; 03 §3.5–§3.6): a control push (Freeze, Stun, Daze, Petrify) lands once until the target has had a
+  // turn (fight.ts clears the guard when its turn comes up); a second application still takes the status, not the push.
+  if (def.appliesEnergyDelta) {
+    const guarded = def.appliesEnergyDelta < 0 && t.combat.pushGuard.value === true
+    if (!guarded || !target.pushGuard) target.energy += def.appliesEnergyDelta
+    if (guarded) target.pushGuard = true
+  }
   if (instant) return { outcome: 'applied', status: id, upgraded }
 
   // An upgrade (Chill → Freeze) takes the upgraded status's own duration, not the Chill line's (03 §3.5: Freeze 1).

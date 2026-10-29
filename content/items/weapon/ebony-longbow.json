@@ -1,0 +1,47 @@
+{
+  "id": "ebony-longbow",
+  "name": "Ebony Longbow",
+  "slot": "mainHand",
+  "kind": "weapon",
+  "grade": "A",
+  "materialLadder": "wood",
+  "materialRung": 5,
+  "weaponType": "longbow",
+  "armorFamily": null,
+  "hands": 2,
+  "damageType": "pierce",
+  "weight": 1000,
+  "baseStats": {
+    "attackPhys": 71
+  },
+  "requirements": {
+    "strength": 17,
+    "wisdom": 0
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 8,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 8.14,
+  "value": 2400,
+  "classLock": [
+    "ranger"
+  ],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "weapon-longbow-01",
+    "tintPrimary": "#2a211c",
+    "tintSecondary": "#4a3626",
+    "trimMetal": "skysteel"
+  }
+}

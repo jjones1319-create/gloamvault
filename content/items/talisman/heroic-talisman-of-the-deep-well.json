@@ -1,0 +1,46 @@
+{
+  "id": "heroic-talisman-of-the-deep-well",
+  "name": "Heroic Talisman of the Deep Well",
+  "slot": "talisman",
+  "kind": "talisman",
+  "grade": "A",
+  "materialLadder": null,
+  "materialRung": null,
+  "weaponType": null,
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": null,
+  "baseStats": {
+    "stamina": 36,
+    "mana": 36
+  },
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 3,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 8,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1,
+  "value": 1280,
+  "classLock": [],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": null,
+  "ammo": null,
+  "visual": {
+    "meshId": "talisman-deep-well-01",
+    "tintPrimary": "#9ec5e0",
+    "tintSecondary": "#0f766e",
+    "trimMetal": "skysteel"
+  }
+}
