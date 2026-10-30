@@ -5,7 +5,7 @@ A 1–4 player co-op party dungeon crawler for Android phones (Galaxy S25 Ultra 
 ## The owner
 
 - James is **not a programmer**. Explain in plain words, give exact click-by-click steps when he must do something, and never ask him to edit code or open Blender's UI.
-- He tests on his phone after every phase. End every phase with a short **"Try this on your phone"** checklist (2–3 items) and **stop** until he says go (D-137); write a review file in `docs/feedback/` (template there) at Phases 14, 19 and 24.
+- He tests on his phone after every phase. End every phase with a short **"Try this on your phone"** checklist (2–3 items) and **stop** until he says go (D-137); write a review file in `docs/feedback/` (template there) at Phases 14, 20 and 25.
 - He has delegated the design choices ("make all of the choices for me; I trust your decisions"). Decide, build, log — and collect his feedback at each phase's stop.
 - Ask before anything that **costs money, publishes something new outside this repo, or deletes his data**. Those, plus his one-time steps (the Unity Hub sign-in, USB debugging on the phone, backing up the signing key), are the only reasons to stop inside a phase.
 
@@ -82,7 +82,7 @@ A 1–4 player co-op party dungeon crawler for Android phones (Galaxy S25 Ultra 
 2. **Build** in small steps with tests. Use subagents for broad searches, reviews and parallel content conversion to keep context lean. Keep `STATUS.md` current as you go.
 3. `npm run verify` (and `npm run lint`, `npm run balance`, `npm run shots` as relevant) until green; update the docs the phase changed (rev. lines, open questions, `13`).
 4. **Commit** `P<n>: <summary>`, push `main`, confirm the deploy (`gh run list`).
-5. Install the build on the phone and read its log; write the phase's "Try this on your phone" checklist into `STATUS.md` (at Phases 14, 19 and 24 also a review file in `docs/feedback/`) and **stop** until James says go.
+5. Install the build on the phone and read its log; write the phase's "Try this on your phone" checklist into `STATUS.md` (at Phases 14, 20 and 25 also a review file in `docs/feedback/`) and **stop** until James says go.
 6. **Design changes** inside a phase: log as Proposed (rule 2). At a stop, James's answers become Accepted/Superseded and the docs are updated before the next phase starts.
 
 ## Gotchas

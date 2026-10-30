@@ -7,17 +7,17 @@
             <ui:Label text="Delve the keep. Fight on the timeline.&#10;Care for your things." class="tagline" />
             <ui:VisualElement class="note">
                 <ui:Label text="Gloamvault is moving to Unity" class="note__title" />
-                <ui:Label text="This is the first Unity build. Your heroes come across from the web version in Phase 20; until then, keep playing there." class="note__body" />
+                <ui:Label text="This is the first Unity build. Your heroes come across from the web version in Phase 22; until then, keep playing there." class="note__body" />
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement class="menu">
             <ui:Button name="new" enabled="false" class="menu__btn menu__btn--primary">
                 <ui:Label text="New game" class="menu__label" />
-                <ui:Label text="arrives in Phase 20" class="menu__hint" />
+                <ui:Label text="arrives in Phase 22" class="menu__hint" />
             </ui:Button>
             <ui:Button name="settings" enabled="false" class="menu__btn">
                 <ui:Label text="Settings" class="menu__label" />
-                <ui:Label text="Phase 20" class="menu__hint" />
+                <ui:Label text="Phase 22" class="menu__hint" />
             </ui:Button>
             <ui:Button name="overlay" text="Speed overlay: off" class="menu__btn menu__btn--text" />
         </ui:VisualElement>

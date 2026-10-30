@@ -2,7 +2,7 @@
 
 This folder already contains everything Claude needs: the rulebook (`docs/03-GAME-DESIGN.md`), the content (`docs/04`–`09`), the tech and art plans (`docs/10`–`11`), the build order (`docs/12-ROADMAP.md`), the decision log (`docs/13-DECISIONS.md`) and Claude's standing instructions (`CLAUDE.md`, which Claude Code reads automatically). Your job: paste a prompt, play on your phone when asked, answer the questions at the end of each segment, and repeat.
 
-**Since checkpoint 2 (2026-10-29) the game is being rebuilt in Unity in small phases** (`docs/12-ROADMAP.md` §3). Claude builds one phase, installs it on your phone over the USB cable, gives you a 2–3 item checklist in `STATUS.md` — and **stops** until you paste the **Next phase prompt**. At Phases 14, 19 and 24 it also writes a review file in `docs/feedback/` with its questions. (Segments 1 and 2 ran as four phases at a time; their prompts are kept below as history.)
+**Since checkpoint 2 (2026-10-29) the game is being rebuilt in Unity in small phases** (`docs/12-ROADMAP.md` §3). Claude builds one phase, installs it on your phone over the USB cable, gives you a 2–3 item checklist in `STATUS.md` — and **stops** until you paste the **Next phase prompt**. At Phases 14, 20 and 25 it also writes a review file in `docs/feedback/` with its questions. (Segments 1 and 2 ran as four phases at a time; their prompts are kept below as history.)
 
 **Before your first run:** you already did this for Wildsong Ranch — Node.js (24+), Git, the GitHub CLI signed in (`gh auth login`), VS Code with Claude Code, Google Chrome, Blender 5.2. If anything is missing, `..\Monster Rancher\docs\PHONE_AND_GITHUB_SETUP.md` Part A has the plain-English steps, or just tell Claude Code "help me install [thing]".
 

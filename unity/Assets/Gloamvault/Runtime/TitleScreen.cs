@@ -4,7 +4,7 @@ using UnityEngine.UIElements;
 namespace Gloamvault
 {
     /// <summary>
-    /// The title (Phase 9): the wordmark, the menu — New game and Settings arrive with saves in Phase 20 — the speed
+    /// The title (Phase 9): the wordmark, the menu — New game and Settings arrive with saves in Phase 22 — the speed
     /// overlay's button, and the version line. Keeps the menu inside the phone's safe area (the camera hole).
     /// </summary>
     public sealed class TitleScreen : MonoBehaviour

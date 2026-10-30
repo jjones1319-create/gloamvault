@@ -4,6 +4,8 @@
 
 ## 1. The shape (one paragraph)
 
+> **Skill trees (D-153, D-154 — James, 2026-10-30; Unity, Phase 18):** the schools become the branches of each class's tree; skills are unlocked with **skill points** (3 at creation, +1 per level; I 1 · II 1 · III 2 · IV 2 · V 3), rank still by use; Insight, Tomes, monster techniques and the Skill Hall (dearer) teach without a point, and the Hall resets a tree; the Arcanist's branches become **Fire · Frost · Storm · Summoning**, with summons that make one great attack and are gone. The rules are `03` §7's note; the paragraph and tables below are the web version's until Phase 18.
+
 Every class has **three schools**, each a way to play the class. Each school has **fifteen skills in five tiers** (three per tier). **Tier** is fixed and opens with hero level (I at 1, II at 5, III at 12, IV at 20, V at 30); **rank** 1–10 grows by use and tunes the skill (+4% effect, −2% cost per rank; rank 10 unlocks the **Mastery** line). Each Tier II–V skill needs **one** Tier N−1 skill of its school. The **Ultimate** (Tier III, 100 Momentum, never misses, its own button — D-027) is the class's signature. Exactly two Tier III–IV skills per class are **monster techniques**, learned only by **witnessing** that monster use the move in a fight (`06-MONSTERS.md` says which monster teaches which; a flat 10% per witnessed use, certain by the 10th). Loadout: **4 actives + 2 passives + the pet stance**. The town **Skill Hall** sells Tiers I–III; **Insight** in the dungeon teaches Tier IV (and anything below) and drops a **Skill Tome** of it for the party; Tier V comes from endgame bosses and Divine Shards (designed in the content, locked until Segment 3).
 
 ## 2. The seven lists

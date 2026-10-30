@@ -246,6 +246,8 @@ gallery shows them: title → **Monsters & rooms** → **Rooms**) and switch on 
 
 ### 2.3 Floor by floor
 
+> **Unity (D-149–D-151, James 2026-10-30):** Floor 1 is rebuilt in Phase 15 as one large hand-laid level, 5–10× this table's walking area, with its entrance, its way down and one or two side exits found from inside (Proposed). The explored map, the secret passages found and the levers pulled stay between delves; the rest is drawn afresh each delve. The table below is the web version's until each floor is rebuilt.
+
 Light at entry is what the floor's entry lantern *sets* if the party's light is below it (never lowers). Rooms include Entry and Stairs. Traps band is the difficulty range rolled for the floor (Detection = Perception + light bonus [Radiant +4, Dim +2, Shadowy 0, Dark −3, Pitch −6] + skills + pet). Secrets: chance of a secret room · its door's difficulty. Elite affix counts follow `03` §11.1; the pool is `06` §2.
 
 | Floor | Zone | Monster level | Rooms (min–max) | Light at entry | Encounter table | Elite affixes | Fixed rooms | Traps band | Secrets | Notable curios | Merchant? | Hunter clock | Boss |

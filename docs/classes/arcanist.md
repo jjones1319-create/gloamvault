@@ -53,6 +53,8 @@ All enemies, both rows, take **2.4× spell Attack** as the element each one is w
 
 ## 4. The three schools
 
+> **To be re-cut in Phase 18 (D-154 — James, 2026-10-30):** four branches — **Fire · Frost · Storm · Summoning** — instead of these three. Evocation splits into Fire and Storm, Rime becomes Frost, and Arcana's skills move into them: Time Slip to Frost; Quicken and Mass Haste to Storm; Dispel, Arcane Ward and Mirror Ward to Summoning, the binding arts. Summoning adds about six **summons** — a creature appears for one great attack and is gone (never a pet that stays). The lists below are the web version's until then.
+
 ### 4.1 Evocation — *Fire and Lightning: the room is the target*
 
 Philosophy: damage first, status second, Mana third. Fire burns down a row; Lightning picks a target and jumps. Every skill in the school either hits more than one thing or makes the next hit bigger.

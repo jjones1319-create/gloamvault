@@ -6,7 +6,7 @@ namespace Gloamvault
 {
     /// <summary>
     /// The speed overlay (10-TECH-PLAN §4; a Settings toggle on the web, a title button here until Settings arrive in
-    /// Phase 20): fps, frame time and its p95, CPU and GPU time where the phone reports them, draw calls and
+    /// Phase 22): fps, frame time and its p95, CPU and GPU time where the phone reports them, draw calls and
     /// triangles where the build reports them, memory, and the thermal state. Whether it shows or not, it writes one
     /// <c>[gv] {"k":"perf",…}</c> line a second to the phone log, which is how Claude reads the phone (D-138).
     /// </summary>

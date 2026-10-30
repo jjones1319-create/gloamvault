@@ -12,6 +12,8 @@ Seven classes, one sheet each in `docs/classes/`. This file is the index: the ru
 
 **Forty-five skills each**: three schools × five tiers × three skills. Tier is fixed and opens at level 1 / 5 / 12 / 20 / 30; rank 1–10 grows by use (+4% effect, −2% cost per rank; rank 10 unlocks the Mastery line). Each Tier II–V skill has one prerequisite at the tier below in its school, so a school reads as three columns. Monster techniques (exactly two per class, Tier III–IV, learned only by witnessing the monster use the move — a flat 10% each time, certain by the 10th; `06-MONSTERS.md` says which monster teaches each) may stand in a school's chain where the sheet puts them: the Warden's Rampart follows Bone Knight's Stand, the Ranger's Spiked Net follows Deep Tentacle's Drag (the sheets own their trees; *Phase 7 reading* — the old "leaves" line was this index's, not the sheets'). Loadout: 4 actives + 2 passives + 1 pet stance. The Ultimate sits at Tier III, costs 100 Momentum and never misses.
 
+> **Skill trees (D-153, D-154 — James, 2026-10-30; Unity, Phase 18):** each class's three schools become the branches of its skill tree, unlocked with skill points earned by levelling (`03` §7); the **Arcanist** is re-cut into four branches — Fire · Frost · Storm · Summoning — with summons in the Final Fantasy way (one great attack, then gone): 60 skills, written in Phase 18.
+
 **Shared bands per tier** (the sheets stay inside these; the runner tunes the edges):
 
 | Tier | Opens at | Cost (pool points) | Single-target × Attack | AoE × per target | Heal (% of target max HP) |
