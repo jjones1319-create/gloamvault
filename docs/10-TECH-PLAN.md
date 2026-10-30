@@ -4,7 +4,7 @@
 
 ## 1. The decision (checkpoint 2, D-135): a Unity app for Android
 
-**From Phase 9, Gloamvault is rebuilt as a Unity 6.3 LTS app** (6000.3.27f1) for Android, installed on James's Galaxy S25 Ultra over a USB cable to this PC (D-138), and later published on Google Play. James chose it at checkpoint 2: *"I think I would like to attempt unity. I believe we can upgrade everything pretty substantially if we do that."* It comes with free-roam exploration (D-136) and small phases (D-137).
+**From Phase 9, Gloamvault is rebuilt as a Unity 6.3 LTS app** (6000.3.27f1) for Android, installed on James's Galaxy S25 Edge (SM-S937U, read over USB in Phase 9 — the docs' earlier "S25 Ultra", D-155) over a USB cable to this PC (D-138), and later published on Google Play. James chose it at checkpoint 2: *"I think I would like to attempt unity. I believe we can upgrade everything pretty substantially if we do that."* It comes with free-roam exploration (D-136) and small phases (D-137).
 
 Why it is worth the rebuild: a native app reaches the phone's full graphics power (Vulkan rather than WebGL in Chrome), can be as large as it needs to be (James: *"I am okay with it being much larger"*), and is the road to the Play Store. What it costs: the web version's link-and-install, its automatic updates and its WebRTC-in-the-browser co-op plan (co-op's networking is re-decided before it is built, §5); about sixteen small phases before the Unity version does everything the web version does.
 
@@ -128,7 +128,7 @@ As built in Phase 1 (D-048): one `package.json` at the root (no workspaces); the
 
 ## 4. Rendering budgets for the Galaxy S25 Ultra (WebGL2 in Chrome)
 
-*Unity (D-135): these budgets are the web version's. The Unity budgets are **measured on the phone itself in Phase 14** (a 10-minute soak of a large seamless floor over USB: frame time, draw calls, triangles, memory, battery temperature) and written here then; until then the Unity build starts from the numbers below, which the web version already holds at 60 fps. James (checkpoint 2): the phone can take far more than these numbers ask of it — Phase 14 finds out how much.*
+*Unity (D-135): these budgets are the web version's. The Unity budgets are **measured on the phone itself in Phase 14** (a 10-minute soak of a large seamless floor over USB: frame time, draw calls, triangles, memory, battery temperature) and written here then; until then the Unity build starts from the numbers below, which the web version already holds at 60 fps. James (checkpoint 2): the phone can take far more than these numbers ask of it — Phase 14 finds out how much. The phone is a Galaxy S25 Edge (D-155): the Ultra's chip in a thinner body, so it throttles sooner. Phase 9's first reading (2026-10-30, the title scene for 2 minutes, the phone on USB power): **60 fps steady** (frame 16.7 ms, p95 16.7 ms), GPU 8.9 ms, 39–41 draw calls, 2.7–2.9k triangles, 112–116 MB, thermal state none (headroom 0.69–0.71), battery 34.6 °C; the boot line reads Adreno 830, Vulkan, 2,340 × 1,080 at 120 Hz, 11.1 GB. The CPU figure includes the wait for the next frame, so at 60 fps it reads about 16.7 ms.*
 
 The S25 Ultra's Adreno 830 throttles to ~50% of peak GPU within 3–4 minutes (research §4). Design for the **sustained** budget:
 

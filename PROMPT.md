@@ -75,7 +75,7 @@ Please log every answer in docs/13-DECISIONS.md and the docs (Accepted / Superse
 
 **Something's broken:**
 ```
-Bug: [what you did] → [what happened] → [what you expected]. Phone: Galaxy S25 Ultra, Chrome, [installed / tab]. Find the cause, add a test that reproduces it, fix it, run verify, push, and tell me what to check.
+Bug: [what you did] → [what happened] → [what you expected]. Phone: Galaxy S25 Edge, [the Unity app / Chrome]. Find the cause, add a test that reproduces it, fix it, run verify, push, and tell me what to check.
 ```
 
 **It doesn't feel right:**

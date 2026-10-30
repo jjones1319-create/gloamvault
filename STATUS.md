@@ -15,7 +15,7 @@
 ## Where we are
 
 - **Segment 3 — Gloamvault in Unity, in small phases** (`docs/12-ROADMAP.md` §3): started 2026-10-29 at checkpoint 2, when James chose Unity and free-roam exploration (`docs/13-DECISIONS.md` §A5, D-135–D-140). Claude **stops after every phase** (D-137) and installs each build on James's phone over USB (D-138).
-- **Phase 9 — Unity on your phone — in progress** (task list below).
+- **Phase 9 — Unity on your phone — done 2026-10-30**: the Unity app installed on James's Galaxy S25 Edge over USB and measured at a steady 60 fps (task list below). **Stopped — waiting for James's go for Phase 10** (the phone checklist is at the end of this file).
 - **Segment 2** (Phases 5–8) — done 2026-10-29; its review questions (`docs/feedback/SEGMENT-2-REVIEW.md`) and Proposed lines stay open for James to answer whenever — nothing before Phase 15 depends on them.
 - **Checkpoint 1:** **done 2026-10-27.** James's answers are logged (`docs/13-DECISIONS.md` §A4, D-095–D-099) and built: **Nightmare**, the third death rule (the chosen hero leads every delve; their death ends the save; the Hall of Nightmares keeps a line); **battle XP split through the party and scaled by the level gap to the party's average** (×0.25 at 5 below, ×2 at 5 above); each level costs more (as built); every Proposed line of Segment 1 Accepted (C1); 107 open questions in the docs answered; the Nightmare difficulty preset renamed **Dread**. v0.4.1.
 - **Phase:** 8 — polish and juice — **done 2026-10-29** (v0.8.0; verify green — 1227 tests, lint ALL GOOD, app code 548 KB gzipped of 600 and the content data 150 KB of 300; 88 screenshots, the Phase 8 set read; the e2e smoke passes). **Segment 2 is done — stopped for checkpoint 2** (`docs/feedback/SEGMENT-2-REVIEW.md`).
@@ -29,8 +29,8 @@
 3. [x] **`unity/` created** in batchmode: URP (mobile), Input System, UI Toolkit, Test Framework; player settings (Gloamvault, `com.gloamvault.game`, landscape only, IL2CPP ARM64, Vulkan + GLES3, min API 29, target API 36, 60 fps); the release keystore in `Documents\Gloamvault\keys\` (made 2026-10-30, RSA 2048, alias `gloamvault`); `.gitignore` and `.gitattributes` for Unity. The first open treated the folder as a new project and wrote Unity's default packages (purchasing, analytics, collab, 2D, …) into the manifest — the lean manifest was restored and setup re-run. URP mobile asset: MSAA 4×, HDR off, main light + 4 per-pixel lights, 1024 shadow maps, 25 m shadow distance, soft shadows.
 4. [x] **`tools/unity/`** wrappers + `npm run unity:test | unity:shots | unity:build | unity:install | unity:log`; each prints the errors from Unity's log; `make-key.ps1` (once). Fixed on the first run: ASCII-only scripts (PowerShell 5.1 reads BOM-less files as ANSI), quoted `Start-Process` arguments (the space in "Dungeon Crawler").
 5. [x] **First screen:** a UI Toolkit title (Gloamvault, version, Continue/New greyed "coming in Phase 22" — the saves' phase after the reorders of D-150 and D-153) over a dark backdrop, and the **speed overlay** (fps, frame ms, draw calls, triangles, memory, battery temperature) that logs one line a second. `unity:test` 13/13 (12 EditMode, 1 PlayMode — the PlayMode assembly had been Editor-only, which Unity treats as EditMode). `unity:shots` → `title.png`, `title-perf.png`, read: the disabled buttons were see-through (now solid and muted), the overlay button now follows the overlay, memory reads in GB, the torches' lights moved off the pillar faces (a flat stripe). Batchmode shows 0 draw calls (it renders only on request) — the phone gives the real numbers.
-6. [ ] **On the phone:** James turns on USB debugging and plugs in; Claude installs, launches, reads two minutes of overlay lines and the temperature.
-7. [ ] Verify (`npm run verify`, `unity:test`, `unity:shots` read), commit `P9: …`, push, `gh run list`, the phone checklist below, **stop**.
+6. [x] **On the phone** (2026-10-30): the phone is a **Galaxy S25 Edge** (SM-S937U, Android 17), not the Ultra the docs assumed (D-155); USB debugging allowed for this PC (the phone first showed as unauthorized until Allow was tapped). `unity:install` installed and launched v0.9.0 (9) — the first install, signed with the release key. Phase 9's first reading (2026-10-30, the title scene for 2 minutes, the phone on USB power): **60 fps steady** (frame 16.7 ms, p95 16.7 ms), GPU 8.9 ms, 39–41 draw calls, 2.7–2.9k triangles, 112–116 MB, thermal state none (headroom 0.69–0.71), battery 34.6 °C; the boot line reads Adreno 830, Vulkan, 2,340 × 1,080 at 120 Hz, 11.1 GB. The CPU figure includes the wait for the next frame, so at 60 fps it reads about 16.7 ms. A tap sent over USB toggles the speed overlay, and a screenshot from the phone matches `unity:shots`: UI Toolkit taps work with the Input System only, and the release build reports draw calls and triangles.
+7. [x] Verify green (`npm run verify`; `unity:test` 14/14; `unity:shots` read), commits `4a6427e`, `299c721`, `271e680` and the phone commit pushed, the deploy green; the phone checklist below; **stop**.
 
 ## Checkpoint 1 task list (done)
 
@@ -159,16 +159,10 @@ Monster techniques guaranteed by the 10th witnessed use (`09` §4; tuning + `ins
 - Nightmare's details (D-095): the chosen hero must lead every delve; the save's backups go too; the Hall keeps a line. A fresh party of four loses its chosen Warden in about a third of first trips under Nightmare.
 - The Beast Tamer keeps whip and short spear (its sheet owns its weapons), not `08`'s wider list.
 
-## Phone checklist (Phase 8 — polish and juice)
+## Phone checklist (Phase 9 — Unity on your phone)
 
-Open **https://jjones1319-create.github.io/gloamvault/** or the installed app. If a small "Update ready" note appears on the title, tap it. The title should say **v0.8.0 · Phase 8**. (The new app icon shows after you remove and re-add the app, or on its own after a while.)
+1. On your phone, open **Gloamvault** from your apps (it's a new icon, separate from the web version). *The title shows sideways, with "v0.9.0 · Phase 9 · Unity" at the bottom left.* Turn the phone round the other way: *the picture flips and nothing sits under the camera hole.*
+2. Tap **Speed overlay**: *the numbers appear at the top right — 60 fps and "cool".* Tap again to hide them. *New game and Settings are greyed out on purpose; they arrive with saves in Phase 22.*
+3. **One-time, on the computer — back up the app's key.** Open File Explorer → **Documents** → **Gloamvault**, right-click the **keys** folder → **Copy**, and paste it onto a USB stick or into your OneDrive or Google Drive folder. Every update of the app is signed with this key; if it were lost, a future update would mean removing the app, which erases the save.
 
-1. Tap anywhere on the title: *music starts — Emberfall's waltz.* Settings → **Sound**: try the sliders and **Mute**. Put the app in the background: *the music pauses.*
-2. Start a **New game**: *your first floor is a short lesson — a tip at each step (Got it / Skip the lesson).* Settings → **Help → Replay the tutorial** brings it back.
-3. Go into the Cellars, then a fight: *each place has its own music; a fight changes it; winning plays a short victory tune.* Later, the Crypts and the Drowned Vault sound different again, and each boss has its own theme.
-4. On a hero's **Status** tab, tap any number: *a tip explains it with that hero's own numbers.* Scroll to **How they grow**: *how close each stat and skill is to its next point.*
-5. Tap **Codex** (town or hero screen): *every monster you've met, a turning 3D model, its weaknesses and the attacks you've seen; the materials and where they come from.*
-6. Settings → **Text size: Largest**, then look at the town and a fight: *everything bigger, nothing cut off.* Try **Colours: Red–green safe** and **Reduce motion**.
-7. A boss fight (Vexa on floor 3): *the arena line sits beside the enemy list, and the boss stands closer.*
-8. Settings → **Performance overlay** on, then a fight in the Crypts or the Vault: tell me the **fps** — the stutter at the start of fights should be gone.
-9. Tell me: does any tune remind you of a song or game you know?
+You can unplug the phone now; plug it in again (with the same cable) when a phase is ready to install. Say **go** for Phase 10 — the game's rules running inside the Unity app.
