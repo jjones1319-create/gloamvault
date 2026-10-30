@@ -310,6 +310,8 @@ Using an item is weight 600 (rulebook §3.2). Potions are percentages so one tab
 | Antidote | cleanse Poison and Bleed; +50% Poison resistance 3 rounds | 0.3 | 0.02 | floors 1+, Cellars vermin 10%, shop |
 | Cleansing Salt | cleanse every debuff on one ally | 0.3 | 0.06 | floors 4+, Crypts, shop |
 | Haste Tonic | Haste 3 rounds on one ally | 0.5 | 0.10 | floors 7+, merchant only |
+| Hushsmoke, Small / Medium / Large *(D-142; Unity, Phase 17)* | outside a fight: no **random** encounters for about 2 / 4 / 8 minutes of walking (distance walked); placed elites, bosses, guarded treasure, the hunter and traps still happen; burns twice as fast in Dark and Pitch light | 0.3 | 0.04 / 0.07 / 0.12 | town shop, dungeon merchants, chests floors 1+ |
+| Callsmoke, Small / Medium / Large *(D-148; Unity, Phase 17)* | outside a fight: random encounters about twice as often for 2 / 4 / 8 minutes of walking, and no grace after a fight; placed monsters unchanged | 0.3 | 0.04 / 0.07 / 0.12 | as Hushsmoke |
 | Fortify Draught | Fortify 3 rounds on one ally (+20% Defense, `03` §3.5) | 0.5 | 0.08 | floors 4+, shop |
 | Torch | light +25 (out of combat; instant) | 1 | 0.02 | everywhere; Foraging makes them; shop |
 | Repair Kit | +25% durability to one item, out of combat | 2 | 0.08 | common drop 8% per fight, shop, merchant |

@@ -8,7 +8,7 @@
 
 Why it is worth the rebuild: a native app reaches the phone's full graphics power (Vulkan rather than WebGL in Chrome), can be as large as it needs to be (James: *"I am okay with it being much larger"*), and is the road to the Play Store. What it costs: the web version's link-and-install, its automatic updates and its WebRTC-in-the-browser co-op plan (co-op's networking is re-decided before it is built, §5); about sixteen small phases before the Unity version does everything the web version does.
 
-What carries over unchanged: the design docs; the content JSON, its schemas and linter; the Blender build scripts (they gain FBX exports); and — if Phase 10's test passes — the TypeScript sim, its tests, replays and balance runner, run inside Unity by Jint (D-139). **The web version stays live at its link, frozen at v0.8.0 (fixes only), until Phase 24.**
+What carries over unchanged: the design docs; the content JSON, its schemas and linter; the Blender build scripts (they gain FBX exports); and — if Phase 10's test passes — the TypeScript sim, its tests, replays and balance runner, run inside Unity by Jint (D-139). **The web version stays live at its link, frozen at v0.8.0 (fixes only), until the Unity version has all of Gravehollow (D-150).**
 
 ### 1.1 Segments 1–2: a web app installed from GitHub Pages (D-002, superseded by D-135)
 
@@ -54,7 +54,7 @@ The one real cost is rendering headroom; §4 budgets for it. If Phase 6 cannot h
 
 ## 3. Architecture
 
-**Unity (from Phase 9).** `unity/` is the Unity project (`Assets/Gloamvault/` — Scripts by area with assembly definitions, UI as UXML/USS, Shaders, Scenes built by editor scripts; `Packages/`; `ProjectSettings/`); `Library/`, `Temp/`, `Logs/`, `obj/`, `Build/` and `UserSettings/` are never committed. `tools/unity/` holds the PowerShell wrappers behind `npm run unity:*`. The sim reaches Unity as a bundle built from `sim/` (Phase 10) and the content as one JSON bundle built from `content/`, both generated, never edited. The web layout below stays the reference until Phase 24.
+**Unity (from Phase 9).** `unity/` is the Unity project (`Assets/Gloamvault/` — Scripts by area with assembly definitions, UI as UXML/USS, Shaders, Scenes built by editor scripts; `Packages/`; `ProjectSettings/`); `Library/`, `Temp/`, `Logs/`, `obj/`, `Build/` and `UserSettings/` are never committed. `tools/unity/` holds the PowerShell wrappers behind `npm run unity:*`. The sim reaches Unity as a bundle built from `sim/` (Phase 10) and the content as one JSON bundle built from `content/`, both generated, never edited. The web layout below stays the reference until the Unity version has all of Gravehollow (D-150).
 
 ```
 gloamvault/
