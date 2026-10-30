@@ -1,6 +1,6 @@
 import { quiverRefill, withQuiver } from './ammo.ts'
 import { EMPTY_PITY, chestKeyItemId, chestOnSale, keyOpens, openTownChest, type ChestPityState, type ChestResult, type TomeBagState } from './chests.ts'
-import type { Content } from './content.ts'
+import { compareIds, type Content } from './content.ts'
 import { boardSlot, contractPayout, delveContractProgress, markClaimed, playerBand, syncBoard, type BoardContext, type ContractBoard, type ContractPayout } from './contracts.ts'
 import { codexFromLog, mergeCodex, type CodexRecord } from './codex.ts'
 import { createDelve } from './delve.ts'
@@ -909,7 +909,7 @@ export function skillHallOffers(content: Content, profile: Profile, heroId: stri
     const tierLock = s.tier > open ? `Tier ${s.tier} opens at level ${content.tuning.skills.tierOpensAtLevel[String(s.tier) as '1']}` : null
     out.push({ skillId: s.id, price: skillPrice(content, profile, heroId, s.id), locked: tierLock ?? prereq })
   }
-  return out.sort((a, b) => (content.skills.get(a.skillId)!.tier - content.skills.get(b.skillId)!.tier) || a.price - b.price || a.skillId.localeCompare(b.skillId))
+  return out.sort((a, b) => (content.skills.get(a.skillId)!.tier - content.skills.get(b.skillId)!.tier) || a.price - b.price || compareIds(a.skillId, b.skillId))
 }
 
 export function learnSkill(content: Content, profile: Profile, heroId: string, skillId: string): Profile {
@@ -1118,7 +1118,7 @@ export function buyChest(content: Content, profile: Profile, chestId: string, he
       const t = content.tuning
       const inLoadout = new Set([...h.loadout.actives, ...h.loadout.passives].filter((x): x is string => x !== null))
       const candidates = h.skills.filter((k) => k.rank < t.xp.skill.maxRank)
-      const chosen = candidates.find((k) => k.skillId === options.practiceSkillId) ?? [...candidates].sort((a, b) => Number(inLoadout.has(b.skillId)) - Number(inLoadout.has(a.skillId)) || a.rank - b.rank || a.skillId.localeCompare(b.skillId))[0]
+      const chosen = candidates.find((k) => k.skillId === options.practiceSkillId) ?? [...candidates].sort((a, b) => Number(inLoadout.has(b.skillId)) - Number(inLoadout.has(a.skillId)) || a.rank - b.rank || compareIds(a.skillId, b.skillId))[0]
       if (chosen) {
         const xp = chosen.xp + (skillRankThreshold(t, chosen.rank + 1) - skillRankThreshold(t, chosen.rank))
         const rank = Math.max(chosen.rank, skillRankFor(t, xp))

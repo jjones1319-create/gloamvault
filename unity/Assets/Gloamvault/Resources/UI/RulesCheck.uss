@@ -1,0 +1,118 @@
+/* The Rules check screen (Phase 10): a panel over the title, the cases as rows. */
+.rules {
+    flex-grow: 1;
+    align-self: stretch;
+    flex-direction: column;
+    padding: 10px 14px;
+    background-color: var(--bg-panel);
+    border-width: 1px;
+    border-color: var(--line);
+    border-radius: var(--radius);
+}
+
+.rules__head {
+    flex-direction: column;
+    margin-bottom: 8px;
+}
+
+.rules__title {
+    font-size: 22px;
+    -unity-font-style: bold;
+    color: var(--ember);
+}
+
+.rules__sub {
+    margin-top: 2px;
+    font-size: 12px;
+    color: var(--ink-dim);
+}
+
+.rules__scroll {
+    flex-grow: 1;
+}
+
+.rules__cases {
+    flex-direction: column;
+}
+
+.case {
+    flex-direction: column;
+    padding: 6px 10px;
+    margin-bottom: 6px;
+    background-color: var(--bg-raised);
+    border-width: 1px;
+    border-color: var(--line);
+    border-radius: 10px;
+}
+
+.case__name {
+    font-size: 14px;
+}
+
+.case__status {
+    margin-top: 2px;
+    font-size: 14px;
+    -unity-font-style: bold;
+    color: var(--ink-dim);
+}
+
+.case__status--same {
+    color: #9be28a;
+}
+
+.case__status--differs {
+    color: #ff8a65;
+}
+
+.case__time {
+    margin-top: 1px;
+    font-size: 11px;
+    color: var(--ink-dim);
+}
+
+.rules__foot {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 6px;
+}
+
+.rules__verdict {
+    flex-grow: 1;
+    flex-basis: 0;
+    font-size: 14px;
+    -unity-font-style: bold;
+    margin-right: 12px;
+}
+
+.rules__buttons {
+    flex-direction: row;
+}
+
+.rules__btn {
+    min-width: 120px;
+    min-height: 44px;
+    margin-left: 10px;
+    padding: 0 16px;
+    -unity-text-align: middle-center;
+    background-color: var(--bg-raised);
+    border-width: 1px;
+    border-color: var(--line);
+    border-radius: var(--radius);
+    color: var(--ink);
+    font-size: 16px;
+}
+
+.rules__btn:hover {
+    border-color: var(--ember);
+}
+
+.rules__btn:disabled {
+    opacity: 1;
+    color: var(--ink-dim);
+}
+
+.rules__btn--primary {
+    background-color: var(--ember-deep);
+    border-color: #e0702a;
+}

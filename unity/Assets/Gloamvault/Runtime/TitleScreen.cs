@@ -25,6 +25,9 @@ namespace Gloamvault
             overlayButton.clicked += () => overlay.Toggle();
             overlay.VisibleChanged += _ => SetOverlayLabel(overlayButton);
             SetOverlayLabel(overlayButton);
+            // Phase 10: the Rules check — the golden delves played by the rules engine inside the app (D-139).
+            document.rootVisualElement.Q<Button>("rules").clicked += () => RulesCheckScreen.Open(document, run: true);
+            if (Boot.LaunchMode == "rules") RulesCheckScreen.Open(document, run: true);
             lastSafeArea = Rect.zero;
         }
 

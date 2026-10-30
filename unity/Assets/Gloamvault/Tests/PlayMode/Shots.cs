@@ -30,6 +30,19 @@ namespace Gloamvault.Tests
             yield return ShotCapture.Capture("title-perf");
             overlay.SetVisible(was);
         }
+
+        [UnityTest]
+        public IEnumerator Rules()
+        {
+            yield return Scenes.Load(Scenes.Boot);
+            yield return new WaitForSecondsRealtime(1f);
+            var doc = Object.FindFirstObjectByType<UIDocument>();
+            var screen = RulesCheckScreen.Open(doc, run: true, onlyCaseId: "A");
+            float started = Time.realtimeSinceStartup;
+            while (!screen.Done && Time.realtimeSinceStartup - started < 170f) yield return null;
+            yield return new WaitForSecondsRealtime(0.5f);
+            yield return ShotCapture.Capture("rules");
+        }
     }
 
     public static class ShotCapture

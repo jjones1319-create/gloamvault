@@ -38,6 +38,14 @@ function compareNames(a: string, b: string): number {
 
 /** Loads the real corpus from `<dir>` (default `content`, relative to the working directory) into a `Content`. */
 export function loadContentDir(dir = 'content'): Content {
+  return buildContent(readContentFiles(dir))
+}
+
+/**
+ * The corpus as raw files, in sorted path order, before indexing: what `loadContentDir` builds from and what the
+ * Unity bundle carries (tools/unity/bundle.ts; the bridge builds the same `Content` inside the app).
+ */
+export function readContentFiles(dir = 'content'): RawContentFile[] {
   const root = path.resolve(dir)
   const files: RawContentFile[] = []
   const visit = (d: string, depth: number): void => {
@@ -57,7 +65,7 @@ export function loadContentDir(dir = 'content'): Content {
     }
   }
   visit(root, 0)
-  return buildContent(files)
+  return files
 }
 
 /**

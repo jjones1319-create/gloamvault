@@ -1,4 +1,4 @@
-import type { Content } from './content.ts'
+import { compareIds, type Content } from './content.ts'
 import type { DelveEvent, DelveState } from './delve-types.ts'
 import { bandRows } from './grades.ts'
 import { Rng, seedFor } from './rng.ts'
@@ -150,7 +150,7 @@ function slotFor(k: ContractDef, band: number): ContractSlot {
 export function syncBoard(content: Content, board: ContractBoard | null | undefined, ctx: BoardContext, clock: { day: number; week: number }): ContractBoard {
   const t = content.tuning
   if (board && board.day === clock.day && board.week === clock.week && board.keysWeek === clock.week) return board
-  const all = [...content.contracts.values()].sort((a, b) => a.id.localeCompare(b.id))
+  const all = [...content.contracts.values()].sort((a, b) => compareIds(a.id, b.id))
   const eligible = all.filter((k) => contractEligible(content, k, ctx))
   let next: ContractBoard = board ? { ...board } : { day: clock.day - 1, week: clock.week - 1, dailies: [], weekly: null, keysWeek: clock.week, keysStandard: 0, keysGrand: 0 }
   if (!board || board.day !== clock.day) {
@@ -164,7 +164,7 @@ export function syncBoard(content: Content, board: ContractBoard | null | undefi
     next = { ...next, day: clock.day, dailies: picked.map((k) => slotFor(k, ctx.band)) }
   }
   if (!board || board.week !== clock.week) {
-    const weeklies = eligible.filter((k) => k.cadence === 'weekly').sort((a, b) => (a.band ?? 0) - (b.band ?? 0) || a.id.localeCompare(b.id))
+    const weeklies = eligible.filter((k) => k.cadence === 'weekly').sort((a, b) => (a.band ?? 0) - (b.band ?? 0) || compareIds(a.id, b.id))
     const k = weeklies.length > 0 && t.contracts.weeklies > 0 ? weeklies[((clock.week % weeklies.length) + weeklies.length) % weeklies.length]! : null
     next = { ...next, week: clock.week, weekly: k ? slotFor(k, ctx.band) : null }
   }

@@ -1,5 +1,5 @@
 import { fightAmmoFor, stowAmmo } from './ammo.ts'
-import type { Content } from './content.ts'
+import { compareIds, type Content } from './content.ts'
 import type { DelveCommand, DelveHero, DelveOptions, DelveState, FloorRun, HunterState, LegalDelveAction, RoomState } from './delve-types.ts'
 import { detection, disarmChance, heroAmbushChance, monsterAmbushChance, rollScout, scoutChance, trapRevealed } from './detection.ts'
 import { codexEventData } from './codex.ts'
@@ -634,7 +634,7 @@ function giveConsumable(content: Content, state: DelveState, inst: ItemInstance,
 function partSales(content: Content, state: DelveState): { itemId: string; name: string; quantity: number; gold: number }[] {
   const hag = Math.max(0, ...activeHeroes(state).map((h) => h.record.fieldSkills.haggling.rank))
   const out: { itemId: string; name: string; quantity: number; gold: number }[] = []
-  for (const [id, n] of Object.entries(state.materials).sort(([x], [y]) => x.localeCompare(y))) {
+  for (const [id, n] of Object.entries(state.materials).sort(([x], [y]) => compareIds(x, y))) {
     const def = content.items.get(id)
     if (!def || def.kind !== 'material' || def.value <= 0 || n <= 0) continue
     out.push({ itemId: id, name: def.name, quantity: n, gold: sellPrice(content.tuning, def.value, hag) * n })

@@ -37,5 +37,25 @@ namespace Gloamvault.Tests
             Assert.Greater(overlay.SampleCount, 0, "the overlay samples once a second");
             Assert.Greater(overlay.Last.Fps, 0f);
         }
+
+        /// <summary>Phase 10: the Rules check opens from the title and plays case A to Node's hash on its worker thread.</summary>
+        [UnityTest]
+        public IEnumerator TheRulesCheckPlaysCaseAAsNodeDid()
+        {
+            yield return Scenes.Load(Scenes.Boot);
+            yield return new WaitForSecondsRealtime(1f);
+            var doc = Object.FindFirstObjectByType<UIDocument>();
+            Assert.IsNotNull(doc.rootVisualElement.Q<Button>("rules"), "the title's Rules check button");
+
+            var screen = RulesCheckScreen.Open(doc, run: true, onlyCaseId: "A");
+            float started = Time.realtimeSinceStartup;
+            while (!screen.Done && Time.realtimeSinceStartup - started < 170f) yield return null;
+            Assert.IsTrue(screen.Done, "the check finished");
+            Assert.AreEqual(1, screen.Results.Count);
+            var r = screen.Results[0];
+            Assert.IsNull(r.error, "case A ran");
+            Assert.IsTrue(r.same, $"case A matches Node (differs at {r.differsAt})");
+            StringAssert.Contains("same as the computer", doc.rootVisualElement.Q<Label>(className: "case__status").text);
+        }
     }
 }

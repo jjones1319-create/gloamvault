@@ -1,0 +1,19 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="RulesCheck.uss" />
+    <ui:VisualElement name="rules" class="rules">
+        <ui:VisualElement class="rules__head">
+            <ui:Label text="Rules check" class="rules__title" />
+            <ui:Label name="startup" text="Starting the rules engine…" class="rules__sub" />
+        </ui:VisualElement>
+        <ui:ScrollView class="rules__scroll">
+            <ui:VisualElement name="cases" class="rules__cases" />
+        </ui:ScrollView>
+        <ui:VisualElement class="rules__foot">
+            <ui:Label name="verdict" class="rules__verdict" />
+            <ui:VisualElement class="rules__buttons">
+                <ui:Button name="again" text="Run again" class="rules__btn" />
+                <ui:Button name="back" text="Back" class="rules__btn rules__btn--primary" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

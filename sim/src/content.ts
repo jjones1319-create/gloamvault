@@ -162,7 +162,8 @@ export function kindForContentPath(relativePath: string): ContentPathKind | null
 // Building the bundle
 // ---------------------------------------------------------------------------------------------------------------
 
-function compareIds(a: string, b: string): number {
+/** Ordinal string order (UTF-16 code units): the same in every JavaScript engine, unlike `localeCompare` (D-139). */
+export function compareIds(a: string, b: string): number {
   return a < b ? -1 : a > b ? 1 : 0
 }
 

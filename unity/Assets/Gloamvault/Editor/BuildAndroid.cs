@@ -42,6 +42,9 @@ namespace Gloamvault.EditorTools
                 PlayerSettings.Android.keyaliasPass = keys.keyPass;
                 EditorUserBuildSettings.buildAppBundle = false;
                 EditorUserBuildSettings.development = false;
+                // The version lives in ProjectSetup; applied here too, so a bump needs no setup re-run.
+                PlayerSettings.bundleVersion = ProjectSetup.Version;
+                PlayerSettings.Android.bundleVersionCode = ProjectSetup.VersionCode;
 
                 var options = new BuildPlayerOptions
                 {

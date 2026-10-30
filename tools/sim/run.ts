@@ -11,9 +11,7 @@ import path from 'node:path'
 import { createDelve, delveSummary, hashDelve, runDelveAuto } from '../../sim/src/delve.ts'
 import type { DelveOptions } from '../../sim/src/delve-types.ts'
 import { renderFloorAscii } from '../../sim/src/generator-ascii.ts'
-import { createHero } from '../../sim/src/hero.ts'
-import { Rng } from '../../sim/src/rng.ts'
-import type { HeroRecord } from '../../sim/src/types/content.ts'
+import { createParty } from '../../sim/src/bridge.ts'
 import { assembleFixtureCorpus } from '../../sim/test/fixtures/assemble.ts'
 import { loadContentDir } from './loadContent.ts'
 
@@ -32,19 +30,15 @@ if (has('fixture') || content.dungeons.size === 0) {
   if (!has('quiet')) console.log(`(using the Phase 2 fixture content: ${content.dungeons.size} dungeon(s), ${content.monsters.size} monsters)`)
 }
 try {
-  const t = content.tuning
   const delveArg = flag('delve', 'gravehollow')
   const dungeon = [...content.dungeons.values()].find((d) => d.id === delveArg || d.id.startsWith(delveArg))
   if (!dungeon) throw new Error(`no dungeon matching "${delveArg}" (have: ${[...content.dungeons.keys()].join(', ')})`)
   const seed = Number(flag('seed', '17'))
   const partySpec = flag('party', 'warden').split(',').filter(Boolean)
-  const party: HeroRecord[] = partySpec.map((spec, i) => {
-    const [classId, speciesId = 'human', name] = spec.split(':')
-    const cls = content.classes.get(classId ?? '')
-    if (!cls) throw new Error(`no class "${classId}" (have: ${[...content.classes.keys()].join(', ')})`)
-    const egg = [...content.pets.values()].find((p) => p.creationChoice)
-    return createHero(content, t, Rng.fromSeed(seed + i), { id: `h${i + 1}`, name: name ?? `${cls.name} ${i + 1}`, speciesId, classId: cls.id, freePoints: { endurance: 2, vitality: 2, strength: 2 }, eggPetId: egg?.id ?? null })
-  })
+  const party = createParty(content, seed, partySpec.map((spec) => {
+    const [classId = '', speciesId = 'human', name] = spec.split(':')
+    return name === undefined ? { classId, speciesId } : { classId, speciesId, name }
+  }))
   const options: DelveOptions = {
     dungeonId: dungeon.id,
     zone: has('floor') ? undefined : Number(flag('zone', '1')),

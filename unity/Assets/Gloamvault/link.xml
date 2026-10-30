@@ -1,0 +1,6 @@
+<linker>
+  <!-- The JavaScript engine the rules run in (D-139). IL2CPP strips code it cannot see a call to; an interpreter
+       reaches much of itself by reflection, so both assemblies are kept whole. -->
+  <assembly fullname="Jint" preserve="all" />
+  <assembly fullname="Acornima" preserve="all" />
+</linker>

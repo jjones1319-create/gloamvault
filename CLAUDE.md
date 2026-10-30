@@ -40,7 +40,7 @@ A 1–4 player co-op party dungeon crawler for Android phones (James's Galaxy S2
 
 ## Commands
 
-- **Unity:** `npm run unity:test` (EditMode tests) · `npm run unity:shots` (→ `unity/shots/`, read them) · `npm run unity:build` (release APK → `unity/Build/`) · `npm run unity:install` (adb install + launch on the phone) · `npm run unity:log` (the game's phone log lines).
+- **Unity:** `npm run unity:bundle` (the sim, the content and the golden cases → `unity/Assets/Gloamvault/Resources/Sim/`, generated; run by the three below) · `npm run unity:test` (EditMode + PlayMode tests; `-- -EditOnly`) · `npm run unity:shots` (→ `unity/shots/`, read them) · `npm run unity:build` (release APK → `unity/Build/`) · `npm run unity:install` (adb install + launch on the phone) · `npm run unity:log` (the game's phone log lines) · `npm run unity:rules` (the Rules check on the phone: the golden delves through Jint, hashes against Node, step times).
 - `npm run dev` — http://localhost:5173/gloamvault/ (add `-- --host` to play on the phone over Wi-Fi; service workers need https or localhost).
 - `npm test` · `npm run typecheck` · `npm run lint` (content) · `npm run build` · `npm run preview`
 - `npm run verify` = typecheck + test + lint + build + check:build (bundle and precache budgets). **Run before every commit.**
