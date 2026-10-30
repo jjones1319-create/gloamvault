@@ -18,3 +18,26 @@ __pycache__/
 .DS_Store
 Thumbs.db
 shots-dev/
+
+# Unity (from Phase 9): generated folders, IDE files, build outputs, shots and test results stay local
+unity/[Ll]ibrary/
+unity/[Tt]emp/
+unity/[Oo]bj/
+unity/[Bb]uild/
+unity/[Bb]uilds/
+unity/[Ll]ogs/
+unity/[Uu]ser[Ss]ettings/
+unity/.vs/
+unity/.vscode/
+unity/*.csproj
+unity/*.sln
+unity/*.slnx
+unity/.vsconfig
+unity/.utmp/
+unity/shots/
+unity/TestResults-*.xml
+unity/*.apk
+unity/*.aab
+# the signing key never enters the repo (it lives in Documents\Gloamvault\keys)
+*.keystore
+*.jks

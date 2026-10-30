@@ -23,7 +23,13 @@
     "model-index": "node tools/build/model-index.ts",
     "e2e": "playwright test",
     "sim": "node tools/sim/run.ts",
-    "balance": "node tools/balance/run.ts"
+    "balance": "node tools/balance/run.ts",
+    "unity:setup": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/unity/setup.ps1",
+    "unity:test": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/unity/test.ps1",
+    "unity:shots": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/unity/shots.ps1",
+    "unity:build": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/unity/build.ps1",
+    "unity:install": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/unity/install.ps1",
+    "unity:log": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/unity/log.ps1"
   },
   "dependencies": {
     "@preact/signals": "^2.11.3",

@@ -1,0 +1,150 @@
+/* The title (Phase 9), after the web version's .title (client/src/ui/styles/base.css). */
+.title {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    flex-direction: row;
+    align-items: center;
+    padding: 16px 28px 12px 28px;
+}
+
+.title__left {
+    flex-grow: 1.15;
+    flex-basis: 0;
+    flex-direction: column;
+    justify-content: center;
+    margin-right: 24px;
+}
+
+.wordmark {
+    font-size: 40px;
+    -unity-font-style: bold;
+    letter-spacing: 8px;
+    color: var(--ember);
+    text-shadow: 0 2px 0 #3a1e06;
+    white-space: nowrap;
+}
+
+.tagline {
+    margin-top: 6px;
+    font-size: 16px;
+    text-shadow: 0 1px 2px #000000;
+}
+
+.note {
+    margin-top: 16px;
+    padding: 12px 14px;
+    background-color: var(--bg-panel);
+    border-width: 1px;
+    border-color: var(--line);
+    border-radius: var(--radius);
+    max-width: 380px;
+}
+
+.note__title {
+    -unity-font-style: bold;
+    font-size: 15px;
+}
+
+.note__body {
+    margin-top: 4px;
+    font-size: 13px;
+    color: var(--ink-dim);
+}
+
+.menu {
+    flex-grow: 1;
+    flex-basis: 0;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.menu__btn {
+    width: 300px;
+    min-height: 46px;
+    margin-bottom: 10px;
+    padding: 0 16px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--bg-raised);
+    border-width: 1px;
+    border-color: var(--line);
+    border-radius: var(--radius);
+    color: var(--ink);
+    font-size: 18px;
+}
+
+.menu__btn:hover {
+    border-color: var(--ember);
+}
+
+.menu__btn:active {
+    background-color: #2a2330;
+}
+
+.menu__btn--primary {
+    background-color: var(--ember-deep);
+    border-color: #e0702a;
+}
+
+/* Not yet available: solid (a see-through button shows the torches through it), muted, the hint says when. */
+.menu__btn:disabled {
+    opacity: 1;
+    background-color: var(--bg-raised);
+    border-color: var(--line);
+}
+
+.menu__btn--primary:disabled {
+    border-color: #7a3d14;
+}
+
+.menu__btn:disabled .menu__label {
+    opacity: 1;
+    color: var(--ink-dim);
+}
+
+.menu__btn:disabled .menu__hint {
+    opacity: 1;
+}
+
+.menu__btn--text {
+    -unity-text-align: middle-left;
+    font-size: 16px;
+    min-height: 44px;
+}
+
+.menu__label {
+    font-size: 18px;
+}
+
+.menu__hint {
+    font-size: 13px;
+    color: var(--ink-dim);
+}
+
+.menu__btn--primary .menu__hint {
+    color: #ffe2bf;
+}
+
+.version {
+    position: absolute;
+    left: 28px;
+    bottom: 10px;
+    font-size: 13px;
+    color: var(--ink-dim);
+}
+
+.perf {
+    position: absolute;
+    right: 8px;
+    top: 6px;
+    padding: 4px 8px;
+    background-color: rgba(0, 0, 0, 0.6);
+    border-radius: 6px;
+    font-size: 11px;
+    color: #b8f5c1;
+    -unity-text-align: upper-right;
+}

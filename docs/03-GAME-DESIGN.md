@@ -192,6 +192,8 @@ Elite affixes (`06` §2) are not statuses; they are rules on the monster.
 
 ### 4.1 The party moves as one
 
+> **Superseded at checkpoint 2 (D-136, James, 2026-10-29):** free-roam exploration — a joystick, much larger floors walked seamlessly, random encounters while walking, walk up and press A to interact. The rules that replace this section (and adjust §4.2–§4.6 and §11.1) are written in Phases 15–16; until then the text below is the web version's, as built.
+
 A floor is a **graph of 8–14 rooms** (§11.1; the first-ever floor is a shorter fixed tutorial and the final throne floor is fixed — `07` owns each floor's count). The party stands in one room; the room is a 3D set piece with a fixed cinematic camera; the doors you can take are lit. Pick a door → the party walks through (a short real-time walk, interruptible by what is found) → the next room resolves: a fight, a trap, a curio, a treasure, a rest, a merchant, the stairs, the boss. No joystick, no one gets lost, and every move is one command — which is what makes co-op and testing cheap (D-005).
 
 The **minimap** shows explored rooms; **scouting** (§4.3) may reveal what is behind the next doors; secret doors appear when found. The **floor clock** (§4.5) ticks per room entered.

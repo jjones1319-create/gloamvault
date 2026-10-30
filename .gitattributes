@@ -3,3 +3,12 @@
 *.glb binary
 *.ogg binary
 *.blend binary
+*.fbx binary
+*.apk binary
+*.aab binary
+*.ttf binary
+*.otf binary
+*.wav binary
+*.jpg binary
+*.exr binary
+*.keystore binary

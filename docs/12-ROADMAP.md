@@ -1,8 +1,10 @@
 # 12 — Roadmap: twelve phases in three segments
 
-*Last updated 2026-10-28 · rev. 6 (Phase 6 as built: its done-when follows D-113, kits with baked AO and effects in code — D-110, D-112) · rev. 5 (Phase 7 prep: Phase 7 builds Gravehollow from `07` §2.3's 8-floor table — D-104) · rev. 4 (checkpoint 1: open questions answered by delegation; Phase 11's hired companions become wayfarers and the Nightmare preset is renamed Dread — D-091, D-095, D-099) · rev. 3 (Claude: James's direction during Phase 4 — death, raising, the chosen hero and wayfarers, legacies, threat — added to Phases 4 and 7, D-088–D-092) · rev. 2 (Claude: James's direction of 2026-10-27 added to Phases 4 and 7 — D-082–D-085) · rev. 1 (Claude). James asked for the build to run in **three segments**, each a third of the phases, with all feedback gathered at the end of each segment. `PROMPT.md` holds the prompts that start each segment; `STATUS.md` at the repo root is the checkpoint Claude Code keeps while it works.*
+*Last updated 2026-10-29 · rev. 7 (checkpoint 2: Segment 3 becomes the Unity rebuild in small phases with a stop after each — D-135–D-140; the old Phases 9–12 kept as 25+) · rev. 6 (Phase 6 as built: its done-when follows D-113, kits with baked AO and effects in code — D-110, D-112) · rev. 5 (Phase 7 prep: Phase 7 builds Gravehollow from `07` §2.3's 8-floor table — D-104) · rev. 4 (checkpoint 1: open questions answered by delegation; Phase 11's hired companions become wayfarers and the Nightmare preset is renamed Dread — D-091, D-095, D-099) · rev. 3 (Claude: James's direction during Phase 4 — death, raising, the chosen hero and wayfarers, legacies, threat — added to Phases 4 and 7, D-088–D-092) · rev. 2 (Claude: James's direction of 2026-10-27 added to Phases 4 and 7 — D-082–D-085) · rev. 1 (Claude). James asked for the build to run in **three segments**, each a third of the phases, with all feedback gathered at the end of each segment. `PROMPT.md` holds the prompts that start each segment; `STATUS.md` at the repo root is the checkpoint Claude Code keeps while it works.*
 
 ## 0. How a segment runs
+
+*From Phase 9 (D-137): one small phase at a time — plan mode → build with tests → verify → install on the phone over USB and read its numbers → docs and `STATUS.md` → commit `P<n>: …` and push → the phone checklist → **stop** until James says go. The steps below are how Segments 1–2 ran.*
 
 1. James pastes the segment's prompt from `PROMPT.md` into Claude Code (VS Code, this folder open).
 2. Claude Code works through the segment's four phases **autonomously**: plan mode for each phase's task list → build in small steps with tests → `npm run verify` green → update `STATUS.md` and the docs → commit `P<n>: <summary>` and push (the site redeploys) → next phase. It never stops to ask inside a segment: when the docs are silent it chooses the reading closest to the pillars, implements it, and logs it in `13-DECISIONS.md` as **Proposed** with the quote (CLAUDE.md §How this folder works). It stops only for the three things James must do himself (first GitHub push approval, the Cloudflare account in Phase 9, a payment of any kind — there is none planned).
@@ -72,24 +74,52 @@ If a Claude Code session ends mid-segment, James pastes the **Continue** prompt;
 
 **Feedback checkpoint 2.** James plays all of Gravehollow with real art. Questions: do the characters look good enough or should heads be commissioned; which classes feel best/worst; is durability/repair a chore; Insight rate; chest cadence; how the Nightmare rule and the party-average XP (D-095, D-096) feel. (Segment 3 builds co-op first — decided at checkpoint 1, D-099.)
 
-## 3. Segment 3 — together, and beyond (Phases 9–12): *co-op, two more dungeons, the Beast Tamer, Wildsong pets, release*
+## 3. Segment 3 — Gloamvault in Unity, in small phases (from Phase 9; D-135–D-140)
 
-### Phase 9 — Co-op
+*Checkpoint 2 (James, 2026-10-29, `13` §A5): the game is rebuilt as a Unity app with free-roam exploration — a joystick, much larger floors, random encounters while walking, walk up and press A — in **small phases**. A phase is about one session's work; it ends with something new on James's phone (installed over USB), a commit `P<n>: …`, and a 2–3 item phone checklist in `STATUS.md`; then Claude Code **stops** until James says go (D-137). Each phase starts in plan mode. Review files (`docs/feedback/`) at Phases 14, 19 and 24. The web version stays live, frozen at v0.8.0, until Phase 24. The old Segment 3 (co-op, two dungeons, the Beast Tamer, Wildsong pets, release) follows as Phases 25+, re-planned in small phases.*
+
+| Phase | Builds | Done when (on the phone) |
+|---|---|---|
+| **9 · Unity on your phone** | the docs re-planned; Unity 6.3 LTS + Android support installed; `unity/` (URP, UI Toolkit, Input System, landscape, IL2CPP ARM64, Vulkan, the release key); `tools/unity/` wrappers and `npm run unity:*`; a title screen and the speed overlay that logs to the phone log | the app opens landscape on the S25 Ultra and Claude has read its frame times and temperature over USB |
+| **10 · The rules inside Unity** | `sim/src/bridge.ts`, the sim and content bundles, Jint in Unity, an EditMode test that plays seeded delves and matches Node's hashes; a *rules check* screen on the phone | seeded delves on the phone give the same hashes as Node, a step's p95 is under 30 ms and start-up under 3 s — or the fallback is chosen and logged (D-139) |
+| **11 · Rooms** | FBX exports from the Blender kit scripts; the URP toon and outline shaders; a room built from a template; torches with real light and shadow; `unity:shots` | Cellars, Crypts and Vault rooms render on the phone; the shots are read |
+| **12 · Heroes and monsters** | FBX hero, gear, weapon, clip and monster exports; the character assembler (species, face, parts, gear, tints, bone scales, hidden body faces); monsters from bases and variants; the viewer | every species × class and every monster animates in the viewer on the phone |
+| **13 · Walking** | the on-screen joystick and A button, the follow camera, collision with walls and props, the party following its leader, walk and run clips | James walks his party around a room |
+| **14 · The test floor** | a large seamless floor (the generator's grid layout at bigger settings), areas loaded ahead and released behind, unseen rooms skipped, a self-playing soak | a 10-minute soak measured over USB; `10` §4's budgets rewritten from the numbers; floor size and quality settings chosen; **review file** |
+| **15 · Free-roam rules 1** | `03` §4 and `07`'s generator rewritten for walked floors (more and larger rooms, corridors and halls, walking distance, the light and the hunter on a walked floor); the sim and tests; the balance runner | verify green; the balance report reads well |
+| **16 · Free-roam rules 2** | random encounters by steps (rate by light band, a grace after each fight; elites, bosses and guarded treasure stay placed), press-A interactions as commands, traps you step on, the co-op walking rule written; retuned | James walks a real generated floor: encounters start, chests open with A |
+| **17 · The fight, staged** | the fight starts where the party stands: rows, animations and effects cued from the bridge's fight events | a fight plays out on the phone (on auto) |
+| **18 · The fight HUD** | turn strip, skills and Ultimate, targets, cards, auto and speed, items, flee | James plays a fight by hand |
+| **19 · The delve HUD** | light, floor clock, map, rest, merchant, curio choices, results and end cards | James plays a whole delve; **review file** |
+| **20 · Saves, title, new hero** | save files (versions, migrations, validation, rotating backups), **import of the web version's save file**, the title, the death rules, the Hall, New hero with the 3D look step | James's web heroes are in the Unity app |
+| **21 · Town 1** | Emberfall's hub, the Waystone, Inn, Bank, Stables, Shrine, Quest Board | those places work on the phone |
+| **22 · Town 2** | the Blacksmith, the Curio Merchant's chests, the Skill Hall, the hero sheet | the town is complete |
+| **23 · Sound and music** | the web engine's music, beds and effects rendered to audio files; the music director | everything the web version plays |
+| **24 · Bosses and polish** | the four boss arenas, the tutorial floor, tips, codex, settings, accessibility | the Unity version does everything the web version does and replaces it on the phone; **review file** |
+| **25+** | upgrade passes as Phase 14's numbers allow (lighting, post-processing, more detailed characters and monsters); then, re-planned in small phases: **co-op** (its networking re-decided then — the web plan's Trystero and Cloudflare relay do not carry over), **the Fungal Deep and Emberforge**, **the Beast Tamer, pets depth, Wildsong Ranch import** (a share code), **endgame**, **release and the Play Store** | as each is planned |
+
+**Feedback.** At Phases 14, 19 and 24, Claude writes a short review file from the template; James plays and answers. Between them, each phase's phone checklist is the feedback.
+
+### The old Segment 3 plan (Phases 9–12, as written at checkpoint 1 — superseded by D-135–D-137)
+
+These are kept for the content they list; they become Phases 25+ above.
+
+#### Old Phase 9 — Co-op
 - `client/src/net/`: Transport interface; host sequencing, intents vs commands, desync hashes, snapshot + log-tail join, reconnect with tokens, host migration; the Lobby at the Lantern Inn (create → invite code; join → code); **Trystero** WebRTC transport; the **Cloudflare Worker relay** (James creates the free account; Claude Code deploys with `wrangler`); grouped decision windows, 20 s timers, AI fallback, door proposals, loot pick order, drop-in at rooms, revive budgets per floor in co-op.
 - Tests: two browser contexts in Playwright playing a delve through both transports; a 4-phone checklist for James and three friends.
 - **Done when:** two phones on different networks complete a delve together through the relay, and four browser contexts complete one in CI through Local.
 
-### Phase 10 — The Fungal Deep and Emberforge
+#### Old Phase 10 — The Fungal Deep and Emberforge
 - Dungeon 2 (L12–26) and Dungeon 3 (L24–38) from `07` §3–§4 and `06` §4–§5: kits, templates, 6–8 monsters per zone built from the one-liners into full entries first (docs), hunters, zone bosses, final bosses (the Sporemother, the Forge-Tyrant), the signature mechanics (spore load, heat), materials C–A/S rungs, items S, Grand chests at those bands, contracts, the overworld travel and unlock rules.
 - Balance pass per dungeon.
 - **Done when:** both dungeons clear on Normal solo and with four (Local) within targets; `docs/balance/<date>-deep-and-forge.md`.
 
-### Phase 11 — Beast Tamer, pets depth, Wildsong Ranch import, endgame
+#### Old Phase 11 — Beast Tamer, pets depth, Wildsong Ranch import, endgame
 - The Beast Tamer class (gear set, 45 skills, summons as timeline actors) and its wayfarers, pet bond stars, the **Ranch Shrine** at the Stables: import a Wildsong Ranch share code → a pet of grade ≤ A tagged *Ranch-raised* (`14-IDEAS.md` has the mapping). No hired companions: wayfarers from the Wayfarer Chest fill that role for solo (D-091).
 - Endgame: Tier V skills, SS items and the eleven God items, Divine Shard forging, Hard/Dread rewards, titles and the codex completion rewards; Frostmarch Citadel **designed in full** in the docs (built after launch).
 - **Done when:** a Beast Tamer with a Ranch-raised pet clears Gravehollow; a God item can be forged from ten shards; lint has rules for every new kind.
 
-### Phase 12 — Release
+#### Old Phase 12 — Release
 - README for players (install, backup, co-op invite codes), `CREDITS.md`, the privacy note, the odds screen final copy, store-quality icon/screenshots in the repo, a settings "Reset" and "Export everything".
 - Final balance report, the full e2e + shots set, a last performance soak, `v1.0.0` tag and GitHub Release notes.
 - **Done when:** `SEGMENT-3-REVIEW.md` is written with the launch checklist and the post-launch backlog (`14-IDEAS.md`).
@@ -106,12 +136,18 @@ If a Claude Code session ends mid-segment, James pastes the **Continue** prompt;
 | P6 | the Cellars, Crypts and Vault in 3D with every monster |
 | P7 | the Hollow King beaten; a +N Skysteel-promoted sword (a boss's A-grade Skysteel sword raised +N with Gravehollow's Honing Oil — D-120); a Tier IV Insight |
 | P8 | music, tutorial, polish — "the game" |
-| P9 | a delve with a friend over the internet |
-| P10 | two new dungeons |
-| P11 | the Beast Tamer and a Wildsong monster at his side |
-| P12 | v1.0 |
+| P9 | the Unity app, installed over USB, with the speed overlay |
+| P10 | the rules running inside the Unity app |
+| P11–P12 | the rooms, heroes and monsters in Unity |
+| P13–P14 | walking with a joystick; a huge test floor |
+| P15–P16 | real floors walked, random encounters, press A |
+| P17–P19 | a whole delve in Unity |
+| P20–P24 | saves (with the web heroes), title, town, sound, bosses — the Unity version replaces the web one |
+| P25+ | upgrades, co-op, two new dungeons, the Beast Tamer and Wildsong pets, release and the Play Store |
 
 ## 5. Risks to the schedule
+
+- **The Unity rebuild** (D-135) is ~16 small phases before it matches the web version; the web version stays playable throughout and every phase shows something new. **Jint on the phone** (D-139) is unproven — Phase 10 tests it before anything depends on it. Unity builds are slower than the web build (minutes per APK); phases are sized for it.
 
 - **Phase 5–6 art** is the long pole and the quality risk; it is sequenced after the sim so the game is already playable and the review loop has something to show. If the renders do not meet the bar after three rounds per asset, the segment ships with the best round and the review lists what an artist would do (`11` §10).
 - **Phase 9 networking** depends on James's friends' networks; the relay is the hedge.

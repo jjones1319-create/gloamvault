@@ -14,11 +14,23 @@
 
 ## Where we are
 
-- **Segment:** 2 (Phases 5–8) — **done 2026-10-29; waiting for James at checkpoint 2**, started 2026-10-27 when James pasted the Segment 2 prompt with his checkpoint 1 answers.
+- **Segment 3 — Gloamvault in Unity, in small phases** (`docs/12-ROADMAP.md` §3): started 2026-10-29 at checkpoint 2, when James chose Unity and free-roam exploration (`docs/13-DECISIONS.md` §A5, D-135–D-140). Claude **stops after every phase** (D-137) and installs each build on James's phone over USB (D-138).
+- **Phase 9 — Unity on your phone — in progress** (task list below).
+- **Segment 2** (Phases 5–8) — done 2026-10-29; its review questions (`docs/feedback/SEGMENT-2-REVIEW.md`) and Proposed lines stay open for James to answer whenever — nothing before Phase 15 depends on them.
 - **Checkpoint 1:** **done 2026-10-27.** James's answers are logged (`docs/13-DECISIONS.md` §A4, D-095–D-099) and built: **Nightmare**, the third death rule (the chosen hero leads every delve; their death ends the save; the Hall of Nightmares keeps a line); **battle XP split through the party and scaled by the level gap to the party's average** (×0.25 at 5 below, ×2 at 5 above); each level costs more (as built); every Proposed line of Segment 1 Accepted (C1); 107 open questions in the docs answered; the Nightmare difficulty preset renamed **Dread**. v0.4.1.
 - **Phase:** 8 — polish and juice — **done 2026-10-29** (v0.8.0; verify green — 1227 tests, lint ALL GOOD, app code 548 KB gzipped of 600 and the content data 150 KB of 300; 88 screenshots, the Phase 8 set read; the e2e smoke passes). **Segment 2 is done — stopped for checkpoint 2** (`docs/feedback/SEGMENT-2-REVIEW.md`).
 - **Last commit:** see `git log` (the checkpoint commit is `P4: checkpoint 1 …`).
 - **Tools checked 2026-10-26:** Node 24.18.0 ✓ · npm 11.16.0 ✓ · git 2.51 ✓ · gh 2.102 signed in as `jjones1319-create` ✓ · Blender 5.2.2 LTS ✓ · Google Chrome ✓. The CC0 Human Base Meshes bundle is on this machine (`../ProjectAscend/art/ref/human-base-meshes/`, copied to `art/ref/` git-ignored); its stylized male and female bodies share one topology (12,502 vertices, 12,500 quads, UVs), so one landmark table fits the rig to both.
+
+## Phase 9 task list (the plan) — Unity on your phone
+
+1. [x] **Docs re-planned:** `13` §A5 + §F (D-135 Unity, D-136 free roam, D-137 small phases, D-138 USB install / large app / Play Store later — Accepted, James; D-139 the TS sim in Unity via Jint, D-140 the Unity stack — Proposed); D-002, D-005 and D-021's cadence superseded; `12` §0, §3 (the Phase 9–24 table, the old Phases 9–12 kept as 25+), §4, §5; `10` §1, §2.1, §3, §4, §5, §7; `11` §14; `03` §4.1 pointer; `CLAUDE.md`; `README.md`; `PROMPT.md` (the Next phase prompt).
+2. [x] **Unity installed:** Unity Hub 3.22.5 (winget, an MSIX app — its CLI needs `ELECTRON_RUN_AS_NODE` unset); editors in `C:\Users\jjones1\Unity\Hub\Editor`; **6000.3.27f1 + Android** (OpenJDK 17.0.18, SDK platforms 34–37, build-tools 36.0.0, NDK r27c — the headless install finished at midnight but never exited); James signed in to the Hub (free Personal licence, 2026-10-30).
+3. [x] **`unity/` created** in batchmode: URP (mobile), Input System, UI Toolkit, Test Framework; player settings (Gloamvault, `com.gloamvault.game`, landscape only, IL2CPP ARM64, Vulkan + GLES3, min API 29, target API 36, 60 fps); the release keystore in `Documents\Gloamvault\keys\` (made 2026-10-30, RSA 2048, alias `gloamvault`); `.gitignore` and `.gitattributes` for Unity. The first open treated the folder as a new project and wrote Unity's default packages (purchasing, analytics, collab, 2D, …) into the manifest — the lean manifest was restored and setup re-run. URP mobile asset: MSAA 4×, HDR off, main light + 4 per-pixel lights, 1024 shadow maps, 25 m shadow distance, soft shadows.
+4. [x] **`tools/unity/`** wrappers + `npm run unity:test | unity:shots | unity:build | unity:install | unity:log`; each prints the errors from Unity's log; `make-key.ps1` (once). Fixed on the first run: ASCII-only scripts (PowerShell 5.1 reads BOM-less files as ANSI), quoted `Start-Process` arguments (the space in "Dungeon Crawler").
+5. [x] **First screen:** a UI Toolkit title (Gloamvault, version, Continue/New greyed "coming in Phase 20") over a dark backdrop, and the **speed overlay** (fps, frame ms, draw calls, triangles, memory, battery temperature) that logs one line a second. `unity:test` 13/13 (12 EditMode, 1 PlayMode — the PlayMode assembly had been Editor-only, which Unity treats as EditMode). `unity:shots` → `title.png`, `title-perf.png`, read: the disabled buttons were see-through (now solid and muted), the overlay button now follows the overlay, memory reads in GB, the torches' lights moved off the pillar faces (a flat stripe). Batchmode shows 0 draw calls (it renders only on request) — the phone gives the real numbers.
+6. [ ] **On the phone:** James turns on USB debugging and plugs in; Claude installs, launches, reads two minutes of overlay lines and the temperature.
+7. [ ] Verify (`npm run verify`, `unity:test`, `unity:shots` read), commit `P9: …`, push, `gh run list`, the phone checklist below, **stop**.
 
 ## Checkpoint 1 task list (done)
 
@@ -119,6 +131,8 @@ Monster techniques guaranteed by the 10th witnessed use (`09` §4; tuning + `ins
 - 2026-10-28 — Phase 7: Gravehollow complete (8 floors, the Crypts and the Vault, four boss arenas) and the systems (Tiers IV–V, techniques, Tomes, items to S, sets, relics, Pacts, Hard/Dread, contracts, pet growth, arrows), the balance pass; v0.7.0. Commit `f43da95`, deployed.
 
 ## Decisions logged this segment
+
+- Checkpoint 2 / Phase 9: D-135 Unity (**Accepted**, James) · D-136 free-roam exploration (**Accepted**, James) · D-137 small phases, a stop after each (**Accepted**, James) · D-138 a large app installed over USB, the Play Store later (**Accepted**, James) · D-139 the TS sim inside Unity via Jint (Proposed — Phase 10 decides) · D-140 the Unity stack (Proposed).
 
 - Phase 8: D-130 sound · D-131 onboarding and information · D-132 accessibility, performance, assets · D-133 the Segment 2 balance pass · D-134 the bugs found (models never cached offline).
 - Phase 7: D-118 the rule fixes · D-119 skills as built · D-120 items as built (the Skysteel milestone) · D-121 floors 4–8 · D-122 the bosses and arenas · D-123 Pacts, contracts, pets, arrows · D-124 the runner and the careful player · D-125 the Vault pets · D-126 save version 4 · D-127 control, rounds and the wipe · D-128 the balance pass (the boss party-size row).

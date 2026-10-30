@@ -1,8 +1,16 @@
 # 10 — Tech Plan
 
-*Last updated 2026-10-29 · rev. 8c (Phase 8, pass C: §4 measured — the dips were shader compiles, not the mist; programs kept and compiled before showing) · rev. 8a (Phase 8, pass A: §2's audio and §3's `src/audio/` as built) · rev. 8b (Phase 8, pass B: §6 the backup reminder as built) · rev. 7 (Phase 6: §4 measured; the room, monster and effects modules and the gallery in the client map — D-110–D-117) · rev. 6 (Phase 5: the character modules, the viewer, looks in the save — profile version 3, the model index) · rev. 5 (checkpoint 1: open questions answered by delegation — D-099; save version 2 and the Hall of Nightmares key — D-095) · rev. 4 (Phase 4: the town, the save, the screens and the client map as built; James's death and party rules, D-087–D-094) · rev. 3 (Claude; rev. 2 after Phase 1 built the skeleton: the §3 layout notes on the Vite root, the three TypeScript projects and Node-direct tools, and the §7 screenshot viewport — D-048, D-052; rev. 3 after Phase 2 built the sim: the §3 module map). The engine decision is D-002 in `13-DECISIONS.md`; the research behind it is `docs/research/2026-10-26-tech-engine-android-coop.md` (which recommended Godot + APK under an "APK on GitHub" framing — §1 below says why the web path wins for James specifically).*
+*Last updated 2026-10-29 · rev. 9 (checkpoint 2: §1 the Unity decision — D-135; §2.1 the Unity stack — D-140; §3, §4, §5, §7 marked for Unity; the web plan kept as the record of Segments 1–2) · rev. 8c (Phase 8, pass C: §4 measured — the dips were shader compiles, not the mist; programs kept and compiled before showing) · rev. 8a (Phase 8, pass A: §2's audio and §3's `src/audio/` as built) · rev. 8b (Phase 8, pass B: §6 the backup reminder as built) · rev. 7 (Phase 6: §4 measured; the room, monster and effects modules and the gallery in the client map — D-110–D-117) · rev. 6 (Phase 5: the character modules, the viewer, looks in the save — profile version 3, the model index) · rev. 5 (checkpoint 1: open questions answered by delegation — D-099; save version 2 and the Hall of Nightmares key — D-095) · rev. 4 (Phase 4: the town, the save, the screens and the client map as built; James's death and party rules, D-087–D-094) · rev. 3 (Claude; rev. 2 after Phase 1 built the skeleton: the §3 layout notes on the Vite root, the three TypeScript projects and Node-direct tools, and the §7 screenshot viewport — D-048, D-052; rev. 3 after Phase 2 built the sim: the §3 module map). The engine decision is D-002 in `13-DECISIONS.md`; the research behind it is `docs/research/2026-10-26-tech-engine-android-coop.md` (which recommended Godot + APK under an "APK on GitHub" framing — §1 below says why the web path wins for James specifically).*
 
-## 1. The decision: a web app installed from GitHub Pages
+## 1. The decision (checkpoint 2, D-135): a Unity app for Android
+
+**From Phase 9, Gloamvault is rebuilt as a Unity 6.3 LTS app** (6000.3.27f1) for Android, installed on James's Galaxy S25 Ultra over a USB cable to this PC (D-138), and later published on Google Play. James chose it at checkpoint 2: *"I think I would like to attempt unity. I believe we can upgrade everything pretty substantially if we do that."* It comes with free-roam exploration (D-136) and small phases (D-137).
+
+Why it is worth the rebuild: a native app reaches the phone's full graphics power (Vulkan rather than WebGL in Chrome), can be as large as it needs to be (James: *"I am okay with it being much larger"*), and is the road to the Play Store. What it costs: the web version's link-and-install, its automatic updates and its WebRTC-in-the-browser co-op plan (co-op's networking is re-decided before it is built, §5); about sixteen small phases before the Unity version does everything the web version does.
+
+What carries over unchanged: the design docs; the content JSON, its schemas and linter; the Blender build scripts (they gain FBX exports); and — if Phase 10's test passes — the TypeScript sim, its tests, replays and balance runner, run inside Unity by Jint (D-139). **The web version stays live at its link, frozen at v0.8.0 (fixes only), until Phase 24.**
+
+### 1.1 Segments 1–2: a web app installed from GitHub Pages (D-002, superseded by D-135)
 
 **Gloamvault is a TypeScript + three.js web app (an installable PWA) hosted on GitHub Pages**, exactly the way Wildsong Ranch already reaches James's phone: open the link in Chrome on the S25 Ultra → *Install app* → it runs full-screen and offline, and every push to `main` updates it within minutes.
 
@@ -23,6 +31,16 @@ The one real cost is rendering headroom; §4 budgets for it. If Phase 6 cannot h
 
 ## 2. Stack (keep it; ask before adding a dependency)
 
+### 2.1 The Unity stack (from Phase 9; D-140, Proposed)
+
+- **Unity 6.3 LTS** (6000.3.27f1) with Android Build Support (its own SDK, NDK and OpenJDK), the free **Personal** licence (James signs in to Unity Hub once). Editors live in `C:Usersjjones1UnityHubEditor`; the Hub is an MSIX app and its command line runs headless (`tools/unity/`).
+- **URP** (the mobile pipeline asset) · **UI Toolkit** for every screen and the HUD (UXML + USS: text files, flexbox and CSS-like styles, so the Preact screens port) · **Input System** (on-screen stick and buttons) · **Unity Test Framework** (EditMode and PlayMode tests in batchmode).
+- Android: **IL2CPP, ARM64 only, Vulkan with a GLES3 fallback, landscape only**, minimum API 29, target API 36 (Play's rule for new apps), package id `com.gloamvault.game`, one release key from the first build (kept in `DocumentsGloamvaultkeys`, never in the repo).
+- **The sim** stays TypeScript, bundled into one JS file and run by **Jint** behind a JSON bridge (D-139; Phase 10 decides). **Models** arrive as FBX from the Blender scripts; **sound** as audio files rendered from the web engine; **saves** as JSON files in the app's storage.
+- Everything Claude Code writes is text (C#, UXML, USS, shader code, scene-building scripts); Unity runs in **batchmode** only. Unity cannot open a project in batchmode while the editor has it open.
+
+### 2.2 The web stack (Segments 1–2; frozen at v0.8.0)
+
 - **Vite** (current major) + **TypeScript** `strict` + **Preact 10** + `@preact/signals` for every 2D screen and the in-fight HUD (the pattern Wildsong Ranch uses; Claude Code knows it).
 - **three.js** (current release, pinned) for the dungeon, town and character viewer: `GLTFLoader` (+ `KTX2Loader`/Draco optional), `AnimationMixer`, `SkinnedMesh`, custom toon `ShaderMaterial`, inverted-hull outlines, `EffectComposer` only for a cheap bloom on element glows.
 - **Sim**: a pure TypeScript package `sim/` — no DOM, no `Math.random`, no `Date.now`, integer math, seeded PCG32/xoshiro RNG, `createDelve / legalActions / step / runAuto / replay / hashState`. Policies for tests and auto-play in `sim/src/policies.ts`. (Project Ascend's `@ascend/sim` is the pattern.)
@@ -35,6 +53,8 @@ The one real cost is rendering headroom; §4 budgets for it. If Phase 6 cannot h
 - **Tooling on the PC**: Node 24 LTS, npm ≥ 11, Git, GitHub CLI, VS Code + Claude Code, Blender 5.2 (headless only), Google Chrome.
 
 ## 3. Architecture
+
+**Unity (from Phase 9).** `unity/` is the Unity project (`Assets/Gloamvault/` — Scripts by area with assembly definitions, UI as UXML/USS, Shaders, Scenes built by editor scripts; `Packages/`; `ProjectSettings/`); `Library/`, `Temp/`, `Logs/`, `obj/`, `Build/` and `UserSettings/` are never committed. `tools/unity/` holds the PowerShell wrappers behind `npm run unity:*`. The sim reaches Unity as a bundle built from `sim/` (Phase 10) and the content as one JSON bundle built from `content/`, both generated, never edited. The web layout below stays the reference until Phase 24.
 
 ```
 gloamvault/
@@ -108,6 +128,8 @@ As built in Phase 1 (D-048): one `package.json` at the root (no workspaces); the
 
 ## 4. Rendering budgets for the Galaxy S25 Ultra (WebGL2 in Chrome)
 
+*Unity (D-135): these budgets are the web version's. The Unity budgets are **measured on the phone itself in Phase 14** (a 10-minute soak of a large seamless floor over USB: frame time, draw calls, triangles, memory, battery temperature) and written here then; until then the Unity build starts from the numbers below, which the web version already holds at 60 fps. James (checkpoint 2): the phone can take far more than these numbers ask of it — Phase 14 finds out how much.*
+
 The S25 Ultra's Adreno 830 throttles to ~50% of peak GPU within 3–4 minutes (research §4). Design for the **sustained** budget:
 
 | Knob | Budget (starting point) |
@@ -139,6 +161,8 @@ each fetched the first time it is needed.
 
 ## 5. Multiplayer
 
+*Unity (D-135): the **model** below — a deterministic sim, a host that sequences commands, seed + command log, hashes, late join, host migration — carries over unchanged. The **transports** (Trystero WebRTC and the Cloudflare relay) were chosen for a browser and are re-decided, with James, before co-op is built (Phases 25+).*
+
 **Model (D-014):** the sim is deterministic; one phone is the **host**; clients send *intents*, the host validates against `legalActions`, assigns a sequence number and broadcasts `{seq, command}`; everyone applies commands in order. A match is **seed + command log** → replays, desync detection (state hash every 20 commands), save-and-resume, late join (snapshot + log tail), **host migration** (lowest remaining peer re-hosts from its log; same invite code).
 
 | Phase | Transport | What it needs | Notes |
@@ -162,6 +186,8 @@ Pacing rules live in the rulebook §10.2 (grouped decision windows, 20 s timer, 
 - **Wildsong Ranch import** (Segment 3, `14-IDEAS.md`): read a Wildsong share code (its `src/save/shareCode.ts` format) → map LIF/POW/INT/SKI/SPD/DEF onto a pet of grade ≤ A → tag *Ranch-raised*. One-way.
 
 ## 7. Build, deploy, verify
+
+**Unity (from Phase 9).** `npm run unity:test` (EditMode tests in batchmode) · `npm run unity:shots` (renders the screen set to `unity/shots/` at the phone's 2,340 × 1,080 — Claude Code reads the PNGs) · `npm run unity:build` (the release-signed APK in `unity/Build/`) · `npm run unity:install` (`adb install -r` and launch on the phone over USB) · `npm run unity:log` (the game's lines from the phone log — the speed overlay writes one a second). Each wrapper prints the errors from Unity's log. `npm run verify` keeps covering the sim, the content and the web version; GitHub Actions keeps deploying the web version; Unity builds run on this PC (a Unity licence on CI would need James's account in a secret — not planned).
 
 - `npm run dev` (http://localhost:5173/gloamvault/; `-- --host` to play on the phone over Wi-Fi), `npm run build`, `npm run preview`.
 - `npm run verify` = `typecheck` + `test` (Vitest) + `lint` (content) + `build` + `check:build` (bundle budgets: app code ≤ 600 KB gz and the content data ≤ 300 KB gz on its own line — D-129 — precache ≤ 8 MB, models runtime-cached). **Run before every commit.**

@@ -2,7 +2,7 @@
 
 This folder already contains everything Claude needs: the rulebook (`docs/03-GAME-DESIGN.md`), the content (`docs/04`–`09`), the tech and art plans (`docs/10`–`11`), the build order (`docs/12-ROADMAP.md`), the decision log (`docs/13-DECISIONS.md`) and Claude's standing instructions (`CLAUDE.md`, which Claude Code reads automatically). Your job: paste a prompt, play on your phone when asked, answer the questions at the end of each segment, and repeat.
 
-The build runs in **three segments** of four phases each (`docs/12-ROADMAP.md`). Inside a segment Claude works on its own, makes the calls, logs them, commits and pushes as it goes, and gives you a phone checklist after every phase. At the end of a segment it writes `docs/feedback/SEGMENT-<n>-REVIEW.md` with everything it wants your feedback on — and stops until you answer.
+**Since checkpoint 2 (2026-10-29) the game is being rebuilt in Unity in small phases** (`docs/12-ROADMAP.md` §3). Claude builds one phase, installs it on your phone over the USB cable, gives you a 2–3 item checklist in `STATUS.md` — and **stops** until you paste the **Next phase prompt**. At Phases 14, 19 and 24 it also writes a review file in `docs/feedback/` with its questions. (Segments 1 and 2 ran as four phases at a time; their prompts are kept below as history.)
 
 **Before your first run:** you already did this for Wildsong Ranch — Node.js (24+), Git, the GitHub CLI signed in (`gh auth login`), VS Code with Claude Code, Google Chrome, Blender 5.2. If anything is missing, `..\Monster Rancher\docs\PHONE_AND_GITHUB_SETUP.md` Part A has the plain-English steps, or just tell Claude Code "help me install [thing]".
 
@@ -16,7 +16,13 @@ The build runs in **three segments** of four phases each (`docs/12-ROADMAP.md`).
 
 ---
 
-## Segment 1 prompt (paste once)
+## Next phase prompt (paste after each phase, once you have tried it on your phone)
+
+```
+Next phase. My phone check: [what worked / what didn't — "all good" is fine]. Re-read CLAUDE.md, STATUS.md and the next phase in docs/12-ROADMAP.md §3; log anything I said in docs/13-DECISIONS.md and the docs first. Plan the phase, build it, run the checks, install it on my phone over USB (it is plugged in), read its log, commit and push, write the phone checklist in STATUS.md, and stop.
+```
+
+## Segment 1 prompt (history — Segment 1 is done)
 
 ```
 You're building Gloamvault, an original co-op dungeon-crawler game I want to play on my Galaxy S25 Ultra with friends. Everything you need is in this folder: CLAUDE.md (your standing rules), README.md (the map and where we are), docs/03-GAME-DESIGN.md (the rulebook), docs/04–09 (classes, species, monsters, dungeons, items, skills), docs/10-TECH-PLAN.md, docs/11-ART-PIPELINE.md, docs/12-ROADMAP.md (the phases), docs/13-DECISIONS.md and content/ (the schemas). I'm not a programmer, so explain things simply and tell me exactly what to click whenever you need me.
@@ -34,13 +40,13 @@ Do this:
 For the whole project follow CLAUDE.md — especially: the docs are the source of truth, decide-and-log instead of asking, numbers are tuning starting points that live in content, look at your screenshots and renders before calling anything done, originality, phone-first landscape, and the deterministic pure sim.
 ```
 
-## Segment 2 prompt (paste after you've answered the Segment 1 review)
+## Segment 2 prompt (history — Segment 2 is done)
 
 ```
 Let's run SEGMENT 2 = Phases 5, 6, 7 and 8 of docs/12-ROADMAP.md. First re-read CLAUDE.md, STATUS.md, docs/12-ROADMAP.md and docs/feedback/SEGMENT-1-REVIEW.md with my answers, and make sure every answer is logged in docs/13-DECISIONS.md (Accepted / Superseded) and reflected in the docs before you start. Then work the four phases the same way as Segment 1: plan mode and a task list in STATUS.md per phase, small steps with tests, verify/lint/balance/shots green, docs and decisions updated, commit "P<n>: …" and push, a phone checklist per phase, no mid-segment questions except the money/publish/delete/one-time-approval cases. Phase 5 and 6 are Blender work: drive Blender headless from tools/blender, render the review set every round, look at the renders, and log each round in art/LOG.md. After Phase 8, write docs/feedback/SEGMENT-2-REVIEW.md (template in docs/feedback/) and stop.
 ```
 
-## Segment 3 prompt (paste after you've answered the Segment 2 review)
+## Segment 3 prompt (history — replaced at checkpoint 2 by the Next phase prompt, D-137)
 
 ```
 Let's run SEGMENT 3 = Phases 9, 10, 11 and 12 of docs/12-ROADMAP.md. Re-read CLAUDE.md, STATUS.md, docs/12-ROADMAP.md and docs/feedback/SEGMENT-2-REVIEW.md with my answers; log every answer in docs/13-DECISIONS.md and update the docs first. Phase 9 is co-op: when you reach the relay, tell me exactly how to create the free Cloudflare account and what to paste back to you, then continue. For the Wildsong Ranch import in Phase 11, the other game's code is in ..\Monster Rancher (read its src/save/shareCode.ts and docs/GAME_DESIGN.md §4–5 for the monster format) and the mapping is in docs/14-IDEAS.md §A. Same working rules as before. After Phase 12, tag v1.0.0, write docs/feedback/SEGMENT-3-REVIEW.md with the launch checklist and the post-launch backlog, and stop.
@@ -49,7 +55,7 @@ Let's run SEGMENT 3 = Phases 9, 10, 11 and 12 of docs/12-ROADMAP.md. Re-read CLA
 ## Continue prompt (paste in a fresh chat whenever a session ended or you typed /clear)
 
 ```
-Continue building Gloamvault. Read CLAUDE.md, then STATUS.md (where you were), then the current phase in docs/12-ROADMAP.md and the doc sections it touches. Pick up exactly where STATUS.md says, finish the phase (verify green, docs and decision log updated, commit and push, phone checklist in STATUS.md), and carry on through the rest of the current segment under the same rules. Stop only at the end of the segment (write the review) or for the money/publish/delete/one-time-approval cases.
+Continue building Gloamvault. Read CLAUDE.md, then STATUS.md (where you were), then the current phase in docs/12-ROADMAP.md and the doc sections it touches. Pick up exactly where STATUS.md says, finish the phase (verify green, docs and decision log updated, commit and push, phone checklist in STATUS.md), and stop at the end of that phase (D-137). Stop earlier only for the money/publish/delete/one-time-step cases.
 ```
 
 ## Feedback prompt (paste with your answers after playing)

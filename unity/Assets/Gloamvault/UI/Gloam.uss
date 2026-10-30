@@ -1,0 +1,27 @@
+/* Gloamvault's shared look (from the web version's client/src/ui/styles/base.css): dark panels, warm ink, ember accents.
+   Sizes are the web's CSS px: the panel's reference resolution is the phone's landscape viewport, 892 × 412 (D-052). */
+:root {
+    --bg: #120f14;
+    --bg-raised: #1e1922;
+    --bg-panel: rgba(30, 25, 34, 0.86);
+    --line: #3a3340;
+    --ink: #e8e2d6;
+    --ink-dim: #a69e92;
+    --ember: #ffb347;
+    --ember-deep: #c2410c;
+    --radius: 14px;
+    color: var(--ink);
+    font-size: 16px;
+}
+
+Label {
+    color: var(--ink);
+    white-space: normal;
+    margin: 0;
+    padding: 0;
+}
+
+Button {
+    margin: 0;
+    -unity-text-align: middle-left;
+}
