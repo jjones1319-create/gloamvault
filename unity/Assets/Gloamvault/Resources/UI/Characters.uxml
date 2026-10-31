@@ -1,0 +1,50 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="Characters.uss" />
+    <ui:VisualElement name="chars" class="chars" picking-mode="Ignore">
+        <ui:VisualElement class="chars__top">
+            <ui:VisualElement class="chars__tabs">
+                <ui:Button name="tabHeroes" text="Heroes" class="chars__tab chars__tab--on" />
+                <ui:Button name="tabMonsters" text="Monsters" class="chars__tab" />
+            </ui:VisualElement>
+            <ui:VisualElement name="heroPickers" class="chars__pickers">
+                <ui:VisualElement class="chars__picker">
+                    <ui:Button name="speciesPrev" text="◀" class="chars__arrow" />
+                    <ui:Label name="species" text="Human" class="chars__value" />
+                    <ui:Button name="speciesNext" text="▶" class="chars__arrow" />
+                </ui:VisualElement>
+                <ui:VisualElement class="chars__picker">
+                    <ui:Button name="classPrev" text="◀" class="chars__arrow" />
+                    <ui:Label name="class" text="Warden" class="chars__value" />
+                    <ui:Button name="classNext" text="▶" class="chars__arrow" />
+                </ui:VisualElement>
+                <ui:VisualElement class="chars__picker">
+                    <ui:Button name="facePrev" text="◀" class="chars__arrow" />
+                    <ui:Label name="face" text="Face" class="chars__value" />
+                    <ui:Button name="faceNext" text="▶" class="chars__arrow" />
+                </ui:VisualElement>
+                <ui:Button name="tier" text="Fine (S)" class="chars__btn" />
+                <ui:Button name="frame" text="Broad" class="chars__btn" />
+            </ui:VisualElement>
+            <ui:VisualElement name="monsterPickers" class="chars__pickers" style="display: none;">
+                <ui:VisualElement class="chars__picker">
+                    <ui:Button name="zonePrev" text="◀" class="chars__arrow" />
+                    <ui:Label name="zone" text="Cellars" class="chars__value" />
+                    <ui:Button name="zoneNext" text="▶" class="chars__arrow" />
+                </ui:VisualElement>
+                <ui:VisualElement class="chars__picker chars__picker--wide">
+                    <ui:Button name="monsterPrev" text="◀" class="chars__arrow" />
+                    <ui:Label name="monster" text="Giant Rat" class="chars__value" />
+                    <ui:Button name="monsterNext" text="▶" class="chars__arrow" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="stage" class="chars__stage" />
+        <ui:VisualElement class="chars__bottom">
+            <ui:ScrollView name="clipsScroll" class="chars__clips" mode="Horizontal">
+                <ui:VisualElement name="clips" class="chars__clipRow" />
+            </ui:ScrollView>
+            <ui:Label name="stats" text="" class="chars__stats" />
+            <ui:Button name="back" text="Back" class="chars__btn chars__btn--primary" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

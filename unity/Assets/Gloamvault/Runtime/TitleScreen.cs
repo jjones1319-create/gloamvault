@@ -31,6 +31,10 @@ namespace Gloamvault
             // Phase 11: the Rooms viewer — the thirty templates built from the kits (D-158).
             document.rootVisualElement.Q<Button>("rooms").clicked += () => RoomsScreen.Open(document);
             if (Boot.LaunchMode.StartsWith("room:")) RoomsScreen.Open(document, Boot.LaunchMode.Substring(5));
+            // Phase 12: the Characters viewer — every hero and monster (D-160).
+            document.rootVisualElement.Q<Button>("characters").clicked += () => CharactersScreen.Open(document);
+            if (Boot.LaunchMode.StartsWith("hero:")) CharactersScreen.Open(document, hero: Boot.LaunchMode.Substring(5));
+            if (Boot.LaunchMode.StartsWith("monster:")) CharactersScreen.Open(document, monster: Boot.LaunchMode.Substring(8));
             lastSafeArea = Rect.zero;
         }
 

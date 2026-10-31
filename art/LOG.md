@@ -2634,3 +2634,14 @@ The four kits (shared 12, Cellars 40, Crypts 41, Vault 35 pieces) exported as FB
 3. Round 1: the Crypts' bier candle ring lit the floor like a floodlight (a candle's flame carried a torch's strength). → A strength by kind: candle 0.22, lamp 0.6, torch 1, fire and brazier 1.1.
 4. The brazier and the sconces throw real soft shadows; the Vault's lamps pool light on the water; the caustic shimmers; the fog and the background colour are the zone's.
 5. Left for later: the flames are unlit blobs (the sprite VFX come with the fight's effects); the mist and web pieces are drawn but not yet checked in a shot; door leaves do not open (Phase 13); no outline on rooms (as on the web, D-099).
+
+#### Phase 12 · Heroes and monsters in Unity — 2026-10-31 — the GLBs as FBX, the first Unity character shots
+
+The 16 hero files and 16 monster bases converted from the shipped GLBs by `npm run unity:models` (D-160): every mesh with its vertex colours, the rig, the sockets, the shape keys and the actions. Unity shots read beside the Blender reviews:
+
+1. `hero-card.png` (Dwarf Warden, fine gear) beside `art/review/hero/gear/warden/poses_S_broad.jpg`: the same hero — the blue plate, the red tabard, the orange trim, the beard, the thin dark outline. The helmet hides the hair; the body under the armour is cut by the region mask.
+2. Round 1: the hero faced away (the import's front is +z; the viewer turns the character 180°) and stood in the dark (the title's hall lights it as a backdrop, not a stage) → a warm key light with soft shadows.
+3. Round 2: every hero a black silhouette, then the whole view black: the outline hull's width came from `_ScreenParams`, which the render-to-texture path does not fill, so the hull inflated to cover the screen in its own near-black. → The width goes by depth alone, capped at 2 cm.
+4. Round 3: saturated blue and magenta under the stage light; bisected to the second directional light (the rim) as an *additional* light — the key alone, with its shadows, is right. → One key light; the cause stays open in D-160.
+5. `heroes-matrix.png`: all 36 species × class heroes in Idle; `monsters-<zone>.png`: each zone's monsters at their scale in a line; `monster-old-gnaw.png`, `monster-king.png`.
+6. Known gaps: the ooze stands still (its shape-key clips do not come through the FBX); the King's throne and phases, Naesa's arms and the Deep Maw's ring wait for the fight (Phase 19); eight pets have no model yet (capsules, D-117).

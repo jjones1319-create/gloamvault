@@ -25,8 +25,8 @@ namespace Gloamvault.EditorTools
         public const string BootScene = Root + "/Scenes/Boot.unity";
         public const string PackageId = "com.gloamvault.game";
         /// <summary>The app's version: 0.&lt;phase&gt;.&lt;fix&gt;; the version code must rise with every build James installs.</summary>
-        public const string Version = "0.11.0";
-        public const int VersionCode = 11;
+        public const string Version = "0.12.0";
+        public const int VersionCode = 12;
 
         public static void Run()
         {

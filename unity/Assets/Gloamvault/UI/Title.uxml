@@ -22,6 +22,7 @@
             <ui:Button name="overlay" text="Speed overlay: off" class="menu__btn menu__btn--text" />
             <ui:Button name="rules" text="Rules check" class="menu__btn menu__btn--text" />
             <ui:Button name="rooms" text="Rooms" class="menu__btn menu__btn--text" />
+            <ui:Button name="characters" text="Characters" class="menu__btn menu__btn--text" />
         </ui:VisualElement>
         <ui:Label name="version" class="version" />
         <ui:Label name="perf" class="perf" picking-mode="Ignore" />

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.IO;
+using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -61,6 +62,83 @@ namespace Gloamvault.Tests
             screen.SetLight(20);
             yield return new WaitForSecondsRealtime(2.5f);
             yield return ShotCapture.Capture("room-dark");
+        }
+
+        [UnityTest]
+        public IEnumerator Characters()
+        {
+            yield return Scenes.Load(Scenes.Boot);
+            yield return new WaitForSecondsRealtime(1f);
+            var doc = Object.FindFirstObjectByType<UIDocument>();
+            var screen = CharactersScreen.Open(doc, "dwarf,warden,S");
+            yield return new WaitForSecondsRealtime(1f);
+            yield return ShotCapture.Capture("hero-card");
+            screen.Play("Attack_Heavy");
+            yield return new WaitForSecondsRealtime(0.45f);
+            yield return ShotCapture.Capture("hero-swing");
+            screen.ShowMonster("old-gnaw");
+            yield return new WaitForSecondsRealtime(1f);
+            yield return ShotCapture.Capture("monster-old-gnaw");
+            screen.ShowMonster("hollow-king");
+            yield return new WaitForSecondsRealtime(1f);
+            yield return ShotCapture.Capture("monster-king");
+        }
+
+        /// <summary>Every species × class at once, and every monster of a zone in a line — the web's matrix and lineups.</summary>
+        [UnityTest]
+        public IEnumerator Lineups()
+        {
+            yield return Scenes.Load(Scenes.Boot);
+            yield return new WaitForSecondsRealtime(0.5f);
+            var cam = Camera.main;
+            var stage = Gloamvault.CharactersScreen.StageLight(Vector3.zero);
+            var built = new System.Collections.Generic.List<Gloamvault.Characters.Character>();
+            int i = 0;
+            foreach (var species in Gloamvault.Characters.HeroLibrary.SpeciesIds)
+            {
+                int j = 0;
+                foreach (var cls in Gloamvault.Characters.HeroLibrary.Classes)
+                {
+                    var c = Gloamvault.Characters.HeroAssembler.Build(new Gloamvault.Characters.HeroSpec { speciesId = species, classId = cls, tier = "S" });
+                    c.root.transform.position = new Vector3((j - 2.5f) * 1.5f, 0, (i - 2.5f) * 1.6f);
+                    c.root.transform.rotation = Quaternion.Euler(0, Gloamvault.CharactersScreen.FaceCamera, 0);
+                    c.animator.Play("Idle");
+                    built.Add(c);
+                    j++;
+                }
+                i++;
+            }
+            cam.transform.position = new Vector3(0, 6.5f, -9.5f);
+            cam.transform.LookAt(new Vector3(0, 0.8f, 0.5f));
+            cam.fieldOfView = 50f;
+            yield return new WaitForSecondsRealtime(1f);
+            yield return ShotCapture.Capture("heroes-matrix");
+            foreach (var c in built) c.Destroy();
+            built.Clear();
+
+            foreach (var zone in Gloamvault.CharactersScreen.Zones)
+            {
+                var list = Gloamvault.Characters.MonsterBuilder.Data.list.Where(m => m.zone == zone && !string.IsNullOrEmpty(m.entry)).ToList();
+                float x = -(list.Count - 1) * 0.5f * 1.4f;
+                foreach (var m in list)
+                {
+                    var c = Gloamvault.Characters.MonsterBuilder.Build(Gloamvault.Characters.MonsterBuilder.Data.Entry(m.entry));
+                    c.root.transform.position = new Vector3(x, 0, 0);
+                    c.root.transform.rotation = Quaternion.Euler(0, Gloamvault.CharactersScreen.FaceCamera, 0);
+                    c.animator.Play("Idle");
+                    built.Add(c);
+                    x += 1.4f;
+                }
+                float width = Mathf.Max(6f, list.Count * 1.4f);
+                cam.transform.position = new Vector3(0, 2.2f, -width * 0.62f - 2f);
+                cam.transform.LookAt(new Vector3(0, 1.0f, 0));
+                cam.fieldOfView = 50f;
+                yield return new WaitForSecondsRealtime(1f);
+                yield return ShotCapture.Capture("monsters-" + zone);
+                foreach (var c in built) c.Destroy();
+                built.Clear();
+            }
+            Object.Destroy(stage);
         }
     }
 

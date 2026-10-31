@@ -89,12 +89,33 @@ def _fbx_supported(kwargs):
     return {k: v for k, v in kwargs.items() if k in props}
 
 
-def export_fbx(path, objects, at_origin=True, extra=None):
+RIGGED_FBX_SETTINGS = dict(
+    object_types={'MESH', 'ARMATURE', 'EMPTY'},  # the rig and the socket empties come too
+    bake_space_transform=False,                  # a skinned mesh keeps its armature's frame; Unity applies the axes
+    bake_anim=True,                              # every action as a take, named <armature>|<action>
+    bake_anim_use_all_bones=True,
+    bake_anim_use_nla_strips=False,
+    bake_anim_use_all_actions=True,
+    bake_anim_force_startend_keying=True,
+    bake_anim_step=1.0,
+    bake_anim_simplify_factor=0.0,
+    primary_bone_axis='Y',
+    secondary_bone_axis='X',
+    armature_nodetype='NULL',
+    use_mesh_modifiers=False,                    # shape keys survive only when modifiers are not applied
+)
+
+
+def export_fbx(path, objects, at_origin=True, extra=None, rigged=False):
     """
     Exports exactly `objects` to an FBX for Unity (D-140, Phase 11): metres, -Z forward / Y up baked into the vertices,
     linear vertex colours, custom normals. With `at_origin` every top-level object is moved to the origin for the
-    export and put back (a kit's pieces are a library, not a layout). Returns the file size in KB.
+    export and put back (a kit's pieces are a library, not a layout). `rigged` (Phase 12): armatures, socket empties,
+    shape keys and every action as an animation take — for heroes and monsters. Returns the file size in KB.
     """
+    if rigged:
+        at_origin = False
+        extra = dict(RIGGED_FBX_SETTINGS, **(extra or {}))
     os.makedirs(os.path.dirname(path), exist_ok=True)
     saved = {}
     if at_origin:

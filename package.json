@@ -26,6 +26,7 @@
     "balance": "node tools/balance/run.ts",
     "unity:setup": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/unity/setup.ps1",
     "unity:bundle": "node tools/unity/bundle.ts",
+    "unity:models": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/unity/models.ps1",
     "unity:rules": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/unity/rules.ps1",
     "unity:test": "npm run unity:bundle && powershell -NoProfile -ExecutionPolicy Bypass -File tools/unity/test.ps1",
     "unity:shots": "npm run unity:bundle && powershell -NoProfile -ExecutionPolicy Bypass -File tools/unity/shots.ps1",
