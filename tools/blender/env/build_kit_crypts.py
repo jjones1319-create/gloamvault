@@ -572,7 +572,8 @@ def main():
                   'cry-t-wardens-vigil': {'east': 'cry_door_secret', 'west': 'cry_door_secret'}}
     kb = kl.export_kit(kit, GLB, MANIFEST, shell=shell,
                        about='The Crypts kit (07 §2.2): the 22 cry_ pieces, the cut-away shell, and the props the Crypts templates and the Barrow Warden\'s arena name.',
-                       extra={'notes': NOTES, 'floorMix': {}, 'substitute': {}, 'doorSkins': door_skins})
+                       extra={'notes': NOTES, 'floorMix': {}, 'substitute': {}, 'doorSkins': door_skins},
+                       fbx_path=None if a.get('no_fbx') else kl.unity_fbx_path('crypts'))
     worst, n = check_codes()
     log('kit_crypts.glb %.1f KB; COLOR_0 R worst distance from a whole slot code %.5f over %d vertices' % (kb, worst, n))
     report = {'glbKB': round(kb, 1), 'slotCodeWorst': worst,

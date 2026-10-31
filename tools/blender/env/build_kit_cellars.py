@@ -1584,14 +1584,15 @@ def main():
         log('baked AO in %.1f s' % (time.time() - t0))
     if not NO_EXPORT:
         os.makedirs(K.ENV_MODELS, exist_ok=True)
+        fbx = lambda zone: None if ARGS.get('no_fbx') else K.unity_fbx_path(zone)  # noqa: E731  (Phase 11: the kits for Unity too)
         K.export_kit(shr, os.path.join(K.ENV_MODELS, 'kit_shared.glb'), os.path.join(K.ENV_MODELS, 'shared.json'),
-                     shell=None, about=SHARED_ABOUT + ' Conventions: tools/blender/env/kit_lib.py.')
+                     shell=None, about=SHARED_ABOUT + ' Conventions: tools/blender/env/kit_lib.py.', fbx_path=fbx('shared'))
         shell = dict(SHELL)
         shell.update(SHELL_EXTRA)
         K.export_kit(cel, os.path.join(K.ENV_MODELS, 'kit_cellars.glb'), os.path.join(K.ENV_MODELS, 'cellars.json'),
                      shell=shell, about=CELLARS_ABOUT + ' Conventions: tools/blender/env/kit_lib.py.',
                      extra={'floorMix': {k: [[m, p] for m, p in v] for k, v in FLOOR_MIX.items()},
-                            'substitute': SUBSTITUTE})
+                            'substitute': SUBSTITUTE}, fbx_path=fbx('cellars'))
     save_blend(os.path.join(BUILD, 'kit_cellars.blend'))
     for line in report([shr, cel]):
         print(line)

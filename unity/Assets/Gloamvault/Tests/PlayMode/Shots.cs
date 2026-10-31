@@ -43,6 +43,25 @@ namespace Gloamvault.Tests
             yield return new WaitForSecondsRealtime(0.5f);
             yield return ShotCapture.Capture("rules");
         }
+
+        [UnityTest]
+        public IEnumerator Rooms()
+        {
+            yield return Scenes.Load(Scenes.Boot);
+            yield return new WaitForSecondsRealtime(1f);
+            var doc = Object.FindFirstObjectByType<UIDocument>();
+            var screen = RoomsScreen.Open(doc, "cel-t-guardpost");
+            foreach (var (id, name) in new[] { ("cel-t-guardpost", "room-cellars"), ("cry-t-wardens-vigil", "room-crypts"), ("vlt-t-throne", "room-vault") })
+            {
+                screen.ShowById(id);
+                yield return new WaitForSecondsRealtime(1.2f);
+                yield return ShotCapture.Capture(name);
+            }
+            screen.ShowById("cel-t-guardpost");
+            screen.SetLight(20);
+            yield return new WaitForSecondsRealtime(2.5f);
+            yield return ShotCapture.Capture("room-dark");
+        }
     }
 
     public static class ShotCapture

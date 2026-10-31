@@ -18,6 +18,7 @@ import vm from 'node:vm'
 import { build } from 'vite'
 import * as direct from '../../sim/src/bridge.ts'
 import { readContentFiles } from '../sim/loadContent.ts'
+import { writeEnv } from './env.ts'
 
 /** A hash every EVERY steps; at most CAP steps a case. RulesCheck.cs reads both from golden.json. */
 const EVERY = 20
@@ -129,5 +130,8 @@ fs.mkdirSync(OUT, { recursive: true })
 fs.writeFileSync(path.join(OUT, 'sim.js.txt'), code)
 fs.writeFileSync(path.join(OUT, 'content.json'), contentJson)
 fs.writeFileSync(path.join(OUT, 'golden.json'), JSON.stringify({ bridge: direct.BRIDGE_VERSION, every: EVERY, cap: CAP, node: { runMs: ms(runMs), initMs: ms(initMs) }, cases }, null, 1))
+// The rooms' data (Phase 11): the templates and the kit manifests reshaped for JsonUtility.
+console.log(writeEnv())
+
 const kb = (s: string) => `${(Buffer.byteLength(s) / 1024).toFixed(0)} KB`
 console.log(`unity:bundle → ${path.relative(process.cwd(), OUT)}: sim.js.txt ${kb(code)} · content.json ${kb(contentJson)} (${info['files']} files) · golden.json ${cases.length} cases · Node start-up ${ms(runMs)} + ${ms(initMs)} ms`)

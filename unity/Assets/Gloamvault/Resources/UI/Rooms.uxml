@@ -1,0 +1,21 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="Rooms.uss" />
+    <ui:VisualElement name="rooms" class="rooms" picking-mode="Ignore">
+        <ui:VisualElement class="rooms__top">
+            <ui:Button name="prev" text="◀" class="rooms__arrow" />
+            <ui:VisualElement class="rooms__title" picking-mode="Ignore">
+                <ui:Label name="name" text="Room" class="rooms__name" />
+                <ui:Label name="zone" text="" class="rooms__zone" />
+            </ui:VisualElement>
+            <ui:Button name="next" text="▶" class="rooms__arrow" />
+        </ui:VisualElement>
+        <ui:VisualElement class="rooms__bottom">
+            <ui:VisualElement class="rooms__light">
+                <ui:Label name="lightLabel" text="Light 100" class="rooms__lightLabel" />
+                <ui:Slider name="light" low-value="0" high-value="100" value="100" class="rooms__slider" />
+            </ui:VisualElement>
+            <ui:Label name="stats" text="" class="rooms__stats" />
+            <ui:Button name="back" text="Back" class="rooms__btn rooms__btn--primary" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

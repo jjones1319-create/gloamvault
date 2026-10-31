@@ -28,6 +28,9 @@ namespace Gloamvault
             // Phase 10: the Rules check — the golden delves played by the rules engine inside the app (D-139).
             document.rootVisualElement.Q<Button>("rules").clicked += () => RulesCheckScreen.Open(document, run: true);
             if (Boot.LaunchMode == "rules") RulesCheckScreen.Open(document, run: true);
+            // Phase 11: the Rooms viewer — the thirty templates built from the kits (D-158).
+            document.rootVisualElement.Q<Button>("rooms").clicked += () => RoomsScreen.Open(document);
+            if (Boot.LaunchMode.StartsWith("room:")) RoomsScreen.Open(document, Boot.LaunchMode.Substring(5));
             lastSafeArea = Rect.zero;
         }
 

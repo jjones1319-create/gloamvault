@@ -1937,6 +1937,10 @@ def export_kit(objs):
     for p, ob, parts, empties in objs:
         sel += [ob] + parts + empties
     kb = export_glb(GLB, sel)
+    if not ARGS.get('no_fbx'):
+        # The same pieces for Unity (Phase 11, D-140): meshes only; the pieces already sit at the origin here.
+        from export import export_fbx
+        export_fbx(K.unity_fbx_path('vault'), [o for o in sel if o.type == 'MESH'], at_origin=False)
     for p, ob, parts, empties in objs:
         ob.location = saved[ob.name]
     bpy.context.view_layer.update()

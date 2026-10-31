@@ -2624,3 +2624,13 @@ from the file at Idle, Attack1 and Death. `manifest.json` and `clips.json`: only
    only if the client asks for it (the entries' `clipMap` carries `Pinch`, `TideShell`, `Pilfer`, `Hex`).
 7. No Flee clip (`06` §9's pets do not flee).
 8. All review renders are `--quick` (8 samples).
+
+#### Phase 11 · Rooms in Unity — 2026-10-30 — the kits as FBX, the first Unity shots
+
+The four kits (shared 12, Cellars 40, Crypts 41, Vault 35 pieces) exported as FBX by the kit builds (`export_fbx`, D-158) and read in Unity: every mesh with its vertex colours, every slot code a whole number (worst error 0.000 over 45,000 vertices), custom normals kept; the import mirrors x, measured from `cel_wall_corner_in` and `shr_stairs_down`. The web's GLBs unchanged. Unity shots `unity/shots/room-cellars.png` (cel-t-guardpost), `room-crypts.png` (cry-t-wardens-vigil), `room-vault.png` (vlt-t-throne) and `room-dark.png` (the guardpost at light 20) read beside the Blender renders:
+
+1. The layouts match the renders piece for piece — doors on the right walls, the table, the brazier for the campfire, the banner, the bone shelves and the bier, the throne and its water — so the mirror and the camera agree.
+2. Round 1: the Cellars' bricks pale and washed out at full light. Two causes: the web's hemisphere (meant for a room with no shadows) on top of real torches, and the palette passed to the shader as sRGB numbers in a linear pipeline. → The hemisphere at 0.6, a light's strength capped at the ramp's top, the palette converted to linear.
+3. Round 1: the Crypts' bier candle ring lit the floor like a floodlight (a candle's flame carried a torch's strength). → A strength by kind: candle 0.22, lamp 0.6, torch 1, fire and brazier 1.1.
+4. The brazier and the sconces throw real soft shadows; the Vault's lamps pool light on the water; the caustic shimmers; the fog and the background colour are the zone's.
+5. Left for later: the flames are unlit blobs (the sprite VFX come with the fight's effects); the mist and web pieces are drawn but not yet checked in a shot; door leaves do not open (Phase 13); no outline on rooms (as on the web, D-099).

@@ -89,7 +89,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 LIB = os.path.join(os.path.dirname(HERE), 'lib')
 if LIB not in sys.path:
     sys.path.insert(0, LIB)
-from common import CONTENT, MODELS, TOOLS, hexcol, log, read_json, write_json  # noqa: E402
+from common import CONTENT, MODELS, REPO, TOOLS, hexcol, log, read_json, write_json  # noqa: E402
 import toon  # noqa: E402
 
 # ---------------------------------------------------------------------------------------------------- constants
@@ -1351,7 +1351,12 @@ def game_bounds(objects):
             'max': [round(hi.x, 3) + 0.0, round(hi.z, 3) + 0.0, round(-lo.y, 3) + 0.0]}
 
 
-def export_kit(kit, glb_path, json_path, shell=None, about=None, extra=None):
+def unity_fbx_path(zone):
+    """Where the Unity app reads a kit: unity/Assets/Gloamvault/Resources/Env/kit_<zone>.fbx (generated, git-ignored)."""
+    return os.path.join(REPO, 'unity', 'Assets', 'Gloamvault', 'Resources', 'Env', 'kit_%s.fbx' % zone)
+
+
+def export_kit(kit, glb_path, json_path, shell=None, about=None, extra=None, fbx_path=None):
     """Writes the kit's .glb (pieces named by meshId at the origin, parts and points as children, extras kind / zone /
     tris / role) and the piece list the client reads: {zone, about, palette, shell, pieces: {meshId: {tris, budget,
     role, bounds, parts, lights, fx, …info}}}. Coordinates in the .json are game space (`at`, `pivot`, `bounds`)."""
@@ -1378,6 +1383,9 @@ def export_kit(kit, glb_path, json_path, shell=None, about=None, extra=None):
         entry.update(p.info)
         pieces[p.id] = entry
     kb = gexport.export_glb(glb_path, objs)
+    if fbx_path:
+        # The same pieces for Unity (Phase 11, D-140): meshes only — the lights and fx points are in the .json.
+        gexport.export_fbx(fbx_path, [o for o in objs if o.type == 'MESH'])
     data = {'zone': kit.zone, 'about': about or '', 'palette': kit.colours, 'shell': shell, 'pieces': pieces}
     data.update(extra or {})
     write_json(json_path, data)

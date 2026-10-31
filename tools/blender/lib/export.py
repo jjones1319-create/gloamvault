@@ -65,6 +65,65 @@ def export_glb(path, objects, animations=False, animation_mode='ACTIONS', extra=
     return kb
 
 
+FBX_SETTINGS = dict(
+    use_selection=True,
+    object_types={'MESH'},
+    apply_scale_options='FBX_SCALE_ALL',   # metres stay metres in Unity (no 100× unit scale)
+    axis_forward='-Z',
+    axis_up='Y',
+    bake_space_transform=True,              # the axis change baked into the vertices: identity transforms in Unity
+    use_mesh_modifiers=True,
+    mesh_smooth_type='OFF',                 # per-loop (custom split) normals written as they are
+    use_custom_props=True,
+    colors_type='LINEAR',                   # the `gv` codes as linear floats: slot/15 stays a whole code
+    add_leaf_bones=False,
+    use_armature_deform_only=True,
+    bake_anim=False,
+    embed_textures=False,
+    path_mode='AUTO',
+)
+
+
+def _fbx_supported(kwargs):
+    props = bpy.ops.export_scene.fbx.get_rna_type().properties.keys()
+    return {k: v for k, v in kwargs.items() if k in props}
+
+
+def export_fbx(path, objects, at_origin=True, extra=None):
+    """
+    Exports exactly `objects` to an FBX for Unity (D-140, Phase 11): metres, -Z forward / Y up baked into the vertices,
+    linear vertex colours, custom normals. With `at_origin` every top-level object is moved to the origin for the
+    export and put back (a kit's pieces are a library, not a layout). Returns the file size in KB.
+    """
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    saved = {}
+    if at_origin:
+        for ob in objects:
+            if ob.parent is None or ob.parent not in objects:
+                saved[ob] = ob.matrix_world.copy()
+                ob.matrix_world = ob.matrix_world.__class__.Translation((0.0, 0.0, 0.0)) @ ob.matrix_world.to_3x3().to_4x4()
+        bpy.context.view_layer.update()
+    try:
+        for o in bpy.context.view_layer.objects:
+            o.select_set(False)
+        for ob in objects:
+            ob.hide_viewport = False
+            ob.hide_set(False)
+            ob.select_set(True)
+        bpy.context.view_layer.objects.active = objects[0]
+        kw = dict(FBX_SETTINGS)
+        kw.update(extra or {})
+        bpy.ops.export_scene.fbx(filepath=path, **_fbx_supported(kw))
+    finally:
+        for ob, m in saved.items():
+            ob.matrix_world = m
+        if saved:
+            bpy.context.view_layer.update()
+    kb = os.path.getsize(path) / 1024
+    log('exported', os.path.relpath(path, REPO), '%.1f KB' % kb)
+    return kb
+
+
 def stash_actions(arm_ob, names):
     """Puts each named action on its own muted NLA track so the ACTIONS export mode writes all of them (Ascend's lesson)."""
     adt = arm_ob.animation_data or arm_ob.animation_data_create()
