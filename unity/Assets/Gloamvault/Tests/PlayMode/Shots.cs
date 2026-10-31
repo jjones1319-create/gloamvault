@@ -84,6 +84,52 @@ namespace Gloamvault.Tests
             yield return ShotCapture.Capture("monster-king");
         }
 
+        [UnityTest]
+        public IEnumerator Walk()
+        {
+            yield return Scenes.Load(Scenes.Boot);
+            yield return new WaitForSecondsRealtime(0.5f);
+            var doc = Object.FindFirstObjectByType<UIDocument>();
+            var screen = WalkScreen.Open(doc, "cel-t-guardpost");
+            screen.Stick.Set(new Vector2(0.4f, 0.6f));
+            yield return new WaitForSecondsRealtime(0.8f);
+            screen.Stick.Set(Vector2.zero);
+            yield return new WaitForSecondsRealtime(0.4f);
+            yield return ShotCapture.Capture("walk-room");
+
+            // Beside a door, opened.
+            var door = screen.Room.doors[0];
+            var centre = screen.Room.root.transform.position;
+            var inward = centre - door.transform.position; inward.y = 0; inward.Normalize();
+            var hero = screen.Hero.root.transform;
+            screen.Mover.controller.enabled = false;
+            hero.position = door.transform.position + inward * 1.4f;
+            hero.rotation = Quaternion.LookRotation(-inward, Vector3.up);
+            screen.Mover.controller.enabled = true;
+            yield return null;
+            screen.Interactor.Update(hero, screen.Room.doors);
+            screen.Act();
+            yield return new WaitForSecondsRealtime(1.2f);
+            yield return ShotCapture.Capture("walk-door");
+
+            screen.CycleCamera();
+            yield return new WaitForSecondsRealtime(1.0f);
+            yield return ShotCapture.Capture("walk-far");
+
+            screen.ShowById("cry-t-wardens-vigil");
+            yield return null;
+            var gate = screen.Room.doors[0];
+            var inward2 = screen.Room.root.transform.position - gate.transform.position; inward2.y = 0; inward2.Normalize();
+            var hero2 = screen.Hero.root.transform;
+            screen.Mover.controller.enabled = false;
+            hero2.position = gate.transform.position + inward2 * 1.6f;
+            hero2.rotation = Quaternion.LookRotation(-inward2, Vector3.up);
+            screen.Mover.controller.enabled = true;
+            gate.Open();
+            yield return new WaitForSecondsRealtime(1.2f);
+            yield return ShotCapture.Capture("walk-crypts");
+        }
+
         /// <summary>Every species × class at once, and every monster of a zone in a line — the web's matrix and lineups.</summary>
         [UnityTest]
         public IEnumerator Lineups()

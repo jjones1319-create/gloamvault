@@ -35,6 +35,9 @@ namespace Gloamvault
             document.rootVisualElement.Q<Button>("characters").clicked += () => CharactersScreen.Open(document);
             if (Boot.LaunchMode.StartsWith("hero:")) CharactersScreen.Open(document, hero: Boot.LaunchMode.Substring(5));
             if (Boot.LaunchMode.StartsWith("monster:")) CharactersScreen.Open(document, monster: Boot.LaunchMode.Substring(8));
+            // Phase 13: walking — the stick, the follow camera, doors that open with A (D-162).
+            document.rootVisualElement.Q<Button>("walk").clicked += () => WalkScreen.Open(document);
+            if (Boot.LaunchMode.StartsWith("walk:")) WalkScreen.Open(document, Boot.LaunchMode.Substring(5));
             lastSafeArea = Rect.zero;
         }
 

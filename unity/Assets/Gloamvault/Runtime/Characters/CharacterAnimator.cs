@@ -25,7 +25,24 @@ namespace Gloamvault.Characters
         int current = -1;
         float fade, fadeTime = 0.12f;
         public float speed = 1f;
+        float timeScale = 1f;
         public string Current { get; private set; }
+
+        /// <summary>The current clip's playback rate (a walk cycle matched to the hero's metres per second).</summary>
+        public void SetTimeScale(float scale)
+        {
+            timeScale = Mathf.Clamp(scale, 0.2f, 3f);
+            if (current >= 0 && slots[current].IsValid()) slots[current].SetSpeed(timeScale * speed);
+        }
+
+        /// <summary>The clip's metres per second at 1× (clips.json `speed`), 0 when unknown.</summary>
+        public float MetresPerSecond(string name)
+        {
+            var clip = Resolve(name);
+            if (clip == null) return 0f;
+            string n = clip.name; int bar = n.LastIndexOf('|'); if (bar >= 0) n = n.Substring(bar + 1);
+            return infos.TryGetValue(n, out var i) ? i.speed : 0f;
+        }
         public bool Ready => graph.IsValid();
 
         public void Setup(Animator animator, IEnumerable<AnimationClip> available, IEnumerable<ClipInfo> clipInfos, IDictionary<string, string> clipAliases = null)
@@ -64,6 +81,7 @@ namespace Gloamvault.Characters
         {
             var clip = Resolve(name);
             if (clip == null || !graph.IsValid()) return false;
+            timeScale = 1f;
             string resolved = clip.name;
             int rbar = resolved.LastIndexOf('|');
             if (rbar >= 0) resolved = resolved.Substring(rbar + 1);
@@ -76,7 +94,9 @@ namespace Gloamvault.Characters
             slots[next] = AnimationClipPlayable.Create(graph, clip);
             slots[next].SetApplyFootIK(false);
             slots[next].SetTime(start);
-            slots[next].SetSpeed((info?.speed > 0 ? info.speed : 1f) * speed);
+            // A clip's `speed` in clips.json is metres per second at 1× (a walk covers 1.067 m a loop), not a playback
+            // rate; the mover sets the time scale from how fast the hero really moves.
+            slots[next].SetSpeed(timeScale * speed);
             if (!clip.isLooping && !(info?.loop ?? false)) slots[next].SetDuration(clip.length);
             mixer.ConnectInput(next, slots[next], 0, current < 0 ? 1f : 0f);
             if (current >= 0) mixer.SetInputWeight(current, 1f);

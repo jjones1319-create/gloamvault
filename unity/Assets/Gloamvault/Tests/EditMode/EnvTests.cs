@@ -109,7 +109,7 @@ namespace Gloamvault.Tests
         static Template Square(int w, int h, params (string side, int offset)[] doors) => new Template
         {
             id = "test", kit = "cellars", w = w, h = h,
-            doors = doors.Select(d => new Door { side = d.side, offset = d.offset }).ToArray(),
+            doors = doors.Select(d => new TemplateDoor { side = d.side, offset = d.offset }).ToArray(),
             camera = new CameraSpec { position = new[] { 0f, 7.5f, -10.6f }, lookAt = new[] { 0f, 1f, 0f }, fov = 40 },
             props = new Prop[0], triBudget = 40000, drawCallBudget = 40,
         };

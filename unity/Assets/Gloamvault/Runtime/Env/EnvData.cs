@@ -38,14 +38,14 @@ namespace Gloamvault.Env
         public string kit;
         public int w;
         public int h;
-        public Door[] doors;
+        public TemplateDoor[] doors;
         public CameraSpec camera;
         public Prop[] props;
         public int triBudget;
         public int drawCallBudget;
     }
 
-    [Serializable] public sealed class Door { public string side; public int offset; }
+    [Serializable] public sealed class TemplateDoor { public string side; public int offset; }
     [Serializable] public sealed class CameraSpec { public float[] position; public float[] lookAt; public float fov; }
     [Serializable] public sealed class Prop { public string meshId; public float[] position; public float rotationY; public bool lightSource; }
 
@@ -99,6 +99,8 @@ namespace Gloamvault.Env
         public string[] floorWhole;
         public Doorway[] doorways;
         public float tile, segment, doorwayWidth, wallHeight, wallThickness, cutHeight;
+        /// <summary>The 2 m opening in a 4 m doorway piece: its width, the arch's spring and apex heights.</summary>
+        public Opening opening;
 
         public string DoorwayOf(string kind)
         {
@@ -126,10 +128,13 @@ namespace Gloamvault.Env
         /// <summary>x0, z0, x1, z1 in the piece's own space: floor tiles under it are not drawn.</summary>
         public float[] hole;
         public bool extra;
+        /// <summary>A step's height to stand on (the Crypts' altar step), 0 for the floor.</summary>
+        public float raised;
     }
 
+    [Serializable] public sealed class Opening { public float width = 2f; public float spring = 2.1f; public float apex = 3.1f; }
     [Serializable] public sealed class Bounds3 { public float[] min; public float[] max; }
-    [Serializable] public sealed class Part { public string name; public string part; public float[] pivot; public string axis; }
+    [Serializable] public sealed class Part { public string name; public string part; public float[] pivot; public string axis; public string note; }
     [Serializable] public sealed class Flame { public string name; public string kind; public float[] at; public string color; }
     [Serializable] public sealed class Fx { public string name; public string kind; public float[] at; }
     [Serializable] public sealed class FloorMix { public string templateId; public Weighted[] mix; }

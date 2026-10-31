@@ -1,0 +1,142 @@
+/* The Walk screen (Phase 13): the stick bottom-left, A bottom-right, the room picker and camera button along the top. */
+.walk {
+    flex-grow: 1;
+    align-self: stretch;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.walk__top {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
+.walk__picker {
+    flex-direction: row;
+    align-items: center;
+    background-color: var(--bg-panel);
+    border-width: 1px;
+    border-color: var(--line);
+    border-radius: var(--radius);
+}
+
+.walk__arrow {
+    width: 44px;
+    min-height: 40px;
+    font-size: 16px;
+    -unity-text-align: middle-center;
+    background-color: transparent;
+    border-width: 0;
+    color: var(--ink);
+}
+
+.walk__room {
+    min-width: 170px;
+    font-size: 14px;
+    -unity-text-align: middle-center;
+    color: var(--ink);
+}
+
+.walk__stats {
+    font-size: 11px;
+    color: var(--ink-dim);
+    text-shadow: 0 1px 2px #000000;
+    margin: 6px 10px;
+    flex-grow: 1;
+    -unity-text-align: upper-center;
+}
+
+.walk__right {
+    flex-direction: row;
+}
+
+.walk__btn {
+    min-height: 40px;
+    padding: 0 14px;
+    margin-left: 8px;
+    font-size: 14px;
+    -unity-text-align: middle-center;
+    background-color: var(--bg-panel);
+    border-width: 1px;
+    border-color: var(--line);
+    border-radius: var(--radius);
+    color: var(--ink);
+}
+
+.walk__btn--primary {
+    min-width: 100px;
+    background-color: var(--ember-deep);
+    border-color: #e0702a;
+}
+
+.walk__bottom {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+}
+
+/* The stick zone: a wide, tall area for the left thumb; the ring moves to where the thumb lands. */
+.walk__stickZone {
+    width: 300px;
+    height: 220px;
+    position: relative;
+}
+
+.walk__ring {
+    position: absolute;
+    left: 60px;
+    top: 50px;
+    width: 150px;
+    height: 150px;
+    border-radius: 75px;
+    border-width: 2px;
+    border-color: rgba(232, 226, 214, 0.35);
+    background-color: rgba(30, 25, 34, 0.45);
+    align-items: center;
+    justify-content: center;
+}
+
+.walk__knob {
+    width: 60px;
+    height: 60px;
+    border-radius: 30px;
+    background-color: rgba(255, 179, 71, 0.8);
+    border-width: 2px;
+    border-color: #ffd9a8;
+}
+
+.walk__action {
+    flex-direction: column;
+    align-items: center;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+.walk__prompt {
+    margin-bottom: 8px;
+    padding: 4px 10px;
+    font-size: 14px;
+    -unity-font-style: bold;
+    color: var(--ember);
+    background-color: var(--bg-panel);
+    border-radius: 10px;
+    text-shadow: 0 1px 2px #000000;
+}
+
+.walk__a {
+    width: 96px;
+    height: 96px;
+    border-radius: 48px;
+    font-size: 30px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    color: #1a1218;
+    background-color: var(--ember);
+    border-width: 3px;
+    border-color: #ffd9a8;
+}
+
+.walk__a:active {
+    background-color: #e0702a;
+}

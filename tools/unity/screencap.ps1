@@ -1,7 +1,7 @@
 # tools/unity/screencap.ps1 - a screenshot from the phone over USB (Phase 11). -Room <templateId> first (re)starts
 # the installed app on that room (the launch extra gv=room:<id>), waits -Wait seconds, and also prints the overlay's
 # last perf line. Writes unity/shots/phone-<name>.png. ASCII only (PowerShell 5.1).
-param([string]$Room = '', [string]$Hero = '', [string]$Monster = '', [string]$Name = '', [int]$Wait = 6)
+param([string]$Room = '', [string]$Hero = '', [string]$Monster = '', [string]$Walk = '', [string]$Name = '', [int]$Wait = 6)
 . (Join-Path $PSScriptRoot 'common.ps1')
 
 $adb = Get-Adb
@@ -9,7 +9,7 @@ $devices = & $adb devices | Select-Object -Skip 1 | Where-Object { $_ -match '\t
 if (-not $devices) { & $adb devices; throw 'No phone found (plugged in, USB debugging on, this computer allowed?).' }
 $package = 'com.gloamvault.game'
 $extra = ''
-if ($Room) { $extra = "room:$Room" } elseif ($Hero) { $extra = "hero:$Hero" } elseif ($Monster) { $extra = "monster:$Monster" }
+if ($Room) { $extra = "room:$Room" } elseif ($Hero) { $extra = "hero:$Hero" } elseif ($Monster) { $extra = "monster:$Monster" } elseif ($Walk) { $extra = "walk:$Walk" }
 if ($extra) {
     $resolved = & $adb shell cmd package resolve-activity --brief $package | Select-Object -Last 1
     $activity = "$resolved".Trim()

@@ -1,0 +1,28 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="Walk.uss" />
+    <ui:VisualElement name="walk" class="walk" picking-mode="Ignore">
+        <ui:VisualElement class="walk__top" picking-mode="Ignore">
+            <ui:VisualElement class="walk__picker">
+                <ui:Button name="prev" text="◀" class="walk__arrow" />
+                <ui:Label name="room" text="Room" class="walk__room" />
+                <ui:Button name="next" text="▶" class="walk__arrow" />
+            </ui:VisualElement>
+            <ui:Label name="stats" text="" class="walk__stats" picking-mode="Ignore" />
+            <ui:VisualElement class="walk__right">
+                <ui:Button name="camera" text="Camera: normal" class="walk__btn" />
+                <ui:Button name="back" text="Back" class="walk__btn walk__btn--primary" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement class="walk__bottom" picking-mode="Ignore">
+            <ui:VisualElement name="stickZone" class="walk__stickZone">
+                <ui:VisualElement name="ring" class="walk__ring" picking-mode="Ignore">
+                    <ui:VisualElement name="knob" class="walk__knob" picking-mode="Ignore" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement class="walk__action" picking-mode="Ignore">
+                <ui:Label name="prompt" text="" class="walk__prompt" picking-mode="Ignore" />
+                <ui:Button name="a" text="A" class="walk__a" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

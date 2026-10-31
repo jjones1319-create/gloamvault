@@ -60,7 +60,7 @@ function manifest(zone: Zone) {
     tris: p.tris ?? 0,
     role: p.role ?? '',
     bounds: { min: vec(p.bounds?.min), max: vec(p.bounds?.max) },
-    parts: ((p.parts ?? []) as any[]).map((q) => ({ name: q.name, part: q.part, pivot: vec(q.pivot), axis: q.axis ?? 'y' })),
+    parts: ((p.parts ?? []) as any[]).map((q) => ({ name: q.name, part: q.part, pivot: vec(q.pivot), axis: q.axis ?? 'y', note: q.note ?? '' })),
     lights: ((p.lights ?? []) as any[]).map((l) => ({ name: l.name, kind: l.kind, at: vec(l.at), color: flameColour(id, zone) })),
     fx: ((p.fx ?? []) as any[]).map((f) => ({ name: f.name, kind: f.kind, at: vec(f.at) })),
     mount: p.mount ?? '',
@@ -71,6 +71,7 @@ function manifest(zone: Zone) {
     hasHole: Array.isArray(p.hole),
     hole: Array.isArray(p.hole) ? p.hole.slice(0, 4) : [0, 0, 0, 0],
     extra: p.extra === true,
+    raised: typeof p.raised === 'number' ? p.raised : 0,
   }))
   const dict = (o: Record<string, any> | undefined) => Object.entries(o ?? {})
   return {
@@ -96,6 +97,7 @@ function manifest(zone: Zone) {
       wallHeight: shell.wallHeight ?? 3.5,
       wallThickness: shell.wallThickness ?? 0.4,
       cutHeight: shell.cutHeight ?? 0.55,
+      opening: { width: shell.opening?.width ?? 2, spring: shell.opening?.spring ?? 2.1, apex: shell.opening?.apex ?? 3.1 },
     },
     pieces,
     floorMix: dict(m['floorMix']).map(([templateId, mix]) => ({ templateId, mix: weighted(mix as Weighted[]) })),

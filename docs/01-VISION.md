@@ -12,7 +12,7 @@ Four friends, one phone each, a torch, and a keep that sank into its own catacom
 2. **Everything grows by use.** Skills, attributes, weapons, armor, pets, field skills. No point-placing after creation, no grinding on walls — only meaningful actions against things that can hurt you.
 3. **Care for your things.** Gear wears; neglected gear breaks; repaired, upgraded, promoted gear outlasts fresh finds. The blacksmith is the most visited door in town.
 4. **Better together, fine alone.** One to four players; grouped decision windows so nobody waits; a pet beside every hero; solo is a complete game, not a demo.
-5. **Readable on a phone.** Landscape, one thumb for a fight, fixed cameras, big silhouettes, a floor in a coffee break, a delve in an evening.
+5. **Readable on a phone.** Landscape, one thumb for a fight and one on the stick, a follow camera you set the distance of (D-159; fixed cameras in fights), big silhouettes, a floor in a coffee break, a delve in an evening.
 
 ## Audience
 
@@ -32,7 +32,7 @@ Grim places, warm people. The dungeon is wet stone, bone and brass under torchli
 
 ## What this game is not
 
-Not an action RPG (no joystick), not a gacha for money (chests cost dungeon gold only), not consequence-free (under the default **Mortal** rule a hero who dies stays dead unless raised — D-088; **Sheltered** is the gentle choice and **Nightmare** the one where your chosen hero's death ends the save — D-095), not a live-service (no server state), not realistic (stylized, readable).
+Not an action RPG (a joystick walks the floor since D-136, but every fight is turn-based and every stat a number), not a gacha for money (chests cost dungeon gold only), not consequence-free (under the default **Mortal** rule a hero who dies stays dead unless raised — D-088; **Sheltered** is the gentle choice and **Nightmare** the one where your chosen hero's death ends the save — D-095), not a live-service (no server state), not realistic (stylized, readable).
 
 ## Names (D-001; James can rename at checkpoint 1)
 

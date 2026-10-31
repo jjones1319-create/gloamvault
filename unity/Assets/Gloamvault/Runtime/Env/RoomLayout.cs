@@ -163,7 +163,7 @@ namespace Gloamvault.Env
         /// The shell and the props of a template, in game space. `camX, camZ` is the horizontal direction from the
         /// look-at point to the camera; `variation` is the room's variant seed (0 in the viewer).
         /// </summary>
-        public static List<Placement> Build(Template t, KitManifest kit, KitManifest shared, float camX, float camZ, int variation = 0)
+        public static List<Placement> Build(Template t, KitManifest kit, KitManifest shared, float camX, float camZ, int variation = 0, IDictionary<string, string> doorKinds = null)
         {
             var o = new List<Placement>();
             var shell = kit.shell;
@@ -240,7 +240,9 @@ namespace Gloamvault.Env
                     if (piece)
                     {
                         var (px, pz) = at(c);
-                        string id = low ? shell.doorwayCut : (skinFor(side) ?? shell.doorway);
+                        // The door's kind for this side (a floor's data, or the walk viewer's choice), else the template's skin, else the open arch.
+                        string kindId = doorKinds != null && doorKinds.TryGetValue(side, out var kind) && !string.IsNullOrEmpty(kind) ? shell.DoorwayOf(kind) : null;
+                        string id = low ? shell.doorwayCut : (kindId ?? skinFor(side) ?? shell.doorway);
                         if (string.IsNullOrEmpty(id)) id = shell.doorway;
                         o.Add(new Placement { role = Role.Doorway, meshId = id, x = px, z = pz, yaw = yaw, low = low, side = side });
                         roll.Next();
