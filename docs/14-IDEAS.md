@@ -40,3 +40,5 @@
 - **Commissioned heads** for the six species once the pipeline is proven (`11` §10) — the one step a script will not reach.
 - **Animated portraits** in dialogue (the base-mesh heads have mouths and eyes; a few shape keys).
 - **Monster part-break visuals** — the limb actually falls off (the part-break mechanic exists; the mesh split is art work).
+
+- **A first-person view while exploring** (James, 2026-10-31; D-159): a Settings toggle after Floor 1 plays well in third person — it hides the hero and the gear, so it is an option, never the default.

@@ -167,6 +167,10 @@ Monster techniques guaranteed by the 10th witnessed use (`09` §4; tuning + `ins
 - Phase 5: D-100 two body frames · D-101 the palette and one-draw-call heroes · D-102 the rig fitted by cuts, the sockets · D-103 gear built from the body, tiers F/S · D-104 Gravehollow at 8 floors in the docs (Phase 7 prep) · D-105 a hero's look in the save · D-106 how the client dresses a hero · D-107 fight clips · D-108 content-hashed model URLs · D-109 review renders curated.
 - Checkpoint 1: D-095 Nightmare (**Accepted**, James) · D-096 battle XP split, scaled by the level gap to the party's average (**Accepted**, James) · D-097 each level costs more (**Accepted**, James) · D-098 the twelve answers; every Segment 1 Proposed line Accepted (C1) · D-099 the docs' open questions.
 
+## Open for James (Phase 11 stop)
+
+- D-159: the exploring camera — third person with three distances you cycle (close · normal · far), built in Phase 13; first person kept as a later Settings option. Confirm or change.
+
 ## Open from Phase 11 (small, for the next build)
 
 - The Rooms viewer's zone line wraps on the phone's narrower safe area ("4 doors" on a second line): `white-space: nowrap` on `.rooms__zone`.
