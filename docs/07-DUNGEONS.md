@@ -434,6 +434,8 @@ A hunter shows on the minimap as a pulsing ring two rooms out; its arrival is a 
 
 Floor seed = `hash(matchSeed, dungeonId, floorNumber)` from the host's 64-bit seed (`03` §11.1); integer PRNG only; sorted iteration; identical on every phone. The grammar makes a **mission graph**, then **lays it out** on the 8×6 grid with templates, then **decorates**.
 
+*Unity (Phase 14, D-163): a walked level is many rooms on one grid joined door to door (`unity/…/Runtime/Level/`, the walls inset so touching rooms share no face); the test level generates such a grid from the 30 templates with halls between rooms, and Phase 15 lays Floor 1 out by hand in the same shape (D-150). The grammar below still shapes the generated floors of Phase 26+, at the larger sizes of D-149.*
+
 **Start symbol and rewrite rules** (`{a–b}` = repeat a to b times, chosen by the seed; `|` = alternatives; `?` = optional; weights in brackets):
 
 ```

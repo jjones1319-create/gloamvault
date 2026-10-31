@@ -39,7 +39,6 @@ namespace Gloamvault.Env
         readonly GameObject root;
         LightLook current, target;
         float camDistance = 12f;
-        Material glowMaterial;
 
         public RoomLighting(Room room, Vector3 focus, Camera camera, int light = 100)
         {
@@ -92,23 +91,7 @@ namespace Gloamvault.Env
             return l;
         }
 
-        GameObject MakeGlow(Vector3 at, Color color, string kind)
-        {
-            glowMaterial ??= new Material(Shader.Find("Universal Render Pipeline/Unlit")) { name = "Flame glow" };
-            var go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            go.name = "Flame " + kind;
-            go.transform.SetParent(root.transform, false);
-            go.transform.position = at;
-            float size = kind == "candle" ? 0.08f : kind == "brazier" || kind == "fire" ? 0.34f : 0.16f;
-            go.transform.localScale = new Vector3(size * 0.8f, size * 1.4f, size * 0.8f);
-            Object.Destroy(go.GetComponent<Collider>());
-            var mr = go.GetComponent<MeshRenderer>();
-            var m = new Material(glowMaterial) { color = Color.Lerp(color, Color.white, 0.35f) };
-            mr.sharedMaterial = m;
-            mr.shadowCastingMode = ShadowCastingMode.Off;
-            mr.receiveShadows = false;
-            return go;
-        }
+        GameObject MakeGlow(Vector3 at, Color color, string kind) => FlameGlow.Make(root.transform, at, color, kind);
 
         /// <summary>Sets the light meter's target; <see cref="Tick"/> eases toward it.</summary>
         public void SetLight(int light) => target = LightLook.For(light);
@@ -145,6 +128,65 @@ namespace Gloamvault.Env
                 else l.intensity = web * IntensityPerWebUnit;
                 l.enabled = web > 0.01f;
             }
+        }
+    }
+
+    /// <summary>
+    /// A flame's unlit glow (Phase 11; shared since Phase 14): one material per flame colour and one low-poly blob
+    /// mesh for every glow in the game — a level streams dozens of rooms, and a material per glow was never freed.
+    /// </summary>
+    public static class FlameGlow
+    {
+        static readonly Dictionary<Color, Material> materials = new();
+        static Mesh blob;
+
+        public static Material MaterialFor(Color flame)
+        {
+            var c = Color.Lerp(flame, Color.white, 0.35f);
+            if (materials.TryGetValue(c, out var m) && m != null) return m;
+            m = new Material(Shader.Find("Universal Render Pipeline/Unlit")) { name = "Flame glow " + ColorUtility.ToHtmlStringRGB(c), color = c };
+            materials[c] = m;
+            return m;
+        }
+
+        /// <summary>A 16-triangle blob (a ring of eight round the middle, a top and a bottom) in a unit sphere.</summary>
+        public static Mesh Mesh
+        {
+            get
+            {
+                if (blob != null) return blob;
+                const int n = 8;
+                var v = new Vector3[n + 2];
+                v[0] = new Vector3(0, 0.5f, 0); v[1] = new Vector3(0, -0.5f, 0);
+                for (int i = 0; i < n; i++) { float a = i * Mathf.PI * 2f / n; v[2 + i] = new Vector3(Mathf.Cos(a) * 0.5f, 0f, Mathf.Sin(a) * 0.5f); }
+                var tri = new int[n * 6];
+                for (int i = 0; i < n; i++)
+                {
+                    int a = 2 + i, b = 2 + (i + 1) % n;
+                    tri[i * 6] = 0; tri[i * 6 + 1] = b; tri[i * 6 + 2] = a;
+                    tri[i * 6 + 3] = 1; tri[i * 6 + 4] = a; tri[i * 6 + 5] = b;
+                }
+                blob = new Mesh { name = "Flame glow blob", vertices = v, triangles = tri };
+                blob.RecalculateBounds();
+                return blob;
+            }
+        }
+
+        public static float SizeOf(string kind) => kind == "candle" ? 0.08f : kind == "brazier" || kind == "fire" ? 0.34f : 0.16f;
+
+        public static GameObject Make(Transform parent, Vector3 at, Color color, string kind)
+        {
+            var go = new GameObject("Flame " + kind);
+            go.transform.SetParent(parent, false);
+            go.transform.position = at;
+            float size = SizeOf(kind);
+            go.transform.localScale = new Vector3(size * 0.8f, size * 1.4f, size * 0.8f);
+            go.AddComponent<MeshFilter>().sharedMesh = Mesh;
+            var mr = go.AddComponent<MeshRenderer>();
+            mr.sharedMaterial = MaterialFor(color);
+            mr.shadowCastingMode = ShadowCastingMode.Off;
+            mr.receiveShadows = false;
+            return go;
         }
     }
 }

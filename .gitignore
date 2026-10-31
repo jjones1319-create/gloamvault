@@ -49,6 +49,10 @@ unity/Assets/Gloamvault/Resources/Monsters.meta
 unity/TestResults-*.xml
 unity/*.apk
 unity/*.aab
+# the phone soaks' raw logs (npm run unity:soak); the numbers go into docs/10-TECH-PLAN.md
+unity/soak/
+# Claude Code's personal permission settings for this machine
+.claude/settings.local.json
 # the signing key never enters the repo (it lives in Documents\Gloamvault\keys)
 *.keystore
 *.jks

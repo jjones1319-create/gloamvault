@@ -49,8 +49,12 @@ namespace Gloamvault.Env
         /// <summary>The layer the room's colliders live on (the walker and the camera cast against it).</summary>
         public const int RoomLayer = 0;
 
+        /// <summary>A prop lower than this casts no shadow (Phase 14: the point light's six faces draw every caster in range).</summary>
+        public const float ShadowCasterMinHeight = 0.5f;
+
         /// <param name="cutAway">Cut the side facing the template's camera low (the diorama viewer); false for a room walked with the follow camera.</param>
-        public static Room Build(Template t, int variation = 0, Transform parent = null, IDictionary<string, string> doorKinds = null, bool colliders = true, bool cutAway = true)
+        /// <param name="inset">How far the walls stand inside the edge (0.4 m for rooms that touch in a level; see <see cref="RoomLayout.Build"/>).</param>
+        public static Room Build(Template t, int variation = 0, Transform parent = null, IDictionary<string, string> doorKinds = null, bool colliders = true, bool cutAway = true, float inset = 0f)
         {
             var kit = KitLibrary.Load(t.kit);
             var shared = KitLibrary.Shared;
@@ -69,7 +73,7 @@ namespace Gloamvault.Env
             var doorsRoot = new GameObject("Doors");
             doorsRoot.transform.SetParent(room.root.transform, false);
 
-            var placements = RoomLayout.Build(t, kit.manifest, shared.manifest, camX, camZ, variation, doorKinds);
+            var placements = RoomLayout.Build(t, kit.manifest, shared.manifest, camX, camZ, variation, doorKinds, inset);
             room.placements.AddRange(placements);
             bool any = false;
             var bounds = new Bounds();
@@ -98,6 +102,8 @@ namespace Gloamvault.Env
                 var tag = go.AddComponent<RoomPiece>();
                 tag.meshId = p.meshId; tag.role = p.role; tag.side = p.side; tag.low = p.low; tag.placementIndex = index;
                 Dress(go, lib.manifest, piece, room);
+                if (p.role == RoomLayout.Role.Prop && piece?.bounds?.max != null && piece.bounds.max[1] - piece.bounds.min[1] < ShadowCasterMinHeight)
+                    foreach (var r in go.GetComponentsInChildren<MeshRenderer>()) r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
                 if (colliders) AddColliders(go, piece, p, lib.manifest, axes);
                 if (moving && p.role == RoomLayout.Role.Doorway)
                 {

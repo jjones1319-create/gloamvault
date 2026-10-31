@@ -38,8 +38,21 @@ namespace Gloamvault
             // Phase 13: walking — the stick, the follow camera, doors that open with A (D-162).
             document.rootVisualElement.Q<Button>("walk").clicked += () => WalkScreen.Open(document);
             if (Boot.LaunchMode.StartsWith("walk:")) WalkScreen.Open(document, Boot.LaunchMode.Substring(5));
+            // Phase 14: the test level and the soak (D-163); the frame rate choice (D-156).
+            document.rootVisualElement.Q<Button>("level").clicked += () => LevelScreen.Open(document, Boot.LaunchSeed, Boot.LaunchRooms);
+            var fpsButton = document.rootVisualElement.Q<Button>("fps");
+            fpsButton.clicked += () => { Boot.ApplyFrameRate(Boot.TargetFps >= 120 ? 60 : 120); SetFpsLabel(fpsButton); };
+            SetFpsLabel(fpsButton);
+            if (Boot.LaunchMode.StartsWith("level:"))
+            {
+                int.TryParse(Boot.LaunchMode.Substring(6), out int seed);
+                LevelScreen.Open(document, seed > 0 ? seed : Boot.LaunchSeed, Boot.LaunchRooms);
+            }
+            if (Boot.LaunchMode == "soak") LevelScreen.Open(document, Boot.LaunchSeed, Boot.LaunchRooms, soakMinutes: Boot.LaunchMinutes, autoWalk: true);
             lastSafeArea = Rect.zero;
         }
+
+        static void SetFpsLabel(Button b) => b.text = $"Frame rate: {Boot.TargetFps}";
 
         void SetOverlayLabel(Button b) => b.text = overlay != null && overlay.Visible ? "Speed overlay: on" : "Speed overlay: off";
 

@@ -163,7 +163,12 @@ namespace Gloamvault.Env
         /// The shell and the props of a template, in game space. `camX, camZ` is the horizontal direction from the
         /// look-at point to the camera; `variation` is the room's variant seed (0 in the viewer).
         /// </summary>
-        public static List<Placement> Build(Template t, KitManifest kit, KitManifest shared, float camX, float camZ, int variation = 0, IDictionary<string, string> doorKinds = null)
+        /// <param name="inset">
+        /// How far the walls, doorways and corner posts stand inside the room's edge (Phase 14): a wall slab lies 0.4 m
+        /// outside the edge line, so rooms that touch in a level each pull theirs in by 0.4 m and the two back faces
+        /// meet at the line, hidden behind each other. 0 for a room on its own.
+        /// </param>
+        public static List<Placement> Build(Template t, KitManifest kit, KitManifest shared, float camX, float camZ, int variation = 0, IDictionary<string, string> doorKinds = null, float inset = 0f)
         {
             var o = new List<Placement>();
             var shell = kit.shell;
@@ -226,7 +231,7 @@ namespace Gloamvault.Env
                 bool low = FacesCamera(side, camX, camZ);
                 bool alongX = side == "north" || side == "south";
                 float length = alongX ? width : depth;
-                float edge = alongX ? nz * depth / 2 : nx * width / 2;
+                float edge = alongX ? nz * (depth / 2 - inset) : nx * (width / 2 - inset);
                 float yaw = InwardYaw(side);
                 (float x, float z) at(float along) => alongX ? (along, edge) : (edge, along);
                 var gaps = new List<(float, float)>();
@@ -277,7 +282,7 @@ namespace Gloamvault.Env
             {
                 bool low = FacesCamera(a, camX, camZ) || FacesCamera(b, camX, camZ);
                 string id = low && !string.IsNullOrEmpty(shell.cornerCut) ? shell.cornerCut : shell.corner;
-                o.Add(new Placement { role = Role.Corner, meshId = id, x = sx * width / 2, z = sz * depth / 2, yaw = yaw, sy = low ? cutaway : 1f, low = low });
+                o.Add(new Placement { role = Role.Corner, meshId = id, x = sx * (width / 2 - inset), z = sz * (depth / 2 - inset), yaw = yaw, sy = low ? cutaway : 1f, low = low });
                 roll.Next();
             }
 

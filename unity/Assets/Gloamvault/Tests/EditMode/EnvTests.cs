@@ -73,6 +73,37 @@ namespace Gloamvault.Tests
             }
         }
 
+        /// <summary>Phase 14: the doorways' void polygon (the dark fill at the back of the opening) is dropped at import, so a level's next room shows through.</summary>
+        [Test]
+        public void TheDoorwaysAreOpenThrough()
+        {
+            foreach (var zone in new[] { "cellars", "crypts", "vault" })
+            {
+                var k = KitLibrary.Load(zone);
+                int doorways = 0;
+                foreach (var p in k.manifest.pieces)
+                {
+                    if (!p.id.Contains("_door_")) continue;
+                    var mf = k.Source(p.id)?.GetComponent<MeshFilter>();
+                    if (mf == null || mf.sharedMesh == null) continue;
+                    doorways++;
+                    var m = mf.sharedMesh;
+                    var v = m.vertices; var tri = m.triangles;
+                    int onBackPlane = 0;
+                    for (int i = 0; i + 2 < tri.Length; i += 3)
+                    {
+                        // The import rule's test: three vertices inside the opening, at the wall's back, in one plane (a gate's channel is not).
+                        bool all = true;
+                        float z0 = v[tri[i]].z;
+                        for (int j = 0; j < 3 && all; j++) { var q = v[tri[i + j]]; if (Mathf.Abs(q.x) > 1.02f || q.y > 3.3f || Mathf.Abs(q.z) < 0.39f || Mathf.Abs(q.z - z0) > 0.02f) all = false; }
+                        if (all) onBackPlane++;
+                    }
+                    Assert.AreEqual(0, onBackPlane, p.id + ": triangles filling the opening at the back of the wall");
+                }
+                Assert.Greater(doorways, 2, zone + " doorway pieces checked");
+            }
+        }
+
         [Test]
         public void TheAxesAgreeAcrossPiecesAndZones()
         {

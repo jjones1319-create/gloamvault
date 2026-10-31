@@ -80,5 +80,16 @@ namespace Gloamvault.Env
         {
             foreach (var kv in cache) if (kv.Key.StartsWith(kit.zone + "/") && kv.Value != null) ApplyLook(kv.Value, kit, hemi);
         }
+
+        /// <summary>The same hemi strength on every kit's materials (a level mixes zones; each keeps its own colours).</summary>
+        public static void ApplyHemiToEveryKit(float hemi)
+        {
+            foreach (var kv in cache)
+            {
+                if (kv.Value == null) continue;
+                string zone = kv.Key.Substring(0, kv.Key.IndexOf('/'));
+                ApplyLook(kv.Value, KitLibrary.Load(zone).manifest, hemi);
+            }
+        }
     }
 }

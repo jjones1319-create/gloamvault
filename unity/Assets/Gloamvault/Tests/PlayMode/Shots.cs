@@ -130,6 +130,52 @@ namespace Gloamvault.Tests
             yield return ShotCapture.Capture("walk-crypts");
         }
 
+        /// <summary>Phase 14: the test level — the entry, a hall from the far camera, the Crypts region, the overlay over the stream.</summary>
+        [UnityTest]
+        public IEnumerator Level()
+        {
+            yield return Scenes.Load(Scenes.Boot);
+            yield return new WaitForSecondsRealtime(0.5f);
+            var doc = Object.FindFirstObjectByType<UIDocument>();
+            var screen = LevelScreen.Open(doc, seed: 1);
+            yield return null;
+            var level = screen.Level;
+            var entry = level.rooms[level.entryId];
+            // Face the first join so the doorway into the next room is in the picture.
+            var hero = screen.Hero.root.transform;
+            var first = level.Neighbours(entry).First();
+            var look = Gloamvault.Level.LevelBuilder.JoinPoint(first.join) - hero.position; look.y = 0;
+            hero.rotation = Quaternion.LookRotation(look.normalized, Vector3.up);
+            yield return new WaitForSecondsRealtime(1.2f);
+            yield return ShotCapture.Capture("level-entry");
+
+            // A hall, from the far camera.
+            var hall = level.rooms.FirstOrDefault(r => r.hall && r.kit == "cellars") ?? first.other;
+            screen.Teleport(Gloamvault.Level.LevelBuilder.RoomCentre(hall));
+            var next = level.Neighbours(hall).FirstOrDefault();
+            if (next.join != null) { var l2 = Gloamvault.Level.LevelBuilder.JoinPoint(next.join) - hero.position; l2.y = 0; hero.rotation = Quaternion.LookRotation(l2.normalized, Vector3.up); }
+            screen.CycleCamera();
+            yield return new WaitForSecondsRealtime(1.2f);
+            yield return ShotCapture.Capture("level-far");
+            screen.CycleCamera(); screen.CycleCamera();
+
+            // The Crypts region.
+            var crypt = level.rooms.FirstOrDefault(r => r.kit == "crypts" && !r.hall) ?? level.rooms.First(r => r.kit == "crypts");
+            screen.Teleport(Gloamvault.Level.LevelBuilder.RoomCentre(crypt));
+            yield return new WaitForSecondsRealtime(1.2f);
+            yield return ShotCapture.Capture("level-crypts");
+
+            // The overlay on, the pilot walking.
+            var overlay = Object.FindFirstObjectByType<PerfOverlay>();
+            bool was = overlay.Visible;
+            overlay.SetVisible(true);
+            screen.SetAutoWalk(true);
+            yield return new WaitForSecondsRealtime(2.5f);
+            yield return ShotCapture.Capture("level-overlay");
+            overlay.SetVisible(was);
+            screen.SetAutoWalk(false);
+        }
+
         /// <summary>Every species × class at once, and every monster of a zone in a line — the web's matrix and lineups.</summary>
         [UnityTest]
         public IEnumerator Lineups()

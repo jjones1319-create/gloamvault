@@ -23,7 +23,56 @@ namespace Gloamvault.EditorTools
         bool Ours => Rigged || assetPath.StartsWith(Env);
 
         /// <summary>Bumped when these rules change: Unity re-imports every model they touch.</summary>
-        public override uint GetVersion() => 3;
+        public override uint GetVersion() => 4;
+
+        /// <summary>
+        /// The doorways' void (Phase 14): every doorway piece fills its opening with a dark polygon at the back of the
+        /// wall, so an open door read as depth in the web's diorama. In a walked level it hides the next room, so the
+        /// triangles lying wholly on the back plane inside the opening are dropped at import. The parts (leaves,
+        /// gates) are separate children and keep everything.
+        /// </summary>
+        void OnPostprocessModel(GameObject root)
+        {
+            if (!assetPath.StartsWith(Env)) return;
+            foreach (var mf in root.GetComponentsInChildren<MeshFilter>())
+            {
+                string name = mf.gameObject.name;
+                if (!name.Contains("_door_") || name.Contains(".")) continue;
+                var mesh = mf.sharedMesh;
+                if (mesh == null) continue;
+                int stripped = StripVoid(mesh);
+                if (stripped > 0) Debug.Log($"[gv-import] {name}: dropped {stripped} void triangles from the opening");
+            }
+        }
+
+        /// <summary>The opening's half width and the arch's apex (07 §2.2: a 2 m opening, the spring at 2.1 m); the wall's back at 0.4 m.</summary>
+        const float OpeningHalf = 1.02f, OpeningTop = 3.3f, BackPlane = 0.39f;
+
+        public static int StripVoid(Mesh mesh)
+        {
+            var v = mesh.vertices;
+            int dropped = 0;
+            for (int s = 0; s < mesh.subMeshCount; s++)
+            {
+                var tri = mesh.GetTriangles(s);
+                var keep = new List<int>(tri.Length);
+                for (int i = 0; i + 2 < tri.Length; i += 3)
+                {
+                    bool voidTri = true;
+                    float z0 = v[tri[i]].z;
+                    for (int k = 0; k < 3 && voidTri; k++)
+                    {
+                        var p = v[tri[i + k]];
+                        if (Mathf.Abs(p.x) > OpeningHalf || p.y > OpeningTop || Mathf.Abs(p.z) < BackPlane || Mathf.Abs(p.z - z0) > 0.02f) voidTri = false;
+                    }
+                    if (voidTri) { dropped++; continue; }
+                    keep.Add(tri[i]); keep.Add(tri[i + 1]); keep.Add(tri[i + 2]);
+                }
+                if (keep.Count != tri.Length) mesh.SetTriangles(keep, s);
+            }
+            if (dropped > 0) mesh.RecalculateBounds();
+            return dropped;
+        }
 
         void OnPreprocessModel()
         {
