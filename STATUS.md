@@ -15,7 +15,7 @@
 ## Where we are
 
 - **Segment 3 — Gloamvault in Unity, in small phases** (`docs/12-ROADMAP.md` §3): started 2026-10-29 at checkpoint 2, when James chose Unity and free-roam exploration (`docs/13-DECISIONS.md` §A5, D-135–D-140). Claude **stops after every phase** (D-137) and installs each build on James's phone over USB (D-138).
-- **Phase 12 — Heroes and monsters — done 2026-10-31**: the heroes and monsters in Unity — the shipped GLBs converted to FBX, every species × class and every monster entry assembled and animated in a Characters viewer on James's phone (D-160; task list below). **Stopped — waiting for James's go for Phase 13** (the phone checklist is at the end of this file).
+- **Phase 12 — Heroes and monsters — done 2026-10-31**: the heroes and monsters in Unity — the shipped GLBs converted to FBX, every species × class and every monster entry assembled and animated in a Characters viewer on James's phone (D-160; task list below). James's go (2026-10-31): **Phases 13–15 as one block, one phone install at the end** (D-161).
 - **Phase 11 — Rooms — done 2026-10-30**: the four kits in Unity as FBX, a room built from its template, the toon shader in URP with real torch light and shadow, a Rooms viewer with the thirty templates on James's phone (D-158; task list below).
 - **Phase 10 — The rules inside Unity — done 2026-10-30**: the TypeScript sim runs inside the Unity app through Jint; all five golden delves give the computer's hashes on James's phone, start-up 0.5 s, a hero's turn 3–9 ms (D-157; task list below).
 - **Phase 9 — Unity on your phone — done 2026-10-30**: the Unity app installed on James's Galaxy S25 Edge over USB and measured at a steady 60 fps (task list below).
