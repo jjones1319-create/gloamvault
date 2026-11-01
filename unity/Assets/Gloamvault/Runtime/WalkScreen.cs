@@ -22,6 +22,7 @@ namespace Gloamvault
         public HeroMover Mover { get; private set; }
         public FollowCamera Follow { get; private set; }
         public VirtualStick Stick { get; private set; }
+        public CameraPan Pan { get; private set; }
         public Interactor Interactor { get; } = new();
         public RoomLighting Lighting { get; private set; }
         public int Index { get; private set; }
@@ -94,6 +95,7 @@ namespace Gloamvault
             cameraButton.clicked += CycleCamera;
             walk.Q<Button>("a").clicked += () => Act();
             Stick = new VirtualStick(walk.Q("stickZone"), walk.Q("ring"), walk.Q("knob"));
+            Pan = new CameraPan(walk.Q("panZone"), () => Follow);
 
             cam = Camera.main;
             camPos = cam.transform.position; camRot = cam.transform.rotation; camFov = cam.fieldOfView; camBg = cam.backgroundColor; camClear = cam.clearFlags; camNear = cam.nearClipPlane;
@@ -178,9 +180,13 @@ namespace Gloamvault
                 if (k != Vector2.zero) v = k.normalized * (kb.leftShiftKey.isPressed ? 1f : 0.5f);
                 if (kb.eKey.wasPressedThisFrame) Act();
                 if (kb.cKey.wasPressedThisFrame) CycleCamera();
+                // Q and E pan the camera (D-168), as a second finger does on the phone.
+                if (kb.qKey.isPressed) Pan.Drag(-400f * Time.deltaTime);
+                if (kb.rKey.isPressed) Pan.Drag(400f * Time.deltaTime);
             }
             Mover.stick = v;
             Mover.cameraYaw = Follow != null ? Follow.Yaw : 0f;
+            if (Follow != null) Follow.heroSpeed = Mover.Speed;
             Interactor.Update(Hero.root.transform, Room.doors);
             promptLabel.text = Interactor.Nearest != null ? "A · " + Interactor.Prompt : "";
             promptLabel.style.visibility = Interactor.Nearest != null ? Visibility.Visible : Visibility.Hidden;

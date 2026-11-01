@@ -28,6 +28,7 @@ namespace Gloamvault
         public HeroMover Mover { get; private set; }
         public FollowCamera Follow { get; private set; }
         public VirtualStick Stick { get; private set; }
+        public CameraPan Pan { get; private set; }
         public Interactor Interactor { get; } = new();
         public SoakPilot Pilot { get; private set; }
         public bool AutoWalk { get; private set; }
@@ -122,6 +123,7 @@ namespace Gloamvault
             if (mapButton != null) mapButton.style.display = DisplayStyle.None;
             if (toastLabel != null) toastLabel.style.visibility = Visibility.Hidden;
             Stick = new VirtualStick(walk.Q("stickZone"), walk.Q("ring"), walk.Q("knob"));
+            Pan = new CameraPan(walk.Q("panZone"), () => Follow);
             overlay = UnityEngine.Object.FindFirstObjectByType<PerfOverlay>();
 
             cam = Camera.main;
@@ -386,6 +388,7 @@ namespace Gloamvault
             Hero.root.transform.position = at;
             Mover.controller.enabled = true;
             Streamer.Prime();
+            Follow?.Snap();
             var room = Streamer.HeroRoom;
             if (room != null) Lighting?.SetZone(room.kit);
         }
@@ -414,8 +417,11 @@ namespace Gloamvault
                 if (kb.eKey.wasPressedThisFrame) Act();
                 if (kb.cKey.wasPressedThisFrame) CycleCamera();
                 if (kb.mKey.wasPressedThisFrame) ShowMap(!MapOpen);
+                if (kb.qKey.isPressed) Pan.Drag(-400f * Time.deltaTime);
+                if (kb.rKey.isPressed) Pan.Drag(400f * Time.deltaTime);
             }
             float yaw = Follow != null ? Follow.Yaw : 0f;
+            if (Follow != null) Follow.heroSpeed = Mover.Speed;
             Interactor.Update(Hero.root.transform, things);
             if (AutoWalk && v == Vector2.zero && !Stick.Held) v = Pilot.Tick(Time.deltaTime, yaw, overlay);
             else if (AutoWalk) Pilot.Tick(0f, yaw, overlay);

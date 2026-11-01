@@ -1635,6 +1635,140 @@ def make_cyclic(act):
         fc.update()
 
 
+# ---------------------------------------------------------------------- traversal (Phase 16, D-146, D-171)
+# The hero crawls under, squeezes through, jumps across and climbs up at marked spots. Every clip animates in place:
+# the game moves the root along the spot's path while the clip plays (the crawl loops at `speed` metres a second).
+CRAWL_T = 1.2
+
+
+def crawl_pose(ph):
+    """On hands and knees, the left hand and right knee forward at phase 0, the other pair at 0.5."""
+    s = math.sin(2 * math.pi * ph)
+    c = math.cos(2 * math.pi * ph)
+    p = base()
+    torso(p, (10, 0, -3 * s), (6, 0, -2 * s), (2, 0, 0), (-14, 0, 3 * s), (-20, 0, 0))
+    p['Hips.loc'] = hips_loc(0.015 * s, -0.52 + 0.012 * abs(s), -0.05)
+    p['Hips'] = hips_rot(yaw=3 * s, pitch=64, roll=2 * s)
+    for side, sgn in (('L', -1), ('R', 1)):
+        pre = side_pre(side)
+        p[pre + 'UpperLeg'] = mir(side, (64 + 12 * c * sgn, 0, 6))
+        p[pre + 'LowerLeg'] = (-96, 0, 0)
+        p[pre + 'Foot'] = (-48, 0, 0)
+        p[pre + 'Toes'] = (0, 0, 0)
+    ground(p, regions=KNEES)
+    for side, sgn, left in (('L', 1, 0.22), ('R', -1, -0.22)):
+        fwd = 0.52 + 0.13 * c * sgn
+        up = 0.03 + (0.06 * max(0.0, c * sgn) if abs(c * sgn) > 0.3 else 0.0)
+        reach(p, side, pos=W(left, fwd, up), blade=D(0, 1, 0), edge=D(1 if side == 'L' else -1, 0, 0),
+              seed={side_pre(side) + 'UpperArm': (75, 10 * (1 if side == 'L' else -1), 0), side_pre(side) + 'LowerArm': (12, 0, 0)}, tag='crawl ' + side)
+        p.update(hand(side, 'open', spread=0.3))
+    tail(p, lift=12, sway=6 * s)
+    return p
+
+
+@clip('Crawl', loop=True, events={'handL': 0.0, 'handR': CRAWL_T / 2}, shots=[0, f(9), f(18), f(27)], view=dict(az=72, el=8), props=(), speed=0.8)
+def c_crawl():
+    return loop_keys([f(n) for n in range(0, 37, 4)], lambda t: crawl_pose(t / CRAWL_T))
+
+
+@clip('Squeeze', shots=[0, f(8), f(18), f(28), f(36)], view=dict(az=20, el=10), props=())
+def c_squeeze():
+    """Turned side-on, arms drawn up over the chest, edging through a crack (the game slides the root sideways)."""
+    k = [(0, IDLE0)]
+
+    def side_pose(shift, lean):
+        p = base()
+        torso(p, (4, 0, lean), (3, 0, lean), (2, 0, 0), (0, 0, -lean), (4, 0, -lean))
+        stance(p, hips=(0, -0.08, 0), yaw=-82, feet={'L': Foot(out=0.10, fwd=0.22 + shift, yaw=-70), 'R': Foot(out=0.12, fwd=-0.22 + shift, yaw=-85)})
+        reach(p, 'L', pos=W(-0.04, 0.18, 1.30), blade=D(-1, 0.2, 0.3), seed={'LeftUpperArm': (70, 30, 30), 'LeftLowerArm': (120, 0, 0)}, tag='squeeze L')
+        p.update(hand('L', 'open'))
+        reach(p, 'R', pos=W(0.08, 0.16, 1.22), blade=D(1, 0.2, 0.3), seed={'RightUpperArm': (70, -30, -30), 'RightLowerArm': (120, 0, 0)}, tag='squeeze R')
+        p.update(hand('R', 'open'))
+        tail(p, lift=20)
+        return p
+    k.append((f(8), side_pose(0.0, 6)))
+    k.append((f(18), side_pose(0.10, -6)))
+    k.append((f(28), side_pose(-0.06, 4)))
+    k.append((f(36), IDLE0))
+    return k
+
+
+@clip('Jump', events={'launch': f(9), 'land': f(21)}, shots=[0, f(6), f(9), f(14), f(21), f(27)], view=dict(az=72, el=10), props=())
+def c_jump():
+    """A crouch, a leap with the legs tucked, a landing (the game carries the root over the gap in an arc)."""
+    k = [(0, IDLE0)]
+    p = base()
+    torso(p, (20, 0, 0), (10, 0, 0), (4, 0, 0), (-6, 0, 0), (-8, 0, 0))
+    stance(p, hips=(0, -0.30, -0.06), yaw=-4, pitch=14, feet={'L': Foot(out=0.12, fwd=0.02, yaw=-6), 'R': Foot(out=0.12, fwd=-0.02, yaw=4)})
+    p['LeftUpperArm'] = (-25, 10, -12); p['LeftLowerArm'] = (20, 0, 0)
+    p['RightUpperArm'] = (-25, -10, 12); p['RightLowerArm'] = (20, 0, 0)
+    p.update(hand('L', 'open')); p.update(hand('R', 'open'))
+    k.append((f(6), p))
+
+    def air(up, thigh, shin, arms):
+        q = base()
+        torso(q, (8, 0, 0), (4, 0, 0), (2, 0, 0), (-4, 0, 0), (-4, 0, 0))
+        q['Hips.loc'] = hips_loc(0, up, 0.04)
+        q['Hips'] = hips_rot(yaw=-4, pitch=6)
+        for side in ('L', 'R'):
+            pre = side_pre(side)
+            q[pre + 'UpperLeg'] = mir(side, (thigh, 0, 5))
+            q[pre + 'LowerLeg'] = (shin, 0, 0)
+            q[pre + 'Foot'] = (-20, 0, 0)
+            q[pre + 'Toes'] = (0, 0, 0)
+        q['LeftUpperArm'] = (arms, 10, -10); q['LeftLowerArm'] = (25, 0, 0)
+        q['RightUpperArm'] = (arms, -10, 10); q['RightLowerArm'] = (25, 0, 0)
+        q.update(hand('L', 'open')); q.update(hand('R', 'open'))
+        tail(q, lift=30)
+        return q
+    k.append((f(9), air(0.10, 10, -15, 60)))
+    k.append((f(14), air(0.38, 75, -105, 40)))
+    k.append((f(18), air(0.22, 35, -40, 20)))
+    q = base()
+    torso(q, (18, 0, 0), (8, 0, 0), (3, 0, 0), (-4, 0, 0), (-6, 0, 0))
+    stance(q, hips=(0, -0.26, 0.02), yaw=-4, pitch=10, feet={'L': Foot(out=0.14, fwd=0.04, yaw=-6), 'R': Foot(out=0.14, fwd=-0.04, yaw=4)})
+    q['LeftUpperArm'] = (30, 10, -20); q['LeftLowerArm'] = (30, 0, 0)
+    q['RightUpperArm'] = (30, -10, 20); q['RightLowerArm'] = (30, 0, 0)
+    q.update(hand('L', 'open')); q.update(hand('R', 'open'))
+    k.append((f(21), q))
+    k.append((f(27), IDLE0))
+    return k
+
+
+@clip('Climb', events={'top': f(26)}, shots=[0, f(8), f(16), f(26), f(36)], view=dict(az=60, el=12), props=())
+def c_climb():
+    """Hands up on a ledge at chest height, a pull with the left knee up, a crouch on top, standing (the game lifts the root)."""
+    k = [(0, IDLE0)]
+    ledge = 1.05
+    p = base()
+    torso(p, (6, 0, 0), (4, 0, 0), (2, 0, 0), (-10, 0, 0), (-14, 0, 0))
+    stance(p, hips=(0, -0.10, 0.02), yaw=-2, pitch=4)
+    reach(p, 'L', pos=W(0.22, 0.42, ledge), blade=D(0, 1, 0), edge=D(1, 0, 0), seed={'LeftUpperArm': (110, 10, -5), 'LeftLowerArm': (20, 0, 0)}, tag='ledge L')
+    reach(p, 'R', pos=W(-0.22, 0.42, ledge), blade=D(0, 1, 0), edge=D(-1, 0, 0), seed={'RightUpperArm': (110, -10, 5), 'RightLowerArm': (20, 0, 0)}, tag='ledge R')
+    p.update(hand('L', 'open')); p.update(hand('R', 'open'))
+    k.append((f(8), p))
+    q = base()
+    torso(q, (24, 0, 2), (10, 0, 0), (4, 0, 0), (-8, 0, 0), (-10, 0, 0))
+    q['Hips.loc'] = hips_loc(0.02, 0.18, 0.12)
+    q['Hips'] = hips_rot(yaw=-4, pitch=20, roll=-4)
+    q['LeftUpperLeg'] = mir('L', (95, 0, 12)); q['LeftLowerLeg'] = (-110, 0, 0); q['LeftFoot'] = (-10, 0, 0); q['LeftToes'] = (0, 0, 0)
+    q['RightUpperLeg'] = mir('R', (10, 0, 4)); q['RightLowerLeg'] = (-30, 0, 0); q['RightFoot'] = (25, 0, 0); q['RightToes'] = (0, 0, 0)
+    reach(q, 'L', pos=W(0.24, 0.40, ledge), blade=D(0, 1, 0), edge=D(1, 0, 0), seed={'LeftUpperArm': (80, 10, -5), 'LeftLowerArm': (60, 0, 0)}, tag='pull L')
+    reach(q, 'R', pos=W(-0.22, 0.40, ledge), blade=D(0, 1, 0), edge=D(-1, 0, 0), seed={'RightUpperArm': (80, -10, 5), 'RightLowerArm': (60, 0, 0)}, tag='pull R')
+    q.update(hand('L', 'fist')); q.update(hand('R', 'fist'))
+    tail(q, lift=40)
+    k.append((f(16), q))
+    r = base()
+    torso(r, (22, 0, 0), (10, 0, 0), (4, 0, 0), (-6, 0, 0), (-8, 0, 0))
+    stance(r, hips=(0, -0.34, -0.04), yaw=-4, pitch=16, feet={'L': Foot(out=0.12, fwd=0.10, yaw=-6), 'R': Foot(out=0.12, fwd=-0.08, yaw=4)})
+    r['LeftUpperArm'] = (40, 10, -15); r['LeftLowerArm'] = (40, 0, 0)
+    r['RightUpperArm'] = (40, -10, 15); r['RightLowerArm'] = (40, 0, 0)
+    r.update(hand('L', 'open')); r.update(hand('R', 'open'))
+    k.append((f(26), r))
+    k.append((f(36), IDLE0))
+    return k
+
+
 def author_all():
     for c in CLIPS:
         CURRENT[0] = c['name']

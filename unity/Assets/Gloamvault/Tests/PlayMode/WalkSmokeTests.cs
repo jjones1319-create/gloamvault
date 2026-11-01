@@ -46,7 +46,8 @@ namespace Gloamvault.Tests
             hero.position = door.transform.position + inward * 1.2f;
             hero.rotation = Quaternion.LookRotation(-inward, Vector3.up);
             screen.Mover.controller.enabled = true;
-            yield return null;
+            screen.Follow.Snap();
+            yield return null; yield return null;
             screen.Interactor.Update(hero, screen.Room.doors);
             Assert.AreEqual(door, screen.Interactor.Nearest, "the door in front is the prompt's");
             Assert.AreEqual("Open", screen.Interactor.Prompt);
@@ -74,6 +75,19 @@ namespace Gloamvault.Tests
             screen.CycleCamera(); Assert.AreEqual(FollowCamera.Distance.Far, screen.Follow.distance);
             screen.CycleCamera(); Assert.AreEqual(FollowCamera.Distance.Close, screen.Follow.distance);
             screen.CycleCamera(); Assert.AreEqual(FollowCamera.Distance.Normal, screen.Follow.distance);
+
+            // The pan (D-168): a drag turns the camera and holds it while the hero stands; walking on, it eases back behind him.
+            yield return new WaitForSecondsRealtime(1.0f);
+            float before = screen.Follow.Yaw;
+            screen.Pan.Drag(200f);
+            Assert.IsTrue(screen.Follow.Holding);
+            yield return new WaitForSecondsRealtime(0.5f);
+            Assert.AreEqual(Mathf.Repeat(before + 200f * CameraPan.DegreesPerPixel, 360f), screen.Follow.Yaw, 0.5f, "the pan held while standing");
+            screen.Stick.Set(new Vector2(0, 1f));
+            yield return new WaitForSecondsRealtime(3.0f);
+            screen.Stick.Set(Vector2.zero);
+            Assert.IsFalse(screen.Follow.Holding, "walking released the hold");
+            Assert.Less(Mathf.Abs(Mathf.DeltaAngle(screen.Follow.Yaw, hero.eulerAngles.y)), 25f, "the camera eased back behind the hero");
         }
 
         [UnityTest]

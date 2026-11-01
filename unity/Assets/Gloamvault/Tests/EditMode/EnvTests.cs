@@ -169,6 +169,35 @@ namespace Gloamvault.Tests
             Assert.IsTrue(placements.Where(p => p.role == RoomLayout.Role.Wall && p.side == "south").All(p => !p.low && p.sy == 1f));
         }
 
+        /// <summary>D-169: in a walked room no standing prop sits in a used door's approach; the diorama (no door kinds) keeps everything.</summary>
+        [Test]
+        public void NoPropStandsInAUsedDoorway()
+        {
+            var f = TemplateFile.Load();
+            var shared = KitManifest.Load("shared");
+            int dropped = 0, kept = 0;
+            foreach (var t in f.templates)
+            {
+                var kit = KitManifest.Load(t.kit);
+                var kinds = new Dictionary<string, string>();
+                foreach (var d in t.doors) kinds[d.side] = "open";
+                var walked = RoomLayout.Build(t, kit, shared, 0f, 0f, 0, kinds);
+                var diorama = RoomLayout.Build(t, kit, shared, 0f, 0f, 0, null);
+                int propsWalked = walked.Count(p => p.role == RoomLayout.Role.Prop), propsDiorama = diorama.Count(p => p.role == RoomLayout.Role.Prop);
+                dropped += propsDiorama - propsWalked; kept += propsWalked;
+                var approaches = RoomLayout.DoorApproaches(t, kinds);
+                foreach (var p in walked.Where(p => p.role == RoomLayout.Role.Prop))
+                {
+                    var piece = kit.Piece(p.meshId) ?? shared.Piece(p.meshId);
+                    bool hung = piece != null && (piece.mount == "wall" || piece.mount == "shell" || piece.role == "wall-hung");
+                    Assert.IsFalse(RoomLayout.BlocksADoor(piece, new Prop { meshId = p.meshId, position = new[] { p.x, p.y, p.z } }, p.yaw, approaches, hung), $"{t.id}: {p.meshId} stands in a doorway");
+                }
+            }
+            Assert.Greater(dropped, 0, "some template had furniture in a doorway (James found one)");
+            Assert.Greater(kept, dropped * 3, "most furniture stays");
+            Debug.Log($"[gv-test] doorway clearance: {dropped} props left out across the 30 templates, {kept} kept");
+        }
+
         [Test]
         public void TheRollsMatchTheWebsGenerator()
         {

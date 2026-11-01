@@ -205,3 +205,12 @@
     white-space: normal;
     -unity-text-align: middle-center;
 }
+
+/* The second finger (D-168): the right half of the screen, under the buttons, pans the camera. */
+.walk__panZone {
+    position: absolute;
+    left: 50%;
+    right: 0;
+    top: 60px;
+    bottom: 0;
+}

@@ -143,6 +143,43 @@ namespace Gloamvault.Env
             return new Rect { x0 = Math.Min(Math.Min(xs[0], xs[1]), Math.Min(xs[2], xs[3])), x1 = Math.Max(Math.Max(xs[0], xs[1]), Math.Max(xs[2], xs[3])), z0 = Math.Min(Math.Min(zs[0], zs[1]), Math.Min(zs[2], zs[3])), z1 = Math.Max(Math.Max(zs[0], zs[1]), Math.Max(zs[2], zs[3])) };
         }
 
+        /// <summary>A used door's approach (D-169): the 2 m opening plus this much each side, and this far into the room.</summary>
+        public const float ApproachSide = 0.6f, ApproachDepth = 2.4f;
+
+        /// <summary>The approach rectangles (room space) of every door the kinds do not wall up.</summary>
+        public static List<Rect> DoorApproaches(Template t, IDictionary<string, string> doorKinds)
+        {
+            var o = new List<Rect>();
+            float width = t.w * Cell, depth = t.h * Cell;
+            foreach (var d in t.doors)
+            {
+                if (doorKinds.TryGetValue(d.side, out var kind) && kind == "wall") continue;
+                bool alongX = d.side == "north" || d.side == "south";
+                float length = alongX ? width : depth;
+                float c = -length / 2 + (d.offset + 0.5f) * Cell;
+                float half = DoorWidth / 2 + ApproachSide;
+                switch (d.side)
+                {
+                    case "north": o.Add(new Rect { x0 = c - half, x1 = c + half, z0 = -depth / 2, z1 = -depth / 2 + ApproachDepth }); break;
+                    case "south": o.Add(new Rect { x0 = c - half, x1 = c + half, z0 = depth / 2 - ApproachDepth, z1 = depth / 2 }); break;
+                    case "east": o.Add(new Rect { x0 = width / 2 - ApproachDepth, x1 = width / 2, z0 = c - half, z1 = c + half }); break;
+                    default: o.Add(new Rect { x0 = -width / 2, x1 = -width / 2 + ApproachDepth, z0 = c - half, z1 = c + half }); break;
+                }
+            }
+            return o;
+        }
+
+        /// <summary>True when a standing prop's footprint overlaps a door's approach: flat and wall-hung pieces never block.</summary>
+        public static bool BlocksADoor(Piece piece, Prop p, float yaw, List<Rect> approaches, bool wallHung)
+        {
+            if (piece?.bounds?.min == null || piece.bounds.max == null || wallHung) return false;
+            if (piece.mount == "tile" || piece.mount == "floor" || piece.bounds.max[1] < 0.25f) return false;
+            var r = PlacedRect(piece.bounds.min[0], piece.bounds.min[2], piece.bounds.max[0], piece.bounds.max[2], p.position[0], p.position[2], yaw);
+            foreach (var a in approaches)
+                if (r.x0 < a.x1 && r.x1 > a.x0 && r.z0 < a.z1 && r.z1 > a.z0) return true;
+            return false;
+        }
+
         /// <summary>Picks by cumulative weight: the base piece carries what the alternates leave (1 − Σ their weights).</summary>
         public static string PickWeighted(string baseId, Weighted[] alts, float roll)
         {
@@ -289,14 +326,17 @@ namespace Gloamvault.Env
             }
 
             // The props: a substitute where the kit says so; a wall-hung piece on the cut-away side is not drawn.
+            // In a walked room (door kinds given) a prop standing in a used door's approach is left out (D-169).
             var subs = new Dictionary<string, string>();
             foreach (var s in kit.substitute ?? Array.Empty<Substitute>()) if (s.templateId == t.id && s.pairs != null) foreach (var pr in s.pairs) subs[pr.from] = pr.to;
+            var approaches = doorKinds != null ? DoorApproaches(t, doorKinds) : null;
             for (int i = 0; i < t.props.Length; i++)
             {
                 var p = t.props[i];
                 string id = subs.TryGetValue(p.meshId, out var to) ? to : p.meshId;
                 var piece = pieceOf(id);
                 bool wallHung = piece != null && (piece.mount == "wall" || piece.mount == "shell" || piece.role == "wall-hung");
+                if (approaches != null && BlocksADoor(piece, p, propYaws[i], approaches, wallHung)) continue;
                 bool low = false;
                 if (wallHung)
                 {

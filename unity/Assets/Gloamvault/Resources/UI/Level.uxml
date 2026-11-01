@@ -1,6 +1,7 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
     <Style src="Walk.uss" />
     <ui:VisualElement name="walk" class="walk" picking-mode="Ignore">
+        <ui:VisualElement name="panZone" class="walk__panZone" />
         <ui:VisualElement class="walk__top" picking-mode="Ignore">
             <ui:VisualElement class="walk__picker">
                 <ui:Label name="room" text="Test level" class="walk__room" />
