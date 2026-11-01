@@ -1,0 +1,28 @@
+{
+  "id": "example-floor",
+  "dungeonId": "gravehollow-keep",
+  "floor": 1,
+  "zoneId": "the-cellars",
+  "kit": "cellars",
+  "grid": { "w": 8, "h": 6 },
+  "rooms": [
+    { "id": 0, "templateId": "cel-t-stairwell", "gx": 1, "gy": 2, "variation": 11, "role": "entry", "name": "the way in" },
+    { "id": 1, "templateId": "hall-cellars-h2", "gx": 2, "gy": 2, "variation": 40 },
+    { "id": 2, "templateId": "cel-t-storeroom", "gx": 4, "gy": 2, "variation": 73, "role": "key" },
+    { "id": 3, "templateId": "cel-t-stairwell", "gx": 5, "gy": 2, "variation": 5, "role": "stairs", "name": "the way down" }
+  ],
+  "joins": [
+    { "a": 0, "b": 1, "sideA": "east", "offsetA": 0, "kind": "open" },
+    { "a": 1, "b": 2, "sideA": "east", "offsetA": 0, "kind": "wood" },
+    { "a": 2, "b": 3, "sideA": "east", "offsetA": 0, "kind": "locked" }
+  ],
+  "levers": [],
+  "exits": [
+    { "id": "entrance", "kind": "entrance", "room": 0, "side": "west", "name": "the keep's gate" },
+    { "id": "stairs-down", "kind": "stairs", "room": 3, "name": "the stair to Floor 2" }
+  ],
+  "spots": [
+    { "kind": "key", "room": 2, "at": [2, 2], "id": null },
+    { "kind": "encounter", "room": 1, "at": [0, 0], "id": null }
+  ]
+}

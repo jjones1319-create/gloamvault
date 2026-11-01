@@ -238,6 +238,8 @@ namespace Gloamvault.Env
                 foreach (var d in t.doors)
                 {
                     if (d.side != side) continue;
+                    // Phase 15: a door the floor walls up (no neighbour, no exit) — no gap, no piece; the wall runs through.
+                    if (doorKinds != null && doorKinds.TryGetValue(side, out var wallKind) && wallKind == "wall") continue;
                     float c = -length / 2 + (d.offset + 0.5f) * Cell;
                     bool piece = !low || cutDoorways;
                     float half = (piece ? Math.Max(0.5f, doorwayWidth) : DoorWidth) / 2;

@@ -39,6 +39,8 @@ namespace Gloamvault.Env
         public int w;
         public int h;
         public TemplateDoor[] doors;
+        /// <summary>The template's kind tags (entry, stairs, rest, merchant, fight, …; Phase 15 carries them in).</summary>
+        public string[] kinds;
         public CameraSpec camera;
         public Prop[] props;
         public int triBudget;

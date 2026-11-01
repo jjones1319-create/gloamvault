@@ -78,8 +78,7 @@ namespace Gloamvault.Level
             else { stuckTimer = 0f; stuckPos = p; }
 
             actTimer -= dt;
-            var near = interactor.Nearest;
-            if (actTimer <= 0f && near != null && !near.locked && !near.IsOpen) { interactor.Act(); actTimer = 0.6f; }
+            if (actTimer <= 0f && interactor.Nearest is Env.Door near && !near.locked && !near.hidden && !near.IsOpen) { interactor.Act(); actTimer = 0.6f; }
 
             var dir = to.normalized;
             var local = Quaternion.Euler(0, -cameraYaw, 0) * dir;

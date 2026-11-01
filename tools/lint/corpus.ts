@@ -31,6 +31,7 @@ export type ContentKind =
   | 'wayfarer'
   | 'tuning'
   | 'hero'
+  | 'floor-layout'
 
 export type FileRole = 'content' | 'example' | 'save'
 
@@ -138,6 +139,10 @@ export function kindForContentPath(segments: string[]): ContentKind | null {
   }
   if (segments.length === 4 && first === 'dungeons' && third === 'templates' && second !== undefined && fourth !== undefined) {
     return 'template'
+  }
+  // Phase 15: a hand-laid floor beside its dungeon (D-150).
+  if (segments.length === 4 && first === 'dungeons' && third === 'floors' && second !== undefined && fourth !== undefined) {
+    return 'floor-layout'
   }
   return null
 }

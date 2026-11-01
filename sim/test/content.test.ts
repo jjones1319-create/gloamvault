@@ -151,8 +151,9 @@ describe('loadExamplesAsContent', () => {
       wayfarer: 1,
       tuning: 1,
     })
-    // Every example file but hero.example.json is one record (templates are inline in the dungeon example).
-    const exampleFiles = fs.readdirSync(examplesDir).filter((n) => n.endsWith('.example.json') && !n.startsWith('hero'))
+    // Every example file with a sim kind is one record (templates are inline in the dungeon example; hero is a save
+    // record, and a floor layout is read by the Unity bundler and the linter until Phase 17 gives the rules the floor).
+    const exampleFiles = fs.readdirSync(examplesDir).filter((n) => n.endsWith('.example.json') && kindForExampleFile(n) !== null)
     const recordCount = CONTENT_KINDS.filter((k) => k !== 'template').reduce((n, k) => n + summary[k], 0)
     expect(recordCount).toBe(exampleFiles.length)
     for (const kind of CONTENT_KINDS) expect(summary[kind], kind).toBeGreaterThan(0)

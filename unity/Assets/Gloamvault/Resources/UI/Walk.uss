@@ -140,3 +140,68 @@
 .walk__a:active {
     background-color: #e0702a;
 }
+
+/* Phase 15: the floor's map in the corner, the full map, the toast. */
+.walk__minimap {
+    position: absolute;
+    right: 16px;
+    top: 66px;
+    width: 240px;
+    height: 150px;
+    background-color: rgba(18, 14, 20, 0.72);
+    border-width: 1px;
+    border-color: var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.walk__toast {
+    position: absolute;
+    left: 25%;
+    right: 25%;
+    top: 128px;
+    padding: 6px 12px;
+    font-size: 15px;
+    -unity-text-align: middle-center;
+    color: var(--ink);
+    background-color: rgba(18, 14, 20, 0.78);
+    border-radius: 10px;
+    white-space: normal;
+}
+
+.walk__mapPanel {
+    position: absolute;
+    left: 10%;
+    right: 10%;
+    top: 7%;
+    bottom: 7%;
+    flex-direction: column;
+    background-color: rgba(18, 14, 20, 0.94);
+    border-width: 1px;
+    border-color: var(--line);
+    border-radius: 12px;
+    padding: 10px 14px;
+}
+
+.walk__mapHead {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.walk__mapTitle {
+    font-size: 16px;
+    color: var(--ink);
+}
+
+.walk__fullMap {
+    flex-grow: 1;
+    margin: 8px 0;
+}
+
+.walk__legend {
+    font-size: 11px;
+    color: var(--ink-dim);
+    white-space: normal;
+    -unity-text-align: middle-center;
+}

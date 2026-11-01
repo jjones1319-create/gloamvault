@@ -18,6 +18,10 @@ namespace Gloamvault.Level
         public readonly List<LevelJoin> joins = new();
         /// <summary>Every template the level uses, the halls made in code included.</summary>
         public readonly Dictionary<string, Template> templates = new();
+        /// <summary>The kind a door with no neighbour gets: the kit's barred door in the test level, a wall on a laid-out floor (Phase 15).</summary>
+        public string unmatchedKind = "locked";
+        /// <summary>A door kind set by name for one room's side (a floor's exits are open arches): (room id, side) → kind.</summary>
+        public readonly Dictionary<(int room, string side), string> sideKinds = new();
         int[] cells;
 
         public int FloorCells { get { int n = 0; foreach (var r in rooms) n += r.w * r.h; return n; } }
@@ -61,8 +65,9 @@ namespace Gloamvault.Level
             var kinds = new Dictionary<string, string>();
             foreach (var d in TemplateOf(r).doors)
             {
-                if (r.joinBySide.TryGetValue(d.side, out int ji)) kinds[d.side] = joins[ji].a == r.id ? joins[ji].kind : "open";
-                else kinds[d.side] = "locked";
+                if (sideKinds.TryGetValue((r.id, d.side), out var set)) kinds[d.side] = set;
+                else if (r.joinBySide.TryGetValue(d.side, out int ji)) kinds[d.side] = joins[ji].a == r.id ? joins[ji].kind : "open";
+                else kinds[d.side] = unmatchedKind;
             }
             return kinds;
         }

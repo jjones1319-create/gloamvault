@@ -123,6 +123,7 @@ function templates() {
         w: t['footprint']?.w ?? 1,
         h: t['footprint']?.h ?? 1,
         doors: ((t['doors'] ?? []) as any[]).map((d) => ({ side: d.side, offset: d.offset ?? 0 })),
+        kinds: ((t['kinds'] ?? []) as string[]).slice(),
         camera: { position: vec(t['camera']?.position), lookAt: vec(t['camera']?.lookAt), fov: t['camera']?.fov ?? 40 },
         props: ((t['props'] ?? []) as any[]).map((p) => ({ meshId: p.meshId, position: vec(p.position), rotationY: p.rotationY ?? 0, lightSource: p.lightSource === true })),
         triBudget: t['triBudget'] ?? 40000,
@@ -242,10 +243,40 @@ export function writeCharacters(): string {
   return `characters → Resources/Hero: ${hero.species.length} species, ${hero.parts.length} parts, ${hero.gear.length} gear pieces, ${hero.weapons.length} weapons, ${hero.clips.length} clips, ${hero.classes.length} classes (${fbx(heroDir)} FBX) · Resources/Monsters: ${mon.entries.length} entries, ${mon.clips.length} bases with clips, ${mon.list.length} listed (${fbx(monDir)} FBX)`
 }
 
+// ---------------------------------------------------------------------------------------------------------------
+// The hand-laid floors (Phase 15, D-150): content/dungeons/*/floors/*.json reshaped for JsonUtility — the grid as
+// two numbers, a spot's `at` as x and z, a null id as "".
+// ---------------------------------------------------------------------------------------------------------------
+
+function floors() {
+  const root = path.resolve('content/dungeons')
+  const out: object[] = []
+  for (const dungeon of fs.readdirSync(root).sort()) {
+    const dir = path.join(root, dungeon, 'floors')
+    if (!fs.existsSync(dir)) continue
+    for (const file of fs.readdirSync(dir).sort()) {
+      if (!file.endsWith('.json')) continue
+      const f = readJson(path.join(dir, file))
+      out.push({
+        id: f['id'], dungeonId: f['dungeonId'], zoneId: f['zoneId'], kit: f['kit'], floor: f['floor'] ?? 1,
+        gridW: f['grid']?.w ?? 8, gridH: f['grid']?.h ?? 6,
+        rooms: ((f['rooms'] ?? []) as any[]).map((r) => ({ id: r.id, templateId: r.templateId, gx: r.gx, gy: r.gy, variation: r.variation ?? 0, role: r.role ?? '', name: r.name ?? '' })),
+        joins: ((f['joins'] ?? []) as any[]).map((j) => ({ a: j.a, b: j.b, sideA: j.sideA, offsetA: j.offsetA ?? 0, kind: j.kind ?? 'open' })),
+        levers: ((f['levers'] ?? []) as any[]).map((l) => ({ id: l.id, room: l.room, x: l.at?.[0] ?? 0, z: l.at?.[1] ?? 0, opens: l.opens })),
+        exits: ((f['exits'] ?? []) as any[]).map((e) => ({ id: e.id, kind: e.kind, room: e.room, side: e.side ?? '', name: e.name ?? '' })),
+        spots: ((f['spots'] ?? []) as any[]).map((s) => ({ kind: s.kind, room: s.room, x: s.at?.[0] ?? 0, z: s.at?.[1] ?? 0, id: s.id ?? '' })),
+      })
+    }
+  }
+  return out
+}
+
 export function writeEnv(): string {
   fs.mkdirSync(OUT, { recursive: true })
   const ts = templates()
   fs.writeFileSync(path.join(OUT, 'templates.json'), JSON.stringify({ templates: ts }))
+  const fl = floors()
+  fs.writeFileSync(path.join(OUT, 'floors.json'), JSON.stringify({ floors: fl }))
   const counts: string[] = []
   for (const zone of ZONES) {
     const m = manifest(zone)
@@ -253,7 +284,7 @@ export function writeEnv(): string {
     const fbx = path.join(OUT, `kit_${zone}.fbx`)
     counts.push(`${zone} ${m.pieces.length} pieces${fs.existsSync(fbx) ? '' : ' (no kit_' + zone + '.fbx — run the Blender kit build)'}`)
   }
-  return `env → ${path.relative(process.cwd(), OUT)}: ${ts.length} templates · ${counts.join(' · ')}\n${writeCharacters()}`
+  return `env → ${path.relative(process.cwd(), OUT)}: ${ts.length} templates · ${fl.length} floor layout${fl.length === 1 ? '' : 's'} · ${counts.join(' · ')}\n${writeCharacters()}`
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) console.log(writeEnv())

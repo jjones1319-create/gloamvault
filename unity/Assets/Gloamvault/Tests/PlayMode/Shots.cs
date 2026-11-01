@@ -176,6 +176,62 @@ namespace Gloamvault.Tests
             screen.SetAutoWalk(false);
         }
 
+        /// <summary>Phase 15: Floor 1 — the gate with the minimap, the lever pulled, a panel found, the map part-explored, the stair down.</summary>
+        [UnityTest]
+        public IEnumerator Floor()
+        {
+            Gloamvault.Level.FloorState.Forget("floor-1");
+            yield return Scenes.Load(Scenes.Boot);
+            yield return new WaitForSecondsRealtime(0.5f);
+            var doc = Object.FindFirstObjectByType<UIDocument>();
+            var screen = LevelScreen.Open(doc, floorId: "floor-1");
+            yield return null;
+            var floor = screen.Floor;
+            var l = floor.level;
+            var first = l.Neighbours(l.rooms[l.entryId]).First();
+            screen.Face(Gloamvault.Level.LevelBuilder.JoinPoint(first.join));
+            yield return new WaitForSecondsRealtime(1.2f);
+            yield return ShotCapture.Capture("floor-entry");
+
+            // The lever in the cold hearth, pulled.
+            var lever = screen.Levers[0];
+            var hearth = l.rooms[floor.def.levers[0].room];
+            screen.Teleport(lever.Position + (Gloamvault.Level.LevelBuilder.RoomCentre(hearth) - lever.Position).normalized * 1.3f);
+            screen.Face(lever.Position);
+            yield return null;
+            screen.Act();
+            yield return new WaitForSecondsRealtime(1.0f);
+            yield return ShotCapture.Capture("floor-lever");
+
+            // The panel beside the hearth, found.
+            int sj = floor.secretJoins.First(j => l.joins[j].a == hearth.id);
+            var pj = l.joins[sj];
+            var panel = screen.Streamer.Built[pj.a].doors.First(d => d.GetComponent<Gloamvault.Env.RoomPiece>().side == pj.sideA);
+            screen.Teleport(panel.transform.position + (Gloamvault.Level.LevelBuilder.RoomCentre(hearth) - panel.transform.position).normalized * 1.1f);
+            screen.Face(panel.transform.position);
+            yield return null;
+            screen.Act();
+            yield return new WaitForSecondsRealtime(1.0f);
+            yield return ShotCapture.Capture("floor-secret");
+
+            // The map after a few rooms.
+            foreach (var id in new[] { 2, 3, 4, 13, 19 }) if (id < l.rooms.Count) screen.State.visited.Add(id);
+            screen.Teleport(Gloamvault.Level.LevelBuilder.RoomCentre(l.rooms[2]));
+            yield return null;
+            screen.ShowMap(true);
+            yield return new WaitForSecondsRealtime(0.8f);
+            yield return ShotCapture.Capture("floor-map");
+            screen.ShowMap(false);
+
+            // The stair down.
+            var stairs = screen.Exits.First(e => e.def.kind == "stairs");
+            screen.Teleport(stairs.Position + new Vector3(0, 0, 1.6f));
+            screen.Face(stairs.Position);
+            yield return new WaitForSecondsRealtime(1.0f);
+            yield return ShotCapture.Capture("floor-stairs");
+            Gloamvault.Level.FloorState.Forget("floor-1");
+        }
+
         /// <summary>Every species × class at once, and every monster of a zone in a line — the web's matrix and lineups.</summary>
         [UnityTest]
         public IEnumerator Lineups()

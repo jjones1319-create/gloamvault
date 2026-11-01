@@ -27,6 +27,7 @@ content/
   elite-affixes/<id>.json
   dungeons/<dungeon>/dungeon.json  zones, floors, the generator, curios, traps, secrets, Pacts, presets
   dungeons/<dungeon>/templates/<id>.json
+  dungeons/<dungeon>/floors/<id>.json  a hand-laid floor (Phase 15, D-150): rooms on the grid, joins, levers, exits, spots
   encounters/<id>.json
   pets/<id>.json
   chests/<id>.json
@@ -269,3 +270,9 @@ Where the owning doc is silent, the schemas take the simplest reading. Each is a
 - **The fight log**: `{ kind: 'arena', data: { what, boss, … } }` with `what` one of `phase` (`phase`, `phases`, `name`, `speed`), `light` (`from`, `to`, `band`, `cause`: arena · phase · lantern · torch · brazier; `lanternsOut`), `tide` (`from`, `to`, `cause`: rise · phase · sluice), `brazier` (`index`, `lit`, `of`, `light`), `recall` (`cause`, `monsters`, `count`), `hunterReturns` (`hunter`, `wave`, `skipped`), `partBreak` (`part`, `name`), `candle` (`out`, `of`), `doors`, `barricade`, `keg`, `pile`, `sluice`, `slick`, `pull`, `pulse`, `oath`, `frenzy`; and `{ kind: 'tell', data: { hint, cue, source: arena · attack, ref, first, boss } }`; `tellBroken` when a blow is broken off. `DelveState.stats.bossArenas` keeps one row per boss fight.
 - **Tuning** `arena`: the wind-up's weight and breakers, re-entering adds' HP, the returning hunters' level offset and HP, the heroes' arena habits on auto (`torchBelowLight`, `brazierBelowLight`, `sluiceFromTide`, `swapOnPull`).
 - **Rewards**: `everyKill` on every kill, `firstKill` on top when `DelveOptions.bossKills` has none for the boss; a reward line's `difficultyMin` is honoured; chest keys and `shard` lines count in materials; `title`, `luck` and `waystone` lines wait in `DelveState.bossRewards` for `settleDelve`, which gives the title and the Luck to the heroes standing.
+
+## Floor layouts (Phase 15, D-150) and lint rule 90
+
+A floor laid out by hand is `dungeons/<dungeon>/floors/<id>.json` (`floor-layout.schema.json`): its `rooms[]` on a grid of 8 m cells (`gx`, `gy` from the north-west corner; `templateId` one of the dungeon's templates or a hall `hall-<kit>-h<n>` / `-v<n>` made from the kit's walls), its `joins[]` where two rooms' doors meet (`a` < `b`; `sideA`/`offsetA` name a's door; `kind` open · wood · locked · secret · lever), its `levers[]` (each lifts one `lever` join), its `exits[]` (one `entrance`, one `stairs`, any `side` exits found from inside — D-151) and its `spots[]` (where the seed puts encounters, chests, curios and traps each delve — Phase 17 — and where the floor's `key` lies). `tools/content/gen-floor-1.ts` writes Gravehollow's Floor 1 from a table and checks the layout as it goes. `npm run unity:bundle` reshapes the floors into `unity/Assets/Gloamvault/Resources/Env/floors.json`; the sim reads them from Phase 17.
+
+- **Rule 90 (floor layouts):** every `templateId` is one of the dungeon's templates or a well-formed hall; no two footprints overlap and all lie inside `grid`; every join is door to door — a's door at (`sideA`, `offsetA`) faces a door of b across the shared edge, and no door is joined twice; every room is reached from the `entry` room **without passing a secret join** (07 §2.6: secrets reward, never gate) — a room with `role: secret-room` excepted; a `locked` join exists only with a `key` spot, whose room is reached without passing a locked or secret join; every `lever` join has a lever and every lever's `opens` is a lever join; exits other than the stairs sit in an unjoined door of their room; exactly one `entry` role and one `stairs` role.

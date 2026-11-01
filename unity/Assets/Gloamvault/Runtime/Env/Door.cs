@@ -11,7 +11,7 @@ namespace Gloamvault.Env
     /// "lifts", the Vault's secret "pivots"). Eased open over about half a second with the chest lid's curve; an open
     /// leaf's collider is off so the hero walks through.
     /// </summary>
-    public sealed class Door : MonoBehaviour
+    public sealed class Door : MonoBehaviour, Gloamvault.Level.IInteractable
     {
         public enum Motion { Swing, Lift, Slide }
 
@@ -32,10 +32,21 @@ namespace Gloamvault.Env
         public readonly List<Moving> parts = new();
         public bool IsOpen { get; private set; }
         public string meshId;
-        /// <summary>A locked door needs its key (Phase 15 wires the key; the walk viewer leaves it unlocked).</summary>
+        /// <summary>A locked door needs its key, or its lever (Phase 15: the floor's data says which; the walk viewer leaves it unlocked).</summary>
         public bool locked;
+        /// <summary>A secret panel not yet found (Phase 15, D-146): it reads as wall — no prompt until the hero is close and facing it, then "Search".</summary>
+        public bool hidden;
         public const float EaseSeconds = 0.16f;
         float openness, target;
+
+        /// <summary>Raised when a hidden panel is found with A.</summary>
+        public event System.Action<Door> OnFound;
+
+        // IInteractable (Phase 15): the walker's A.
+        public Vector3 Position => transform.position;
+        public bool Available => true;
+        /// <summary>How close A works: a secret panel wants the hero almost touching it.</summary>
+        public float Reach => hidden ? 1.4f : 2.8f;
 
         /// <summary>Reads the piece's parts under this clone and decides each one's motion.</summary>
         public void Setup(Piece piece, Axes axes)
@@ -99,7 +110,23 @@ namespace Gloamvault.Env
         public void Open() { target = 1f; IsOpen = true; foreach (var m in parts) if (m.collider != null) m.collider.enabled = false; }
         public void Close() { target = 0f; IsOpen = false; }
         public void Toggle() { if (IsOpen) Close(); else Open(); }
-        public string Prompt => locked ? "Locked" : IsOpen ? "Close" : "Open";
+        public string Prompt => hidden ? "Search" : locked ? "Locked" : IsOpen ? "Close" : "Open";
+
+        /// <summary>A: finds a hidden panel (and opens it), toggles an unlocked door; a locked door does nothing (the screen tries the key).</summary>
+        public bool Act()
+        {
+            if (hidden)
+            {
+                hidden = false;
+                GvLog.Line("secret", ("door", meshId));
+                OnFound?.Invoke(this);
+                Open();
+                return true;
+            }
+            if (locked) return false;
+            Toggle();
+            return true;
+        }
         public float Openness => openness;
 
         void Update()
