@@ -125,8 +125,16 @@ namespace Gloamvault
                 Room = RoomBuilder.Build(t, 0, null, DoorKindsFor(t.kit), colliders: true, cutAway: false);
                 foreach (var d in Room.doors) d.locked = false;
                 Hero = HeroAssembler.Build(spec);
-                Hero.root.transform.position = Vector3.zero;
-                Hero.root.transform.rotation = Quaternion.Euler(0, 180f, 0);
+                // Just inside the first doorway, facing in — not the centre, where a table may stand (the phone's camera was pulled inside the hero).
+                var start = Vector3.zero; var facing = Quaternion.Euler(0, 180f, 0);
+                if (Room.doors.Count > 0)
+                {
+                    var d = Room.doors[0].transform.position; d.y = 0;
+                    var inward = -d; inward.y = 0;
+                    if (inward.sqrMagnitude > 0.01f) { start = d + inward.normalized * 1.8f; facing = Quaternion.LookRotation(inward.normalized, Vector3.up); }
+                }
+                Hero.root.transform.position = start;
+                Hero.root.transform.rotation = facing;
                 Mover = HeroMover.Attach(Hero);
                 Follow = FollowCamera.Attach(cam, Hero.root.transform, Hero.height);
                 cam.clearFlags = CameraClearFlags.SolidColor;

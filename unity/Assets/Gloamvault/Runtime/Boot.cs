@@ -31,7 +31,9 @@ namespace Gloamvault
             LaunchMinutes = ReadExtraInt("minutes", 10);
             LaunchRooms = ReadExtraInt("rooms", 60);
             LaunchSeed = ReadExtraInt("seed", 1);
-            int fps = ReadExtraInt("fps", PlayerPrefs.GetInt(FpsPref, 60));
+            // The default is the screen's own rate (D-156, measured at the Phase 13–15 install: a 60 target on the
+            // 120 Hz S25 Edge clocks the GPU down and the frame pacing falls to 30; at 120 the level runs at 119.8).
+            int fps = ReadExtraInt("fps", PlayerPrefs.GetInt(FpsPref, RefreshHz >= 119 ? 120 : 60));
             ApplyFrameRate(fps, remember: false);
             Screen.sleepTimeout = SleepTimeout.NeverSleep;
             Screen.autorotateToPortrait = false;

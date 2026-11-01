@@ -17,7 +17,25 @@
 
 ## 3. Try this on your phone (10–15 minutes)
 
-*At the install: the three phone checklists in STATUS.md (Phases 13, 14 and 15) are the steps; they are copied here then.*
+Installed 2026-11-01 (v0.15.0). Open the installed app; the title says **v0.15.0 · Phase 15 · Unity**.
+
+**Walking (Phase 13)**
+
+1. Open **Gloamvault** and tap **Walk**. *Your Dwarf Warden stands in a Cellars room.* Put your left thumb on the ring at the bottom-left and push: *he walks; push further, he runs; he turns the way you push and stops at the walls and the table.*
+2. Walk up to a door until **A · Open** appears, then tap **A**: *the door swings open; walk through it.* (Tap ▶ at the top for other rooms: the Crypts' iron gate, the Vault's door.)
+3. Tap **Camera** a few times: *close over the shoulder, normal, far and high.* Turn while walking: *the view swings round behind you.*
+
+**The test level (Phase 14)**
+
+1. Open **Gloamvault**, tap **Test level**. *Your Dwarf Warden stands in a Cellars guardpost; the stats line at the top says how many rooms are built.* Walk through any doorway: *the next room is already there, and more appear ahead as you go — no loading, no pause.* Keep walking into the middle third: *the Crypts, green and dim; then the Vault.* Doors with "A · Locked" lead nowhere yet (the level's edge).
+2. Tap **Auto walk**: *he walks off on his own, opens doors, crosses halls.* Turn the **Speed overlay** on (Back → Speed overlay → Test level): *watch the fps and "draws" while he walks for a minute.* Tap Auto walk again to take over.
+3. Tap **Back**, tap **Frame rate: 60** so it reads **120**, then **Test level** again and walk: *does it feel smoother? does the phone warm?* (Claude's 10-minute soaks at both rates are in STATUS and `docs/10-TECH-PLAN.md` §4 — tell Claude what you felt.)
+
+**Floor 1 (Phase 15)**
+
+1. Open **Gloamvault**, tap **Floor 1**. *You stand at the keep's gate (walk back to the archway behind you: "A · Leave the keep"); the little map at the top right shows your room and a "?" beyond its door.* Walk east through the hall and the crossing: *rooms draw themselves on the map as you enter them.* Tap **Map**: *the whole floor, dark except where you have been.*
+2. At the crossing take the north hall to **the cold hearth**: pull the **lever** (A · Pull) — *a gate grinds up somewhere.* Walk to the room's **west wall**, right up to the middle of it, facing it: *"A · Search" — press it and a panel slides aside: the Hearth Shrine.* Go east along the hall: *the kennels' portcullis is up.*
+3. Back at the crossing take the south hall; in **the storeroom** on the spine (east of the long gallery) pick up the **key** (A · Take the key), then in the south wing walk to the **wine vault's door** ("A · Locked"): *press A — the key turns.* Then tap **Back**, tap **Floor 1** again: *the map remembers everything you found.*
 
 ## 4. Numbers from the runner (so you can judge, not guess)
 
@@ -25,11 +43,11 @@
 |---|---|---|
 | Rules on the phone (Phase 10) | the same hashes as Node; a turn p95 < 30 ms; start-up < 3 s | 5 of 5 the same; 8–32 ms; 0.6 s |
 | A room on the phone (Phase 11) | 60 fps | 60 fps; 107–522 draws; GPU 7–11 ms |
-| A hero on the phone (Phase 12) | 60 fps | the Dwarf Warden 60; three others 30 (CPU 33 ms) — measured again at the install |
-| The test level, 10 min at 60 fps | low 5 % ≥ 54 fps; thermal ≤ light | *at the install* |
-| The test level, 10 min at 120 fps | low 5 % ≥ 108 fps; thermal ≤ light | *at the install* |
-| Memory on the level | under 600 MB | *at the install* |
-| Battery over the 10 minutes | noted, not judged | *at the install* |
+| A hero on the phone (Phase 12) | 60 fps | the Dwarf Warden 60; three others 30 — the same 60-target pacing trap as the level (D-167); at 120 the one-room walk reads 119.8 |
+| The test level, 10 min at 60 fps | low 5 % ≥ 54 fps; thermal ≤ light | **60 p50, low 5 % 60** over five minutes walking, but with GPU 11–13 ms and CPU p95 18 ms (half the headroom of 120) and 30 fps stalls when standing at the start — see D-167 |
+| The test level, 10 min at 120 fps | low 5 % ≥ 108 fps; thermal ≤ light | **120 p50, low 5 % 120; frame p95 8.3 ms; thermal 0** — holds |
+| Memory on the level | under 600 MB | 134 MB at the peak |
+| Battery over the 10 minutes | noted, not judged | at 120: 71% → 75%, 36.0 → 36.4 °C · at 60: 80% → 82%, 36.6 → 36.2 °C |
 
 ## 5. Decisions I made this segment (Proposed — please accept, change, or say "you decide")
 
@@ -38,7 +56,7 @@
 
 ## 6. Questions for you (from the docs' Open questions)
 
-1. **120 fps** — if the soak holds, do you want 120 to be the default on your phone, or 60 with 120 as the choice in Settings (my recommendation: 60 default, 120 offered — cooler, and the fights are turn-based)?
+1. **120 fps** — the soak settled it the other way round: on your phone 60 misbehaves (it drops to 30) and 120 runs clean, so **120 is now the default** (D-167). Keep it so? (My recommendation: yes; a battery mode comes with Settings.)
 2. **Level size** — the test level is about 60 rooms; does Floor 1 want to feel that large, or nearer the 5× end (my recommendation: Floor 1 at about 40 spaces, growing floor by floor)?
 3. **Caves and tunnels** (D-164) — happy for Floor 1 to be built from the rooms and halls we have, with a cave kit later, or should the cave kit come before Floor 1?
 4. **The camera** — after walking the level: close, normal or far as the default (D-159)?

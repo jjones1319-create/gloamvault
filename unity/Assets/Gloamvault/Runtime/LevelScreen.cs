@@ -151,8 +151,18 @@ namespace Gloamvault
                 levelRoot = new GameObject("Level");
                 var entry = Level.rooms[Level.entryId];
                 Hero = HeroAssembler.Build(spec);
-                Hero.root.transform.position = LevelBuilder.RoomCentre(entry);
-                Hero.root.transform.rotation = Quaternion.Euler(0, 180f, 0);
+                // Not the room's centre (a table may stand there — the phone's camera was pulled inside the hero): just
+                // inside the entry's doorway, facing in — the gate on a floor, the first join on the test level.
+                var centre = LevelBuilder.RoomCentre(entry);
+                Vector3 doorAt = centre;
+                if (Floor != null)
+                {
+                    foreach (var e in Floor.def.exits) if (e.kind == "entrance" && e.room == entry.id) { doorAt = ExitPoint(entry, e.side); break; }
+                }
+                else foreach (var (j, _) in Level.Neighbours(entry)) { doorAt = LevelBuilder.JoinPoint(j); break; }
+                var inward = centre - doorAt; inward.y = 0;
+                Hero.root.transform.position = inward.sqrMagnitude > 0.01f ? doorAt + inward.normalized * 1.8f : centre;
+                Hero.root.transform.rotation = inward.sqrMagnitude > 0.01f ? Quaternion.LookRotation(inward.normalized, Vector3.up) : Quaternion.Euler(0, 180f, 0);
                 Mover = HeroMover.Attach(Hero);
                 Follow = FollowCamera.Attach(cam, Hero.root.transform, Hero.height);
                 Streamer = LevelStreamer.Attach(levelRoot, Level, levelRoot.transform, Hero.root.transform);
@@ -200,24 +210,7 @@ namespace Gloamvault
             foreach (var e in def.exits)
             {
                 var room = Level.rooms[e.room];
-                Vector3 at;
-                if (e.kind == "stairs" || string.IsNullOrEmpty(e.side)) at = LevelBuilder.RoomCentre(room);
-                else
-                {
-                    var t = Level.TemplateOf(room);
-                    int offset = 0;
-                    foreach (var d in t.doors) if (d.side == e.side) { offset = d.offset; break; }
-                    float cell = RoomLayout.Cell, inset = 0.9f;
-                    float x, z;
-                    switch (e.side)
-                    {
-                        case "north": x = (room.gx + offset + 0.5f) * cell; z = room.gy * cell + inset; break;
-                        case "south": x = (room.gx + offset + 0.5f) * cell; z = (room.gy + room.h) * cell - inset; break;
-                        case "east": x = (room.gx + room.w) * cell - inset; z = (room.gy + offset + 0.5f) * cell; break;
-                        default: x = room.gx * cell + inset; z = (room.gy + offset + 0.5f) * cell; break;
-                    }
-                    at = LevelBuilder.ToUnity(x, 0f, z);
-                }
+                Vector3 at = e.kind == "stairs" || string.IsNullOrEmpty(e.side) ? LevelBuilder.RoomCentre(room) : ExitPoint(room, e.side);
                 var spot = ExitSpot.Place(levelRoot.transform, at, e, State.exitsFound.Contains(e.id));
                 spot.OnUsed += OnExitUsed;
                 exits.Add(spot);
@@ -231,6 +224,24 @@ namespace Gloamvault
             var fullBox = container.Q("fullMap");
             if (fullBox != null) fullBox.Add(FullMap);
             if (mapButton != null) mapButton.style.display = DisplayStyle.Flex;
+        }
+
+        /// <summary>A point just inside a room's door on the given side (0.9 m in from the edge), in Unity space.</summary>
+        Vector3 ExitPoint(LevelRoom room, string side)
+        {
+            var t = Level.TemplateOf(room);
+            int offset = 0;
+            foreach (var d in t.doors) if (d.side == side) { offset = d.offset; break; }
+            float cell = RoomLayout.Cell, inset = 0.9f;
+            float x, z;
+            switch (side)
+            {
+                case "north": x = (room.gx + offset + 0.5f) * cell; z = room.gy * cell + inset; break;
+                case "south": x = (room.gx + offset + 0.5f) * cell; z = (room.gy + room.h) * cell - inset; break;
+                case "east": x = (room.gx + room.w) * cell - inset; z = (room.gy + offset + 0.5f) * cell; break;
+                default: x = room.gx * cell + inset; z = (room.gy + offset + 0.5f) * cell; break;
+            }
+            return LevelBuilder.ToUnity(x, 0f, z);
         }
 
         /// <summary>Every built door gets the floor's word: a secret panel hidden until found, a lever gate or a locked door shut until opened.</summary>

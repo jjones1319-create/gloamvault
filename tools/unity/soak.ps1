@@ -43,10 +43,11 @@ $seen = @{}
 $done = $null
 $lastBattery = Get-Date
 $battery = @()
-"# soak $stamp: $Minutes min at $Fps fps, $Rooms rooms, seed $Seed" | Out-File -FilePath $logPath -Encoding ascii
+"# soak ${stamp}: $Minutes min at $Fps fps, $Rooms rooms, seed $Seed" | Out-File -FilePath $logPath -Encoding ascii
 while (-not $done) {
     Start-Sleep -Seconds 15
-    $all = & $adb logcat -d -s Unity:V
+    # Only the newest lines each poll: a whole-buffer dump through PowerShell's pipeline grows slower every minute and stalled the first runs.
+    $all = & $adb logcat -d -s Unity:V -t 1500
     $lines = $all | Where-Object { $_ -match '\[gv\] \{' } | ForEach-Object { ($_ -replace '^.*?\[gv\]\s*', '') }
     $new = @()
     foreach ($line in $lines) { if (-not $seen.ContainsKey($line)) { $seen[$line] = $true; $new += $line } }
