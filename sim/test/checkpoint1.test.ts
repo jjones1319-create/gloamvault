@@ -3,7 +3,6 @@ import { describe, expect, it } from 'vitest'
 import { loadContentDir } from '../../tools/sim/loadContent.ts'
 import { createDelve, runDelveAuto } from '../src/delve.ts'
 import type { FightState } from '../src/fight-types.ts'
-import { monsterBaseline } from '../src/monsters.ts'
 import { fightXpPool } from '../src/progress.ts'
 import { addHero, lowerDeathRule, lowerRulesFor, newProfile, nightmareBlocker, settleDelve, startDelve, TownError, type Profile } from '../src/town.ts'
 import { heroLevelXpCost, levelGapMultiplier } from '../src/xp.ts'
@@ -96,7 +95,7 @@ describe('Nightmare (D-095)', () => {
 })
 
 /** A won fight's actors, enough for the pool: heroes at the given levels and defeated monsters. */
-function wonFight(heroLevels: number[], monsters: { level: number; xpClass: number; affixes?: number; boss?: boolean }[]): FightState {
+function wonFight(heroLevels: number[], monsters: { level: number; xpClass: number; affixes?: number; boss?: boolean; hp?: number }[]): FightState {
   const actors = [
     ...heroLevels.map((level, i) => ({ id: `hero-${i}`, kind: 'hero', side: 'party', level, fallen: false, gone: false, fled: false })),
     ...monsters.map((m, i) => ({
@@ -104,6 +103,7 @@ function wonFight(heroLevels: number[], monsters: { level: number; xpClass: numb
       kind: 'monster',
       side: 'enemy',
       level: m.level,
+      maxHp: m.hp ?? 100,
       gone: true,
       fled: false,
       monster: { xpClass: m.xpClass, isBoss: m.boss ?? false, isHunter: false, champion: m.affixes ? { affixIds: Array.from({ length: m.affixes }, (_, k) => `a${k}`) } : null },
@@ -124,31 +124,31 @@ describe('battle XP and the level gap (D-096)', () => {
   })
 
   it("the party's average level decides the multiplier, so a weaker hero raises everyone's pool", () => {
-    const unit = (level: number) => monsterBaseline(t, level).xpUnit
+    // D-176 (James): a monster's XP is its hitpoints × 4, +5% per XP class above fodder — 100 HP: 400 and 420.
     const pack = [
       { level: 6, xpClass: 1 },
       { level: 6, xpClass: 2 },
     ]
     const level = fightXpPool(t, wonFight([6, 6], pack))
-    expect(level).toBe(unit(6) * 3)
+    expect(level).toBe(400 + 420)
     // Average 6 either way.
     expect(fightXpPool(t, wonFight([2, 10], pack))).toBe(level)
     // A party five levels above: a fifth (D-152).
-    expect(fightXpPool(t, wonFight([11, 11], pack))).toBe(Math.round(unit(6) * 0.2) + Math.round(unit(6) * 2 * 0.2))
+    expect(fightXpPool(t, wonFight([11, 11], pack))).toBe(Math.round(400 * 0.2) + Math.round(420 * 0.2))
     // A strong hero alone (gap −4 → ×0.4) against the same strong hero with a weak wayfarer (average 6: ×1.0).
     expect(fightXpPool(t, wonFight([10, 2], pack))).toBeGreaterThan(fightXpPool(t, wonFight([10], pack)))
   })
 
   it('champions and bosses count as the threat chip counts them', () => {
-    const unit = monsterBaseline(t, 5).xpUnit
+    const unit = 400
     expect(fightXpPool(t, wonFight([5], [{ level: 5, xpClass: 1, affixes: 2 }]))).toBe(Math.round(unit * 1.4))
     expect(fightXpPool(t, wonFight([5], [{ level: 5, xpClass: 1, boss: true }]))).toBe(Math.round(unit * 1.6))
   })
 })
 
-describe('the level curve (D-097)', () => {
+describe('the level curve (D-097, D-176)', () => {
   it('every level costs more battle XP than the one before', () => {
-    expect(heroLevelXpCost(t, 2)).toBe(120)
+    expect(heroLevelXpCost(t, 2)).toBe(3984)
     for (let level = 3; level <= 40; level++) expect(heroLevelXpCost(t, level)).toBeGreaterThan(heroLevelXpCost(t, level - 1))
   })
 })

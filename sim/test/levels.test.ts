@@ -25,14 +25,19 @@ beforeAll(() => {
 afterAll(() => rmSync(root, { recursive: true, force: true }))
 
 describe('Final Fantasy-style hero levels (D-082)', () => {
-  it('the curve (D-152, D-173): level N costs 120 × 1.35^(N−2) battle XP', () => {
+  it("the curve (D-176, James): RuneScape's — floor(L + 300 × 2^(L/7)) / 4 from level L to L+1, times the scale 48", () => {
     expect(heroLevelXpCost(t, 1)).toBe(0)
-    expect(heroLevelXpCost(t, 2)).toBe(120)
-    expect(heroLevelXpCost(t, 5)).toBe(295)
-    expect(heroLevelXpCost(t, 10)).toBe(1324)
+    expect(heroLevelXpCost(t, 2)).toBe(3984)
+    expect(heroLevelXpCost(t, 3)).toBe(4404)
+    expect(heroLevelXpCost(t, 5)).toBe(5388)
+    expect(heroLevelXpCost(t, 10)).toBe(8880)
+    // RuneScape's own table at scale 1: 83 to level 2, 13,034,431 to level 99.
+    const one = { ...t, xp: { ...t.xp, heroLevel: { ...t.xp.heroLevel, curveScale: { value: 1, note: '' } } } }
+    expect(heroLevelXpCost(one, 2)).toBe(83)
+    expect(battleXpForLevel(one, 99)).toBe(13034431)
     expect(heroLevelForXp(t, 0)).toBe(1)
-    expect(heroLevelForXp(t, 119)).toBe(1)
-    expect(heroLevelForXp(t, 120)).toBe(2)
+    expect(heroLevelForXp(t, 3983)).toBe(1)
+    expect(heroLevelForXp(t, 3984)).toBe(2)
     for (const lv of [2, 5, 8, 15]) {
       expect(heroLevelForXp(t, battleXpForLevel(t, lv))).toBe(lv)
       expect(heroLevelForXp(t, battleXpForLevel(t, lv) - 1)).toBe(lv - 1)

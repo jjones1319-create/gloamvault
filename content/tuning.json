@@ -188,8 +188,8 @@
     "source": "03 §4.1–§4.6",
     "walk": {
       "note": "Phase 17 (D-142, D-147–D-152): random encounters by seconds walked — a budget from secondsMin–secondsMax, bandScale divides the seconds as light falls, a grace after a fight; Callsmoke scales by callsmokeFactor; smokes last smokeMinutes.",
-      "secondsMin": 45,
-      "secondsMax": 90,
+      "secondsMin": 25,
+      "secondsMax": 50,
       "graceSeconds": 20,
       "bandScale": { "radiant": 1, "dim": 0.8, "shadowy": 0.7, "dark": 0.6, "pitch": 0.45 },
       "callsmokeFactor": 0.5,
@@ -419,11 +419,13 @@
     "humanBonusPercent": 10,
     "deathCostsXp": false,
     "heroLevel": {
-      "xpToNextBase": {
-        "value": 120,
-        "note": "D-082 (James, Accepted): heroes level Final Fantasy style from battle XP; level N costs base × growth^(N−2) XP (L2 60, L5 126, L10 432)."
+      "curveScale": {
+        "value": 48,
+        "note": "D-176 (James): RuneScape's curve — XP from level L to L+1 is floor(L + 300 × 2^(L/7)) / 4 (83, 91, 102 …, about 10.4% more a level; 99 at 13.0 M) times this scale; the walked-floor tour set it so a full Floor 1 is about a level and a third."
       },
-      "xpToNextGrowth": 1.35,
+      "xpPerMonsterHp": 4,
+      "xpClassPercent": 5,
+      "monsterXpNote": "D-176: a monster's XP is its hitpoints × xpPerMonsterHp (OSRS: 4 per point of damage), plus xpClassPercent per XP class above fodder; the old XP unit (dungeon.monsterBaseline.xpUnit) is no longer read.",
       "cap": 99,
       "attributePointsPerLevel": {
         "value": 1,

@@ -42,7 +42,7 @@ describe('the bridge', () => {
     let s = snap()
     expect(s['phase']).toBe('room')
     expect(s['roomId']).toBe('r0')
-    expect(s['walkBudget']).toBeGreaterThanOrEqual(45)
+    expect(s['walkBudget']).toBeGreaterThanOrEqual(25)
     // Never a null: JsonUtility would choke on one.
     expect(JSON.stringify(s)).not.toContain('null')
     const gate = JSON.parse(bridge.room(h, 'r0')) as Record<string, unknown>

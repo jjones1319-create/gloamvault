@@ -95,11 +95,21 @@ export function itemLevelCost(t: Tuning, level: number): number {
   return roundHalfUp(i.levelBase * Math.pow(i.levelGrowth, level - 1))
 }
 
-/** Battle XP to go from level N−1 to N (D-082): base × growth^(N−2); L2 60, L5 126, L10 432 at 60 / 1.28. */
+/**
+ * Battle XP to go from level N−1 to N: RuneScape's curve (D-176, James) — the increment from level L to L+1 is
+ * floor(L + 300 × 2^(L/7)) / 4, so each level costs about 10.4% more than the last (83, 91, 102, 112, 124 … at scale 1;
+ * level 99 at 13,034,431), times `xp.heroLevel.curveScale`.
+ */
 export function heroLevelXpCost(t: Tuning, level: number): number {
   if (level <= 1) return 0
-  const h = t.xp.heroLevel
-  return roundHalfUp(h.xpToNextBase.value * Math.pow(h.xpToNextGrowth, level - 2))
+  return runescapeTotal(t, level) - runescapeTotal(t, level - 1)
+}
+
+/** RuneScape's total to reach a level: floor(scale × Σ_{ℓ<L} floor(ℓ + 300 × 2^(ℓ/7)) / 4) — the floor on the sum, as the table has it. */
+function runescapeTotal(t: Tuning, level: number): number {
+  let sum = 0
+  for (let n = 1; n < level; n++) sum += Math.floor(n + 300 * Math.pow(2, n / 7))
+  return Math.floor((t.xp.heroLevel.curveScale.value * sum) / 4)
 }
 
 /** The hero level a battle-XP total reaches (D-082), capped at xp.heroLevel.cap. */

@@ -153,11 +153,16 @@ export function monsterGold(t: Tuning, actor: Actor): number {
   return roundHalfUp(monsterBaseline(t, actor.level).gold * m.goldMultiplier)
 }
 
-/** XP a monster is worth before the D curve (06 §8.6): XP class × the level's XP unit. */
+/**
+ * XP a monster is worth before the level-gap curve (06 §8.6, D-176 — James: RuneScape's way): its hitpoints ×
+ * `xp.heroLevel.xpPerMonsterHp` (OSRS gives 4 per point of damage), and a little more per XP class above fodder
+ * (`xpClassPercent` each) — a stronger monster has more hitpoints, so it pays more.
+ */
 export function monsterXp(t: Tuning, actor: Actor): number {
   const m = actor.monster
   if (!m) return 0
-  return m.xpClass * monsterBaseline(t, actor.level).xpUnit
+  const h = t.xp.heroLevel
+  return roundHalfUp((actor.maxHp * h.xpPerMonsterHp * (100 + h.xpClassPercent * Math.max(0, m.xpClass - 1))) / 100)
 }
 
 /** The level of a monster on a floor: the floor band level, plus the hunter's offset. */

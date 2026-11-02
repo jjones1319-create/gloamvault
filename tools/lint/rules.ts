@@ -58,8 +58,8 @@ export type Tables = {
   lootItemChanceByCentre: Map<string, number>
   partChance: { common: number; rare: number }
   /** D-082: the hero level curve. */
-  heroXpBase: number
-  heroXpGrowth: number
+  /** D-176: RuneScape's curve times this scale (xp.heroLevel.curveScale). */
+  heroXpScale: number
   heroLevelCap: number
   eliteAffixPool: number
   launchPacts: number
@@ -185,8 +185,7 @@ export function buildTables(corpus: Corpus): Tables {
     armorPercentStep: { fromIndex: Math.max(0, grades.indexOf(str(at(tuning, 'items', 'armorPercentStep', 'fromGrade')) ?? 'B')), pp: tnum(at(tuning, 'items', 'armorPercentStep', 'pp')) ?? 1 },
     lootItemChanceByCentre: new Map(Object.entries(obj(at(tuning, 'items', 'lootItemChanceByCentre')) ?? {}).map(([g, v]) => [g, tnum(v)]).filter((e): e is [string, number] => e[1] !== undefined)),
     partChance: { common: tnum(at(tuning, 'equipment', 'parts', 'commonChance')) ?? 35, rare: tnum(at(tuning, 'equipment', 'parts', 'rareChance')) ?? 4 },
-    heroXpBase: tnum(at(tuning, 'xp', 'heroLevel', 'xpToNextBase')) ?? 60,
-    heroXpGrowth: tnum(at(tuning, 'xp', 'heroLevel', 'xpToNextGrowth')) ?? 1.28,
+    heroXpScale: tnum(at(tuning, 'xp', 'heroLevel', 'curveScale')) ?? 1,
     heroLevelCap: tnum(at(tuning, 'xp', 'heroLevel', 'cap')) ?? 99,
     statuses: enumOf('status'),
     fieldSkills: enumOf('fieldSkill'),
@@ -1879,7 +1878,9 @@ function rule30(ctx: Ctx): Failure[] {
     if (level !== undefined && xp !== undefined) {
       let lv = 1
       let left = xp
-      const cost = (n: number) => Math.round(ctx.t.heroXpBase * Math.pow(ctx.t.heroXpGrowth, n - 2))
+      // D-176: RuneScape's increment from level n−1 to n, times the scale (sim/src/xp.ts heroLevelXpCost).
+      const total = (level: number) => { let sum = 0; for (let n = 1; n < level; n++) sum += Math.floor(n + 300 * Math.pow(2, n / 7)); return Math.floor((ctx.t.heroXpScale * sum) / 4) }
+      const cost = (n: number) => (n <= 1 ? 0 : total(n) - total(n - 1))
       while (lv < ctx.t.heroLevelCap && left >= cost(lv + 1)) {
         left -= cost(lv + 1)
         lv++
