@@ -1,0 +1,52 @@
+{
+  "id": "arcanist-galvanize",
+  "classId": "arcanist",
+  "school": "storm",
+  "tier": 3,
+  "name": "Galvanize",
+  "description": "Every ally jumps +200 energy up the strip and gains Haste 1.",
+  "type": "active",
+  "cost": 20,
+  "weight": 1000,
+  "target": "allAllies",
+  "effects": [
+    {
+      "kind": "timeline",
+      "energy": 200
+    },
+    {
+      "kind": "applyStatus",
+      "status": "haste",
+      "duration": 1
+    }
+  ],
+  "prerequisiteId": "arcanist-blink-step",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Haste 2.",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "haste",
+        "duration": 2
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "momentum"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 55
+  }
+}

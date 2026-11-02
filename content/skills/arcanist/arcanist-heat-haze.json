@@ -1,0 +1,49 @@
+{
+  "id": "arcanist-heat-haze",
+  "classId": "arcanist",
+  "school": "fire",
+  "tier": 3,
+  "name": "Heat Haze",
+  "description": "The air shimmers: every ally gains +15% Dodge for 2 turns.",
+  "type": "active",
+  "cost": 18,
+  "weight": 1000,
+  "target": "allAllies",
+  "effects": [
+    {
+      "kind": "buffStat",
+      "stat": "dodge",
+      "amount": 15,
+      "duration": 2
+    }
+  ],
+  "prerequisiteId": "arcanist-flame-ward",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "+20% Dodge.",
+    "effects": [
+      {
+        "kind": "buffStat",
+        "stat": "dodge",
+        "amount": 20,
+        "duration": 2
+      }
+    ]
+  },
+  "tags": [
+    "buff"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 40
+  }
+}

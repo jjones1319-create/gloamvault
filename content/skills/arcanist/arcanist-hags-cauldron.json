@@ -1,7 +1,7 @@
 {
   "id": "arcanist-hags-cauldron",
   "classId": "arcanist",
-  "school": "evocation",
+  "school": "fire",
   "tier": 4,
   "name": "Hag’s Cauldron",
   "description": "2.6× Fire to one enemy in either row; Poison 3 turns (ignores armor); Weaken 2 turns. Heavy cast. Monster technique: learned only by witnessing a Brine Hag use it.",
@@ -27,7 +27,7 @@
       "duration": 2
     }
   ],
-  "prerequisiteId": "arcanist-overcharge",
+  "prerequisiteId": "arcanist-heat-haze",
   "isUltimate": false,
   "monsterTechniqueOf": "brine-hag",
   "rankScaling": {

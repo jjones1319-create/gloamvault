@@ -1,7 +1,7 @@
 {
   "id": "arcanist-vaultbreaker",
   "classId": "arcanist",
-  "school": "evocation",
+  "school": "storm",
   "tier": 5,
   "name": "Vaultbreaker",
   "description": "3.8× Lightning to one enemy in either row; Stun 1 turn; the bolt then chains 1.2× to every other enemy that is Shocked. Heavy cast.",

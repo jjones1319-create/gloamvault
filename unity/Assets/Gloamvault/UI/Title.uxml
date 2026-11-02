@@ -26,6 +26,7 @@
             <ui:Button name="walk" text="Walk" class="menu__btn menu__btn--text" />
             <ui:Button name="level" text="Test level" class="menu__btn menu__btn--text" />
             <ui:Button name="floor" text="Floor 1" class="menu__btn menu__btn--text" />
+            <ui:Button name="trees" text="Skill trees" class="menu__btn menu__btn--text" />
             <ui:Button name="fps" text="Frame rate: 60" class="menu__btn menu__btn--text" />
         </ui:VisualElement>
         <ui:Label name="version" class="version" />

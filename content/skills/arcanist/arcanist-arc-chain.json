@@ -1,7 +1,7 @@
 {
   "id": "arcanist-arc-chain",
   "classId": "arcanist",
-  "school": "evocation",
+  "school": "storm",
   "tier": 2,
   "name": "Arc Chain",
   "description": "1.5× Lightning to one enemy in either row, then 0.7× to up to 2 other enemies; all of them Shock 2 turns; Shocked targets take +15% from this skill.",

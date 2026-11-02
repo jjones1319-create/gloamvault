@@ -1,7 +1,7 @@
 {
   "id": "arcanist-spark",
   "classId": "arcanist",
-  "school": "evocation",
+  "school": "storm",
   "tier": 1,
   "name": "Spark",
   "description": "0.95× Lightning to one enemy in either row; Shock 2 turns. If the target was already Shocked, the bolt chains 0.5× to one adjacent enemy.",

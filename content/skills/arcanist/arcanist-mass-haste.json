@@ -1,7 +1,7 @@
 {
   "id": "arcanist-mass-haste",
   "classId": "arcanist",
-  "school": "arcana",
+  "school": "storm",
   "tier": 4,
   "name": "Mass Haste",
   "description": "Every ally and pet gains Haste 2 turns.",
@@ -16,7 +16,7 @@
       "duration": 2
     }
   ],
-  "prerequisiteId": "arcanist-time-slip",
+  "prerequisiteId": "arcanist-galvanize",
   "isUltimate": false,
   "monsterTechniqueOf": null,
   "rankScaling": {

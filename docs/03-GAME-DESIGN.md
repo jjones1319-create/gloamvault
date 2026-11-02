@@ -111,6 +111,9 @@ Species · class · level · the eight attributes with a small "+" when one grew
 
 ## 3. Combat: the speed timeline
 
+> **Unity (Phase 19, D-179) — the fight on the floor.** A fight starts where you stand: your hero turns to face the monsters, the party and the pets appear beside you, the monsters stand in their rows ahead, the camera swings to the side, and every action below is acted out — the swing, the cast, the flinch, the number, the fall, a summon's creature called for its strike — one action at a time (A hurries it). The choices are the sim's own player's until Phase 20 puts the buttons on screen; the card after the fight tells the result. Nothing in the staging decides anything: the rules here are the whole of it.
+
+
 ### 3.1 Who acts when — the accumulator
 
 - Every actor (heroes, pets, monsters) has an **energy accumulator**. Each tick it gains its Speed; at **1,000** it acts, and the action's **weight** is subtracted: *light* 800 (daggers, quick skills), *normal* 1,000, *heavy* 1,400 (two-handers, big spells). So Speed 150 acts 1.5× as often as Speed 100, and a dagger user with Speed 150 against a greatsword user with Speed 100 gets **2.6 actions for every one** — "faster means more attacks" literally (ToME / Caves of Qud / DCSS lineage).
@@ -402,6 +405,8 @@ An armor piece's **material is its grade**. Upgrading it with the next material 
 ## 7. Skills
 
 > **Skill trees (D-153, D-154 — James, 2026-10-30), for the Unity version from Phase 18.** James: *"I would also like there to be a skill tree path for each class … as they grow put more skill points into branches they want to explore."* Each class's schools are the **branches** of its tree (§7.1's shape stays: a skill's tier, its one prerequisite in the branch, the tier's level). **Skill points:** 3 at creation (they replace the starter picks), +1 per level-up; a skill costs **I 1 · II 1 · III 2 · IV 2 · V 3** points (a 45-skill tree is 81, so a level-40 hero owns about half of one). **Rank still grows by use** (§5.2). **The loadout** is unchanged — up to 4 actives in a fight, 2 passives and the Ultimate's own button (§7.3) — and is changed, and points spent, anywhere outside a fight. **The other roads stay and cost no point:** Insight (§7.5) and Tomes; monster techniques, by witnessing; the Skill Hall, which still teaches Tiers I–III for gold at about ×4 §7.4's prices and **resets a tree** for gold. Tier IV is never sold; Tier V keeps its endgame unlock and costs points. **The Arcanist** grows four branches — Fire · Frost · Storm · Summoning — and its **summons** appear for one great attack and are gone (D-154; its sheet is rewritten in Phase 18). §7.2–§7.4 below are the web version's until Phase 18 rewrites them.
+
+*As built (Phase 18, D-178):* `HeroRecord.skillPoints` holds the unspent points; `sim/src/skills/tree.ts` is the rule (`standing`, `spendPoints`, `resetTree`, `equip`); the Hall sells Tiers I–III at 0.4 / 1.2 / 4 R and resets a tree for 1 R; the Arcanist's four branches hold sixty skills with six summons (`docs/classes/arcanist.md` §4, written from the content); the tree screen on the phone spends a test hero's points until Phase 22 seats the roster.
 
 ### 7.1 The shape of a class's list
 

@@ -1,0 +1,57 @@
+{
+  "id": "arcanist-static-charge",
+  "classId": "arcanist",
+  "school": "storm",
+  "tier": 1,
+  "name": "Static Charge",
+  "description": "Shock you apply lasts +1 turn; Lightning damage +5%.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "status-duration-bonus",
+      "status": "shock",
+      "amount": 1,
+      "target": "self"
+    },
+    {
+      "kind": "custom",
+      "customId": "element-damage-percent",
+      "damageType": "lightning",
+      "percent": 5,
+      "target": "self"
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Lightning +10%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "element-damage-percent",
+        "damageType": "lightning",
+        "percent": 10,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 0
+  }
+}

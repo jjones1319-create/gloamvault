@@ -1,7 +1,7 @@
 {
   "id": "arcanist-overcharge",
   "classId": "arcanist",
-  "school": "evocation",
+  "school": "storm",
   "tier": 3,
   "name": "Overcharge",
   "description": "Evocation crits deal +30% Crit Damage and refund 10% of the skill’s Mana cost.",
@@ -25,7 +25,7 @@
       "note": "a crit by a skill of this skill’s school refunds percent% of its pool cost"
     }
   ],
-  "prerequisiteId": "arcanist-backdraft",
+  "prerequisiteId": "arcanist-conductor",
   "isUltimate": false,
   "monsterTechniqueOf": null,
   "rankScaling": {

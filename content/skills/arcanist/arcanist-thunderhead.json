@@ -1,7 +1,7 @@
 {
   "id": "arcanist-thunderhead",
   "classId": "arcanist",
-  "school": "evocation",
+  "school": "storm",
   "tier": 3,
   "name": "Thunderhead",
   "description": "1.0× Lightning to every enemy in both rows; every target already Shocked has a 30% chance of Stun 1 turn.",

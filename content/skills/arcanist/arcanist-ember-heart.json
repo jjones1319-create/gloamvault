@@ -1,0 +1,57 @@
+{
+  "id": "arcanist-ember-heart",
+  "classId": "arcanist",
+  "school": "fire",
+  "tier": 3,
+  "name": "Ember Heart",
+  "description": "Fire skills +8%; Burn you apply lasts +1 turn.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "school-damage-percent",
+      "percent": 8,
+      "target": "self",
+      "note": "skills of this skill’s school (Fire) deal +percent%"
+    },
+    {
+      "kind": "custom",
+      "customId": "status-duration-bonus",
+      "status": "burn",
+      "amount": 1,
+      "target": "self"
+    }
+  ],
+  "prerequisiteId": "arcanist-backdraft",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "+12%.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "school-damage-percent",
+        "percent": 12,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "dot"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 0
+  }
+}

@@ -1,7 +1,7 @@
 {
   "id": "arcanist-frost-floor",
   "classId": "arcanist",
-  "school": "rime",
+  "school": "frost",
   "tier": 1,
   "name": "Frost Floor",
   "description": "0.7× Frost to every front-row enemy; Chill 1 turn.",

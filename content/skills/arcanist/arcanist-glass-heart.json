@@ -1,7 +1,7 @@
 {
   "id": "arcanist-glass-heart",
   "classId": "arcanist",
-  "school": "rime",
+  "school": "frost",
   "tier": 5,
   "name": "Glass Heart",
   "description": "3.5× Frost to one enemy in either row; against a Frozen target it cannot miss and always crits; a kill gives the whole party +15 Momentum.",

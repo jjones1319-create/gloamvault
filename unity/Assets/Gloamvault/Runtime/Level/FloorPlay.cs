@@ -68,6 +68,8 @@ namespace Gloamvault.Level
 
         /// <summary>D-174 (Proposed): until Phase 22 seats a party, a Mender walks with the hero in the rules (unseen on the floor; the card names both) — a fresh hero alone cannot clear Floor 1 (docs/balance/2026-11-02-walk-solo.md).</summary>
         public const string Companion = ",{\"classId\":\"mender\",\"speciesId\":\"human\"}";
+        /// <summary>The tests and the shots: JSON fields appended to the hero's party member (extra skills, the active slots).</summary>
+        public static string HeroExtras = "";
         public const float EngageReach = 1.6f;
         public const float AutoCardSeconds = 2.5f;
 
@@ -109,17 +111,10 @@ namespace Gloamvault.Level
             Card = card;
             try
             {
-                if (Engine == null)
-                {
-                    var sw = System.Diagnostics.Stopwatch.StartNew();
-                    var assets = JintSim.Assets.Load();
-                    Engine = new JintSim(assets.script, assets.content, assets.loadMs);
-                    EngineMs = sw.Elapsed.TotalMilliseconds;
-                    GvLog.Line("play-engine", ("ms", EngineMs), ("engine", Engine.Name));
-                }
+                EnsureEngine();
                 var def = floor.def;
                 string request = "{\"dungeonId\":\"" + def.dungeonId + "\",\"floor\":" + def.floor + ",\"lastFloor\":" + def.floor + ",\"floorLayoutId\":\"" + def.id +
-                    "\",\"seed\":" + seed + ",\"party\":[{\"classId\":\"" + (hero?.classId ?? "warden") + "\",\"speciesId\":\"" + (hero?.speciesId ?? "dwarf") + "\"}" + Companion + "]}";
+                    "\",\"seed\":" + seed + ",\"party\":[{\"classId\":\"" + (hero?.classId ?? "warden") + "\",\"speciesId\":\"" + (hero?.speciesId ?? "dwarf") + "\"" + HeroExtras + "}" + Companion + "]}";
                 Handle = Engine.CreateDelve(request);
                 Refresh();
                 GvLog.Line("play", ("floor", def.id), ("seed", seed), ("room", Snap.roomId), ("light", Snap.light), ("band", Snap.band), ("monsterLevel", Snap.monsterLevel), ("budget", Snap.walkBudget));
@@ -132,8 +127,20 @@ namespace Gloamvault.Level
             }
         }
 
+        /// <summary>The app's one engine, built on first use (about a second on the phone): the walked floor, the tree screen, the fight share it.</summary>
+        public static void EnsureEngine()
+        {
+            if (Engine != null) return;
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            var assets = JintSim.Assets.Load();
+            Engine = new JintSim(assets.script, assets.content, assets.loadMs);
+            EngineMs = sw.Elapsed.TotalMilliseconds;
+            GvLog.Line("play-engine", ("ms", EngineMs), ("engine", Engine.Name));
+        }
+
         public void Dispose()
         {
+            Stage?.Dispose(); Stage = null;
             foreach (var d in dressed.Values) Undress(d);
             dressed.Clear();
             if (Handle >= 0) { try { Engine?.DisposeDelve(Handle); } catch (Exception e) { Debug.LogException(e); } }
@@ -142,10 +149,20 @@ namespace Gloamvault.Level
 
         // ---- the walk feeds the rules ----
 
-        /// <summary>Each frame: the seconds walked (whole ones go to the sim), the monsters reached, the card's auto-press on auto walk.</summary>
+        /// <summary>Each frame: the stage while a fight plays; else the seconds walked (whole ones go to the sim), the monsters reached, the card's auto-press on auto walk.</summary>
         public void Tick(float dt, bool moving, Vector3 heroAt, bool autoWalk)
         {
             if (!Ok) return;
+            if (Stage != null && Stage.Active)
+            {
+                if (!Stage.Tick(dt))
+                {
+                    // The fight is over in the rules: the card.
+                    Refresh();
+                    Resolve();
+                }
+                return;
+            }
             if (CardOpen)
             {
                 if (autoWalk && Time.unscaledTime - cardOpenedAt > AutoCardSeconds) Card.PressFirst();
@@ -288,15 +305,30 @@ namespace Gloamvault.Level
             Snap = JsonUtility.FromJson<SimSnapshot>(Engine.Snapshot(Handle));
         }
 
-        /// <summary>A fight plays itself (Phase 19 stages it); its result, a curio's choices and the delve's end are cards.</summary>
+        /// <summary>The fight on the stage (Phase 19): the figures, the camera, the events acted out; null until a fight starts.</summary>
+        public FightStage Stage { get; private set; }
+        /// <summary>The tests: a fight plays out at once, no stage.</summary>
+        public bool StageFights { get; set; } = true;
+        public bool Staging => Stage != null && Stage.Active;
+
+        /// <summary>A fight goes to the stage, which plays it one action at a time (Phase 19); its result, a curio's choices and the delve's end are cards.</summary>
         void Resolve()
         {
-            int guard = 0;
-            while (Snap.phase == "fight" && guard++ < 600)
+            if (Snap.phase == "fight")
             {
-                try { Engine.Step(Handle, "{\"kind\":\"auto\"}"); Steps++; }
-                catch (Exception e) { Debug.LogException(e); break; }
-                Refresh();
+                if (StageFights && screen.Hero != null)
+                {
+                    Stage ??= new FightStage(this, screen, screen.WalkRoot);
+                    if (!Stage.Active) Stage.Begin();
+                    return;
+                }
+                int guard = 0;
+                while (Snap.phase == "fight" && guard++ < 600)
+                {
+                    try { Engine.Step(Handle, "{\"kind\":\"auto\"}"); Steps++; }
+                    catch (Exception e) { Debug.LogException(e); break; }
+                    Refresh();
+                }
             }
             switch (Snap.phase)
             {

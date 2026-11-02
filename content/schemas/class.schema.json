@@ -5,15 +5,23 @@
   "description": "A hero class: the kit, the weapons and armor, the three schools and the ultimate (03-GAME-DESIGN §2.3, §6.1, §7.1). One file per class under content/classes/<id>.json. The 45 skills themselves live in content/skills/ and point back here by classId.",
   "type": "object",
   "properties": {
-    "id": { "$ref": "common.schema.json#/$defs/id" },
-    "name": { "type": "string", "minLength": 1 },
+    "id": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
     "role": {
       "type": "string",
       "description": "One line on what the class does in a party, shown on its creation card (e.g. 'front-line tank').",
       "minLength": 1,
       "maxLength": 80
     },
-    "description": { "type": "string", "minLength": 1 },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
     "attributeMods": {
       "$ref": "common.schema.json#/$defs/attributeMods",
       "description": "Added to 10 + species mods at creation (§2.3). The linter checks the sum is +4."
@@ -21,31 +29,51 @@
     "pool": {
       "type": "string",
       "description": "The class family's resource pool (§3.2): stamina for physical classes, mana for casters.",
-      "enum": ["stamina", "mana"]
+      "enum": [
+        "stamina",
+        "mana"
+      ]
     },
-    "armorFamily": { "$ref": "common.schema.json#/$defs/armorFamily" },
+    "armorFamily": {
+      "$ref": "common.schema.json#/$defs/armorFamily"
+    },
     "weaponTypes": {
       "type": "array",
       "description": "Weapon and off-hand types the class may equip (§6.3).",
-      "items": { "$ref": "common.schema.json#/$defs/weaponType" },
+      "items": {
+        "$ref": "common.schema.json#/$defs/weaponType"
+      },
       "minItems": 1,
       "uniqueItems": true
     },
     "schools": {
       "type": "array",
-      "description": "Exactly three schools, each a way of playing the class (§7.1). Skills reference a school by its id.",
+      "description": "Exactly three schools, each a way of playing the class (§7.1). Skills reference a school by its id. Phase 18 (D-154): the Arcanist grows four.",
       "items": {
         "type": "object",
         "properties": {
-          "id": { "$ref": "common.schema.json#/$defs/id" },
-          "name": { "type": "string", "minLength": 1 },
-          "philosophy": { "type": "string", "description": "One or two sentences on what the school is for.", "minLength": 1 }
+          "id": {
+            "$ref": "common.schema.json#/$defs/id"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "philosophy": {
+            "type": "string",
+            "description": "One or two sentences on what the school is for.",
+            "minLength": 1
+          }
         },
-        "required": ["id", "name", "philosophy"],
+        "required": [
+          "id",
+          "name",
+          "philosophy"
+        ],
         "additionalProperties": false
       },
       "minItems": 3,
-      "maxItems": 3
+      "maxItems": 4
     },
     "ultimateSkillId": {
       "$ref": "common.schema.json#/$defs/id",
@@ -58,7 +86,9 @@
     "starterSkillIds": {
       "type": "array",
       "description": "The three Tier I skills picked at creation (§7.2).",
-      "items": { "$ref": "common.schema.json#/$defs/id" },
+      "items": {
+        "$ref": "common.schema.json#/$defs/id"
+      },
       "minItems": 3,
       "maxItems": 3,
       "uniqueItems": true
@@ -75,20 +105,40 @@
       "items": {
         "type": "object",
         "properties": {
-          "id": { "$ref": "common.schema.json#/$defs/id" },
-          "name": { "type": "string", "minLength": 1, "maxLength": 40 },
-          "description": { "type": "string", "minLength": 1 },
-          "starterKit": { "$ref": "common.schema.json#/$defs/idList", "description": "Item ids, as starterKit." },
+          "id": {
+            "$ref": "common.schema.json#/$defs/id"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1
+          },
+          "starterKit": {
+            "$ref": "common.schema.json#/$defs/idList",
+            "description": "Item ids, as starterKit."
+          },
           "starterSkillIds": {
             "type": "array",
             "description": "The three Tier I picks this kit recommends (each must work with the kit).",
-            "items": { "$ref": "common.schema.json#/$defs/id" },
+            "items": {
+              "$ref": "common.schema.json#/$defs/id"
+            },
             "minItems": 3,
             "maxItems": 3,
             "uniqueItems": true
           }
         },
-        "required": ["id", "name", "description", "starterKit", "starterSkillIds"],
+        "required": [
+          "id",
+          "name",
+          "description",
+          "starterKit",
+          "starterSkillIds"
+        ],
         "additionalProperties": false
       }
     },
@@ -98,10 +148,19 @@
       "items": {
         "type": "object",
         "properties": {
-          "fieldSkill": { "$ref": "common.schema.json#/$defs/fieldSkill" },
-          "rankBonus": { "type": "integer", "minimum": 1, "maximum": 5 }
+          "fieldSkill": {
+            "$ref": "common.schema.json#/$defs/fieldSkill"
+          },
+          "rankBonus": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          }
         },
-        "required": ["fieldSkill", "rankBonus"],
+        "required": [
+          "fieldSkill",
+          "rankBonus"
+        ],
         "additionalProperties": false
       },
       "uniqueItems": true
@@ -118,33 +177,69 @@
     "visual": {
       "type": "object",
       "properties": {
-        "gearSetId": { "$ref": "common.schema.json#/$defs/id", "description": "The starter gear set's visual id in the art pipeline." },
+        "gearSetId": {
+          "$ref": "common.schema.json#/$defs/id",
+          "description": "The starter gear set's visual id in the art pipeline."
+        },
         "palette": {
           "type": "array",
           "description": "Class accent colours used on trims and effects.",
-          "items": { "$ref": "common.schema.json#/$defs/hexColor" },
+          "items": {
+            "$ref": "common.schema.json#/$defs/hexColor"
+          },
           "minItems": 1
         },
-        "notes": { "type": "string", "description": "Art direction for the class silhouette." }
+        "notes": {
+          "type": "string",
+          "description": "Art direction for the class silhouette."
+        }
       },
-      "required": ["gearSetId", "palette"],
+      "required": [
+        "gearSetId",
+        "palette"
+      ],
       "additionalProperties": false
     },
     "pros": {
       "type": "array",
       "description": "One-line strengths for the creation card (§13).",
-      "items": { "type": "string", "minLength": 1 },
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
       "minItems": 1,
       "maxItems": 3
     },
     "cons": {
       "type": "array",
       "description": "One-line weaknesses for the creation card (§13).",
-      "items": { "type": "string", "minLength": 1 },
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
       "minItems": 1,
       "maxItems": 3
     }
   },
-  "required": ["id", "name", "role", "description", "attributeMods", "pool", "armorFamily", "weaponTypes", "schools", "ultimateSkillId", "starterKit", "starterSkillIds", "fieldSkillAffinities", "monsterTechniqueIds", "aiRuleDefault", "visual", "pros", "cons"],
+  "required": [
+    "id",
+    "name",
+    "role",
+    "description",
+    "attributeMods",
+    "pool",
+    "armorFamily",
+    "weaponTypes",
+    "schools",
+    "ultimateSkillId",
+    "starterKit",
+    "starterSkillIds",
+    "fieldSkillAffinities",
+    "monsterTechniqueIds",
+    "aiRuleDefault",
+    "visual",
+    "pros",
+    "cons"
+  ],
   "additionalProperties": false
 }

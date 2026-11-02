@@ -1,0 +1,60 @@
+{
+  "id": "arcanist-call-storm-hawk",
+  "classId": "arcanist",
+  "school": "summoning",
+  "tier": 3,
+  "name": "Call: Storm Hawk",
+  "description": "A hawk of forked lightning stoops on the whole room: 1.1× Lightning to every enemy; Shock 2. Heavy cast.",
+  "type": "active",
+  "cost": 30,
+  "weight": 1400,
+  "target": "allEnemies",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1.1,
+      "damageType": "lightning"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "shock",
+      "duration": 2
+    }
+  ],
+  "prerequisiteId": "arcanist-call-rime-stag",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "summon": {
+    "creature": "storm-hawk",
+    "name": "Storm Hawk",
+    "element": "lightning"
+  },
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "1.25× each.",
+    "effects": [
+      {
+        "kind": "damage",
+        "multiplier": 1.25,
+        "damageType": "lightning"
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "summon",
+    "debuff",
+    "reach"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 75
+  }
+}

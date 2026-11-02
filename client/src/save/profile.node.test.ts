@@ -70,8 +70,8 @@ describe('the game save (10 §6)', () => {
   it('a version-1 save migrates through to the current version and keeps its death rule (D-095)', () => {
     const fixture = { ...profileWithHero(), saveVersion: 1, deathRule: 'sheltered' }
     const r = validateProfile(content, JSON.parse(JSON.stringify(fixture)))
-    expect(SAVE_VERSION).toBe(4)
-    expect(r.profile?.saveVersion).toBe(4)
+    expect(SAVE_VERSION).toBe(5)
+    expect(r.profile?.saveVersion).toBe(5)
     expect(r.profile?.deathRule).toBe('sheltered')
   })
 
@@ -93,7 +93,7 @@ describe('the game save (10 §6)', () => {
     )
     expect(fixture.heroes[0].look).toBeUndefined()
     const r = validateProfile(content, fixture)
-    expect(r.profile?.saveVersion).toBe(4)
+    expect(r.profile?.saveVersion).toBe(5)
     for (const h of r.profile!.heroes) {
       expect(h.look).toEqual(defaultLook(h.id, content.species.get(h.speciesId)))
       expect(h.saveVersion).toBe(2)
@@ -103,6 +103,18 @@ describe('the game save (10 §6)', () => {
     expect(validateProfile(content, fixture).profile?.heroes.map((h) => h.look)).toEqual(r.profile?.heroes.map((h) => h.look))
     // New heroes get the same look the migration would give them.
     expect(second.heroes[1]!.look).toEqual(defaultLook(second.heroes[1]!.id, content.species.get('halfling')))
+  })
+
+  it('a version-4 save (Phase 17) loads into version 5 with every hero’s skill points worked out (Phase 18, D-153)', () => {
+    const p = profileWithHero()
+    const fixture = JSON.parse(JSON.stringify({ ...p, saveVersion: 4, activeDelve: { options: { dungeonId: 'gravehollow-keep', floor: 1, seed: 5 }, party: p.heroes, commands: [] } }))
+    for (const h of fixture.heroes) { delete h.skillPoints; h.level = 6 }
+    for (const h of fixture.activeDelve.party) { delete h.skillPoints; h.level = 6 }
+    const r = validateProfile(content, fixture)
+    expect(r.profile?.saveVersion).toBe(5)
+    // Level 6: 3 + 5 points earned, the three starter picks (Tier I, 1 each) spent.
+    expect(r.profile!.heroes[0]!.skillPoints).toBe(5)
+    expect(r.profile!.activeDelve!.party[0]!.skillPoints).toBe(5)
   })
 
   it('a version-3 save (Phase 6) loads into version 4 with every Phase 7 field at its default', () => {
@@ -123,7 +135,7 @@ describe('the game save (10 §6)', () => {
     delete fixture.contracts
     if (fixture.progress) delete fixture.progress.bossKillsByDifficulty
     const r = validateProfile(content, fixture)
-    expect(r.profile?.saveVersion).toBe(4)
+    expect(r.profile?.saveVersion).toBe(5)
     const hero = r.profile!.heroes[0]!
     expect(hero.name).toBe('Orrin')
     expect(hero.quiver).toBeUndefined() // a missing quiver counts as full (sim/src/ammo.ts)

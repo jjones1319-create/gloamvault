@@ -1,7 +1,7 @@
 {
   "id": "arcanist-paradox",
   "classId": "arcanist",
-  "school": "arcana",
+  "school": "storm",
   "tier": 5,
   "name": "Paradox",
   "description": "Your heavy casts weigh 1,000 and cannot be interrupted.",
@@ -18,7 +18,7 @@
       "note": "a stub until fight.ts lets a passive lift the charge (execute decides it by the skill’s own weight); Tier V is locked until Segment 3"
     }
   ],
-  "prerequisiteId": "arcanist-mass-haste",
+  "prerequisiteId": "arcanist-lightning-rod",
   "isUltimate": false,
   "monsterTechniqueOf": null,
   "rankScaling": {

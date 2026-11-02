@@ -1,0 +1,60 @@
+{
+  "id": "arcanist-call-ember-imp",
+  "classId": "arcanist",
+  "school": "summoning",
+  "tier": 1,
+  "name": "Call: Ember Imp",
+  "description": "An imp of cinders leaps from the Arcanist’s hand and bursts on one enemy: 1.7× Fire; Burn 2. Heavy cast.",
+  "type": "active",
+  "cost": 18,
+  "weight": 1400,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1.7,
+      "damageType": "fire"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "burn",
+      "duration": 2
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "summon": {
+    "creature": "ember-imp",
+    "name": "Ember Imp",
+    "element": "fire"
+  },
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "2.0×.",
+    "effects": [
+      {
+        "kind": "damage",
+        "multiplier": 2,
+        "damageType": "fire"
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "summon",
+    "dot",
+    "reach"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 65
+  }
+}

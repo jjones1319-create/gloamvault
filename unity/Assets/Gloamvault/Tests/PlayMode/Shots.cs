@@ -339,6 +339,54 @@ namespace Gloamvault.Tests
             Gloamvault.Level.FloorState.Forget("floor-1");
         }
 
+        /// <summary>Phase 18: the Arcanist's four branches with a few points spent, and the Warden's three.</summary>
+        [UnityTest]
+        public IEnumerator Trees()
+        {
+            yield return Scenes.Load(Scenes.Boot);
+            yield return new WaitForSecondsRealtime(0.5f);
+            var doc = Object.FindFirstObjectByType<UIDocument>();
+            var screen = TreeScreen.Open(doc, "arcanist", 12);
+            yield return null;
+            screen.Spend("arcanist-cinder-snap"); screen.Spend("arcanist-call-rime-stag"); screen.Spend("arcanist-flame-ward");
+            screen.Pick("arcanist-call-storm-hawk");
+            yield return new WaitForSecondsRealtime(0.4f);
+            yield return ShotCapture.Capture("tree-arcanist");
+            screen.Step(-1);
+            yield return null;
+            screen.Pick("");
+            yield return new WaitForSecondsRealtime(0.4f);
+            yield return ShotCapture.Capture("tree-" + screen.ClassId);
+        }
+
+        /// <summary>Phase 19: the fight on the stage — the lines facing, a swing mid-fight; an Arcanist's summon called.</summary>
+        [UnityTest]
+        public IEnumerator Fight()
+        {
+            Gloamvault.Level.FloorState.Forget("floor-1");
+            yield return Scenes.Load(Scenes.Boot);
+            yield return new WaitForSecondsRealtime(0.5f);
+            var doc = Object.FindFirstObjectByType<UIDocument>();
+            Gloamvault.Level.FloorPlay.HeroExtras = ",\"skillIds\":[\"arcanist-call-ember-imp\"],\"onlyActives\":[\"arcanist-call-ember-imp\"],\"aiRule\":\"ELSE call: ember imp on weakest enemy\"";
+            var screen = LevelScreen.Open(doc, seed: 11, floorId: "floor-1", hero: new Gloamvault.Characters.HeroSpec { speciesId = "elf", classId = "arcanist", tier = "S" });
+            yield return null;
+            yield return null;
+            var play = screen.Play;
+            play.Walk(400);
+            yield return null;
+            yield return new WaitForSecondsRealtime(1.6f);
+            yield return ShotCapture.Capture("fight-stage");
+            float t = 0f;
+            while (play.Staging && play.Stage.Summons == 0 && t < 25f) { yield return null; t += Time.deltaTime; }
+            if (play.Staging && play.Stage.Summons > 0)
+            {
+                yield return new WaitForSecondsRealtime(0.5f);
+                yield return ShotCapture.Capture("fight-summon");
+            }
+            Gloamvault.Level.FloorPlay.HeroExtras = "";
+            Gloamvault.Level.FloorState.Forget("floor-1");
+        }
+
         [UnityTest]
         public IEnumerator Lineups()
         {

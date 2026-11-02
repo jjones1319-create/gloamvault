@@ -1,7 +1,7 @@
 {
   "id": "arcanist-ice-wall",
   "classId": "arcanist",
-  "school": "rime",
+  "school": "frost",
   "tier": 2,
   "name": "Ice Wall",
   "description": "A wall with HP equal to 25% of your max HP absorbs melee hits aimed at the party’s front row until it breaks or 2 turns pass; an enemy that strikes it is Chilled 1 turn.",

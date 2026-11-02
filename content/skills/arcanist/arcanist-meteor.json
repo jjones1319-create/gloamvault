@@ -1,7 +1,7 @@
 {
   "id": "arcanist-meteor",
   "classId": "arcanist",
-  "school": "evocation",
+  "school": "fire",
   "tier": 3,
   "name": "Meteor",
   "description": "1.2× Fire to every enemy in both rows; Burn 3 turns; any target already Burning is also Dazed (−500 energy). Heavy cast.",

@@ -64,7 +64,10 @@ Weights: light 800 (daggers, quick skills) · normal 1,000 · heavy 1,400 (two-h
 
 Each skill is a list of effects from the closed set in `content/schemas/common.schema.json` (`damage`, `heal`, `shield`, `applyStatus`, `removeStatus`, `buffStat`, `debuffStat`, `momentum`, `pool`, `timeline`, `rowSwap`, `summon`, `revive`, `light`, `loot`, `taunt`, `dispel`, `custom`) with typed fields; `custom` effects name a handler in `sim/src/skills/custom/<id>.ts` and the linter requires the handler to exist. Rank scaling and Mastery are data too.
 
-## 7. As built (Phase 7)
+## 7. As built (Phase 7; Phase 18 below)
+
+- **Phase 18 (D-153, D-154, D-178) — skill trees.** Points on the record (`skillPoints`: 3 at creation on the starter picks, +1 a level), `sim/src/skills/tree.ts` (standing · spend · reset · equip; costs I 1 · II 1 · III 2 · IV 2 · V 3 in `tuning.skills.points`), the Hall at ×4 with a reset for 1 R, profile version 5. **The Arcanist is 60 skills in four branches** — Fire · Frost · Storm · Summoning — with six summons (`summon` on the skill record); the other six classes keep three branches of fifteen. `npm run lint` rule 4 counts per class from its own schools.
+
 
 - **Tiers IV–V** for the six classes (108 skills, `tools/content/gen-class-*.ts` → `content/skills/<class>/`), from the sheets' rows, with about a hundred new hooks in `sim/src/skills/custom/` (the `_group-tiers45*` files). Tier V hooks whose joint lives outside the fight (a delve-side corridor or chest rule, a turn snapshot) are documented stubs until Segment 3 opens Tier V; the sheets' "As built" notes list them. The D-099 limits are in the numbers and linted (rule 36): Oath of the Vault saves each ally once per cast, Undying Rage works once per floor (twice with Deathless), Never Lost cuts ambush by at most 30, no execute above 6.0× (Severance below 35% HP is 6.0× with a sure crit).
 - **Monster techniques live**: the eleven Gravehollow techniques are linked to their monsters and moves (the Mender's Troll's Regrowth waits for the Fungal Deep, marked `monsterTechniqueLater`); a won fight rolls each hero's witnessed uses (`sim/src/progress.ts`), the count shows on the hero's Skills tab.

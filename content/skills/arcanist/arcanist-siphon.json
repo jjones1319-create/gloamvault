@@ -1,7 +1,7 @@
 {
   "id": "arcanist-siphon",
   "classId": "arcanist",
-  "school": "arcana",
+  "school": "summoning",
   "tier": 2,
   "name": "Siphon",
   "description": "Costs no Mana. You restore 25% of max Mana from one enemy in either row; if the target is a caster it is Silenced 1 turn.",

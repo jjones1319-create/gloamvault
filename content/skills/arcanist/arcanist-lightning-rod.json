@@ -1,0 +1,59 @@
+{
+  "id": "arcanist-lightning-rod",
+  "classId": "arcanist",
+  "school": "storm",
+  "tier": 4,
+  "name": "Lightning Rod",
+  "description": "A melee attacker whose hit lands on you gets Shock 1; Lightning resistance +30%.",
+  "type": "passive",
+  "cost": 0,
+  "weight": null,
+  "target": "self",
+  "effects": [
+    {
+      "kind": "custom",
+      "customId": "status-on-melee-attacker",
+      "status": "shock",
+      "duration": 1,
+      "target": "self"
+    },
+    {
+      "kind": "custom",
+      "customId": "element-resist-percent",
+      "damageType": "lightning",
+      "percent": 30,
+      "target": "self"
+    }
+  ],
+  "prerequisiteId": "arcanist-overcharge",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Shock 2.",
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "status-on-melee-attacker",
+        "status": "shock",
+        "duration": 2,
+        "target": "self"
+      }
+    ]
+  },
+  "tags": [
+    "buff",
+    "debuff"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "buff",
+    "priority": 0
+  }
+}

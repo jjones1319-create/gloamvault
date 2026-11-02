@@ -1,7 +1,7 @@
 {
   "id": "arcanist-deep-cold",
   "classId": "arcanist",
-  "school": "rime",
+  "school": "frost",
   "tier": 4,
   "name": "Deep Cold",
   "description": "Every Freeze you cause lasts +1 turn; whenever an ally shatters a Frozen enemy, you restore 15% of max Mana.",

@@ -1,7 +1,7 @@
 {
   "id": "arcanist-lantern-of-the-mind",
   "classId": "arcanist",
-  "school": "arcana",
+  "school": "summoning",
   "tier": 3,
   "name": "Lantern of the Mind",
   "description": "Out of combat: +20 Light, once per room. In combat: every ally is immune to Blind and Fear for 3 turns and Shadow enemies take +15% damage for 3 turns.",

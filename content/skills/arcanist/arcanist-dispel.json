@@ -1,7 +1,7 @@
 {
   "id": "arcanist-dispel",
   "classId": "arcanist",
-  "school": "arcana",
+  "school": "summoning",
   "tier": 3,
   "name": "Dispel",
   "description": "On an enemy in either row: strip every buff (Fortify, Shield, Haste, Regen, Taunt). On an ally instead: cleanse 2 debuffs.",

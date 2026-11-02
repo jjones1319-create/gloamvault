@@ -1,7 +1,7 @@
 {
   "id": "arcanist-blink-step",
   "classId": "arcanist",
-  "school": "arcana",
+  "school": "storm",
   "tier": 2,
   "name": "Blink Step",
   "description": "You or one ally swap rows at once, ignoring Root, Web and Grab, and gain +15% Dodge until the target’s next turn.",

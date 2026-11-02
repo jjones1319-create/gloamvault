@@ -1,0 +1,65 @@
+{
+  "id": "arcanist-call-night-maw",
+  "classId": "arcanist",
+  "school": "summoning",
+  "tier": 5,
+  "name": "Call: Night Maw",
+  "description": "A maw opens in the dark beneath one enemy: 3.4× Shadow; Fear 1; Weaken 2. Heavy cast.",
+  "type": "active",
+  "cost": 44,
+  "weight": 1400,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 3.4,
+      "damageType": "shadow"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "fear",
+      "duration": 1
+    },
+    {
+      "kind": "applyStatus",
+      "status": "weaken",
+      "duration": 2
+    }
+  ],
+  "prerequisiteId": "arcanist-font-of-mana",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "summon": {
+    "creature": "night-maw",
+    "name": "Night Maw",
+    "element": "shadow"
+  },
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "3.8×.",
+    "effects": [
+      {
+        "kind": "damage",
+        "multiplier": 3.8,
+        "damageType": "shadow"
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "summon",
+    "debuff",
+    "reach"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 85
+  }
+}

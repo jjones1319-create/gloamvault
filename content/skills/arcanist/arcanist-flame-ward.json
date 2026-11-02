@@ -1,0 +1,55 @@
+{
+  "id": "arcanist-flame-ward",
+  "classId": "arcanist",
+  "school": "fire",
+  "tier": 2,
+  "name": "Flame Ward",
+  "description": "Shield 15% of the target’s max HP for 2 turns; while it holds, a melee attacker whose hit lands on the ally gets Burn 1.",
+  "type": "active",
+  "cost": 14,
+  "weight": 1000,
+  "target": "ally",
+  "effects": [
+    {
+      "kind": "shield",
+      "percent": 15,
+      "duration": 2
+    },
+    {
+      "kind": "custom",
+      "customId": "status-on-melee-attacker",
+      "status": "burn",
+      "duration": 1,
+      "note": "on the target for the Shield’s turns: a melee attacker whose hit lands gets `status` for `duration`"
+    }
+  ],
+  "prerequisiteId": "arcanist-cinder-snap",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Shield 20%.",
+    "effects": [
+      {
+        "kind": "shield",
+        "percent": 20,
+        "duration": 2
+      }
+    ]
+  },
+  "tags": [
+    "shield",
+    "buff"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "defend",
+    "priority": 45
+  }
+}

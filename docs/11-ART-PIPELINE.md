@@ -36,6 +36,8 @@ Event frames (hit, vanish, release) are listed in each clip's docstring and expo
 
 Per zone: a **kit** of pieces (`07-DUNGEONS.md` §2 lists them with tri budgets), a **palette**, **lighting** baked in Blender (Cycles bake of AO + a lightmap atlas per room template, 2048², headless), fog and torch sprites added in the client. Room **templates** (`07` §2) are `.glb` assemblies built from the kit by script from a JSON description (so the generator's template ids and the Blender builds share a source). Props that repeat (torches, chains, rubble, bones) are separate `.glb`s instanced in three.js. *As built: §12 — kit pieces with ambient occlusion baked into the vertex colours, no lightmaps (D-110, D-114).*
 
+> **Phase 19 (D-179): the six summons' creatures** (Ember Imp, Rime Stag, Storm Hawk, Bog Serpent, Dawn Warden, Night Maw — D-154) are **re-dressed monster bases** for now (`Runtime/Level/FightStage.cs` → `SummonLook`: imp · hound · bat · tentacle · sentinel · wraith with their own palettes and sizes). Their own builds — `tools/blender/monsters/build_<creature>.py` each, with a single strike clip — are a Blender phase to schedule after Phase 20.
+
 ## 6. VFX
 
 Element marks, hits, heals and Ultimates: **sprite flipbooks baked in Blender** (Mantaflow fire/smoke/water, or shader-animated planes rendered to PNG sheets — Wildsong Ranch's bake pattern) plus client-side additive planes and a cheap bloom. ≤ 1 MB per flipbook, lazy-loaded. *Superseded: the effects are generated in code (§12, D-112).*

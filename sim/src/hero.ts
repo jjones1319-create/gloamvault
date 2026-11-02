@@ -5,6 +5,7 @@ import { canHoldOffHand, createItemInstance, effectiveItemStats, setBonusLoad } 
 import { clampLook, defaultLook } from './look.ts'
 import type { Rng } from './rng.ts'
 import { linesAtRank, rankEffectPercent } from './skill-lines.ts'
+import { pointCost, pointsForLevels, pointsOf } from './skills/tree.ts'
 import { battleXpForLevel, heroLevelForXp } from './xp.ts'
 import { ALL_TENS, deriveStats, roundHalfUp, type ArmorPieceLoad, type AttributeValues, type SpeciesStatRules, type StatBonuses, type StatInputs } from './stats.ts'
 import type { Tuning } from './tuning.ts'
@@ -161,6 +162,8 @@ export function createHero(content: Content, t: Tuning, rng: Rng, input: CreateH
     creationValues: attributes,
     freePointsSpent: Object.values(input.freePoints ?? {}).reduce((s, v) => s + (v ?? 0), 0),
     skills,
+    // Phase 18 (D-153): the creation points (3) are spent on the three starter picks; a level-up adds one.
+    skillPoints: Math.max(0, t.skills.points.atCreation - starters.reduce((n, id) => n + pointCost(t, content.skills.get(id)?.tier ?? 1), 0)),
     loadout,
     loadoutPresets: [],
     fieldSkills,
@@ -525,7 +528,9 @@ export function applyBattleXpLevel(content: Content, t: Tuning, hero: HeroRecord
     attributes[a] += v
     creationValues[a] += v
   }
-  return { ...hero, level, attributes, creationValues }
+  // Phase 18 (D-153): a skill point per level gained.
+  const skillPoints = pointsOf(content, t, hero) + pointsForLevels(t, level - hero.level)
+  return { ...hero, level, attributes, creationValues, skillPoints }
 }
 
 /** A hero raised to a level with its growth applied (the balance runner's "grinded" heroes; a debug deep link). */

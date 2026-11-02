@@ -47,6 +47,28 @@ const MIGRATIONS: Record<number, (raw: Record<string, unknown>, content: Content
   // item, and on a delve in progress `options.bossKills` / `purseIn` (a delve begun before the update replays with no
   // first-kill record and no purse carried in, as it was begun).
   3: (raw) => raw,
+  // 4 → 5 (Phase 18, D-153): every hero gets its skill points — its level's points (3 + 1 per level-up) less what it
+  // knows of its tree, never below 0 — the roster and the party of a delve in progress alike.
+  4: (raw, content) => {
+    const out: Record<string, unknown> = { ...raw }
+    const t = content?.tuning
+    const withPoints = (hero: unknown): unknown => {
+      const h = hero as Record<string, unknown>
+      if (!h || typeof h !== 'object' || typeof h.skillPoints === 'number' || typeof h.level !== 'number') return hero
+      if (!content || !t) return { ...h, skillPoints: 0 }
+      const earned = t.skills.points.atCreation + t.skills.points.perLevel * Math.max(0, h.level - 1)
+      const cost = (t.skills.points.costByTier as Record<string, number>)
+      const spent = (Array.isArray(h.skills) ? h.skills : []).reduce((n: number, k) => {
+        const s = content.skills.get(String((k as Record<string, unknown>).skillId))
+        return n + (s && s.classId === h.classId && !s.isUltimate ? cost[String(s.tier)] ?? 1 : 0)
+      }, 0)
+      return { ...h, skillPoints: Math.max(0, earned - spent) }
+    }
+    if (Array.isArray(raw.heroes)) out.heroes = raw.heroes.map(withPoints)
+    const active = raw.activeDelve as Record<string, unknown> | null | undefined
+    if (active && typeof active === 'object' && Array.isArray(active.party)) out.activeDelve = { ...active, party: active.party.map(withPoints) }
+    return out
+  },
 }
 
 export function migrate(raw: Record<string, unknown>, content: Content | null = null): Record<string, unknown> {

@@ -35,6 +35,18 @@ namespace Gloamvault.Sim
         string Room(int handle, string roomId);
         /// <summary>Phase 17: the commands open now, each pre-serialised for the card's buttons (bridge.ts actions).</summary>
         string Actions(int handle);
+        /// <summary>Phase 19 (D-179): the fight's actors and its events from an index (bridge.ts fightView / fightEvents).</summary>
+        string FightView(int handle);
+        string FightEvents(int handle, int from);
+        /// <summary>Phase 18 (D-153): a class's skill tree and a test hero that spends points on it (bridge.ts tree / hero*).</summary>
+        string Tree(string classId);
+        int HeroMake(string requestJson);
+        string HeroView(int handle);
+        string HeroSpend(int handle, string skillId);
+        string HeroEquip(int handle, int slot, string skillId);
+        string HeroReset(int handle);
+        string HeroLevel(int handle, int level);
+        void HeroDispose(int handle);
         void DisposeDelve(int handle);
     }
 

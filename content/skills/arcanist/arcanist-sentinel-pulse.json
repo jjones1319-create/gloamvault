@@ -1,7 +1,7 @@
 {
   "id": "arcanist-sentinel-pulse",
   "classId": "arcanist",
-  "school": "arcana",
+  "school": "summoning",
   "tier": 4,
   "name": "Sentinel Pulse",
   "description": "Every enemy loses every buff, then takes 1.2× Lightning; every ally gains a Shield of 10% of their max HP for 2 turns. Heavy cast. Monster technique: learned only by witnessing a Vault Sentinel use it.",

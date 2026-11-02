@@ -1,7 +1,7 @@
 {
   "id": "arcanist-time-slip",
   "classId": "arcanist",
-  "school": "arcana",
+  "school": "frost",
   "tier": 3,
   "name": "Time Slip",
   "description": "One enemy in either row is Slowed 2 turns and pushed back 300 energy; a charging caster loses its cast.",
@@ -25,7 +25,7 @@
       "note": "a target that is charging a cast loses it"
     }
   ],
-  "prerequisiteId": "arcanist-blink-step",
+  "prerequisiteId": "arcanist-ice-wall",
   "isUltimate": false,
   "monsterTechniqueOf": null,
   "rankScaling": {

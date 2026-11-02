@@ -56,11 +56,11 @@ describe('economy in R (03 §7.4, §7.6, §8)', () => {
   })
 
   it('the Skill Hall ramps +20% per purchase to ×3', () => {
-    expect(skillHallPriceR(t, 1, 0)).toBeCloseTo(0.1)
-    expect(skillHallPriceR(t, 1, 1)).toBeCloseTo(0.12)
-    expect(skillHallPriceR(t, 3, 0)).toBeCloseTo(1.0)
-    expect(skillHallPriceR(t, 3, 10)).toBeCloseTo(3.0)
-    expect(skillHallPriceR(t, 3, 50)).toBeCloseTo(3.0)
+    expect(skillHallPriceR(t, 1, 0)).toBeCloseTo(0.4)
+    expect(skillHallPriceR(t, 1, 1)).toBeCloseTo(0.48)
+    expect(skillHallPriceR(t, 3, 0)).toBeCloseTo(4.0)
+    expect(skillHallPriceR(t, 3, 10)).toBeCloseTo(12.0)
+    expect(skillHallPriceR(t, 3, 50)).toBeCloseTo(12.0)
   })
 
   it('Haggling: 130% − 1%/rank to a floor of 85%; sell 40% + 0.5%/rank; the merchant charges ×1.5', () => {

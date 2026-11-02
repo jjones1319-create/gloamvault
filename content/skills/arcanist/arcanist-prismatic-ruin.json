@@ -1,7 +1,7 @@
 {
   "id": "arcanist-prismatic-ruin",
   "classId": "arcanist",
-  "school": "evocation",
+  "school": "fire",
   "tier": 3,
   "name": "Prismatic Ruin",
   "description": "Every enemy in both rows takes 2.4× spell Attack as the element it is weakest to among Fire, Frost and Lightning (Fire if none; immunities respected), then Burn 2, Chill 1 and Shock 2. You refund 30% of max Mana. 100 Momentum; weight 1,400 but cannot be interrupted; never misses.",

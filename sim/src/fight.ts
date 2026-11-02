@@ -505,7 +505,7 @@ function executePending(ctx: EffectContext, actor: Actor, pending: PendingAction
 function resolveSkill(ctx: EffectContext, actor: Actor, skill: SkillDef, rank: number, target: Actor | null, isUlt: boolean): void {
   const { t, state } = ctx
   const source = heroSkillSource(skill, rank, actor, isUlt)
-  log(ctx, { kind: 'action', actorId: actor.id, targetId: target?.id, text: `${actor.name} uses ${skill.name}${target ? ` on ${target.name}` : ''}` })
+  log(ctx, { kind: 'action', actorId: actor.id, targetId: target?.id, text: `${actor.name} uses ${skill.name}${target ? ` on ${target.name}` : ''}`, data: { skillId: skill.id } })
   notifyAttacks(ctx, actor)
   let landedHostile = false
   for (const line of linesAtRank(skill, rank)) {

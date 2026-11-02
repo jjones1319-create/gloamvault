@@ -1,7 +1,7 @@
 {
   "id": "arcanist-font-of-mana",
   "classId": "arcanist",
-  "school": "arcana",
+  "school": "summoning",
   "tier": 4,
   "name": "Font of Mana",
   "description": "Once per fight, when your Mana reaches 0 it refills to 50%; Fortune (the free-cast chance) +5 points.",

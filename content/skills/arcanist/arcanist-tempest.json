@@ -1,0 +1,54 @@
+{
+  "id": "arcanist-tempest",
+  "classId": "arcanist",
+  "school": "storm",
+  "tier": 5,
+  "name": "Tempest",
+  "description": "1.5× Lightning to every enemy in both rows; Shock 2. Heavy cast.",
+  "type": "active",
+  "cost": 46,
+  "weight": 1400,
+  "target": "allEnemies",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1.5,
+      "damageType": "lightning"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "shock",
+      "duration": 2
+    }
+  ],
+  "prerequisiteId": "arcanist-mass-haste",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "1.7× each.",
+    "effects": [
+      {
+        "kind": "damage",
+        "multiplier": 1.7,
+        "damageType": "lightning"
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "debuff",
+    "reach"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 85
+  }
+}

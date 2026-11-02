@@ -1,7 +1,7 @@
 {
   "id": "arcanist-hoarfrost",
   "classId": "arcanist",
-  "school": "rime",
+  "school": "frost",
   "tier": 3,
   "name": "Hoarfrost",
   "description": "At fight start every enemy in the front row is Chilled 1 turn; Chilled enemies also lose 10% Accuracy.",

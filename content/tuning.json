@@ -851,12 +851,20 @@
       "petStance": 1,
       "ultimateOwnButton": true
     },
+    "points": {
+      "note": "Phase 18 (D-153, James): points buy the tree — atCreation go on the starter picks, perLevel comes with each level-up, costByTier prices a skill by tier; resetPriceR is the Hall's price to forget a tree, every point back.",
+      "atCreation": 3,
+      "perLevel": 1,
+      "costByTier": { "1": 1, "2": 1, "3": 2, "4": 2, "5": 3 },
+      "resetPriceR": 1
+    },
     "skillHall": {
       "priceR": {
-        "1": 0.1,
-        "2": 0.3,
-        "3": 1
+        "1": 0.4,
+        "2": 1.2,
+        "3": 4
       },
+      "priceNote": "D-153: ×4 the web's 0.1 / 0.3 / 1 — the Hall is the dear road now that points buy the tree.",
       "rampPercentPerPurchase": 20,
       "rampCap": 3,
       "highestTierSold": 3

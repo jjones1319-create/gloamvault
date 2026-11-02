@@ -1,0 +1,60 @@
+{
+  "id": "arcanist-call-bog-serpent",
+  "classId": "arcanist",
+  "school": "summoning",
+  "tier": 4,
+  "name": "Call: Bog Serpent",
+  "description": "A serpent of black water rises and bites one enemy: 2.6× Poison; Poison 3. Heavy cast.",
+  "type": "active",
+  "cost": 34,
+  "weight": 1400,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 2.6,
+      "damageType": "poison"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "poison",
+      "duration": 3
+    }
+  ],
+  "prerequisiteId": "arcanist-call-storm-hawk",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "summon": {
+    "creature": "bog-serpent",
+    "name": "Bog Serpent",
+    "element": "poison"
+  },
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "3.0×.",
+    "effects": [
+      {
+        "kind": "damage",
+        "multiplier": 3,
+        "damageType": "poison"
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "summon",
+    "dot",
+    "reach"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 80
+  }
+}

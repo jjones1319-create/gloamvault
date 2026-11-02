@@ -51,6 +51,8 @@ namespace Gloamvault
             if (Boot.LaunchMode == "soak") LevelScreen.Open(document, Boot.LaunchSeed, Boot.LaunchRooms, soakMinutes: Boot.LaunchMinutes, autoWalk: true);
             // Phase 15: Floor 1 laid out by hand, with the map that fills in (D-165).
             document.rootVisualElement.Q<Button>("floor").clicked += () => LevelScreen.Open(document, floorId: "floor-1");
+            document.rootVisualElement.Q<Button>("trees").clicked += () => TreeScreen.Open(document);
+            if (Boot.LaunchMode.StartsWith("tree:")) TreeScreen.Open(document, Boot.LaunchMode.Substring(5));
             if (Boot.LaunchMode.StartsWith("floor:")) LevelScreen.Open(document, floorId: Boot.LaunchMode.Substring(6));
             if (Boot.LaunchMode == "soak-floor") LevelScreen.Open(document, soakMinutes: Boot.LaunchMinutes, autoWalk: true, floorId: "floor-1");
             lastSafeArea = Rect.zero;

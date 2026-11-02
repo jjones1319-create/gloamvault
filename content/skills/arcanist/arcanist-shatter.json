@@ -1,7 +1,7 @@
 {
   "id": "arcanist-shatter",
   "classId": "arcanist",
-  "school": "rime",
+  "school": "frost",
   "tier": 1,
   "name": "Shatter",
   "description": "Any hit from any ally on a Frozen enemy deals +30% and crits; the Freeze ends and the enemy is pushed back 300 energy as it breaks free.",

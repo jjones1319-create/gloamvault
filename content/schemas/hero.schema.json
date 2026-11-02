@@ -344,6 +344,12 @@
         "minimum": 0,
         "maximum": 999
       }
+    },
+    "skillPoints": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 999,
+      "description": "Phase 18 (D-153): unspent skill points (3 at creation, +1 per level-up, spent on the tree). Missing on a record from before Phase 18."
     }
   },
   "required": [

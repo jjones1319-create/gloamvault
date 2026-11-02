@@ -51,79 +51,93 @@ All enemies, both rows, take **2.4× spell Attack** as the element each one is w
 
 ---
 
-## 4. The three schools
+## 4. The four branches
 
-> **To be re-cut in Phase 18 (D-154 — James, 2026-10-30):** four branches — **Fire · Frost · Storm · Summoning** — instead of these three. Evocation splits into Fire and Storm, Rime becomes Frost, and Arcana's skills move into them: Time Slip to Frost; Quicken and Mass Haste to Storm; Dispel, Arcane Ward and Mirror Ward to Summoning, the binding arts. Summoning adds about six **summons** — a creature appears for one great attack and is gone (never a pet that stays). The lists below are the web version's until then.
+> **Re-cut in Phase 18 (D-154 — James, 2026-10-30; built 2026-11-02):** four branches — **Fire · Frost · Storm · Summoning** — instead of the three schools of rev. 1 (Evocation, Rime, Arcana). Evocation's fire half is Fire; its lightning half, with Quicken, Blink Step, Mass Haste and Paradox, is Storm; Rime with Time Slip is Frost; Arcana's binding arts (the Wards, Dispel, the lantern, the Mana economy) with **six summons** are Summoning. Rewind and Frozen Tomb are gone; seventeen rows are new (marked *new*). **These tables are written from the content** (`tools/content/gen-class-arcanist.ts` → `content/skills/arcanist/`): the content is the source for this class. Every skill keeps its tier and one prerequisite in its branch (03 §7.1); a skill costs points by tier (03 §7, D-153).
 
-### 4.1 Evocation — *Fire and Lightning: the room is the target*
-
-Philosophy: damage first, status second, Mana third. Fire burns down a row; Lightning picks a target and jumps. Every skill in the school either hits more than one thing or makes the next hit bigger.
+### 4.1 Fire — *Fire: the room is the target. Burn down a row, make the next hit bigger; the biggest single numbers the class has.*
 
 | Tier | Skill | Type | Cost | Weight | Target | Effect | Prerequisite | Mastery (rank 10 bonus) |
 |---|---|---|---|---|---|---|---|---|
-| I | Ember Lance | Active | 10 Mana | 1,000 | Single enemy, either row | 1.1× Fire; Burn 3 | — | Burn 4 |
-| I | Spark | Active | 8 Mana | 800 | Single enemy, either row | 0.95× Lightning; Shock 2; if the target was already Shocked, chains 0.5× to one adjacent enemy | — | Chains to two |
-| I | Kindling | Passive | — | — | — | Fire and Lightning skills +8%; the first Evocation cast of each fight costs 0 Mana | — | +12% |
-| II | Firewave | Active | 16 Mana | 1,400 | Front row enemies | 0.9× Fire each; Burn 2 | Ember Lance | 1.0× each |
-| II | Arc Chain | Active | 15 Mana | 1,000 | Single enemy + chain | 1.5× Lightning; then 0.7× to up to 2 other enemies; all three Shock 2; Shocked targets take +15% from this skill | Spark | Chains to 3 others |
-| II | Backdraft | Passive | — | — | — | When a Burning enemy dies, its Burn jumps to a random living enemy and the Arcanist gains +10 Momentum | Kindling | +15 Momentum |
-| III | Meteor | Active | 26 Mana | 1,400 | All enemies | 1.2× Fire each; Burn 3; any target already Burning is also Dazed (−500 energy) | Firewave | 1.35× each |
-| III | Thunderhead | Active | 22 Mana | 1,000 | All enemies | 1.0× Lightning each; every target already Shocked has a 30% chance of Stun 1 | Arc Chain | Stun chance 45% |
-| III | Overcharge | Passive | — | — | — | Evocation crits deal +30% Crit Damage and refund 10% of the skill's Mana cost | Backdraft | Refund 20% |
-| IV | Pyroclasm | Active | 36 Mana | 1,400 | All enemies | 1.5× Fire each; consumes Burn on every target: each consumed Burn deals all its remaining ticks at once | Meteor | 1.7× each |
-| IV | Stormcall | Active | 32 Mana | 1,000 | All enemies | 1.3× Lightning each; Shocked targets are pushed back 200 energy; the Arcanist gains Haste 1 | Thunderhead | Pushback 300 |
-| IV | Hag's Cauldron *(monster technique: Brine Hag, the Drowned Vault)* | Active | 30 Mana | 1,400 | Single enemy, either row | 2.6× Fire; Poison 3 (ignores armor); Weaken 2. Only Insights while a Brine Hag uses it. | Overcharge | 3.0× |
-| V | Sunflare | Active | 48 Mana | 1,400 | All enemies | 2.0× Fire each; Burn 4; Blind 2; the Arcanist's next cast is light weight (800) regardless of its own weight | Pyroclasm | Blind 3 |
-| V | Vaultbreaker | Active | 45 Mana | 1,400 | Single enemy, either row | 3.8× Lightning; Stun 1; chains 1.2× to every other enemy that is Shocked | Stormcall | 4.2× |
-| V | Conflagration | Passive | — | — | — | Burn and Shock last +1 turn and may stack twice on a target (the second application refreshes and adds +50% tick) | Stormcall | Stack three times |
+| I | Cinder Snap *(new)* | Active | 7 Mana | 800 | Single enemy, either row | 0.8× Fire to one enemy, either row; Burn 1. Light cast. | — | Burn 2. |
+| I | Ember Lance | Active | 10 Mana | 1,000 | Single enemy, either row | 1.1× Fire to one enemy in either row; Burn 3 turns. | — | Burn 4 turns. |
+| I | Kindling | Passive | — | — | — | Fire and Lightning skills +8%; the first Evocation cast of each fight costs 0 Mana. | — | +12%. |
+| II | Firewave | Active | 16 Mana | 1,400 | Front row enemies | 0.9× Fire to every front-row enemy; Burn 2 turns. Heavy cast: declared at 1,000 energy, resolves 400 later, and a hit in the window can cancel it. | Ember Lance | 1.0× each. |
+| II | Flame Ward *(new)* | Active | 14 Mana | 1,000 | Single ally | Shield 15% of the target’s max HP for 2 turns; while it holds, a melee attacker whose hit lands on the ally gets Burn 1. | Cinder Snap | Shield 20%. |
+| II | Backdraft | Passive | — | — | — | When a Burning enemy dies, its Burn jumps to a random living enemy and you gain +10 Momentum. | Kindling | +15 Momentum. |
+| III | Heat Haze *(new)* | Active | 18 Mana | 1,000 | All allies | The air shimmers: every ally gains +15% Dodge for 2 turns. | Flame Ward | +20% Dodge. |
+| III | Meteor | Active | 26 Mana | 1,400 | All enemies | 1.2× Fire to every enemy in both rows; Burn 3 turns; any target already Burning is also Dazed (−500 energy). Heavy cast. | Firewave | 1.35× each. |
+| III | Ember Heart *(new)* | Passive | — | — | — | Fire skills +8%; Burn you apply lasts +1 turn. | Backdraft | +12%. |
+| IV | Hag’s Cauldron *(monster technique)* | Active | 30 Mana | 1,400 | Single enemy, either row | 2.6× Fire to one enemy in either row; Poison 3 turns (ignores armor); Weaken 2 turns. Heavy cast. Monster technique: learned only by witnessing a Brine Hag use it. | Heat Haze | 3.0×. |
+| IV | Pyroclasm | Active | 36 Mana | 1,400 | All enemies | 1.5× Fire to every enemy in both rows; every Burn on them is consumed and deals all its remaining ticks at once. Heavy cast. | Meteor | 1.7× each. |
+| IV | Ashen Mantle *(new)* | Passive | — | — | — | Fire resistance +25%; your Fire damage heals you for 5% of what it deals. | Ember Heart | Heals 8%. |
+| V | Phoenix Crown *(new)* | Active | 46 Mana | 1,400 | All enemies | 1.6× Fire to every enemy in both rows; Burn 3. Heavy cast. | Pyroclasm | 1.8× each. |
+| V | Sunflare | Active | 48 Mana | 1,400 | All enemies | 2.0× Fire to every enemy in both rows; Burn 4 turns; Blind 2 turns; your next action weighs 800 whatever its own weight. Heavy cast. | Pyroclasm | Blind 3 turns. |
+| V | Conflagration | Passive | — | — | — | Burn and Shock you apply last +1 turn. Burn already stacks on a target (up to three, each stack a full tick), which covers the stacking. | Ashen Mantle | Stack three times: Burn’s own record already allows three stacks (03 §3.5), so the Mastery adds nothing further. |
 
-### 4.2 Rime — *Frost: slow them, stop them, break them*
-
-Philosophy: Frost is the control school. Chill costs enemies turns on the timeline; a second Chill is a Freeze; a Frozen enemy is glass, and the whole party — a Blade, a Warden's mace, a pet — gets the **Shatter** bonus. Walls buy the front row time.
+### 4.2 Frost — *Frost: slow them, stop them, break them. Chill costs enemies turns, a second Chill is a Freeze, and a Frozen enemy is glass for the whole party; Time Slip and the walls buy the front row time.*
 
 | Tier | Skill | Type | Cost | Weight | Target | Effect | Prerequisite | Mastery (rank 10 bonus) |
 |---|---|---|---|---|---|---|---|---|
-| I | Frostbolt | Active | 10 Mana | 1,000 | Single enemy, either row | 1.05× Frost; Chill 2 | — | Chill 3 |
-| I | Frost Floor | Active | 12 Mana | 1,000 | Front row enemies | 0.7× Frost each; Chill 1 | — | 0.8× each |
-| I | Shatter | Passive | — | — | — | Any hit from any ally on a Frozen enemy deals +30% and crits; the Freeze ends and the enemy is pushed back 300 energy as it breaks free | — | +40% |
-| II | Glacier Spike | Active | 16 Mana | 1,400 | Single enemy, either row | 1.9× Frost; Chill 2; if the target was already Chilled it is Frozen 1 at once | Frostbolt | 2.1× |
-| II | Ice Wall | Active | 18 Mana | 1,000 | Party front row | A wall with HP = 25% of the Arcanist's max HP absorbs melee hits aimed at the front row until broken or 2 turns pass; enemies that strike it get Chill 1 | Frost Floor | Wall HP 35% |
-| II | Permafrost | Passive | — | — | — | Chill lasts +1 turn and takes a further −10% Speed; Frost skills +8% | Shatter | Frost skills +12% |
-| III | Avalanche | Active | 26 Mana | 1,400 | All enemies | 1.2× Frost each; Chill 2; Frozen targets are shattered by this hit (Shatter applies even without the passive) | Glacier Spike | 1.35× each |
-| III | Frozen Tomb | Active | 22 Mana | 1,000 | Single any, either row | Enemy: Freeze 2, no damage. Ally: encased — immune to all damage until their next turn, then Chill 1. Bosses: Freeze 1. | Ice Wall | Ally keeps no Chill |
-| III | Hoarfrost | Passive | — | — | — | At fight start every enemy in the front row has Chill 1; Chilled enemies also lose 10% Accuracy | Permafrost | Both rows |
-| IV | Absolute Zero | Active | 38 Mana | 1,400 | All enemies | 1.4× Frost each; every Chilled target is Frozen 1 | Avalanche | 1.6× each |
-| IV | Winter's Breath | Active | 30 Mana | 1,000 | Back row enemies | 1.3× Frost each; Chill 2; Slow 2 (the back row is where the casters stand) | Frozen Tomb | Silence 1 as well |
-| IV | Deep Cold | Passive | — | — | — | Freeze lasts +1 turn; whenever an ally shatters a Frozen enemy the Arcanist restores 15% max Mana | Hoarfrost | Restore 20% |
-| V | Endless Winter | Active | 50 Mana | 1,400 | All enemies | 1.8× Frost each; Chill 3; for 3 turns every enemy action applies Chill 1 to the actor | Absolute Zero | 2.0× each |
-| V | Glass Heart | Active | 40 Mana | 1,000 | Single enemy, either row | 3.5× Frost; against a Frozen target it cannot miss and always crits; a kill gives the whole party +15 Momentum | Winter's Breath | +25 Momentum |
-| V | Rimeborn | Passive | — | — | — | The Arcanist is immune to Chill, Freeze and Slow; a melee attacker that hits the Arcanist gets Chill 1; Rime skills cost −20% | Deep Cold | Cost −30% |
+| I | Frost Floor | Active | 12 Mana | 1,000 | Front row enemies | 0.7× Frost to every front-row enemy; Chill 1 turn. | — | 0.8× each. |
+| I | Frostbolt | Active | 10 Mana | 1,000 | Single enemy, either row | 1.05× Frost to one enemy in either row; Chill 2 turns. | — | Chill 3 turns. |
+| I | Shatter | Passive | — | — | — | Any hit from any ally on a Frozen enemy deals +30% and crits; the Freeze ends and the enemy is pushed back 300 energy as it breaks free. | — | +40%. |
+| II | Glacier Spike | Active | 16 Mana | 1,400 | Single enemy, either row | 1.9× Frost to one enemy in either row; Chill 2 turns, and a target already Chilled is Frozen at once. Heavy cast. | Frostbolt | 2.1×. |
+| II | Ice Wall | Active | 18 Mana | 1,000 | Party front row | A wall with HP equal to 25% of your max HP absorbs melee hits aimed at the party’s front row until it breaks or 2 turns pass; an enemy that strikes it is Chilled 1 turn. | Frost Floor | Wall HP 35%. |
+| II | Permafrost | Passive | — | — | — | Chill you apply lasts +1 turn and takes a further −10% Speed; Frost skills +8%. | Shatter | Frost skills +12%. |
+| III | Avalanche | Active | 26 Mana | 1,400 | All enemies | 1.2× Frost to every enemy in both rows; Chill 2 turns; Frozen targets are shattered by this hit even without the Shatter passive. Heavy cast. | Glacier Spike | 1.35× each. |
+| III | Time Slip | Active | 24 Mana | 1,000 | Single enemy, either row | One enemy in either row is Slowed 2 turns and pushed back 300 energy; a charging caster loses its cast. | Ice Wall | Pushback 500. |
+| III | Hoarfrost | Passive | — | — | — | At fight start every enemy in the front row is Chilled 1 turn; Chilled enemies also lose 10% Accuracy. | Permafrost | Both rows. |
+| IV | Absolute Zero | Active | 38 Mana | 1,400 | All enemies | 1.4× Frost to every enemy in both rows; every target already Chilled is Frozen 1 turn (Large and Huge foes and bosses take Chill instead, as the status rules say). Heavy cast. | Avalanche | 1.6× each. |
+| IV | Winter’s Breath | Active | 30 Mana | 1,000 | Back row enemies | 1.3× Frost to every back-row enemy; Chill 2 turns; Slow 2 turns (the back row is where the casters stand). | Time Slip | Silence 1 turn as well. |
+| IV | Deep Cold | Passive | — | — | — | Every Freeze you cause lasts +1 turn; whenever an ally shatters a Frozen enemy, you restore 15% of max Mana. | Hoarfrost | Restore 20%. |
+| V | Endless Winter | Active | 50 Mana | 1,400 | All enemies | 1.8× Frost to every enemy in both rows; Chill 3 turns; for 3 turns every enemy that acts is Chilled 1 turn. Heavy cast. | Absolute Zero | 2.0× each. |
+| V | Glass Heart | Active | 40 Mana | 1,000 | Single enemy, either row | 3.5× Frost to one enemy in either row; against a Frozen target it cannot miss and always crits; a kill gives the whole party +15 Momentum. | Winter’s Breath | +25 Momentum. |
+| V | Rimeborn | Passive | — | — | — | You are immune to Chill, Freeze and Slow; a melee attacker that hits you is Chilled 1 turn; Rime skills cost −20%. | Deep Cold | Cost −30%. |
 
-### 4.3 Arcana — *the timeline, the Shield, the lantern*
-
-Philosophy: Arcana never kills anything. It decides who acts when, who gets hit, what a buff is worth, and whether the party can see. It is also where the Arcanist keeps its Mana economy.
+### 4.3 Storm — *Lightning and the timeline: Shock that chains, Haste for the party, energy moved up and down the strip. The branch that decides who acts when.*
 
 | Tier | Skill | Type | Cost | Weight | Target | Effect | Prerequisite | Mastery (rank 10 bonus) |
 |---|---|---|---|---|---|---|---|---|
-| I | Arcane Ward | Active | 10 Mana | 800 | Single ally | Shield 18% of the target's max HP for 3 turns | — | Shield 22% |
-| I | Quicken | Active | 12 Mana | 800 | Single ally | Haste 1 and +200 energy at once (the ally jumps up the strip) | — | +300 energy |
-| I | Attune | Passive | — | — | — | Mana regen 8% → 11% per own turn; items are identified on pickup; the party's Light falls 1 less per new room | — | Regen 13% |
-| II | Blink Step | Active | 8 Mana | 800 | Self or single ally | Swap rows at once, ignoring Root, Web and Grab; +15% Dodge until the target's next turn | Quicken | Also breaks Taunt |
-| II | Mirror Ward | Active | 16 Mana | 1,000 | All allies | Shield 12% each for 2 turns; 20% of damage absorbed is returned to the attacker as Lightning | Arcane Ward | Return 30% |
-| II | Siphon | Active | 0 Mana | 1,000 | Single enemy, either row | The Arcanist restores 25% of max Mana; if the target is a caster it is Silenced 1 | Attune | Restore 35% |
-| III | Time Slip | Active | 24 Mana | 1,000 | Single enemy, either row | Slow 2 and pushed back 300 energy; a charging caster loses its cast | Blink Step | Pushback 500 |
-| III | Dispel | Active | 18 Mana | 800 | Single any, either row | Enemy: strip every buff (Fortify, Shield, Haste, Regen, Taunt). Ally: cleanse 2 debuffs. | Mirror Ward | Ally: cleanse all |
-| III | Lantern of the Mind | Active | 14 Mana | 800 | Party | Out of combat: +20 Light, once per room. In combat: all allies immune to Blind and Fear for 3 turns and Shadow enemies take +15% for 3 turns | Siphon | +30 Light |
-| IV | Mass Haste | Active | 34 Mana | 1,000 | All allies + pets | Haste 2 | Time Slip | Haste 3 |
-| IV | Sentinel Pulse *(monster technique: Vault Sentinel, the Drowned Vault)* | Active | 30 Mana | 1,400 | All enemies + all allies | Enemies: every buff stripped, then 1.2× Lightning each. Allies: Shield 10% for 2 turns. Only Insights while a Vault Sentinel uses it. | Dispel | 1.4× each |
-| IV | Font of Mana | Passive | — | — | — | Once per fight, when Mana reaches 0 it refills to 50%; Fortune (free-cast chance) +5 pp | Lantern of the Mind | Refill 70% |
-| V | Rewind | Active | 45 Mana | 1,000 | Single ally | The ally's HP, pool and statuses return to what they were at the start of that ally's previous turn. Cannot revive. | Mass Haste | Also restores Momentum |
-| V | Nullfield | Active | 40 Mana | 1,400 | All | For 2 turns no enemy can use a skill (Silence 2 on every enemy, bosses 1) and every ally Shield is doubled | Font of Mana | Bosses 2 |
-| V | Paradox | Passive | — | — | — | The Arcanist's heavy casts weigh 1,000 and cannot be interrupted | Mass Haste | Normal casts weigh 800 |
+| I | Quicken | Active | 12 Mana | 800 | Single ally | One ally gains Haste 1 turn and +200 energy at once (they jump up the strip). | — | +300 energy. |
+| I | Spark | Active | 8 Mana | 800 | Single enemy, either row | 0.95× Lightning to one enemy in either row; Shock 2 turns. If the target was already Shocked, the bolt chains 0.5× to one adjacent enemy. | — | Chains to two. |
+| I | Static Charge *(new)* | Passive | — | — | — | Shock you apply lasts +1 turn; Lightning damage +5%. | — | Lightning +10%. |
+| II | Arc Chain | Active | 15 Mana | 1,000 | Single enemy, either row | 1.5× Lightning to one enemy in either row, then 0.7× to up to 2 other enemies; all of them Shock 2 turns; Shocked targets take +15% from this skill. | Spark | Chains to 3 others. |
+| II | Blink Step | Active | 8 Mana | 800 | Single ally | You or one ally swap rows at once, ignoring Root, Web and Grab, and gain +15% Dodge until the target’s next turn. | Quicken | Also breaks Taunt. |
+| II | Conductor *(new)* | Passive | — | — | — | Your hits on a Shocked enemy deal +10%. | Static Charge | +15%. |
+| III | Galvanize *(new)* | Active | 20 Mana | 1,000 | All allies | Every ally jumps +200 energy up the strip and gains Haste 1. | Blink Step | Haste 2. |
+| III | Thunderhead | Active | 22 Mana | 1,000 | All enemies | 1.0× Lightning to every enemy in both rows; every target already Shocked has a 30% chance of Stun 1 turn. | Arc Chain | Stun chance 45%. |
+| III | Overcharge | Passive | — | — | — | Evocation crits deal +30% Crit Damage and refund 10% of the skill’s Mana cost. | Conductor | Refund 20%. |
+| IV | Mass Haste | Active | 34 Mana | 1,000 | All allies | Every ally and pet gains Haste 2 turns. | Galvanize | Haste 3 turns. |
+| IV | Stormcall | Active | 32 Mana | 1,000 | All enemies | 1.3× Lightning to every enemy in both rows; every target already Shocked is pushed back 200 energy; you gain Haste 1 turn. | Thunderhead | Pushback 300. |
+| IV | Lightning Rod *(new)* | Passive | — | — | — | A melee attacker whose hit lands on you gets Shock 1; Lightning resistance +30%. | Overcharge | Shock 2. |
+| V | Tempest *(new)* | Active | 46 Mana | 1,400 | All enemies | 1.5× Lightning to every enemy in both rows; Shock 2. Heavy cast. | Mass Haste | 1.7× each. |
+| V | Vaultbreaker | Active | 45 Mana | 1,400 | Single enemy, either row | 3.8× Lightning to one enemy in either row; Stun 1 turn; the bolt then chains 1.2× to every other enemy that is Shocked. Heavy cast. | Stormcall | 4.2×. |
+| V | Paradox | Passive | — | — | — | Your heavy casts weigh 1,000 and cannot be interrupted. | Lightning Rod | Normal casts weigh 800. |
 
-**Skill-line note.** Each school reads as three columns: a damage line, a control-or-defense line, a passive-and-utility line. The two monster techniques (Hag's Cauldron, Sentinel Pulse) are **leaves** — nothing requires them, so a player who never meets a Brine Hag loses nothing on the way to Tier V. A technique is learned only by **witnessing** its monster use the move in a fight the Arcanist is in: a flat 10% per witnessed use, certain by the 10th, skipping the Insight curve (D-028, D-099), and only once the Arcanist knows the technique's prerequisite. It is never sold and never in a Tome.
+### 4.4 Summoning — *The binding arts: Wards and Shields, Dispel, the lantern, the Mana economy — and the summons, each a creature called for one great strike and gone (D-154).*
 
-**As built (Phase 7).** The eighteen Tier IV–V rows are content (`tools/content/gen-class-arcanist.ts`); Tier V is designed and locked until Segment 3's endgame (no Insight, no Tome, no Hall — D-099). Readings where the table was silent:
+| Tier | Skill | Type | Cost | Weight | Target | Effect | Prerequisite | Mastery (rank 10 bonus) |
+|---|---|---|---|---|---|---|---|---|
+| I | Arcane Ward | Active | 10 Mana | 800 | Single ally | Shield one ally for 18% of their max HP for 3 turns. | — | Shield 22%. |
+| I | Call: Ember Imp *(new)* *(summon: Ember Imp, fire)* | Active | 18 Mana | 1,400 | Single enemy, either row | An imp of cinders leaps from the Arcanist’s hand and bursts on one enemy: 1.7× Fire; Burn 2. Heavy cast. | — | 2.0×. |
+| I | Attune | Passive | — | — | — | Mana regen 8% → 11% per own turn; items are identified on pickup; the party’s Light falls 1 less per new room. | — | Regen 13%. |
+| II | Call: Rime Stag *(new)* *(summon: Rime Stag, frost)* | Active | 24 Mana | 1,400 | All enemies | A stag of hoarfrost charges the length of the room: 0.9× Frost to every enemy; Chill 2. Heavy cast. | Call: Ember Imp | 1.05× each. |
+| II | Mirror Ward | Active | 16 Mana | 1,000 | All allies | Every ally gains a Shield of 12% max HP for 2 turns; 20% of the damage it absorbs is returned to the attacker as Lightning. | Arcane Ward | Return 30%. |
+| II | Siphon | Active | 0 Mana | 1,000 | Single enemy, either row | Costs no Mana. You restore 25% of max Mana from one enemy in either row; if the target is a caster it is Silenced 1 turn. | Attune | Restore 35%. |
+| III | Call: Storm Hawk *(new)* *(summon: Storm Hawk, lightning)* | Active | 30 Mana | 1,400 | All enemies | A hawk of forked lightning stoops on the whole room: 1.1× Lightning to every enemy; Shock 2. Heavy cast. | Call: Rime Stag | 1.25× each. |
+| III | Dispel | Active | 18 Mana | 800 | Single enemy, either row | On an enemy in either row: strip every buff (Fortify, Shield, Haste, Regen, Taunt). On an ally instead: cleanse 2 debuffs. | Mirror Ward | Ally: cleanse every debuff. |
+| III | Lantern of the Mind | Active | 14 Mana | 800 | All allies | Out of combat: +20 Light, once per room. In combat: every ally is immune to Blind and Fear for 3 turns and Shadow enemies take +15% damage for 3 turns. | Siphon | +30 Light. |
+| IV | Call: Bog Serpent *(new)* *(summon: Bog Serpent, poison)* | Active | 34 Mana | 1,400 | Single enemy, either row | A serpent of black water rises and bites one enemy: 2.6× Poison; Poison 3. Heavy cast. | Call: Storm Hawk | 3.0×. |
+| IV | Sentinel Pulse *(monster technique)* | Active | 30 Mana | 1,400 | All enemies | Every enemy loses every buff, then takes 1.2× Lightning; every ally gains a Shield of 10% of their max HP for 2 turns. Heavy cast. Monster technique: learned only by witnessing a Vault Sentinel use it. | Dispel | 1.4× each. |
+| IV | Font of Mana | Passive | — | — | — | Once per fight, when your Mana reaches 0 it refills to 50%; Fortune (the free-cast chance) +5 points. | Lantern of the Mind | Refill 70%. |
+| V | Call: Dawn Warden *(new)* *(summon: Dawn Warden, holy)* | Active | 46 Mana | 1,400 | All enemies | A warden of first light descends: 1.5× Holy to every enemy, and every ally is Shielded for 12% of the Arcanist’s max HP for 2 turns. Heavy cast. | Call: Bog Serpent | 1.7× each. |
+| V | Call: Night Maw *(new)* *(summon: Night Maw, shadow)* | Active | 44 Mana | 1,400 | Single enemy, either row | A maw opens in the dark beneath one enemy: 3.4× Shadow; Fear 1; Weaken 2. Heavy cast. | Font of Mana | 3.8×. |
+| V | Nullfield | Active | 40 Mana | 1,400 | All enemies | For 2 turns no enemy can use a skill: Silence 2 turns on every enemy (a boss holds it 1, as the status rules shorten its statuses); every Shield on an ally is doubled. Heavy cast. | Sentinel Pulse | Bosses 2 turns. |
+
+**Skill-line note.** Each branch reads as three columns — a damage or summon line, a control-or-defence line, a passive line — and every Tier N skill has one prerequisite at Tier N−1 in its branch, so the tree screen (Phase 18) draws four readable columns. The two monster techniques (Hag's Cauldron, Sentinel Pulse) are leaves. A **summon** (D-154) is a heavy (1,400) Mana cast that calls its creature for one strike and is gone — never a body that stays on the field; the client stages the entrance from the skill's `summon` block.
+
+**As built (Phase 7; the Tier IV–V readings below still hold where the rows survive the re-cut).** The eighteen Tier IV–V rows are content (`tools/content/gen-class-arcanist.ts`); Tier V is designed and locked until Segment 3's endgame (no Insight, no Tome, no Hall — D-099). Readings where the table was silent:
 - **Pyroclasm** hits first, then consumes each target's Burn (`consume-dot-burst`: the remaining ticks × stacks at once, as the DoT would). **Stormcall** reads the Shock a target held *before* the cast (`timeline-if-status`). **Hag's Cauldron**'s "ignores armor" is Poison's own rule.
 - **Absolute Zero** freezes after its hit (`freeze-if-chilled`), so the cast never shatters its own Freeze; a Large or Huge foe and a boss take Chill instead, by the status rules. **Winter's Breath** follows the convention for row spells: the row of the chosen enemy (a Taunt can turn it to the front row).
 - **Deep Cold** lengthens every Freeze the Arcanist causes in an action, a second Chill turning into one included (`freeze-duration-bonus`), and pays its Mana for every shatter by the party when the Arcanist next acts or starts a turn (`pool-on-party-shatter`).

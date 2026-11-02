@@ -1,7 +1,7 @@
 {
   "id": "arcanist-backdraft",
   "classId": "arcanist",
-  "school": "evocation",
+  "school": "fire",
   "tier": 2,
   "name": "Backdraft",
   "description": "When a Burning enemy dies, its Burn jumps to a random living enemy and you gain +10 Momentum.",

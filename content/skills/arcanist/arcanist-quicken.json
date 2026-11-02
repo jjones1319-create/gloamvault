@@ -1,7 +1,7 @@
 {
   "id": "arcanist-quicken",
   "classId": "arcanist",
-  "school": "arcana",
+  "school": "storm",
   "tier": 1,
   "name": "Quicken",
   "description": "One ally gains Haste 1 turn and +200 energy at once (they jump up the strip).",

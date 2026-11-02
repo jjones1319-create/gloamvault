@@ -1,0 +1,209 @@
+/* The skill tree screen (Phase 18, D-153): a class's branches as columns, five tiers down each, a detail pane. */
+.tree {
+    flex-grow: 1;
+    flex-direction: column;
+    padding: 10px 14px;
+    background-color: rgba(14, 11, 16, 0.92);
+}
+
+.tree__top {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.tree__picker {
+    flex-direction: row;
+    align-items: center;
+    margin-right: 12px;
+    background-color: var(--bg-panel);
+    border-width: 1px;
+    border-color: var(--line);
+    border-radius: var(--radius);
+}
+
+.tree__arrow {
+    width: 40px;
+    min-height: 40px;
+    font-size: 16px;
+    -unity-text-align: middle-center;
+    background-color: transparent;
+    border-width: 0;
+    color: var(--ink);
+}
+
+.tree__value {
+    min-width: 130px;
+    font-size: 16px;
+    -unity-text-align: middle-center;
+    color: var(--ink);
+}
+
+.tree__points {
+    font-size: 15px;
+    color: var(--ember);
+    margin: 0 0 6px 4px;
+}
+
+.tree__btn {
+    min-height: 40px;
+    padding: 0 14px;
+    margin-left: 8px;
+    font-size: 14px;
+    -unity-text-align: middle-center;
+    background-color: var(--bg-panel);
+    border-width: 1px;
+    border-color: var(--line);
+    border-radius: var(--radius);
+    color: var(--ink);
+}
+
+.tree__btn--primary {
+    min-width: 100px;
+    background-color: var(--ember-deep);
+    border-color: #e0702a;
+}
+
+.tree__body {
+    flex-grow: 1;
+    flex-direction: row;
+}
+
+.tree__branches {
+    flex-grow: 1;
+}
+
+.tree__columns {
+    flex-direction: row;
+}
+
+.tree__branch {
+    width: 262px;
+    margin-right: 10px;
+    padding: 6px 8px;
+    background-color: rgba(30, 25, 34, 0.6);
+    border-width: 1px;
+    border-color: var(--line);
+    border-radius: 10px;
+}
+
+.tree__branchName {
+    font-size: 16px;
+    color: var(--ember);
+    -unity-font-style: bold;
+    margin-bottom: 2px;
+}
+
+.tree__branchText {
+    font-size: 11px;
+    color: var(--ink-dim);
+    white-space: normal;
+    margin-bottom: 6px;
+}
+
+.tree__tier {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.tree__tierLabel {
+    width: 26px;
+    font-size: 12px;
+    color: var(--ink-dim);
+    -unity-text-align: middle-center;
+}
+
+.tree__skill {
+    flex-grow: 1;
+    width: 80px;
+    min-height: 46px;
+    margin: 0 2px;
+    padding: 2px 4px;
+    font-size: 11px;
+    white-space: normal;
+    -unity-text-align: middle-center;
+    background-color: var(--bg-panel);
+    border-width: 1px;
+    border-color: var(--line);
+    border-radius: 8px;
+    color: var(--ink-dim);
+}
+
+.tree__skill--known {
+    color: var(--ink);
+    border-color: var(--ember);
+    background-color: rgba(194, 65, 12, 0.35);
+}
+
+.tree__skill--open {
+    color: var(--ink);
+    border-color: #7fd4ff;
+}
+
+.tree__skill--equipped {
+    background-color: rgba(194, 65, 12, 0.7);
+}
+
+.tree__skill--picked {
+    border-width: 2px;
+    border-color: #ffffff;
+}
+
+.tree__detail {
+    width: 300px;
+    margin-left: 10px;
+    padding: 8px 12px;
+    background-color: rgba(30, 25, 34, 0.8);
+    border-width: 1px;
+    border-color: var(--line);
+    border-radius: 10px;
+}
+
+.tree__detailName {
+    font-size: 18px;
+    color: var(--ink);
+    -unity-font-style: bold;
+}
+
+.tree__detailMeta {
+    font-size: 12px;
+    color: var(--ember);
+    white-space: normal;
+    margin-bottom: 4px;
+}
+
+.tree__detailScroll {
+    flex-grow: 1;
+}
+
+.tree__detailText {
+    font-size: 13px;
+    color: var(--ink);
+    white-space: normal;
+}
+
+.tree__detailState {
+    font-size: 12px;
+    color: var(--ink-dim);
+    white-space: normal;
+    margin-top: 4px;
+}
+
+.tree__detailButtons {
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 6px;
+}
+
+.tree__detailButtons .tree__btn {
+    margin: 4px 6px 0 0;
+    min-height: 44px;
+}
+
+.tree__loadout {
+    font-size: 11px;
+    color: var(--ink-dim);
+    white-space: normal;
+    margin-top: 8px;
+}

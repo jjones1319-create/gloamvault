@@ -1,0 +1,53 @@
+{
+  "id": "arcanist-cinder-snap",
+  "classId": "arcanist",
+  "school": "fire",
+  "tier": 1,
+  "name": "Cinder Snap",
+  "description": "0.8× Fire to one enemy, either row; Burn 1. Light cast.",
+  "type": "active",
+  "cost": 7,
+  "weight": 800,
+  "target": "enemy",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 0.8,
+      "damageType": "fire"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "burn",
+      "duration": 1
+    }
+  ],
+  "prerequisiteId": null,
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "Burn 2.",
+    "effects": [
+      {
+        "kind": "applyStatus",
+        "status": "burn",
+        "duration": 2
+      }
+    ]
+  },
+  "tags": [
+    "singleTarget",
+    "dot",
+    "reach"
+  ],
+  "xpTags": [
+    "wisdom"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 50
+  }
+}

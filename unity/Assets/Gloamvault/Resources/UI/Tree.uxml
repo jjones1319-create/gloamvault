@@ -1,0 +1,29 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="Tree.uss" />
+    <ui:VisualElement name="tree" class="tree">
+        <ui:VisualElement class="tree__top">
+            <ui:VisualElement class="tree__picker">
+                <ui:Button name="classPrev" text="◀" class="tree__arrow" />
+                <ui:Label name="className" text="Arcanist" class="tree__value" />
+                <ui:Button name="classNext" text="▶" class="tree__arrow" />
+            </ui:VisualElement>
+            <ui:Button name="levelUp" text="Level +5" class="tree__btn" />
+            <ui:Button name="reset" text="Reset tree" class="tree__btn" />
+            <ui:Button name="back" text="Back" class="tree__btn tree__btn--primary" />
+        </ui:VisualElement>
+        <ui:Label name="points" text="" class="tree__points" />
+        <ui:VisualElement class="tree__body">
+            <ui:ScrollView name="branches" class="tree__branches" mode="VerticalAndHorizontal" />
+            <ui:VisualElement name="detail" class="tree__detail">
+                <ui:Label name="detailName" text="Tap a skill" class="tree__detailName" />
+                <ui:Label name="detailMeta" text="" class="tree__detailMeta" />
+                <ui:ScrollView class="tree__detailScroll">
+                    <ui:Label name="detailText" text="" class="tree__detailText" />
+                </ui:ScrollView>
+                <ui:Label name="detailState" text="" class="tree__detailState" />
+                <ui:VisualElement name="detailButtons" class="tree__detailButtons" />
+                <ui:Label name="loadout" text="" class="tree__loadout" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

@@ -1,0 +1,54 @@
+{
+  "id": "arcanist-phoenix-crown",
+  "classId": "arcanist",
+  "school": "fire",
+  "tier": 5,
+  "name": "Phoenix Crown",
+  "description": "1.6× Fire to every enemy in both rows; Burn 3. Heavy cast.",
+  "type": "active",
+  "cost": 46,
+  "weight": 1400,
+  "target": "allEnemies",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 1.6,
+      "damageType": "fire"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "burn",
+      "duration": 3
+    }
+  ],
+  "prerequisiteId": "arcanist-pyroclasm",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "1.8× each.",
+    "effects": [
+      {
+        "kind": "damage",
+        "multiplier": 1.8,
+        "damageType": "fire"
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "dot",
+    "reach"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 85
+  }
+}

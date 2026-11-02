@@ -388,6 +388,8 @@ export interface SkillDef {
   readonly tags: readonly SkillTag[]
   readonly xpTags: readonly TrainableAttribute[]
   readonly aiHints: AiHints
+  /** D-154 (Phase 18): a summon — the creature the client stages for its one strike, its name and element. */
+  readonly summon?: { readonly creature: ContentId; readonly name: string; readonly element: DamageType }
 }
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -1560,6 +1562,8 @@ export interface HeroRecord {
   readonly creationValues: AttributeValues
   readonly freePointsSpent: number
   readonly skills: readonly KnownSkill[]
+  /** Phase 18 (D-153): unspent skill points — 3 at creation (spent on the starter picks), +1 per level-up. A record from before Phase 18 has none: skills/tree.ts reads it as its level's points less what it knows. */
+  readonly skillPoints?: number
   readonly loadout: Loadout
   /** At most 4; the species' loadoutPresets rule caps the count. */
   readonly loadoutPresets: readonly LoadoutPreset[]

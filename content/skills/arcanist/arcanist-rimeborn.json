@@ -1,7 +1,7 @@
 {
   "id": "arcanist-rimeborn",
   "classId": "arcanist",
-  "school": "rime",
+  "school": "frost",
   "tier": 5,
   "name": "Rimeborn",
   "description": "You are immune to Chill, Freeze and Slow; a melee attacker that hits you is Chilled 1 turn; Rime skills cost −20%.",

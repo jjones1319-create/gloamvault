@@ -1,0 +1,60 @@
+{
+  "id": "arcanist-call-rime-stag",
+  "classId": "arcanist",
+  "school": "summoning",
+  "tier": 2,
+  "name": "Call: Rime Stag",
+  "description": "A stag of hoarfrost charges the length of the room: 0.9× Frost to every enemy; Chill 2. Heavy cast.",
+  "type": "active",
+  "cost": 24,
+  "weight": 1400,
+  "target": "allEnemies",
+  "effects": [
+    {
+      "kind": "damage",
+      "multiplier": 0.9,
+      "damageType": "frost"
+    },
+    {
+      "kind": "applyStatus",
+      "status": "chill",
+      "duration": 2
+    }
+  ],
+  "prerequisiteId": "arcanist-call-ember-imp",
+  "isUltimate": false,
+  "monsterTechniqueOf": null,
+  "summon": {
+    "creature": "rime-stag",
+    "name": "Rime Stag",
+    "element": "frost"
+  },
+  "rankScaling": {
+    "effectPerRank": 4,
+    "costPerRank": -2
+  },
+  "mastery": {
+    "text": "1.05× each.",
+    "effects": [
+      {
+        "kind": "damage",
+        "multiplier": 1.05,
+        "damageType": "frost"
+      }
+    ]
+  },
+  "tags": [
+    "aoe",
+    "summon",
+    "control",
+    "reach"
+  ],
+  "xpTags": [
+    "wisdom",
+    "willpower"
+  ],
+  "aiHints": {
+    "role": "attack",
+    "priority": 70
+  }
+}

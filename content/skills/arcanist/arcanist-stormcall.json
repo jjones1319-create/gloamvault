@@ -1,7 +1,7 @@
 {
   "id": "arcanist-stormcall",
   "classId": "arcanist",
-  "school": "evocation",
+  "school": "storm",
   "tier": 4,
   "name": "Stormcall",
   "description": "1.3× Lightning to every enemy in both rows; every target already Shocked is pushed back 200 energy; you gain Haste 1 turn.",

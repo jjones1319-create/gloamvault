@@ -1,7 +1,7 @@
 {
   "id": "arcanist-nullfield",
   "classId": "arcanist",
-  "school": "arcana",
+  "school": "summoning",
   "tier": 5,
   "name": "Nullfield",
   "description": "For 2 turns no enemy can use a skill: Silence 2 turns on every enemy (a boss holds it 1, as the status rules shorten its statuses); every Shield on an ally is doubled. Heavy cast.",
@@ -24,7 +24,7 @@
       "note": "every Shield on the caster’s side absorbs +percent% of what it has left"
     }
   ],
-  "prerequisiteId": "arcanist-font-of-mana",
+  "prerequisiteId": "arcanist-sentinel-pulse",
   "isUltimate": false,
   "monsterTechniqueOf": null,
   "rankScaling": {

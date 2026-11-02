@@ -17,19 +17,24 @@
   ],
   "schools": [
     {
-      "id": "evocation",
-      "name": "Evocation",
-      "philosophy": "Fire and Lightning: the room is the target. Damage first, status second, Mana third; every skill hits more than one thing or makes the next hit bigger."
+      "id": "fire",
+      "name": "Fire",
+      "philosophy": "Fire: the room is the target. Burn down a row, make the next hit bigger; the biggest single numbers the class has."
     },
     {
-      "id": "rime",
-      "name": "Rime",
-      "philosophy": "Frost: slow them, stop them, break them. Chill costs enemies turns, a second Chill is a Freeze, and a Frozen enemy is glass for the whole party."
+      "id": "frost",
+      "name": "Frost",
+      "philosophy": "Frost: slow them, stop them, break them. Chill costs enemies turns, a second Chill is a Freeze, and a Frozen enemy is glass for the whole party; Time Slip and the walls buy the front row time."
     },
     {
-      "id": "arcana",
-      "name": "Arcana",
-      "philosophy": "The timeline, the Shield, the lantern. Arcana never kills anything; it decides who acts when, who gets hit, and whether the party can see."
+      "id": "storm",
+      "name": "Storm",
+      "philosophy": "Lightning and the timeline: Shock that chains, Haste for the party, energy moved up and down the strip. The branch that decides who acts when."
+    },
+    {
+      "id": "summoning",
+      "name": "Summoning",
+      "philosophy": "The binding arts: Wards and Shields, Dispel, the lantern, the Mana economy — and the summons, each a creature called for one great strike and gone (D-154)."
     }
   ],
   "ultimateSkillId": "arcanist-prismatic-ruin",

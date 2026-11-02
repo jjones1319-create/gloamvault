@@ -17,6 +17,7 @@ import { itemValue, readTomeOnHero, tomeReadBlocker, tomeSkill, type TomeReadOut
 import type { Equipment, HeroRecord, ItemInstance, KnownSkill, PetInstance } from './types/content.ts'
 import { DIFFICULTIES, type ChestSubtype, type DeathRule, type Difficulty, type Grade, type MaterialLadder, type Stance } from './types/enums.ts'
 import { heroFromWayfarer, wayfarerPool } from './wayfarers.ts'
+import { resetTree, spendPoints } from './skills/tree.ts'
 import { skillRankFor, skillRankThreshold, tierOpenAt } from './xp.ts'
 
 /**
@@ -34,7 +35,7 @@ import { skillRankFor, skillRankThreshold, tierOpenAt } from './xp.ts'
  * rest; a hero lost for good leaves a **legacy** (a share of their battle XP) and a line on the Memorial.
  */
 /** 2: the Nightmare death rule (D-095). 3: every hero has a look (Phase 5). */
-export const PROFILE_VERSION = 4
+export const PROFILE_VERSION = 5
 
 export interface TowerProgress {
   /** The deepest floor reached-and-finished per dungeon (D-083): the Waystone offers the floor below it. */
@@ -910,6 +911,23 @@ export function skillHallOffers(content: Content, profile: Profile, heroId: stri
     out.push({ skillId: s.id, price: skillPrice(content, profile, heroId, s.id), locked: tierLock ?? prereq })
   }
   return out.sort((a, b) => (content.skills.get(a.skillId)!.tier - content.skills.get(b.skillId)!.tier) || a.price - b.price || compareIds(a.skillId, b.skillId))
+}
+
+/** The Hall resets a hero's tree for gold (Phase 18, D-153): every tree skill forgotten, every point of the level back. */
+export function resetTreePrice(content: Content, profile: Profile): number {
+  return goldFor(content.tuning.skills.points.resetPriceR, townR(profile))
+}
+
+export function resetTreeAtHall(content: Content, profile: Profile, heroId: string): Profile {
+  const hero = heroOf(profile, heroId)
+  if (isDead(profile, heroId)) fail(`${hero.name} lies at the Shrine`)
+  const paid = pay(profile, resetTreePrice(content, profile))
+  return replaceHero(paid, resetTree(content, content.tuning, heroOf(paid, heroId)))
+}
+
+/** Points spent on the tree in town (Phase 18, D-153): the same rule as anywhere outside a fight. */
+export function spendSkillPoints(content: Content, profile: Profile, heroId: string, skillId: string): Profile {
+  return replaceHero(profile, spendPoints(content, content.tuning, heroOf(profile, heroId), skillId))
 }
 
 export function learnSkill(content: Content, profile: Profile, heroId: string, skillId: string): Profile {

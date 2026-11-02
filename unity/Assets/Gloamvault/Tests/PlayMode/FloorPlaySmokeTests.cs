@@ -28,6 +28,8 @@ namespace Gloamvault.Tests
             yield return null;
             Assert.IsNotNull(screen.Play, "the floor has its rules");
             Assert.IsTrue(screen.Play.Ok, "the delve was made: " + screen.Play.Error);
+            // These test the rules, not the stage (Phase 19 stages fights): a fight plays out at once.
+            screen.Play.StageFights = false;
         }
 
         /// <summary>The rooms from the gate to the target over walkable joins (no locked or secret door), for teleporting room by room.</summary>

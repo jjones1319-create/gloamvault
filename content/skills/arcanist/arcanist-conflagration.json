@@ -1,7 +1,7 @@
 {
   "id": "arcanist-conflagration",
   "classId": "arcanist",
-  "school": "evocation",
+  "school": "fire",
   "tier": 5,
   "name": "Conflagration",
   "description": "Burn and Shock you apply last +1 turn. Burn already stacks on a target (up to three, each stack a full tick), which covers the stacking.",
@@ -26,7 +26,7 @@
       "target": "self"
     }
   ],
-  "prerequisiteId": "arcanist-stormcall",
+  "prerequisiteId": "arcanist-ashen-mantle",
   "isUltimate": false,
   "monsterTechniqueOf": null,
   "rankScaling": {

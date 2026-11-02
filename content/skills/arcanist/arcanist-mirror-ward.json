@@ -1,7 +1,7 @@
 {
   "id": "arcanist-mirror-ward",
   "classId": "arcanist",
-  "school": "arcana",
+  "school": "summoning",
   "tier": 2,
   "name": "Mirror Ward",
   "description": "Every ally gains a Shield of 12% max HP for 2 turns; 20% of the damage it absorbs is returned to the attacker as Lightning.",

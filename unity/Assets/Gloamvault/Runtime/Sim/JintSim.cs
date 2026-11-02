@@ -51,6 +51,8 @@ namespace Gloamvault.Sim
         readonly Engine engine;
         readonly JsValue fnInit, fnCreateDelve, fnStep, fnLegal, fnHash, fnSummary, fnPhase, fnLogSince, fnDispose;
         readonly JsValue fnSnapshot, fnRoom, fnActions;
+        readonly JsValue fnFightView, fnFightEvents;
+        readonly JsValue fnTree, fnHeroMake, fnHeroView, fnHeroSpend, fnHeroEquip, fnHeroReset, fnHeroLevel, fnHeroDispose;
         StartupTiming startup;
 
         /// <summary>Runs the script and indexes the content. <paramref name="loadMs"/> is how long reading the files took.</summary>
@@ -75,6 +77,9 @@ namespace Gloamvault.Sim
                 fnSnapshot = Fn(gv, "snapshot");
                 fnRoom = Fn(gv, "room");
                 fnActions = Fn(gv, "actions");
+                fnFightView = Fn(gv, "fightView"); fnFightEvents = Fn(gv, "fightEvents");
+                fnTree = Fn(gv, "tree"); fnHeroMake = Fn(gv, "heroMake"); fnHeroView = Fn(gv, "heroView"); fnHeroSpend = Fn(gv, "heroSpend");
+                fnHeroEquip = Fn(gv, "heroEquip"); fnHeroReset = Fn(gv, "heroReset"); fnHeroLevel = Fn(gv, "heroLevel"); fnHeroDispose = Fn(gv, "heroDispose");
             }
             catch (JintException e)
             {
@@ -105,6 +110,18 @@ namespace Gloamvault.Sim
         public string Snapshot(int handle) => Call(fnSnapshot, handle).AsString();
         public string Room(int handle, string roomId) => Call(fnRoom, handle, roomId).AsString();
         public string Actions(int handle) => Call(fnActions, handle).AsString();
+        // Phase 19 (D-179): the fight on the stage — its actors and its events.
+        public string FightView(int handle) => Call(fnFightView, handle).AsString();
+        public string FightEvents(int handle, int from) => Call(fnFightEvents, handle, from).AsString();
+        // Phase 18 (D-153): the skill tree and a test hero to spend on.
+        public string Tree(string classId) => Call(fnTree, classId).AsString();
+        public int HeroMake(string requestJson) => (int)Call(fnHeroMake, requestJson).AsNumber();
+        public string HeroView(int handle) => Call(fnHeroView, handle).AsString();
+        public string HeroSpend(int handle, string skillId) => Call(fnHeroSpend, handle, skillId).AsString();
+        public string HeroEquip(int handle, int slot, string skillId) => Call(fnHeroEquip, handle, slot, skillId).AsString();
+        public string HeroReset(int handle) => Call(fnHeroReset, handle).AsString();
+        public string HeroLevel(int handle, int level) => Call(fnHeroLevel, handle, level).AsString();
+        public void HeroDispose(int handle) => Call(fnHeroDispose, handle);
 
         JsValue Call(JsValue fn, params object[] args)
         {

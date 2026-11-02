@@ -42,6 +42,8 @@ namespace Gloamvault
         /// <summary>The walked floor's rules (Phase 17): the delve in the sim, its card, its things.</summary>
         public FloorPlay Play { get; private set; }
         public PlayCard Card { get; private set; }
+        /// <summary>The walk UI's root (the fight stage floats its numbers over it).</summary>
+        public VisualElement WalkRoot { get; private set; }
         /// <summary>The delve's seed: the screen's when given, else the clock (every visit to the floor is a fresh delve until Phase 22 saves it).</summary>
         public int DelveSeed { get; private set; }
         int lastRoomId = -1;
@@ -133,6 +135,7 @@ namespace Gloamvault
             if (toastLabel != null) toastLabel.style.visibility = Visibility.Hidden;
             Stick = new VirtualStick(walk.Q("stickZone"), walk.Q("ring"), walk.Q("knob"));
             Card = new PlayCard(walk);
+            WalkRoot = walk;
             Pan = new CameraPan(walk.Q("panZone"), () => Follow);
             overlay = UnityEngine.Object.FindFirstObjectByType<PerfOverlay>();
 
@@ -416,6 +419,7 @@ namespace Gloamvault
         public bool Act()
         {
             if (Play != null && Play.CardOpen) return Play.Card.PressFirst();
+            if (Play != null && Play.Staging) { Play.Stage.HurryUp(); return true; }
             if (Floor != null && Interactor.Nearest is Door d && d.locked && !d.hidden && doorJoin.TryGetValue(d, out int ji) && Floor.lockedJoins.Contains(ji))
             {
                 if (State.keysHeld <= 0) { Toast("Locked. The key is somewhere on this floor."); return false; }
@@ -476,7 +480,7 @@ namespace Gloamvault
             Interactor.Update(Hero.root.transform, things);
             if (AutoWalk && v == Vector2.zero && !Stick.Held) v = Pilot.Tick(Time.deltaTime, yaw, overlay);
             else if (AutoWalk) Pilot.Tick(0f, yaw, overlay);
-            bool cardOpen = Play != null && Play.CardOpen;
+            bool cardOpen = Play != null && (Play.CardOpen || Play.Staging);
             Mover.stick = MapOpen || Mover.Scripted || cardOpen ? Vector2.zero : v;
             Mover.cameraYaw = yaw;
             promptLabel.text = Interactor.Nearest != null ? "A · " + Interactor.Prompt : "";

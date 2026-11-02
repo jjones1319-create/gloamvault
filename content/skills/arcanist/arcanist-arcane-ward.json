@@ -1,7 +1,7 @@
 {
   "id": "arcanist-arcane-ward",
   "classId": "arcanist",
-  "school": "arcana",
+  "school": "summoning",
   "tier": 1,
   "name": "Arcane Ward",
   "description": "Shield one ally for 18% of their max HP for 3 turns.",

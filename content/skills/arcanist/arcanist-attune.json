@@ -1,7 +1,7 @@
 {
   "id": "arcanist-attune",
   "classId": "arcanist",
-  "school": "arcana",
+  "school": "summoning",
   "tier": 1,
   "name": "Attune",
   "description": "Mana regen 8% → 11% per own turn; items are identified on pickup; the party’s Light falls 1 less per new room.",
