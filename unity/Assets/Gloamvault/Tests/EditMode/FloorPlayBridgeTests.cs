@@ -32,8 +32,8 @@ namespace Gloamvault.Tests
             var s = JsonUtility.FromJson<SimSnapshot>(engine.Snapshot(h));
             Assert.AreEqual("room", s.phase);
             Assert.AreEqual("r0", s.roomId);
-            Assert.GreaterOrEqual(s.walkBudget, 45);
-            Assert.LessOrEqual(s.walkBudget, 90);
+            Assert.GreaterOrEqual(s.walkBudget, 25);
+            Assert.LessOrEqual(s.walkBudget, 50);
             Assert.AreEqual(1, s.heroes.Length);
             Assert.AreEqual("warden", s.heroes[0].classId);
             Assert.IsFalse(string.IsNullOrEmpty(s.band));
