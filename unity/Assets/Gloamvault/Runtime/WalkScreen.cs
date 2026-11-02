@@ -133,7 +133,7 @@ namespace Gloamvault
                 {
                     var d = Room.doors[0].transform.position; d.y = 0;
                     var inward = -d; inward.y = 0;
-                    if (inward.sqrMagnitude > 0.01f) { start = d + inward.normalized * 1.8f; facing = Quaternion.LookRotation(inward.normalized, Vector3.up); }
+                    if (inward.sqrMagnitude > 0.01f) { start = d + inward.normalized * 3.0f; facing = Quaternion.LookRotation(inward.normalized, Vector3.up); }
                 }
                 Hero.root.transform.position = start;
                 Hero.root.transform.rotation = facing;

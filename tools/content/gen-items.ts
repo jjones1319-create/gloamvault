@@ -1046,6 +1046,13 @@ const ZONE = { cellars: 'zone:the-cellars', crypts: 'zone:the-crypts', vault: 'z
 const SAFE = 'safe-item'
 
 const CONSUMABLES: readonly ConsumableRow[] = [
+  // Phase 17 (D-142, D-148): the smokes — Hushsmoke keeps random encounters away for minutes of walking, Callsmoke draws them.
+  { id: 'hushsmoke-small', name: 'Small Hushsmoke', effects: [{ kind: 'custom', customId: 'hushsmoke', amount: 2, note: 'No random encounters for 2 minutes of walking (twice as fast in the dark)' }], stackMax: 5, target: 'self', inCombat: false, priceR: 0.04, mesh: 'consumable-smoke-small-01', tint: '#6b7280' },
+  { id: 'hushsmoke-medium', name: 'Medium Hushsmoke', effects: [{ kind: 'custom', customId: 'hushsmoke', amount: 4, note: '4 minutes of walking' }], stackMax: 5, target: 'self', inCombat: false, priceR: 0.07, mesh: 'consumable-smoke-medium-01', tint: '#6b7280' },
+  { id: 'hushsmoke-large', name: 'Large Hushsmoke', effects: [{ kind: 'custom', customId: 'hushsmoke', amount: 8, note: '8 minutes of walking' }], stackMax: 5, target: 'self', inCombat: false, priceR: 0.12, mesh: 'consumable-smoke-large-01', tint: '#6b7280' },
+  { id: 'callsmoke-small', name: 'Small Callsmoke', effects: [{ kind: 'custom', customId: 'callsmoke', amount: 2, note: 'Random encounters twice as often for 2 minutes of walking, no grace after a fight' }], stackMax: 5, target: 'self', inCombat: false, priceR: 0.04, mesh: 'consumable-smoke-small-01', tint: '#b45309' },
+  { id: 'callsmoke-medium', name: 'Medium Callsmoke', effects: [{ kind: 'custom', customId: 'callsmoke', amount: 4, note: '4 minutes of walking' }], stackMax: 5, target: 'self', inCombat: false, priceR: 0.07, mesh: 'consumable-smoke-medium-01', tint: '#b45309' },
+  { id: 'callsmoke-large', name: 'Large Callsmoke', effects: [{ kind: 'custom', customId: 'callsmoke', amount: 8, note: '8 minutes of walking' }], stackMax: 5, target: 'self', inCombat: false, priceR: 0.12, mesh: 'consumable-smoke-large-01', tint: '#b45309' },
   { id: 'small-hp-potion', name: 'Small HP Potion', effects: [{ kind: 'heal', percent: 25 }], stackMax: 10, target: 'ally', inCombat: true, priceR: 0.03, mesh: 'consumable-potion-small-01', tint: '#b3261e' },
   { id: 'medium-hp-potion', name: 'Medium HP Potion', effects: [{ kind: 'heal', percent: 40 }], stackMax: 10, target: 'ally', inCombat: true, priceR: 0.05, mesh: 'consumable-potion-medium-01', tint: '#b3261e' },
   { id: 'large-hp-potion', name: 'Large HP Potion', effects: [{ kind: 'heal', percent: 60 }], stackMax: 10, target: 'ally', inCombat: true, priceR: 0.08, mesh: 'consumable-potion-large-01', tint: '#b3261e' },

@@ -6,6 +6,7 @@
 
 - `npm install` once (Node 24+, npm 11+), then `npm run dev` → http://localhost:5173/gloamvault/ (add `-- --host` to open it on the phone over Wi-Fi).
 - `npm run verify` before every commit (typecheck · test · lint · build · check:build). `npm run shots` writes the screenshot set to `client/shots/` (read the PNGs). `npm run e2e` runs the Playwright smoke on the built app. Both serve the build on port 4173; when another project on this machine holds that port, set `GLOAMVAULT_PORT` (e.g. `GLOAMVAULT_PORT=4183 npm run e2e`). `npm run icons` re-renders the PWA icons from `client/public/logo.svg`. `node tools/shots/dev-shot.ts --port 5181 --hash "#…" --out shots-dev/x.png [--tap sel]` shoots one screen of a running `npx vite --port 5181`.
+- `npm run balance:walk -- --party warden,mender` tours the walked Floor 1 (Phase 17) → `docs/balance/<date>-walk.md`.
 - `npm run sim -- --seed 17 --party warden,mender --ascii` plays one delve of the Cellars in the terminal. `npm run balance -- --seeds 100 --tag <tag> [--death mortal|sheltered|nightmare]` writes `tools/balance/out/<date>-<tag>.json` and `docs/balance/<date>-<tag>.md` (~25 s at 100 seeds).
 - Deep links: `#delve=gravehollow-keep&floor=1&seed=17&party=warden,mender&auto=1` (`&death=nightmare`, `&end=1` plays the whole delve so the end card shows), `#town&demo=1`, `#town&place=waystone&demo=1`.
 - Content generators: `node tools/content/gen-class-<class>.ts` (six classes) and `node tools/content/gen-items.ts` rewrite their JSON from the tables; edit the tables, never the generated JSON.
@@ -15,6 +16,8 @@
 ## Where we are
 
 - **Segment 3 — Gloamvault in Unity, in small phases** (`docs/12-ROADMAP.md` §3): started 2026-10-29 at checkpoint 2, when James chose Unity and free-roam exploration (`docs/13-DECISIONS.md` §A5, D-135–D-140). Claude **stops after every phase** (D-137) and installs each build on James's phone over USB (D-138).
+- **Phase 17 — Floor 1: the rules — built 2026-11-02** (PC-checked: EditMode/PlayMode green, the play shots read; the phone at the block's install, D-170): the sim plays the hand-laid floor through its own graph (`sim/src/floor-layout.ts`); random encounters come by seconds walked (45–90 s at full light, faster in the dark, a 20 s grace; Hushsmoke stops the clock, Callsmoke hurries it); the monsters stand at their spots and the fight starts when you reach them; chests, gold, a curio, a spotted trap's plate, the hearth, the key, the stair and the ways out are things with A; a fight plays on auto and a card tells it; the light, the clock and the hunter on the stats line; the monsters at the party's level within the floor's band; levels re-tuned (120 × 1.35); a Mender walks with the hero until Phase 22 (D-174); `npm run balance:walk` tours the floor (29 of 30 clears for the pair, 1 wipe). D-172–D-175.
+- **Phase 16 — Climb, crawl, jump — built 2026-11-01** (PC-checked; the phone at the block's install after 17, D-170): four new clips (Crawl, Squeeze, Jump, Climb), traversal spots as data with their obstacles built from the kits, the scripted moves with A; Floor 1 has one of each (D-171; task list below). **Next: Phase 17 — Floor 1's rules.**
 - **Phase 15 — Floor 1: the place — built 2026-11-01** (PC-checked; the phone at the block's install, D-161): Gravehollow's first floor laid out by hand as data (36 spaces on 28 × 20 cells), the map that fills in as you explore (a minimap and the full map), a lever that lifts a gate, three secret panels found with A, a locked door and its key, the keep's gate, the stair down and two side exits, and what the floor remembers between delves (D-165, D-166; task list below). **Installed on James's phone 2026-11-01 (v0.15.0); the soaks measured (D-167: 120 fps is the default). James at the install: *"I think this is great"*; a table in a doorway (fixed, D-169) and a second-finger camera pan (built, D-168) — reinstalled; Phases 16 and 17 run next as one block without questions, one install after 17 (D-170).**
 - **Phase 14 — The test level — built 2026-10-31** (PC-checked; the phone soaks at the block's end, D-161): a generated level of 60 rooms and halls across the three kits, streamed around the hero (built 44 m · lit 32 m · released 60 m), the light following the hero, a pilot that walks it on its own and writes the soak-done numbers, `npm run unity:soak`, the 60 / 120 frame-rate choice (D-163, D-164; task list below).
 - **Phase 13 — Walking — built 2026-10-31** (PC-checked; the phone at the block's end, D-161): the stick walks the hero, walls and furniture block, the follow camera has its three distances, doors swing, lift and slide open with A (D-162; task list below).
@@ -27,6 +30,37 @@
 - **Phase:** 8 — polish and juice — **done 2026-10-29** (v0.8.0; verify green — 1227 tests, lint ALL GOOD, app code 548 KB gzipped of 600 and the content data 150 KB of 300; 88 screenshots, the Phase 8 set read; the e2e smoke passes). **Segment 2 is done — stopped for checkpoint 2** (`docs/feedback/SEGMENT-2-REVIEW.md`).
 - **Last commit:** see `git log` (the checkpoint commit is `P4: checkpoint 1 …`).
 - **Tools checked 2026-10-26:** Node 24.18.0 ✓ · npm 11.16.0 ✓ · git 2.51 ✓ · gh 2.102 signed in as `jjones1319-create` ✓ · Blender 5.2.2 LTS ✓ · Google Chrome ✓. The CC0 Human Base Meshes bundle is on this machine (`../ProjectAscend/art/ref/human-base-meshes/`, copied to `art/ref/` git-ignored); its stylized male and female bodies share one topology (12,502 vertices, 12,500 quads, UVs), so one landmark table fits the rig to both.
+
+## Try this on your phone — the Phases 16–17 install (D-170)
+
+1. **Climb, crawl, jump, squeeze.** Open Floor 1 and walk to the long gallery (east of the gate, past the kennels' crates): a fallen timber lies across it — walk up to it and press **A · Crawl under**. The kennels have crate stacks with a crack between them (**A · Squeeze through**), the hall below the tap room a dark pit (**A · Jump**), the hall before the stair a low wall (**A · Climb**). You cannot walk through any of them.
+2. **Something finds you.** Keep walking a minute or two: *"Something finds the party"* — a card tells the fight (who hit whom, what fell, your HP, the gold, the light). **Continue.** The stats line at the top reads the light and its band, the floor clock and the fights so far; it darkens −2 a room, and the dark brings fights sooner.
+3. **The monsters that wait, the chest, the stair.** Some rooms have monsters standing in them: walk up to them (or press A) and the fight starts; the room is cleared after. Past the lever, the treasure room has a chest (**A · Open the chest**) and gold (**A · Take the gold**); the rest room has a hearth (**A · Rest**); a trap you spot shows a plate (**A · Disarm (chance)**). The stair down (**A · Go down**) ends the floor on a card; the gate (**A · Leave the keep**) leaves it. If the party falls, the card says so and **Leave the floor** returns to the title — Floor 1 opens again as a fresh delve.
+
+Tell me: did the fights come too often or too rarely? Did the card say enough? Would you rather walk alone (harder) than with the unseen Mender (D-174)?
+
+## Phase 17 task list (the plan) — Floor 1: the rules
+
+The walked floor's rules (12 §3 row 17; D-142, D-147–D-152): random encounters by walking, the smokes, the monsters' band, spots with A, the light and the hunter on a walked floor, rewards re-tuned, the balance tour, the battle card.
+
+1. [x] **The sim plays a laid-out floor:** `content.ts` kind `floor-layout`; `sim/src/floor-layout.ts` (rooms, joins → doors with locked/secret, roles → kinds, spots → encounters/chests/curios/traps, hops, the spine); `createDelve` with `floorLayoutId`; the plain hall starts cleared; the band (`bandLevel`); the laid-out floor's light (−2/0) and hunter (+60 ticks).
+2. [x] **Walking and the clock:** `walk {seconds}` with the budget, the light scale, the grace, Hushsmoke and Callsmoke (`FloorRun.walk`); `engage`, `examine`, `reveal`; retreat at side exits; the smokes as consumables (`gen-items.ts`, the custom lines `hushsmoke`/`callsmoke`).
+3. [x] **The bridge for Unity:** `snapshot`, `room`, `actions` (flat, never null), `lastFloor`; `JintSim.Snapshot/Room/Actions`.
+4. [x] **Unity:** `FloorPlay` (the delve, the walk, moves along the joins, barred doors, the things per room — monsters' figures, chests, gold, curio, trap plates, hearth — the card for fights, curios and the end, the stats line); `LevelScreen` hooks; `Level.uxml`/`Walk.uss` card; the hanging-beam camera fix.
+5. [x] **Tests and shots:** Vitest `floor-walk.test.ts` (12), `bridge.test.ts` (+1); EditMode `FloorPlayBridgeTests` (3); PlayMode `FloorPlaySmokeTests` (3); shots `play-monsters`, `play-card`, `play-chest`, `play-loot`, `play-end`.
+6. [x] **The balance tour:** `tools/balance/walk.ts` (`npm run balance:walk`) → `docs/balance/2026-11-02-walk.md` (the pair) and `-walk-solo.md`; levels re-tuned to 120 × 1.35 (D-173); the Mender companion (D-174).
+7. [x] Docs (`13` D-172–D-175, `03` §4, `07` §2.3, `08` §4, `10` §3, `12`, `content/README`, CLAUDE.md, README, STATUS), verify green, commit `P17: …`, push; then the block's install (build, install, the phone log, the checklist above).
+
+## Phase 16 task list (the plan) — Climb, crawl, jump
+
+Context actions at marked spots (D-146): crawl under, squeeze through, jump gaps, climb ledges — the clips, the prompts, the moves.
+
+1. [x] **Four clips** in `tools/blender/hero/build_clips.py` — Crawl (loop, 0.8 m/s), Squeeze, Jump (launch/land), Climb (top) — built, their sheets read (`art/LOG.md`), `hero_clips.glb` → `unity:models` → 24 clips in Unity.
+2. [x] **Spots as data:** `floor-layout.schema.json` kinds crawl · squeeze · jump · climb with `axis` and `length`; `gen-floor-1.ts` places one of each on Floor 1 and checks the clearance; lint rule 90 the same; `env.ts` carries them.
+3. [x] **The obstacles and the moves:** `LevelBuilder.BuildObstacle` (the timber and its block, the crate stacks and their crack, the pit cut from the floor with its edges, the low wall), `RoomBuilder.PlacePiece`, `RoomLayout` extra holes; `Traversal` / `TraversalEnd` (A at either end), `TraversalPath` (straight, eased, the jump's arc, the climb's hump), `HeroMover.BeginScripted`; the level screen lists the ends and ignores the stick during a move.
+4. [x] **Tests and shots:** EditMode `TraversalTests` (the paths, Floor 1's four spots, the jump's hole, the clips in the bundle), PlayMode `TraversalSmokeTests` (each obstacle blocks the walker; the prompt; A carries the hero to the far end with its clip), shots `traverse-<kind>-prompt` and `traverse-<kind>` mid-move (the traversal shots read (unity/shots/traverse-*.png)); version 0.16.0 (16).
+5. [x] Docs (`13` D-171, `03` §4.1, `07` §2.3, `10` §3, `11`, `12`, `art/LOG.md`, STATUS, README), verify green, commit `P16: …`, push; the Phase 16 checklist below; then Phase 17.
+
 
 ## Phase 15 task list (the plan) — Floor 1: the place
 
@@ -212,6 +246,7 @@ Monster techniques guaranteed by the 10th witnessed use (`09` §4; tuning + `ins
 
 ## Decisions logged this segment
 
+- Phase 16: D-171 traversal as built — the four clips, the spots as data, the obstacles from the kits, the scripted moves (Proposed)
 - At the Phases 13–15 install (James): D-167 120 fps the default, measured (Proposed) · D-168 the camera pans with a second finger (**Accepted**, James) · D-169 furniture clear of used doorways (**Accepted**, James) · D-170 Phases 16–17 without questions, one install after 17 (**Accepted**, James)
 - Phase 15: D-165 Floor 1 as built — the data's shape and the layout, the map's rules, the things A does, what a floor remembers in PlayerPrefs until Phase 22 (Proposed) · D-166 the lever and the key as code-built placeholders until the kits have pieces (Proposed)
 - Phase 14: D-163 the test level as built — the generator, the inset walls, the rings, the light over a level, the pilot and `unity:soak`, the 60 / 120 choice (Proposed; the phone's numbers at the install) · D-164 halls stand in for tunnels and caves until the kits have them (Proposed)
@@ -250,6 +285,13 @@ Monster techniques guaranteed by the 10th witnessed use (`09` §4; tuning + `ins
 - D-097: James wrote "It should take more exp to grow a level after each level so 2 to 3 is less xp than 1 to 2"; built as each level costing more (1→2 is the cheapest). Confirm.
 - Nightmare's details (D-095): the chosen hero must lead every delve; the save's backups go too; the Hall keeps a line. A fresh party of four loses its chosen Warden in about a third of first trips under Nightmare.
 - The Beast Tamer keeps whip and short spear (its sheet owns its weapons), not `08`'s wider list.
+
+## Phone checklist (Phase 16 — Climb, crawl, jump) — for the block's install
+
+1. **Floor 1**, from the gate go east: in **the long gallery** (the long room after the crossing) a fallen timber lies across the way — walk up to it: *"A · Crawl under"* — press A: *he drops to hands and knees, crawls under and stands up on the far side.* Try walking round it first: *you can't.*
+2. In **the hall before the stair** (east, past the east guardpost) a low wall blocks the hall: *"A · Climb"* — press A: *he hauls himself over.* In **the hall below the tap room** (south from the tap room) the floor has fallen away: *"A · Jump"* — *he leaps the gap.* In **the kennels** (the north wing, past the lever's gate) crates leave a crack: *"A · Squeeze through".*
+3. Each works from both sides. Tell Claude which of the four moves read well and which looked odd.
+
 
 ## Phone checklist (Phase 15 — Floor 1: the place) — for the block's install
 

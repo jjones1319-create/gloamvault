@@ -19,7 +19,7 @@ namespace Gloamvault.Tests
             yield return Scenes.Load(Scenes.Boot);
             yield return null;
             var doc = Object.FindFirstObjectByType<UIDocument>();
-            var screen = LevelScreen.Open(doc, floorId: "floor-1");
+            var screen = LevelScreen.Open(doc, floorId: "floor-1", rules: false);
             yield return null; yield return null;
             Assert.IsNotNull(screen.Floor, "the floor loaded");
             var floor = screen.Floor;

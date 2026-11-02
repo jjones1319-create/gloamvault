@@ -29,6 +29,12 @@ namespace Gloamvault.Sim
         string Summary(int handle);
         string Phase(int handle);
         string LogSince(int handle, int from);
+        /// <summary>Phase 17: the walked floor's view of the delve — flat JSON for JsonUtility (bridge.ts snapshot).</summary>
+        string Snapshot(int handle);
+        /// <summary>Phase 17: one room as the rules see it — its monsters, chests, curio, traps (bridge.ts room).</summary>
+        string Room(int handle, string roomId);
+        /// <summary>Phase 17: the commands open now, each pre-serialised for the card's buttons (bridge.ts actions).</summary>
+        string Actions(int handle);
         void DisposeDelve(int handle);
     }
 

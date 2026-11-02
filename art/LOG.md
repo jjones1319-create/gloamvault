@@ -2645,3 +2645,7 @@ The 16 hero files and 16 monster bases converted from the shipped GLBs by `npm r
 4. Round 3: saturated blue and magenta under the stage light; bisected to the second directional light (the rim) as an *additional* light — the key alone, with its shadows, is right. → One key light; the cause stays open in D-160.
 5. `heroes-matrix.png`: all 36 species × class heroes in Idle; `monsters-<zone>.png`: each zone's monsters at their scale in a line; `monster-old-gnaw.png`, `monster-king.png`.
 6. Known gaps: the ooze stands still (its shape-key clips do not come through the FBX); the King's throne and phases, Naesa's arms and the Deep Maw's ring wait for the fight (Phase 19); eight pets have no model yet (capsules, D-117).
+
+## Phase 16 — the traversal clips (2026-11-01)
+
+- `build_clips.py` gained Crawl, Squeeze, Jump, Climb (D-171); built with `--only Crawl,Squeeze,Jump,Climb` (renders those, exports all 24). Sheets read: **Crawl** — on hands and knees, the knees alternate, the hands reach a little stiffly (acceptable); **Squeeze** — side-on, arms drawn up over the chest, a sidestep; **Jump** — crouch, launch with the arms thrown forward, a tuck at the top, a landing crouch; **Climb** — hands up to chest height, the pull with the left knee up, a crouch on top, standing. Floor contacts within 1.6 cm except the crawl's start (−9 cm on the broad frame at f8 — the knee solver, a later pass). The sword stays in the right hand through all four (the weapon socket); a hidden-weapon flag during a move is a later pass.

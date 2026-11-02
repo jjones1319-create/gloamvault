@@ -21,7 +21,25 @@ namespace Gloamvault.Walk
         public float cameraYaw;
         public float Speed { get; private set; }
         public string Clip { get; private set; } = "Idle";
+        /// <summary>A scripted move is carrying the hero (Phase 16): the stick is ignored, the controller is off.</summary>
+        public bool Scripted { get; private set; }
         Vector3 velocity;
+        System.Func<float, Vector3> scriptedPath;
+        float scriptedSeconds, scriptedT;
+        System.Action scriptedDone;
+
+        /// <summary>Carries the hero along a path over the seconds while a clip plays, then hands the stick back.</summary>
+        public void BeginScripted(System.Func<float, Vector3> path, float seconds, string clip, Vector3 facing, System.Action done = null)
+        {
+            scriptedPath = path; scriptedSeconds = Mathf.Max(0.05f, seconds); scriptedT = 0f; scriptedDone = done;
+            Scripted = true;
+            if (controller != null) controller.enabled = false;
+            facing.y = 0;
+            if (facing.sqrMagnitude > 1e-4f) transform.rotation = Quaternion.LookRotation(facing.normalized, Vector3.up);
+            transform.position = path(0f);
+            var a = character?.animator;
+            if (a != null && a.Has(clip)) { a.Play(clip); a.SetTimeScale(1f); Clip = clip; }
+        }
 
         public static HeroMover Attach(Character c)
         {
@@ -60,6 +78,24 @@ namespace Gloamvault.Walk
         {
             if (controller == null) return;
             float dt = Time.deltaTime;
+            if (Scripted)
+            {
+                scriptedT += dt;
+                float u = Mathf.Clamp01(scriptedT / scriptedSeconds);
+                transform.position = scriptedPath(u);
+                Speed = 0f;
+                if (u >= 1f)
+                {
+                    Scripted = false;
+                    controller.enabled = true;
+                    velocity = Vector3.zero;
+                    Clip = "Idle";
+                    character?.animator?.Play("Idle");
+                    var cb = scriptedDone; scriptedDone = null;
+                    cb?.Invoke();
+                }
+                return;
+            }
             float wanted = SpeedFor(stick.magnitude);
             var dir = DirectionFor(stick, cameraYaw);
             if (wanted > 0f && dir != Vector3.zero)

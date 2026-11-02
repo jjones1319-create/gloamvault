@@ -205,7 +205,8 @@ namespace Gloamvault.Env
         /// outside the edge line, so rooms that touch in a level each pull theirs in by 0.4 m and the two back faces
         /// meet at the line, hidden behind each other. 0 for a room on its own.
         /// </param>
-        public static List<Placement> Build(Template t, KitManifest kit, KitManifest shared, float camX, float camZ, int variation = 0, IDictionary<string, string> doorKinds = null, float inset = 0f)
+        /// <param name="extraHoles">More floor holes in room space (a floor broken for a jump, Phase 16).</param>
+        public static List<Placement> Build(Template t, KitManifest kit, KitManifest shared, float camX, float camZ, int variation = 0, IDictionary<string, string> doorKinds = null, float inset = 0f, IEnumerable<Rect> extraHoles = null)
         {
             var o = new List<Placement>();
             var shell = kit.shell;
@@ -214,6 +215,7 @@ namespace Gloamvault.Env
 
             // Holes in the floor: every prop whose piece opens its own (deep water, a bone grate, a sluice channel).
             var holes = new List<Rect>();
+            if (extraHoles != null) holes.AddRange(extraHoles);
             var propYaws = new float[t.props.Length];
             for (int i = 0; i < t.props.Length; i++)
             {

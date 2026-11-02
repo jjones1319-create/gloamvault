@@ -510,7 +510,7 @@ const cases: Case[] = [
         j.level = 9
       })
     },
-    check: (r) => expectRule(r, HERO, 30, 'level 9 but battleXp 80 reaches level 2'),
+    check: (r) => expectRule(r, HERO, 30, 'level 9 but battleXp 80 reaches level 1'),
   },
   {
     name: 'a wayfarer look with a skin tone the species does not have (rule 34)',

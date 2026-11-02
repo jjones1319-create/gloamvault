@@ -159,6 +159,39 @@
       "events": {
         "brace": 0.1333
       }
+    },
+    {
+      "name": "Crawl",
+      "seconds": 1.2,
+      "loop": true,
+      "events": {
+        "handL": 0.0,
+        "handR": 0.6
+      },
+      "speed": 0.8
+    },
+    {
+      "name": "Squeeze",
+      "seconds": 1.2,
+      "loop": false,
+      "events": {}
+    },
+    {
+      "name": "Jump",
+      "seconds": 0.9,
+      "loop": false,
+      "events": {
+        "launch": 0.3,
+        "land": 0.7
+      }
+    },
+    {
+      "name": "Climb",
+      "seconds": 1.2,
+      "loop": false,
+      "events": {
+        "top": 0.8667
+      }
     }
   ]
 }

@@ -30,7 +30,8 @@ namespace Gloamvault.Walk
         public Distance distance = Distance.Normal;
         public float yawLagSeconds = 0.6f;
         public float moveLagSeconds = 0.12f;
-        public LayerMask blockers = ~0;
+        /// <summary>What pulls the camera in: everything but the Ignore Raycast layer (the traversal obstacles' unseen blockers live there).</summary>
+        public LayerMask blockers = Physics.DefaultRaycastLayers;
         /// <summary>The hero's ground speed, set by the screen each frame: a held pan releases only once he walks.</summary>
         public float heroSpeed;
         public float Yaw { get; private set; }
@@ -67,6 +68,19 @@ namespace Gloamvault.Walk
         /// <summary>Jump straight behind the hero on the next frame (a teleport, the tests).</summary>
         public void Snap() { snapped = false; Holding = false; manualUntil = 0f; }
 
+        /// <summary>A hanging piece (a ceiling beam) the camera sits inside would fill the view: hidden while the camera is within reach of it.</summary>
+        public const float HangingClearance = 0.7f;
+        static void HideHangingAround(Vector3 at)
+        {
+            float r2 = HangingClearance * HangingClearance;
+            foreach (var r in Gloamvault.Env.RoomBuilder.Hanging)
+            {
+                if (r == null) continue;
+                bool show = r.bounds.SqrDistance(at) > r2;
+                if (r.enabled != show) r.enabled = show;
+            }
+        }
+
         void LateUpdate()
         {
             if (target == null || cam == null) return;
@@ -92,6 +106,7 @@ namespace Gloamvault.Walk
             cam.transform.position = Vector3.Lerp(cam.transform.position, wanted, m);
             cam.transform.rotation = Quaternion.LookRotation(look - cam.transform.position, Vector3.up);
             snapped = true;
+            HideHangingAround(cam.transform.position);
         }
     }
 }

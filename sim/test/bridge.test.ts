@@ -36,6 +36,39 @@ describe('the bridge', () => {
     bridge.dispose(h)
   })
 
+  it('plays a laid-out floor (Phase 17): the flat snapshot, the room report and the actions the walked floor reads', () => {
+    const h = bridge.createDelve(JSON.stringify({ dungeonId: 'gravehollow-keep', floor: 1, lastFloor: 1, floorLayoutId: 'floor-1', seed: 11, party: [{ classId: 'warden', speciesId: 'dwarf' }] }))
+    const snap = () => JSON.parse(bridge.snapshot(h)) as Record<string, unknown>
+    let s = snap()
+    expect(s['phase']).toBe('room')
+    expect(s['roomId']).toBe('r0')
+    expect(s['walkBudget']).toBeGreaterThanOrEqual(45)
+    // Never a null: JsonUtility would choke on one.
+    expect(JSON.stringify(s)).not.toContain('null')
+    const gate = JSON.parse(bridge.room(h, 'r0')) as Record<string, unknown>
+    expect(gate['kind']).toBe('entry')
+    const r2 = JSON.parse(bridge.room(h, 'r2')) as Record<string, unknown>
+    expect(r2['encounterId']).toBeTruthy()
+    expect(r2['monsterId']).toBeTruthy()
+    expect(JSON.stringify(r2)).not.toContain('null')
+    // Entering the monsters' room starts nothing; reaching them does.
+    bridge.step(h, JSON.stringify({ kind: 'move', toRoomId: 'r1' }))
+    bridge.step(h, JSON.stringify({ kind: 'move', toRoomId: 'r2' }))
+    expect(snap()['phase']).toBe('room')
+    bridge.step(h, JSON.stringify({ kind: 'engage' }))
+    s = snap()
+    expect(s['phase']).toBe('fight')
+    expect((s['enemies'] as unknown[]).length).toBeGreaterThan(0)
+    for (let i = 0; i < 600 && snap()['phase'] === 'fight'; i++) bridge.step(h, '{"kind":"auto"}')
+    s = snap()
+    expect(['result', 'over']).toContain(s['phase'])
+    const acts = JSON.parse(bridge.actions(h)) as { items: { kind: string; label: string; enabled: boolean; command: string }[] }
+    expect(acts.items.length).toBeGreaterThan(0)
+    expect(() => JSON.parse(acts.items[0]!.command)).not.toThrow()
+    expect(JSON.stringify(s)).not.toContain('null')
+    bridge.dispose(h)
+  })
+
   it('keeps delves apart by handle, and a disposed handle is gone', () => {
     const a = bridge.createDelve(JSON.stringify(request))
     const b = bridge.createDelve(JSON.stringify({ ...request, seed: 18 }))

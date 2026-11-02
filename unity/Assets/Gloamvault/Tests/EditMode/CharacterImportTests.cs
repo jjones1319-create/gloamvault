@@ -36,7 +36,7 @@ namespace Gloamvault.Tests
             var expected = lib.data.clips.Select(c => c.name).ToArray();
             var missing = expected.Where(n => lib.Clip(n) == null).ToArray();
             Assert.IsEmpty(missing, "clips not imported: " + string.Join(", ", missing));
-            Assert.AreEqual(20, lib.ClipCount, "clips: " + string.Join(", ", lib.ClipNames));
+            Assert.AreEqual(24, lib.ClipCount, "clips: " + string.Join(", ", lib.ClipNames));
             // Looping is the animator's by clips.json (CharacterAnimator wraps a looping clip itself), not the import's.
             Assert.IsTrue(lib.data.Clip("Idle").loop);
             Assert.IsFalse(lib.data.Clip("Attack_Light").loop);

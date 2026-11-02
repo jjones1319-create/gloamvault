@@ -28,6 +28,7 @@ import type {
   WayfarerDef,
 } from './types/content.ts'
 import type { ItemKind, Status } from './types/enums.ts'
+import type { FloorLayoutDef } from './floor-layout.ts'
 
 /** Every content kind. Each is a schema name except `template` (dungeon.schema.json#/$defs/template). */
 export const CONTENT_KINDS = [
@@ -49,6 +50,7 @@ export const CONTENT_KINDS = [
   'status',
   'wayfarer',
   'tuning',
+  'floor-layout',
 ] as const
 export type ContentKind = (typeof CONTENT_KINDS)[number]
 
@@ -89,6 +91,8 @@ export interface Content {
   readonly statuses: ReadonlyMap<Status, StatusDef>
   /** The Wayfarer Chest's cast (D-091). */
   readonly wayfarers: ReadonlyMap<ContentId, WayfarerDef>
+  /** The hand-laid floors by id (Phase 17, D-150): the rules play them as room graphs (floor-layout.ts). */
+  readonly floorLayouts: ReadonlyMap<ContentId, FloorLayoutDef>
   /** classId (or 'field' / 'pet' / 'monster') → its skills sorted by tier, then id. */
   readonly skillsByClass: ReadonlyMap<ContentId, readonly SkillDef[]>
   /** familyId → monsters sorted by id. */
@@ -152,6 +156,8 @@ export function kindForContentPath(relativePath: string): ContentPathKind | null
       return null
     case 4:
       if (first === 'dungeons' && third === 'templates' && second !== undefined) return { kind: 'template', dungeonId: second }
+      // Phase 17 (D-150): a hand-laid floor, `dungeons/<d>/floors/<id>.json`.
+      if (first === 'dungeons' && third === 'floors' && second !== undefined) return { kind: 'floor-layout', dungeonId: second }
       return null
     default:
       return null
@@ -298,6 +304,7 @@ export function buildContent(files: readonly RawContentFile[]): Content {
   const contracts = indexById<ContractDef>('contract', of('contract')).map
   const statuses = indexById<StatusDef, Status>('status', of('status')).map
   const wayfarers = indexById<WayfarerDef>('wayfarer', of('wayfarer')).map
+  const floorLayouts = indexById<FloorLayoutDef>('floor-layout', of('floor-layout')).map
 
   return {
     tuning,
@@ -317,6 +324,7 @@ export function buildContent(files: readonly RawContentFile[]): Content {
     contracts,
     statuses,
     wayfarers,
+    floorLayouts,
     skillsByClass: groupBy(skills.values(), (s) => s.classId, (a, b) => a.tier - b.tier || compareIds(a.id, b.id)),
     monstersByFamily: groupBy(monsters.values(), (m) => m.familyId, byId),
     monstersByZone: groupBy(monsters.values(), (m) => m.zoneId, byId),
@@ -348,5 +356,6 @@ export function contentSummary(c: Content): Record<ContentKind, number> {
     status: c.statuses.size,
     wayfarer: c.wayfarers.size,
     tuning: 1,
+    'floor-layout': c.floorLayouts.size,
   }
 }

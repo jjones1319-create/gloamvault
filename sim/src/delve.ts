@@ -1,6 +1,7 @@
 import { fightAmmoFor, stowAmmo } from './ammo.ts'
 import { compareIds, type Content } from './content.ts'
-import type { DelveCommand, DelveHero, DelveOptions, DelveState, FloorRun, HunterState, LegalDelveAction, RoomState } from './delve-types.ts'
+import { exitRoomIds, layoutToGraph, type FloorLayoutDef } from './floor-layout.ts'
+import type { DelveCommand, DelveHero, DelveOptions, DelveState, FloorRun, HunterState, WalkState, LegalDelveAction, RoomState } from './delve-types.ts'
 import { detection, disarmChance, heroAmbushChance, monsterAmbushChance, rollScout, scoutChance, trapRevealed } from './detection.ts'
 import { codexEventData } from './codex.ts'
 import { corridorChoices, roomEntryTicks, useCorridorSkill } from './corridor.ts'
@@ -297,7 +298,18 @@ function beginFloor(content: Content, state: DelveState, floorNumber: number, rn
   let monsterRooms = 0
   // The boss's arena room is fixed (07 §2.10 "Boss templates are fixed"; 07 §2.8 names it, the boss's arena.room — C1).
   const legalEncounters = encountersFor(content, fd, dungeon.id)
-  const graph: FloorGraph = generateFloor({
+  // Phase 17 (D-150): a hand-laid floor plays its own rooms and joins; the seed still draws what fills the spots.
+  const layout = layoutFor(content, state, floorNumber)
+  const graph: FloorGraph = layout ? layoutToGraph({
+    layout,
+    templates: dungeon.templates.map((tp) => ({ id: tp.id, w: tp.footprint.w, h: tp.footprint.h, doors: tp.doors.map((d) => ({ side: d.side, offset: d.offset ?? 0 })) })),
+    seed: floorSeed,
+    pickEncounter: (_room, previous) => {
+      const e = pickEncounter(content, encRng, fd, dungeon.id, previous, monsterRooms, false)
+      if (e && isMonsterEncounter(content, e)) monsterRooms++
+      return e?.id ?? null
+    },
+  }) : generateFloor({
     knobs: dungeon.generator,
     floor: { ...fd, bossTemplateId: bossDef?.boss?.arena?.room ?? null },
     templates: dungeon.templates,
@@ -329,6 +341,7 @@ function beginFloor(content: Content, state: DelveState, floorNumber: number, rn
         if (elite) rs.championAffixIds = drawChampionAffixes(content, rng, elite, count)
       }
     }
+    if (layout && room.kind === 'fight' && !rs.encounterId) rs.cleared = true
     rooms[room.id] = rs
   }
   // The lesson floor keeps the hunter away when its block says so (D-038; tutorial.ts).
@@ -338,7 +351,7 @@ function beginFloor(content: Content, state: DelveState, floorNumber: number, rn
   const secretId = graph.secretId !== null && secrets.length > 0 ? rng.pick(secrets).id : null
   state.floor = {
     number: floorNumber,
-    monsterLevel: fd.monsterLevel,
+    monsterLevel: layout ? bandLevel(content, state, fd.monsterLevel, dungeon.floors.find((x) => x.floor === floorNumber + 1)?.monsterLevel) : fd.monsterLevel,
     graph,
     rooms,
     currentRoomId: graph.entryId,
@@ -357,6 +370,8 @@ function beginFloor(content: Content, state: DelveState, floorNumber: number, rn
     raisesUsed: {},
     // Pact: Twin Hunter — a second hunter on every floor that has one (07 §6.2).
     ...(hunter && state.ruleFlags.includes('twin-hunter') ? { twinHunter: { ...hunter } } : {}),
+    // Phase 17: the walked floor's clock and its ways out (D-149, D-151).
+    ...(layout ? { walk: newWalk(content, rng), exitRooms: exitRoomIds(layout), layoutId: layout.id } : {}),
   }
   // Floor-long statuses (a shrine's Curse, a blessing) end with the floor; counted ones (Greased Stairs) carry over.
   state.pendingStatuses = state.pendingStatuses.filter((p) => p.fightsLeft !== null)
@@ -368,6 +383,33 @@ function beginFloor(content: Content, state: DelveState, floorNumber: number, rn
   // 07 §1.1: the zone's Waystone stands in the entry room of its first floor (Gravehollow F1, F4, F7).
   if (isWaystoneFloor(dungeon, floorNumber)) logEvent(state, 'waystone', `${zone.name}: the zone's Waystone stands in the entry room`, { zone: zone.id })
   enterRoom(content, state, graph.entryId, rng, false)
+}
+
+/** The hand-laid floor the options name, when it is this dungeon's floor of this number (Phase 17, D-150). */
+function layoutFor(content: Content, state: DelveState, floorNumber: number): FloorLayoutDef | null {
+  const id = state.options.floorLayoutId
+  if (!id) return null
+  const layout = content.floorLayouts.get(id)
+  if (!layout) throw new Error(`no floor layout "${id}"`)
+  return layout.dungeonId === state.options.dungeonId && layout.floor === floorNumber ? layout : null
+}
+
+/** D-147 (2), D-152 (1): monsters at the party's level, clamped to the floor's band (its level up to the next floor's, or + bandWidth). */
+function bandLevel(content: Content, state: DelveState, floorLevel: number, nextFloorLevel: number | undefined): number {
+  const alive = state.heroes.filter((h) => !h.fallen)
+  const avg = alive.length ? alive.reduce((n, h) => n + h.record.level, 0) / alive.length : floorLevel
+  const top = nextFloorLevel !== undefined ? Math.max(floorLevel, nextFloorLevel) : floorLevel + content.tuning.exploration.walk.bandWidth
+  return Math.max(floorLevel, Math.min(top, Math.round(avg)))
+}
+
+/** A fresh random-encounter clock (D-149): the first budget drawn now. */
+function newWalk(content: Content, rng: Rng): WalkState {
+  return { seconds: 0, budget: rollWalkBudget(content, rng), grace: 0, fightsSeen: 0, smoke: null, randomFights: 0 }
+}
+
+function rollWalkBudget(content: Content, rng: Rng): number {
+  const w = content.tuning.exploration.walk
+  return rng.range(w.secondsMin, w.secondsMax)
 }
 
 /* ---------- rooms ---------- */
@@ -384,6 +426,11 @@ function graphRoom(state: DelveState, id: string) {
   return r
 }
 
+/** Phase 17 (D-172): on a laid-out floor the hunter's clock runs longer — the floor has three times the rooms. */
+function walkHunterExtra(content: Content, state: DelveState): number {
+  return state.floor.layoutId ? content.tuning.exploration.walk.hunterExtraTicks : 0
+}
+
 function tickClock(content: Content, state: DelveState, ticks: number, rng: Rng): void {
   state.floor.clock += ticks
   // Pact: Twin Hunter — the second hunter keeps its own walk (it enters with the first, from the floor's other end).
@@ -393,7 +440,7 @@ function tickClock(content: Content, state: DelveState, ticks: number, rng: Rng)
   const dungeon = dungeonOf(content, state)
   const fd = floorDef(dungeon, state.floor.number)
   // Tier IV: Wayfinder delays the hunter.
-  const enterAt = (state.knobs.hunterClock ?? fd.hunterClock ?? content.tuning.exploration.floorClock.hunterEntersAt) + hunterDelay(content, state)
+  const enterAt = (state.knobs.hunterClock ?? fd.hunterClock ?? content.tuning.exploration.floorClock.hunterEntersAt) + hunterDelay(content, state) + walkHunterExtra(content, state)
   if (!h.entered && state.floor.clock >= enterAt) {
     h.entered = true
     h.roomId = farthestRoom(state.floor.graph, state.floor.currentRoomId)
@@ -424,7 +471,7 @@ function tickTwinHunter(content: Content, state: DelveState, h: HunterState, tic
   if (h.killed) return
   const fd = floorDef(dungeonOf(content, state), state.floor.number)
   // Tier IV: Wayfinder delays the hunter.
-  const enterAt = (state.knobs.hunterClock ?? fd.hunterClock ?? content.tuning.exploration.floorClock.hunterEntersAt) + hunterDelay(content, state)
+  const enterAt = (state.knobs.hunterClock ?? fd.hunterClock ?? content.tuning.exploration.floorClock.hunterEntersAt) + hunterDelay(content, state) + walkHunterExtra(content, state)
   const graph = state.floor.graph
   if (!h.entered && state.floor.clock >= enterAt) {
     const first = farthestRoom(graph, state.floor.currentRoomId)
@@ -466,7 +513,10 @@ function enterRoom(content: Content, state: DelveState, roomId: string, rng: Rng
   if (viaMove) {
     const before = state.light
     // Pact: Long Night — a new room drains `lightPerNewRoom` (−8) instead of tuning's perNewRoom (07 §6.2).
-    state.light = firstVisit && state.knobs.lightPerNewRoom !== undefined ? addLight(t, state.light, state.knobs.lightPerNewRoom) : lightAfterRoom(t, state.light, !firstVisit)
+    // Phase 17 (D-172): a laid-out floor's light falls by its own numbers (three times the rooms of a generated floor).
+    state.light = firstVisit && state.knobs.lightPerNewRoom !== undefined ? addLight(t, state.light, state.knobs.lightPerNewRoom)
+      : state.floor.layoutId ? addLight(t, state.light, firstVisit ? t.exploration.walk.lightPerNewRoom : t.exploration.walk.lightPerRevisitedRoom)
+      : lightAfterRoom(t, state.light, !firstVisit)
     // Attune, Vigil Lantern, "of Embers": the party's Light falls that many less per room (the best single hero's; D-071).
     const ease = partyHookBest(content, t, state, 'light-decay-reduction')
     if (ease > 0 && state.light < before) state.light = Math.min(before, state.light + ease)
@@ -543,8 +593,9 @@ function enterRoom(content: Content, state: DelveState, roomId: string, rng: Rng
     case 'fight':
     case 'elite':
     case 'keyRoom':
-      if (!rs.cleared && rs.encounterId) startFight(content, state, rng, g.kind === 'elite' ? 'elite' : 'fight')
-      else if (!rs.cleared) rs.cleared = true
+      // Phase 17 (D-150): on a laid-out floor the monsters wait at their spot — the client sends 'engage' on reaching them.
+      if (!rs.cleared && rs.encounterId && !state.floor.layoutId) startFight(content, state, rng, g.kind === 'elite' ? 'elite' : 'fight')
+      else if (!rs.cleared && !rs.encounterId) rs.cleared = true
       break
     case 'boss':
       if (!rs.cleared) startFight(content, state, rng, 'boss')
@@ -583,7 +634,8 @@ function enterRoom(content: Content, state: DelveState, roomId: string, rng: Rng
       }
       break
     case 'curio':
-      if (rs.curioId && !rs.curioUsed) state.phase = { kind: 'curio', curioId: rs.curioId }
+      // Phase 17: on a laid-out floor the curio waits for A ('examine').
+      if (rs.curioId && !rs.curioUsed && !state.floor.layoutId) state.phase = { kind: 'curio', curioId: rs.curioId }
       break
     case 'merchant':
       if (!rs.merchant) {
@@ -1320,7 +1372,7 @@ function hurtHero(content: Content, state: DelveState, h: DelveHero, dmg: number
 
 /* ---------- fights ---------- */
 
-type FightKind = 'fight' | 'elite' | 'boss' | 'hunter' | 'trap' | 'curio'
+type FightKind = 'fight' | 'elite' | 'boss' | 'hunter' | 'trap' | 'curio' | 'wander'
 
 /**
  * The monsters a named ambush brings (07 §2.4–§2.5): `count` of the monster when the line says how many, else an
@@ -1355,7 +1407,7 @@ function startFight(content: Content, state: DelveState, rng: Rng, kind: FightKi
   let ambushMod = 0
   let isMonsterRoom = false
   let arenaSetup: ArenaSetup | undefined
-  const named = ambush ? spawnAmbush(content, state, rng, ambush, { level: fd.monsterLevel, partySize, enemyHpPercent: enemyHp, enemyCountPercent: enemyCount }) : null
+  const named = ambush ? spawnAmbush(content, state, rng, ambush, { level: state.floor.monsterLevel, partySize, enemyHpPercent: enemyHp, enemyCountPercent: enemyCount }) : null
   if (named) {
     monsters = named
     ambushMod = Math.max(0, ...monsters.map((m) => content.monsters.get(m.monster?.monsterId ?? '')?.ambushModifier ?? 0))
@@ -1379,7 +1431,7 @@ function startFight(content: Content, state: DelveState, rng: Rng, kind: FightKi
       return
     }
     isMonsterRoom = isMonsterEncounter(content, encounter)
-    monsters = spawnEncounter(content, t, rng, encounter, { level: fd.monsterLevel, partySize, enemyHpPercent: enemyHp, enemyCountPercent: enemyCount, championAffixIds: kind === 'elite' ? rs.championAffixIds : [] })
+    monsters = spawnEncounter(content, t, rng, encounter, { level: state.floor.monsterLevel, partySize, enemyHpPercent: enemyHp, enemyCountPercent: enemyCount, championAffixIds: kind === 'elite' ? rs.championAffixIds : [] })
     ambushMod = Math.max(encounter.ambushModifier, ...monsters.map((m) => content.monsters.get(m.monster?.monsterId ?? '')?.ambushModifier ?? 0))
     state.floor.lastEncounterId = encounter.id
     if (kind === 'elite') state.stats.eliteFights += 1
@@ -1871,7 +1923,7 @@ export function legalDelveActions(content: Content, state: DelveState): LegalDel
     for (const b of h.record.bag) {
       const def = content.items.get(b.itemId)
       if (!def?.consumable || def.consumable.inCombat === undefined) continue
-      const usable = /torch|potion|draught|repair|bandage|ration|treat/i.test(def.name)
+      const usable = /torch|potion|draught|repair|bandage|ration|treat|smoke/i.test(def.name)
       if (!usable) continue
       out.push({ command: { kind: 'useItem', heroIndex: hi, instanceId: b.instanceId }, label: `Use ${def.name} ×${b.quantity} (${h.record.name})`, enabled: true })
     }
@@ -1941,6 +1993,65 @@ export function stepDelve(content: Content, state: DelveState, command: DelveCom
       save(state, rng)
       if (!pick || pick.kind === 'auto') return state
       return stepDelve(content, state, pick)
+    }
+    case 'walk': {
+      // Phase 17 (D-149, D-142, D-148): seconds walked on a laid-out floor feed the random-encounter clock.
+      if (phase.kind !== 'room') throw new Error('not walking')
+      const w = state.floor.walk
+      if (!w) break
+      const wt = t.exploration.walk
+      let sec = Math.max(0, Math.floor(command.seconds))
+      w.seconds += sec
+      if (w.fightsSeen !== state.stats.fights) {
+        w.fightsSeen = state.stats.fights
+        w.grace = w.smoke?.kind === 'call' ? 0 : wt.graceSeconds
+      }
+      const band = lightBand(t, state.light).id
+      if (w.smoke) {
+        const burn = band === 'dark' || band === 'pitch' ? 2 : 1
+        w.smoke.secondsLeft -= sec * burn
+        if (w.smoke.secondsLeft <= 0) { logEvent(state, 'smoke', `The ${w.smoke.kind === 'hush' ? 'Hushsmoke' : 'Callsmoke'} has burnt out`); w.smoke = null }
+      }
+      if (w.grace > 0) { const used = Math.min(w.grace, sec); w.grace -= used; sec -= used }
+      if (sec <= 0 || w.smoke?.kind === 'hush') break
+      const scale = (wt.bandScale[band as keyof typeof wt.bandScale] ?? 1) * (w.smoke?.kind === 'call' ? wt.callsmokeFactor : 1)
+      w.budget -= sec / Math.max(0.05, scale)
+      if (w.budget <= 0) {
+        w.budget = rollWalkBudget(content, rng)
+        w.randomFights += 1
+        logEvent(state, 'wander', `Something finds the party in ${state.floor.currentRoomId} after ${w.seconds} s of walking`, { seconds: w.seconds, light: state.light })
+        startFight(content, state, rng, 'wander')
+      }
+      break
+    }
+    case 'engage': {
+      // Phase 17 (D-150): the hero reaches the monsters waiting in this room — the placed fight starts.
+      if (phase.kind !== 'room') throw new Error('not in a room')
+      const rs = currentRoom(state)
+      const g = graphRoom(state, rs.roomId)
+      if (rs.cleared || !rs.encounterId) throw new Error('nothing to fight here')
+      startFight(content, state, rng, g.kind === 'elite' ? 'elite' : 'fight')
+      break
+    }
+    case 'examine': {
+      // Phase 17: A at the curio opens its choices.
+      if (phase.kind !== 'room') throw new Error('not in a room')
+      const rs = currentRoom(state)
+      if (!rs.curioId || rs.curioUsed) throw new Error('nothing to examine')
+      state.phase = { kind: 'curio', curioId: rs.curioId }
+      break
+    }
+    case 'reveal': {
+      // Phase 17 (D-146): a secret panel found with A — the door is known from both sides from now on.
+      if (phase.kind !== 'room') throw new Error('not in a room')
+      const g = graphRoom(state, state.floor.currentRoomId)
+      const door = g.doors.find((d) => d.to === command.toRoomId && d.secret)
+      if (!door) throw new Error('no secret door there')
+      currentRoom(state).secretRevealed = true
+      const other = state.floor.rooms[command.toRoomId]
+      if (other) other.secretRevealed = true
+      logEvent(state, 'secret', `A hidden way to ${command.toRoomId} found`)
+      break
     }
     case 'fight': {
       if (phase.kind !== 'fight' || !state.fight) throw new Error('no fight')
@@ -2140,6 +2251,12 @@ export function stepDelve(content: Content, state: DelveState, command: DelveCom
           if (line.kind === 'heal' && line.percent !== undefined) h.hpPercent = Math.min(100, h.hpPercent + line.percent)
           if (line.kind === 'pool' && line.percent !== undefined) h.poolPercent = Math.min(100, h.poolPercent + line.percent)
           if (line.kind === 'light') state.light = addLight(t, state.light, line.amount ?? 0)
+          // Hushsmoke and Callsmoke (D-142, D-148): minutes of walking on a laid-out floor, kept on the walk clock.
+          if (line.kind === 'custom' && (line.customId === 'hushsmoke' || line.customId === 'callsmoke')) {
+            if (state.floor.walk) state.floor.walk.smoke = { kind: line.customId === 'hushsmoke' ? 'hush' : 'call', secondsLeft: (line.amount ?? 2) * 60 }
+            texts.push(line.customId === 'hushsmoke' ? 'random encounters stay away' : 'random encounters come twice as often')
+            continue
+          }
           // Repair Kit, Pet Treat and the like: the custom line's contract lives in sim/src/skills/custom/<id>.ts.
           if (line.kind === 'custom') texts.push(resolveDelveLine(content, state, rng, line, { kind: 'item', id: def.id, percent: 100, victim: h }).text)
         }
@@ -2261,7 +2378,8 @@ export function stepDelve(content: Content, state: DelveState, command: DelveCom
         const rs = currentRoom(state)
         const atEntry = state.floor.currentRoomId === state.floor.graph.entryId
         const atEnd = state.floor.currentRoomId === state.floor.graph.exitId && (g.kind === 'stairs' || (g.kind === 'boss' && rs.cleared))
-        if (!atEntry && !atEnd) throw new Error('leave from the entrance or the floor\'s end')
+        const atSideExit = state.floor.exitRooms?.includes(state.floor.currentRoomId) ?? false
+        if (!atEntry && !atEnd && !atSideExit) throw new Error('leave from the entrance or the floor\'s end')
         if (atEnd) state.stats.deepestFloorCompleted = Math.max(state.stats.deepestFloorCompleted, state.floor.number)
         // Contracts (07 §7): teleporting out at the floor's end reaches its way down too.
         if (atEnd) logEvent(state, 'stairs', `The way down from floor ${state.floor.number}`, { light: state.light })

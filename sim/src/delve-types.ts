@@ -37,6 +37,14 @@ export type DelveCommand =
   | { kind: 'retreat' }
   | { kind: 'continue' }
   | { kind: 'auto' }
+  /** Phase 17 (D-149): walking on a laid-out floor for this many whole seconds — the random-encounter clock. */
+  | { kind: 'walk'; seconds: number }
+  /** Phase 17 (D-146): the party found a secret door by pressing A on the panel; the door is known from now on. */
+  | { kind: 'reveal'; toRoomId: string }
+  /** Phase 17 (D-150): the hero reaches the monsters waiting at their spot on a laid-out floor — the placed fight starts. */
+  | { kind: 'engage' }
+  /** Phase 17: A at a laid-out floor's curio opens its choices. */
+  | { kind: 'examine' }
 
 export interface LegalDelveAction {
   command: DelveCommand
@@ -135,6 +143,24 @@ export interface FloorRun {
   ambushShiftHere?: number
   /** Double Time's corridor use: room entries left that share one floor-clock tick, and whether it has been paid. */
   roomsPerTick?: { left: number; paid: boolean }
+  /** Phase 17 (D-149, D-142, D-148): the random-encounter clock of a laid-out floor; absent on a generated floor. */
+  walk?: WalkState
+  /** Phase 17 (D-151): the rooms the party may leave the floor from — the entrance, the stairs, the side exits. */
+  exitRooms?: readonly string[]
+  /** Phase 17: the laid-out floor this run plays, if any. */
+  layoutId?: string
+}
+
+/** The random-encounter clock (D-149): seconds walked, the budget to the next roll, the grace after a fight, a smoke burning. */
+export interface WalkState {
+  seconds: number
+  /** Full-light seconds left until the next random encounter. */
+  budget: number
+  grace: number
+  /** The fights count the grace was last set for. */
+  fightsSeen: number
+  smoke: { kind: 'hush' | 'call'; secondsLeft: number } | null
+  randomFights: number
 }
 
 /**
@@ -249,6 +275,8 @@ export interface DelveOptions {
   /** Start zone (1-based) or an explicit floor; the zone wins when both are given. */
   zone?: number
   floor?: number
+  /** Phase 17 (D-150): play this hand-laid floor (content/dungeons/<d>/floors/<id>.json) instead of generating it. */
+  floorLayoutId?: string
   /** A 64-bit seed as two u32 halves or one safe integer. */
   seed: number | readonly [number, number]
   difficulty: Difficulty
@@ -294,7 +322,7 @@ export interface DelveState {
   phase: DelvePhase
   fight: FightState | null
   /** The fight's room and kind, for the result and the stats. */
-  fightContext: { roomId: string; kind: 'fight' | 'elite' | 'boss' | 'hunter' | 'trap' | 'curio'; isMonsterRoom: boolean } | null
+  fightContext: { roomId: string; kind: 'fight' | 'elite' | 'boss' | 'hunter' | 'trap' | 'curio' | 'wander'; isMonsterRoom: boolean } | null
   commandLog: DelveCommand[]
   log: DelveEvent[]
   stats: DelveStats

@@ -13,6 +13,8 @@ namespace Gloamvault.Env
         public readonly List<string> missing = new();
         public readonly List<RoomLayout.Placement> placements = new();
         public readonly List<Door> doors = new();
+        /// <summary>The hanging pieces' renderers (ceiling beams, chains): hidden while the follow camera is inside one (Phase 16).</summary>
+        public readonly List<Renderer> hanging = new();
         public int triangles;
         public int pieces;
         public Bounds bounds;
@@ -21,6 +23,8 @@ namespace Gloamvault.Env
 
         public void Destroy()
         {
+            foreach (var r in hanging) RoomBuilder.Hanging.Remove(r);
+            hanging.Clear();
             if (root != null) Object.Destroy(root);
             root = null;
         }
@@ -54,7 +58,15 @@ namespace Gloamvault.Env
 
         /// <param name="cutAway">Cut the side facing the template's camera low (the diorama viewer); false for a room walked with the follow camera.</param>
         /// <param name="inset">How far the walls stand inside the edge (0.4 m for rooms that touch in a level; see <see cref="RoomLayout.Build"/>).</param>
-        public static Room Build(Template t, int variation = 0, Transform parent = null, IDictionary<string, string> doorKinds = null, bool colliders = true, bool cutAway = true, float inset = 0f)
+        /// <summary>Every live hanging renderer: the follow camera hides the one it is inside (a gallery's ceiling beam sits at its height).</summary>
+        public static readonly HashSet<Renderer> Hanging = new();
+
+        static void NoteHanging(Room room, GameObject go)
+        {
+            foreach (var r in go.GetComponentsInChildren<Renderer>()) { room.hanging.Add(r); Hanging.Add(r); }
+        }
+
+        public static Room Build(Template t, int variation = 0, Transform parent = null, IDictionary<string, string> doorKinds = null, bool colliders = true, bool cutAway = true, float inset = 0f, IEnumerable<RoomLayout.Rect> extraHoles = null)
         {
             var kit = KitLibrary.Load(t.kit);
             var shared = KitLibrary.Shared;
@@ -73,7 +85,7 @@ namespace Gloamvault.Env
             var doorsRoot = new GameObject("Doors");
             doorsRoot.transform.SetParent(room.root.transform, false);
 
-            var placements = RoomLayout.Build(t, kit.manifest, shared.manifest, camX, camZ, variation, doorKinds, inset);
+            var placements = RoomLayout.Build(t, kit.manifest, shared.manifest, camX, camZ, variation, doorKinds, inset, extraHoles);
             room.placements.AddRange(placements);
             bool any = false;
             var bounds = new Bounds();
@@ -102,6 +114,7 @@ namespace Gloamvault.Env
                 var tag = go.AddComponent<RoomPiece>();
                 tag.meshId = p.meshId; tag.role = p.role; tag.side = p.side; tag.low = p.low; tag.placementIndex = index;
                 Dress(go, lib.manifest, piece, room);
+                if (piece?.role == "hanging") NoteHanging(room, go);
                 if (p.role == RoomLayout.Role.Prop && piece?.bounds?.max != null && piece.bounds.max[1] - piece.bounds.min[1] < ShadowCasterMinHeight)
                     foreach (var r in go.GetComponentsInChildren<MeshRenderer>()) r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
                 if (colliders) AddColliders(go, piece, p, lib.manifest, axes);
@@ -144,6 +157,36 @@ namespace Gloamvault.Env
             }
             StaticBatchingUtility.Combine(shellRoot);
             return room;
+        }
+
+        /// <summary>
+        /// One more piece in a built room (Phase 16: an obstacle a traversal spot stands up): a clone under the room's
+        /// Props root at a game-space position and yaw, dressed and with its collider box. Null when the kit lacks it.
+        /// </summary>
+        public static GameObject PlacePiece(Room room, string meshId, Vector3 gamePos, float yaw, bool colliders = true)
+        {
+            var lib = room.kit.Has(meshId) ? room.kit : KitLibrary.Shared.Has(meshId) ? KitLibrary.Shared : null;
+            if (lib == null) { if (!room.missing.Contains(meshId)) room.missing.Add(meshId); return null; }
+            var piece = lib.manifest.Piece(meshId);
+            var props = room.root.transform.Find("Props") ?? room.root.transform;
+            var go = Object.Instantiate(lib.Source(meshId).gameObject, props);
+            go.name = meshId;
+            var axes = room.kit.axes;
+            go.transform.localPosition = axes.Position(gamePos.x, gamePos.y, gamePos.z);
+            go.transform.localRotation = axes.Rotation(yaw);
+            var tag = go.AddComponent<RoomPiece>();
+            tag.meshId = meshId; tag.role = RoomLayout.Role.Prop; tag.placementIndex = -1;
+            Dress(go, lib.manifest, piece, room);
+            if (piece?.role == "hanging") NoteHanging(room, go);
+            if (colliders && piece?.bounds?.min != null)
+            {
+                var min = piece.bounds.min; var max = piece.bounds.max;
+                Vector3 lo = new(Mathf.Min(axes.sx * min[0], axes.sx * max[0]), min[1], Mathf.Min(axes.sz * min[2], axes.sz * max[2]));
+                Vector3 hi = new(Mathf.Max(axes.sx * min[0], axes.sx * max[0]), max[1], Mathf.Max(axes.sz * min[2], axes.sz * max[2]));
+                Box(go, lo, hi, "box");
+            }
+            room.pieces++;
+            return go;
         }
 
         /// <summary>Materials by the manifest: water pieces draw twice (solid faces, then their slot-15 water); mist and webs see-through.</summary>

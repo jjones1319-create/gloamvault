@@ -27,6 +27,13 @@
                 <ui:Button name="a" text="A" class="walk__a" />
             </ui:VisualElement>
         </ui:VisualElement>
+        <ui:VisualElement name="card" class="walk__card">
+            <ui:Label name="cardTitle" text="" class="walk__cardTitle" />
+            <ui:ScrollView name="cardScroll" class="walk__cardScroll">
+                <ui:Label name="cardBody" text="" class="walk__cardBody" />
+            </ui:ScrollView>
+            <ui:VisualElement name="cardButtons" class="walk__cardButtons" />
+        </ui:VisualElement>
         <ui:VisualElement name="mapPanel" class="walk__mapPanel">
             <ui:VisualElement class="walk__mapHead">
                 <ui:Label text="The floor, as far as you have been" class="walk__mapTitle" />

@@ -264,7 +264,7 @@ function floors() {
         joins: ((f['joins'] ?? []) as any[]).map((j) => ({ a: j.a, b: j.b, sideA: j.sideA, offsetA: j.offsetA ?? 0, kind: j.kind ?? 'open' })),
         levers: ((f['levers'] ?? []) as any[]).map((l) => ({ id: l.id, room: l.room, x: l.at?.[0] ?? 0, z: l.at?.[1] ?? 0, opens: l.opens })),
         exits: ((f['exits'] ?? []) as any[]).map((e) => ({ id: e.id, kind: e.kind, room: e.room, side: e.side ?? '', name: e.name ?? '' })),
-        spots: ((f['spots'] ?? []) as any[]).map((s) => ({ kind: s.kind, room: s.room, x: s.at?.[0] ?? 0, z: s.at?.[1] ?? 0, id: s.id ?? '' })),
+        spots: ((f['spots'] ?? []) as any[]).map((s) => ({ kind: s.kind, room: s.room, x: s.at?.[0] ?? 0, z: s.at?.[1] ?? 0, id: s.id ?? '', axis: s.axis ?? '', length: s.length ?? 0 })),
       })
     }
   }

@@ -25,14 +25,14 @@ beforeAll(() => {
 afterAll(() => rmSync(root, { recursive: true, force: true }))
 
 describe('Final Fantasy-style hero levels (D-082)', () => {
-  it('the curve: level N costs 60 × 1.28^(N−2) battle XP', () => {
+  it('the curve (D-152, D-173): level N costs 120 × 1.35^(N−2) battle XP', () => {
     expect(heroLevelXpCost(t, 1)).toBe(0)
-    expect(heroLevelXpCost(t, 2)).toBe(60)
-    expect(heroLevelXpCost(t, 5)).toBe(126)
-    expect(heroLevelXpCost(t, 10)).toBe(432)
+    expect(heroLevelXpCost(t, 2)).toBe(120)
+    expect(heroLevelXpCost(t, 5)).toBe(295)
+    expect(heroLevelXpCost(t, 10)).toBe(1324)
     expect(heroLevelForXp(t, 0)).toBe(1)
-    expect(heroLevelForXp(t, 59)).toBe(1)
-    expect(heroLevelForXp(t, 60)).toBe(2)
+    expect(heroLevelForXp(t, 119)).toBe(1)
+    expect(heroLevelForXp(t, 120)).toBe(2)
     for (const lv of [2, 5, 8, 15]) {
       expect(heroLevelForXp(t, battleXpForLevel(t, lv))).toBe(lv)
       expect(heroLevelForXp(t, battleXpForLevel(t, lv) - 1)).toBe(lv - 1)

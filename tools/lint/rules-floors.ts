@@ -162,7 +162,20 @@ function rule60(ctx: Ctx): Failure[] {
       if (!side || !t.doors.some((d) => d.side === side)) out.push(fail(file, `exits[${ei}] (${str(e.id)}): room ${room} has no ${side ?? '?'} door`))
       else if (used.has(`${room}:${side}`)) out.push(fail(file, `exits[${ei}] (${str(e.id)}): that door is joined to a room`))
     })
-    objs(j.spots).forEach((s, si) => { if (!rooms[num(s.room) ?? -1]) out.push(fail(file, `spots[${si}]: room must exist`)) })
+    objs(j.spots).forEach((s, si) => {
+      const room = num(s.room) ?? -1
+      if (!rooms[room]) { out.push(fail(file, `spots[${si}]: room must exist`)); return }
+      const kind = str(s.kind) ?? ''
+      if (!['crawl', 'squeeze', 'jump', 'climb'].includes(kind)) return
+      // Phase 16: a traversal spot on its axis with 2.6 m clear each side (the ends, the doors' approaches).
+      const t = resolved[room]
+      const axis = str(s.axis), length = num(s.length)
+      if (!t || (axis !== 'ns' && axis !== 'ew') || length === undefined) { out.push(fail(file, `spots[${si}] (${kind}): needs axis ns|ew and length`)); return }
+      const at = Array.isArray(s.at) ? s.at.map((v) => (typeof v === 'number' ? v : 0)) : [0, 0]
+      const half = (axis === 'ew' ? t.w : t.h) * 4
+      const along = axis === 'ew' ? at[0]! : at[1]!
+      if (Math.abs(along) + length / 2 + 2.6 > half) out.push(fail(file, `spots[${si}] (${kind}): too close to the room's ends along its axis`))
+    })
   }
   return out
 }

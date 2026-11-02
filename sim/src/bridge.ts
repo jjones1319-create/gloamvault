@@ -11,6 +11,7 @@ import { createDelve as createDelveState, delveSummary, hashDelve, legalDelveAct
 import type { DelveCommand, DelveOptions, DelveState } from './delve-types.ts'
 import { createHero } from './hero.ts'
 import type { PolicyName } from './policies.ts'
+import { lightBand } from './light.ts'
 import { Rng } from './rng.ts'
 import type { HeroRecord } from './types/content.ts'
 import type { Difficulty } from './types/enums.ts'
@@ -30,6 +31,10 @@ export interface DelveRequest {
   readonly dungeonId: string
   readonly zone?: number
   readonly floor?: number
+  /** Phase 17 (D-150): play this hand-laid floor (content/dungeons/<d>/floors/<id>.json). */
+  readonly floorLayoutId?: string
+  /** The last floor of the delve (Phase 17: a walked floor plays alone until the floors after it exist). */
+  readonly lastFloor?: number
   readonly seed: number
   readonly difficulty?: Difficulty
   readonly pactIds?: readonly string[]
@@ -107,6 +112,8 @@ export function createDelve(requestJson: string): number {
     dungeonId: r.dungeonId,
     zone: r.floor === undefined ? (r.zone ?? 1) : undefined,
     floor: r.floor,
+    ...(r.floorLayoutId ? { floorLayoutId: r.floorLayoutId } : {}),
+    ...(r.lastFloor ? { lastFloor: r.lastFloor } : {}),
     seed: r.seed,
     difficulty: r.difficulty ?? 'normal',
     pactIds: r.pactIds ?? [],
@@ -138,6 +145,103 @@ export function hash(handle: number): string {
 
 export function summary(handle: number): string {
   return JSON.stringify(delveSummary(delveOf(handle)))
+}
+
+/**
+ * What the walking client shows between steps (Phase 17): the phase, the light and its band, the floor clock, the
+ * hunter, the room, the key, the walk clock, the party's health, the gold, the fights so far, the fight. Flat and
+ * never null — Unity's JsonUtility reads it (an absent object would come back as an empty one, a null as a crash).
+ */
+export function snapshot(handle: number): string {
+  const state = delveOf(handle)
+  const c = loaded()
+  const fl = state.floor
+  const walk = fl.walk
+  const ph = state.phase
+  const enemies = state.fight ? state.fight.actors.filter((a) => a.side === 'enemy').map((a) => ({ id: a.id, name: a.name, level: a.level, hp: a.hp, maxHp: a.maxHp, alive: a.hp > 0 })) : []
+  return JSON.stringify({
+    phase: ph.kind,
+    outcome: ph.kind === 'over' ? ph.outcome : '',
+    summary: ph.kind === 'over' ? ph.summary : '',
+    resultTitle: ph.kind === 'result' ? ph.title : '',
+    resultLines: ph.kind === 'result' ? ph.lines : [],
+    curioId: ph.kind === 'curio' ? ph.curioId : '',
+    curioName: ph.kind === 'curio' ? (c.dungeons.get(state.options.dungeonId)?.curios.find((x) => x.id === ph.curioId)?.name ?? ph.curioId) : '',
+    light: state.light,
+    band: lightBand(c.tuning, state.light).id,
+    clock: fl.clock,
+    hunterEntered: fl.hunter?.entered ?? false,
+    hunterRoomId: fl.hunter?.roomId ?? '',
+    hunterKilled: fl.hunter?.killed ?? false,
+    hunterName: fl.hunter ? (c.monsters.get(fl.hunter.monsterId)?.name ?? fl.hunter.monsterId) : '',
+    roomId: fl.currentRoomId,
+    hasKey: fl.hasKey,
+    monsterLevel: fl.monsterLevel,
+    walkSeconds: walk?.seconds ?? 0,
+    walkBudget: Math.round(walk?.budget ?? 0),
+    walkGrace: walk?.grace ?? 0,
+    smokeKind: walk?.smoke?.kind ?? '',
+    smokeSecondsLeft: walk?.smoke?.secondsLeft ?? 0,
+    randomFights: walk?.randomFights ?? 0,
+    gold: state.gold,
+    fights: state.stats.fights,
+    rooms: state.stats.rooms,
+    heroes: state.heroes.map((h) => ({ name: h.record.name, classId: h.record.classId, level: h.record.level, hpPercent: h.hpPercent, poolPercent: h.poolPercent, fallen: h.fallen, downed: h.downed, battleXp: h.record.battleXp })),
+    fightOver: state.fight?.over ?? false,
+    fightRound: state.fight?.round ?? 0,
+    enemies,
+    log: state.log.length,
+  })
+}
+
+/**
+ * One room as the rules see it (Phase 17): what waits there — the monsters (the encounter and its first monster, for
+ * the figure at the spot), the chests, the curio, the traps the party has spotted, the gold, the rest — so the walked
+ * floor can place its things and the prompts. Flat and never null, for JsonUtility.
+ */
+export function room(handle: number, roomId: string): string {
+  const state = delveOf(handle)
+  const c = loaded()
+  const rs = state.floor.rooms[roomId]
+  const g = state.floor.graph.rooms.find((r) => r.id === roomId)
+  if (!rs || !g) throw new Error(`no room "${roomId}"`)
+  const dungeon = c.dungeons.get(state.options.dungeonId)
+  const encounter = rs.encounterId ? c.encounters.get(rs.encounterId) : undefined
+  const firstSlot = encounter?.composition[0]
+  const curio = rs.curioId ? dungeon?.curios.find((x) => x.id === rs.curioId) : undefined
+  // The disarm chance of each spotted trap, from the legal actions (the current room only; the first hero's hand).
+  const chances = new Map<number, number>()
+  if (roomId === state.floor.currentRoomId && state.phase.kind === 'room') {
+    for (const a of legalDelveActions(c, state)) {
+      if (a.command.kind !== 'disarm' || a.command.heroIndex !== 0) continue
+      chances.set(a.command.trapIndex, Number(/(\d+)%\)\s*$/.exec(a.label)?.[1] ?? 0))
+    }
+  }
+  return JSON.stringify({
+    roomId,
+    kind: g.kind,
+    visited: rs.visited,
+    cleared: rs.cleared,
+    encounterId: rs.encounterId ?? '',
+    encounterName: encounter?.name ?? '',
+    monsterId: firstSlot?.monsterId ?? '',
+    monsterName: firstSlot ? (c.monsters.get(firstSlot.monsterId)?.name ?? firstSlot.monsterId) : '',
+    monsterCount: encounter ? encounter.composition.reduce((n, sl) => n + sl.count, 0) : 0,
+    curioId: rs.curioId ?? '',
+    curioName: curio?.name ?? '',
+    curioUsed: rs.curioUsed,
+    restUsed: rs.restUsed,
+    keyHere: g.hasKey && !state.floor.hasKey,
+    goldPiles: rs.goldPiles.length,
+    chests: rs.chests.map((ch, index) => ({ index, size: ch.size, locked: ch.locked, opened: ch.opened })),
+    traps: rs.traps.map((tr, index) => ({ index, trapId: tr.trapId, name: dungeon?.traps.find((x) => x.id === tr.trapId)?.name ?? tr.trapId, revealed: tr.revealed, disarmed: tr.disarmed, triggered: tr.triggered, chance: chances.get(index) ?? 0, blocks: tr.blocksDoorTo !== null, blocksTo: tr.blocksDoorTo ?? '' })),
+  })
+}
+
+/** The commands open now (Phase 17), each with its command pre-serialised: the card's buttons send them back as they are. */
+export function actions(handle: number): string {
+  const items = legalDelveActions(loaded(), delveOf(handle)).map((a) => ({ kind: a.command.kind, label: a.label, enabled: a.enabled, reason: a.reason ?? '', command: JSON.stringify(a.command) }))
+  return JSON.stringify({ items })
 }
 
 export function phase(handle: number): string {

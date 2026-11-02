@@ -727,6 +727,50 @@
         0
       ],
       "id": null
+    },
+    {
+      "kind": "crawl",
+      "room": 3,
+      "at": [
+        4,
+        0
+      ],
+      "axis": "ew",
+      "length": 2.6,
+      "id": null
+    },
+    {
+      "kind": "squeeze",
+      "room": 16,
+      "at": [
+        2,
+        0
+      ],
+      "axis": "ew",
+      "length": 1.6,
+      "id": null
+    },
+    {
+      "kind": "jump",
+      "room": 26,
+      "at": [
+        0,
+        0
+      ],
+      "axis": "ns",
+      "length": 2.4,
+      "id": null
+    },
+    {
+      "kind": "climb",
+      "room": 9,
+      "at": [
+        0,
+        0
+      ],
+      "axis": "ew",
+      "length": 1.6,
+      "id": null
     }
   ]
 }

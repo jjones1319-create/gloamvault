@@ -184,7 +184,7 @@ namespace Gloamvault.Tests
             yield return Scenes.Load(Scenes.Boot);
             yield return new WaitForSecondsRealtime(0.5f);
             var doc = Object.FindFirstObjectByType<UIDocument>();
-            var screen = LevelScreen.Open(doc, floorId: "floor-1");
+            var screen = LevelScreen.Open(doc, floorId: "floor-1", rules: false);
             yield return null;
             var floor = screen.Floor;
             var l = floor.level;
@@ -232,7 +232,113 @@ namespace Gloamvault.Tests
             Gloamvault.Level.FloorState.Forget("floor-1");
         }
 
+        /// <summary>Phase 16: each traversal mid-move — the crawl under the timber, the squeeze between the stacks, the jump over the pit, the climb over the wall.</summary>
+        [UnityTest]
+        public IEnumerator Traverse()
+        {
+            Gloamvault.Level.FloorState.Forget("floor-1");
+            yield return Scenes.Load(Scenes.Boot);
+            yield return new WaitForSecondsRealtime(0.5f);
+            var doc = Object.FindFirstObjectByType<UIDocument>();
+            var screen = LevelScreen.Open(doc, floorId: "floor-1", rules: false);
+            yield return null;
+            var floor = screen.Floor;
+            foreach (var spot in floor.def.spots.Where(s => s.IsTraversal))
+            {
+                var room = floor.level.rooms[spot.room];
+                screen.Teleport(Gloamvault.Level.LevelBuilder.RoomCentre(room));
+                yield return null;
+                var a = screen.TraversalEnds.First(e => e.traversal.def == spot);
+                screen.Teleport(a.from); screen.Face(a.to);
+                yield return new WaitForSecondsRealtime(0.6f);
+                yield return ShotCapture.Capture("traverse-" + spot.kind + "-prompt");
+                screen.Act();
+                float seconds = Gloamvault.Level.TraversalPath.Seconds(spot.kind, Vector3.Distance(a.from, a.to));
+                yield return new WaitForSecondsRealtime(seconds * 0.5f);
+                yield return ShotCapture.Capture("traverse-" + spot.kind);
+                yield return new WaitForSecondsRealtime(seconds * 0.6f);
+            }
+            Gloamvault.Level.FloorState.Forget("floor-1");
+        }
+
         /// <summary>Every species × class at once, and every monster of a zone in a line — the web's matrix and lineups.</summary>
+        /// <summary>Phase 17: the monsters waiting at their spot, the fight's card, a chest's prompt, the delve's end.</summary>
+        [UnityTest]
+        public IEnumerator Play()
+        {
+            Gloamvault.Level.FloorState.Forget("floor-1");
+            yield return Scenes.Load(Scenes.Boot);
+            yield return new WaitForSecondsRealtime(0.5f);
+            var doc = Object.FindFirstObjectByType<UIDocument>();
+            var screen = LevelScreen.Open(doc, seed: 11, floorId: "floor-1");
+            yield return null;
+            yield return null;
+            var play = screen.Play;
+            var floor = screen.Floor;
+            IEnumerator WalkTo(int target)
+            {
+                int prev = 0;
+                foreach (var r in FloorPlaySmokeTests.PathTo(floor, target))
+                {
+                    screen.Teleport(FloorPlaySmokeTests.DoorsideOf(floor, r, prev));
+                    prev = r;
+                    yield return null;
+                    yield return null;
+                    if (play.CardOpen) play.Card.PressFirst();
+                    yield return null;
+                }
+            }
+            // The monsters in room 2, seen from the door side.
+            yield return WalkTo(2);
+            var monster = play.Things.OfType<Gloamvault.Level.MonsterThing>().FirstOrDefault();
+            if (monster != null)
+            {
+                var room = floor.level.rooms[2];
+                var centre = Gloamvault.Level.LevelBuilder.RoomCentre(room);
+                var back = monster.Position + (centre - monster.Position).normalized * 0.01f;
+                screen.Teleport(monster.Position + new Vector3(-3.2f, 0f, -0.8f));
+                screen.Face(monster.Position);
+                yield return new WaitForSecondsRealtime(0.8f);
+                yield return ShotCapture.Capture("play-monsters");
+                screen.Teleport(monster.Position + new Vector3(0.4f, 0f, 0.4f));
+                yield return null;
+                yield return null;
+                yield return new WaitForSecondsRealtime(0.3f);
+                yield return ShotCapture.Capture("play-card");
+                if (play.CardOpen) play.Card.PressFirst();
+                yield return null;
+            }
+            // A chest in the treasure room.
+            int treasure = floor.def.rooms.First(r => r.role == "treasure").id;
+            yield return WalkTo(treasure);
+            var chest = play.Things.OfType<Gloamvault.Level.ChestThing>().FirstOrDefault();
+            if (chest != null)
+            {
+                screen.Teleport(chest.Position + new Vector3(0f, 0f, 1.1f));
+                screen.Face(chest.Position);
+                yield return new WaitForSecondsRealtime(0.6f);
+                yield return ShotCapture.Capture("play-chest");
+                screen.Act();
+                yield return null;
+                yield return new WaitForSecondsRealtime(0.3f);
+                yield return ShotCapture.Capture("play-loot");
+                if (play.CardOpen) play.Card.PressFirst();
+                yield return null;
+            }
+            // The stair: the floor's end.
+            yield return WalkTo(floor.StairsRoom.id);
+            var exit = screen.Exits.First(e => e.def.kind == "stairs");
+            screen.Teleport(exit.Position + new Vector3(0f, 0f, 1.2f));
+            screen.Face(exit.Position);
+            yield return null;
+            yield return null;
+            screen.Act();
+            yield return null;
+            yield return new WaitForSecondsRealtime(0.3f);
+            yield return ShotCapture.Capture("play-end");
+            Gloamvault.Level.FloorState.Forget("floor-1");
+        }
+
         [UnityTest]
         public IEnumerator Lineups()
         {

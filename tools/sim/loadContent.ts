@@ -82,6 +82,7 @@ const EXAMPLE_SCHEMA_NAMES: ReadonlyMap<string, ContentKind | null> = new Map<st
   ['dungeon', 'dungeon'],
   ['elite-affix', 'elite-affix'],
   ['encounter', 'encounter'],
+  ['floor-layout', 'floor-layout'],
   ['hero', null],
   ['item', 'item'],
   ['item-set', 'item-set'],
@@ -119,7 +120,7 @@ export function loadExamplesAsContent(dir = path.join('content', 'examples')): C
     if (kind === null) continue
     const abs = path.join(root, name)
     const json = readJson(abs)
-    const dungeonId = kind === 'dungeon' && typeof json === 'object' && json !== null ? (json as { id?: unknown }).id : undefined
+    const dungeonId = typeof json === 'object' && json !== null ? (kind === 'dungeon' ? (json as { id?: unknown }).id : kind === 'floor-layout' ? (json as { dungeonId?: unknown }).dungeonId : undefined) : undefined
     files.push(rawFile(kind, toPosix(path.join(dir, name)), json, typeof dungeonId === 'string' ? dungeonId : undefined))
   }
   return buildContent(files)

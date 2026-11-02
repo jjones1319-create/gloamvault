@@ -206,6 +206,56 @@
     -unity-text-align: middle-center;
 }
 
+/* The card (Phase 17): what the rules did — a fight's result, a curio's choices, a chest's loot, the delve's end. */
+.walk__card {
+    position: absolute;
+    left: 22%;
+    right: 22%;
+    top: 12%;
+    bottom: 12%;
+    flex-direction: column;
+    background-color: rgba(18, 14, 20, 0.96);
+    border-width: 1px;
+    border-color: var(--line);
+    border-radius: 12px;
+    padding: 12px 18px;
+}
+
+.walk__cardTitle {
+    font-size: 20px;
+    color: var(--ink);
+    -unity-font-style: bold;
+    margin-bottom: 6px;
+}
+
+.walk__cardScroll {
+    flex-grow: 1;
+    margin: 4px 0;
+}
+
+.walk__cardBody {
+    font-size: 14px;
+    color: var(--ink);
+    white-space: normal;
+}
+
+.walk__cardButtons {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    margin-top: 8px;
+}
+
+.walk__cardButton {
+    min-height: 44px;
+    min-width: 120px;
+    margin: 4px 0 0 8px;
+}
+
+.walk__cardButton--off {
+    opacity: 0.45;
+}
+
 /* The second finger (D-168): the right half of the screen, under the buttons, pans the camera. */
 .walk__panZone {
     position: absolute;

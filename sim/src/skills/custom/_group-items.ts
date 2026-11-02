@@ -1,8 +1,10 @@
 import basicAttackPoolRestorePercent from './basic-attack-pool-restore-percent.ts'
 import blockAppliesToSpells from './block-applies-to-spells.ts'
+import callsmoke from './callsmoke.ts'
 import frostFreezesChilled from './frost-freezes-chilled.ts'
 import guardTauntsAndFortifies from './guard-taunts-and-fortifies.ts'
 import hasteOnKill from './haste-on-kill.ts'
+import hushsmoke from './hushsmoke.ts'
 import holySpellsGrantRegen from './holy-spells-grant-regen.ts'
 import nextActionWeightless from './next-action-weightless.ts'
 import rerollFightDrop from './reroll-fight-drop.ts'
@@ -17,9 +19,11 @@ import ultimateAppliesStatus from './ultimate-applies-status.ts'
 export const GROUP: HandlerEntry[] = [
   ['basic-attack-pool-restore-percent', basicAttackPoolRestorePercent],
   ['block-applies-to-spells', blockAppliesToSpells],
+  ['callsmoke', callsmoke],
   ['frost-freezes-chilled', frostFreezesChilled],
   ['guard-taunts-and-fortifies', guardTauntsAndFortifies],
   ['haste-on-kill', hasteOnKill],
+  ['hushsmoke', hushsmoke],
   ['holy-spells-grant-regen', holySpellsGrantRegen],
   ['next-action-weightless', nextActionWeightless],
   ['reroll-fight-drop', rerollFightDrop],

@@ -104,7 +104,16 @@ const SPOTS = [
   { kind: 'chest', room: 23, at: [0, 0], id: null }, { kind: 'chest', room: 18, at: [0, 1.5], id: null }, { kind: 'chest', room: 22, at: [4, 0], id: null },
   { kind: 'curio', room: 22, at: [-3, -2], id: 'sealed-cask' }, { kind: 'curio', room: 28, at: [0, 2], id: 'lost-lantern' },
   { kind: 'trap', room: 3, at: [0, 0], id: null }, { kind: 'trap', room: 21, at: [0, 0], id: null }, { kind: 'trap', room: 29, at: [2, 0], id: null },
+  // Phase 16 (D-171): the traversal spots — a fallen timber to crawl under in the long gallery, a crack between crate
+  // stacks to squeeze through in the kennels, a broken floor to jump in the hall below the tap room, a low wall to
+  // climb over in the hall before the stair.
+  { kind: 'crawl', room: 3, at: [4, 0], axis: 'ew', length: 2.6, id: null },
+  { kind: 'squeeze', room: 16, at: [2, 0], axis: 'ew', length: 1.6, id: null },
+  { kind: 'jump', room: 26, at: [0, 0], axis: 'ns', length: 2.4, id: null },
+  { kind: 'climb', room: 9, at: [0, 0], axis: 'ew', length: 1.6, id: null },
 ]
+
+const TRAVERSAL = new Set(['crawl', 'squeeze', 'jump', 'climb'])
 
 // ---- the templates' footprints and doors ---------------------------------------------------------------------------
 interface Tpl { w: number; h: number; doors: { side: Side; offset: number }[] }
@@ -196,6 +205,16 @@ export function buildFloor1() {
     return { id: l.id, room: l.room, at: l.at, opens }
   })
   joins.forEach((j, ji) => { if (j.kind === 'lever' && !levers.some((l) => l.opens === ji)) throw new Error(`join ${ji} is a lever join with no lever`) })
+  // A traversal spot lies on its axis with 2.6 m of clear room each side (the triggers and the doors' approaches).
+  for (const s of SPOTS) {
+    if (!TRAVERSAL.has(s.kind)) continue
+    const sp = s as { kind: string; room: number; at: number[]; axis?: string; length?: number }
+    const t = tpls[sp.room]!
+    if (!sp.axis || !sp.length) throw new Error(`${sp.kind} spot in room ${sp.room} needs axis and length`)
+    const half = (sp.axis === 'ew' ? t.w : t.h) * 4
+    const along = sp.axis === 'ew' ? sp.at[0]! : sp.at[1]!
+    if (Math.abs(along) + sp.length / 2 + 2.6 > half) throw new Error(`${sp.kind} spot in room ${sp.room}: too close to the room's ends along its axis`)
+  }
   EXITS.forEach((e) => {
     if (e.kind === 'stairs') return
     const t = tpls[e.room]!

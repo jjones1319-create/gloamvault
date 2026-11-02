@@ -50,6 +50,7 @@ namespace Gloamvault.Sim
 
         readonly Engine engine;
         readonly JsValue fnInit, fnCreateDelve, fnStep, fnLegal, fnHash, fnSummary, fnPhase, fnLogSince, fnDispose;
+        readonly JsValue fnSnapshot, fnRoom, fnActions;
         StartupTiming startup;
 
         /// <summary>Runs the script and indexes the content. <paramref name="loadMs"/> is how long reading the files took.</summary>
@@ -71,6 +72,9 @@ namespace Gloamvault.Sim
                 fnPhase = Fn(gv, "phase");
                 fnLogSince = Fn(gv, "logSince");
                 fnDispose = Fn(gv, "dispose");
+                fnSnapshot = Fn(gv, "snapshot");
+                fnRoom = Fn(gv, "room");
+                fnActions = Fn(gv, "actions");
             }
             catch (JintException e)
             {
@@ -98,6 +102,9 @@ namespace Gloamvault.Sim
         public string Phase(int handle) => Call(fnPhase, handle).AsString();
         public string LogSince(int handle, int from) => Call(fnLogSince, handle, from).AsString();
         public void DisposeDelve(int handle) => Call(fnDispose, handle);
+        public string Snapshot(int handle) => Call(fnSnapshot, handle).AsString();
+        public string Room(int handle, string roomId) => Call(fnRoom, handle, roomId).AsString();
+        public string Actions(int handle) => Call(fnActions, handle).AsString();
 
         JsValue Call(JsValue fn, params object[] args)
         {

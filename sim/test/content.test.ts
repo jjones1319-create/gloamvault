@@ -150,9 +150,10 @@ describe('loadExamplesAsContent', () => {
       status: 1,
       wayfarer: 1,
       tuning: 1,
+      'floor-layout': 1,
     })
     // Every example file with a sim kind is one record (templates are inline in the dungeon example; hero is a save
-    // record, and a floor layout is read by the Unity bundler and the linter until Phase 17 gives the rules the floor).
+    // record, and the floor layout example is one record from Phase 17).
     const exampleFiles = fs.readdirSync(examplesDir).filter((n) => n.endsWith('.example.json') && kindForExampleFile(n) !== null)
     const recordCount = CONTENT_KINDS.filter((k) => k !== 'template').reduce((n, k) => n + summary[k], 0)
     expect(recordCount).toBe(exampleFiles.length)

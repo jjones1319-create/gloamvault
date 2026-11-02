@@ -1,0 +1,55 @@
+{
+  "id": "callsmoke-small",
+  "name": "Small Callsmoke",
+  "slot": null,
+  "kind": "consumable",
+  "grade": "F",
+  "materialLadder": null,
+  "materialRung": null,
+  "weaponType": null,
+  "armorFamily": null,
+  "hands": null,
+  "damageType": null,
+  "weight": 600,
+  "baseStats": {},
+  "requirements": {
+    "strength": 0,
+    "wisdom": 0
+  },
+  "affixSlots": 0,
+  "affixes": [],
+  "plusN": 0,
+  "maxPlusN": 3,
+  "itemLevel": 1,
+  "itemXp": 0,
+  "affinities": [],
+  "durability": 100,
+  "maxDurability": 100,
+  "wearK": 1,
+  "value": 12,
+  "classLock": [],
+  "setId": null,
+  "unique": false,
+  "uniquePower": null,
+  "active": null,
+  "consumable": {
+    "effects": [
+      {
+        "kind": "custom",
+        "customId": "callsmoke",
+        "amount": 2,
+        "note": "Random encounters twice as often for 2 minutes of walking, no grace after a fight"
+      }
+    ],
+    "stackMax": 5,
+    "target": "self",
+    "inCombat": false
+  },
+  "ammo": null,
+  "visual": {
+    "meshId": "consumable-smoke-small-01",
+    "tintPrimary": "#b45309",
+    "tintSecondary": "#2b2b2b",
+    "trimMetal": "none"
+  }
+}

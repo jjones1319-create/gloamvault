@@ -39,6 +39,8 @@ namespace Gloamvault.Level
         public IReadOnlyDictionary<int, Room> Built => built;
         public IReadOnlyList<Door> Doors => doors;
         public event Action BuiltSetChanged;
+        /// <summary>The floor's spots for a room (Phase 16: the traversal obstacles are built with the room); null on the test level.</summary>
+        public Func<LevelRoom, IEnumerable<FloorSpotDef>> SpotsFor;
 
         readonly Dictionary<int, Room> built = new();
         readonly List<Door> doors = new();
@@ -125,7 +127,7 @@ namespace Gloamvault.Level
             foreach (var (d, i) in toBuild)
             {
                 if (builds >= BuildsPerFrame) break;
-                built[i] = LevelBuilder.Build(Level, Level.rooms[i], Root);
+                built[i] = LevelBuilder.Build(Level, Level.rooms[i], Root, SpotsFor?.Invoke(Level.rooms[i]));
                 BuildsTotal++; builds++;
                 changed = true;
                 if (Classify(d) == Ring.Active) ActiveCount++;

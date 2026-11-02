@@ -39,6 +39,12 @@ namespace Gloamvault
         public IReadOnlyList<Lever> Levers => levers;
         public IReadOnlyList<ExitSpot> Exits => exits;
         public KeyPickup Key { get; private set; }
+        /// <summary>The walked floor's rules (Phase 17): the delve in the sim, its card, its things.</summary>
+        public FloorPlay Play { get; private set; }
+        public PlayCard Card { get; private set; }
+        /// <summary>The delve's seed: the screen's when given, else the clock (every visit to the floor is a fresh delve until Phase 22 saves it).</summary>
+        public int DelveSeed { get; private set; }
+        int lastRoomId = -1;
         public FloorMapElement Minimap { get; private set; }
         public FloorMapElement FullMap { get; private set; }
         public bool MapOpen => mapPanel != null && mapPanel.style.display == DisplayStyle.Flex;
@@ -64,13 +70,16 @@ namespace Gloamvault
         readonly Dictionary<Door, int> doorJoin = new();
         readonly HashSet<Door> wired = new();
 
-        public static LevelScreen Open(UIDocument document, int seed = 1, int rooms = TestLevelGenerator.DefaultRooms, float soakMinutes = 0f, bool autoWalk = false, HeroSpec hero = null, string floorId = null)
+        /// <summary>Whether a floor plays by the rules (Phase 17); the place-only tests and shots open it without them.</summary>
+        public bool Rules { get; private set; } = true;
+
+        public static LevelScreen Open(UIDocument document, int seed = 1, int rooms = TestLevelGenerator.DefaultRooms, float soakMinutes = 0f, bool autoWalk = false, HeroSpec hero = null, string floorId = null, bool rules = true)
         {
             var existing = document.GetComponent<LevelScreen>();
             if (existing != null) return existing;
             var s = document.gameObject.AddComponent<LevelScreen>();
             s.document = document;
-            s.Seed = seed; s.RoomTarget = Mathf.Clamp(rooms, 2, 400); s.SoakMinutes = soakMinutes; s.FloorId = floorId;
+            s.Seed = seed; s.RoomTarget = Mathf.Clamp(rooms, 2, 400); s.SoakMinutes = soakMinutes; s.FloorId = floorId; s.Rules = rules;
             s.AutoWalk = autoWalk || soakMinutes > 0f;
             if (hero != null) s.spec = hero;
             s.Build();
@@ -123,6 +132,7 @@ namespace Gloamvault
             if (mapButton != null) mapButton.style.display = DisplayStyle.None;
             if (toastLabel != null) toastLabel.style.visibility = Visibility.Hidden;
             Stick = new VirtualStick(walk.Q("stickZone"), walk.Q("ring"), walk.Q("knob"));
+            Card = new PlayCard(walk);
             Pan = new CameraPan(walk.Q("panZone"), () => Follow);
             overlay = UnityEngine.Object.FindFirstObjectByType<PerfOverlay>();
 
@@ -163,11 +173,12 @@ namespace Gloamvault
                 }
                 else foreach (var (j, _) in Level.Neighbours(entry)) { doorAt = LevelBuilder.JoinPoint(j); break; }
                 var inward = centre - doorAt; inward.y = 0;
-                Hero.root.transform.position = inward.sqrMagnitude > 0.01f ? doorAt + inward.normalized * 1.8f : centre;
+                Hero.root.transform.position = inward.sqrMagnitude > 0.01f ? doorAt + inward.normalized * 3.0f : centre;
                 Hero.root.transform.rotation = inward.sqrMagnitude > 0.01f ? Quaternion.LookRotation(inward.normalized, Vector3.up) : Quaternion.Euler(0, 180f, 0);
                 Mover = HeroMover.Attach(Hero);
                 Follow = FollowCamera.Attach(cam, Hero.root.transform, Hero.height);
                 Streamer = LevelStreamer.Attach(levelRoot, Level, levelRoot.transform, Hero.root.transform);
+                if (Floor != null) Streamer.SpotsFor = room => SpotsIn(room.id);
                 Streamer.BuiltSetChanged += OnBuiltChanged;
                 Streamer.Prime();
                 Lighting = new LevelLighting(levelRoot.transform, entry.kit);
@@ -175,7 +186,16 @@ namespace Gloamvault
                 ColorUtility.TryParseHtmlString(KitLibrary.Load(entry.kit).manifest.look.fog, out var bg);
                 cam.backgroundColor = bg;
                 Pilot = new SoakPilot(Level, Streamer, Interactor, Hero.root.transform, SoakMinutes, Seed);
-                if (Floor != null) PlaceFloorThings();
+                if (Floor != null)
+                {
+                    PlaceFloorThings();
+                    if (Rules)
+                    {
+                        DelveSeed = Seed != 1 ? Seed : (int)(DateTime.UtcNow.Ticks % 1000000007L);
+                        Play = new FloorPlay(this, Floor, DelveSeed, spec, Card);
+                        Play.ThingsChanged += RebuildThings;
+                    }
+                }
                 OnBuiltChanged();
                 roomLabel.text = Floor != null ? $"Floor {Floor.def.floor} · {Level.rooms.Count} rooms" : $"Test level · seed {Seed}";
                 cameraButton.text = "Camera: " + Follow.Label;
@@ -269,8 +289,18 @@ namespace Gloamvault
                     else if (Floor.lockedJoins.Contains(ji)) { door.locked = !State.joinsUnlocked.Contains(ji); if (!door.locked && !door.IsOpen) door.Open(); }
                 }
             }
+            Play?.OnBuilt(Streamer.Built);
             RebuildThings();
         }
+
+        IEnumerable<FloorSpotDef> SpotsIn(int roomId)
+        {
+            foreach (var s in Floor.def.spots) if (s.room == roomId) yield return s;
+        }
+
+        /// <summary>The traversal ends of the built rooms (Phase 16).</summary>
+        public IReadOnlyList<TraversalEnd> TraversalEnds => traversalEnds;
+        readonly List<TraversalEnd> traversalEnds = new();
 
         void RebuildThings()
         {
@@ -279,6 +309,14 @@ namespace Gloamvault
             things.AddRange(levers);
             if (Key != null && !Key.Taken) things.Add(Key);
             things.AddRange(exits);
+            traversalEnds.Clear();
+            foreach (var r in Streamer.Built.Values)
+            {
+                if (r?.root == null) continue;
+                foreach (var e in r.root.GetComponentsInChildren<TraversalEnd>(true)) { e.mover = Mover; traversalEnds.Add(e); }
+            }
+            things.AddRange(traversalEnds);
+            if (Play != null) things.AddRange(Play.Things);
         }
 
         bool LeverPulled(int joinIndex)
@@ -298,7 +336,14 @@ namespace Gloamvault
 
         void OnSecretFound(Door door)
         {
-            if (doorJoin.TryGetValue(door, out int ji)) State.secretsFound.Add(ji);
+            if (doorJoin.TryGetValue(door, out int ji))
+            {
+                State.secretsFound.Add(ji);
+                // The rules learn it too (D-146): from the room the hero stands in to the other side.
+                var j = Floor.def.joins[ji];
+                var here = Streamer.HeroRoom;
+                if (Play != null && here != null && (here.id == j.a || here.id == j.b)) Play.Reveal(here.id, here.id == j.a ? j.b : j.a);
+            }
             State.Save();
             Toast("A panel slides aside.");
             RedrawMaps();
@@ -308,10 +353,15 @@ namespace Gloamvault
         {
             State.exitsFound.Add(spot.def.id);
             State.Save();
-            Toast(spot.def.kind == "entrance" ? "The way out. Leaving the keep arrives with the delve's rules (Phase 21)." :
-                  spot.def.kind == "stairs" ? "The stair down. Floor 2 arrives with the floors after this one (Phase 26)." :
-                  $"{spot.def.name} — found. From now on it is a way out too.");
             RedrawMaps();
+            if (Play != null && Play.Ok)
+            {
+                // The rules decide (Phase 17): the stair ends the floor, the gate and a side exit leave it.
+                if (spot.def.kind == "stairs") Play.Descend(); else Play.Retreat();
+                if (!Play.CardOpen) Toast(Play.LastRefusal.Length > 0 ? Play.LastRefusal : $"{spot.def.name} — found.");
+                return;
+            }
+            Toast(spot.def.kind == "entrance" ? "The way out." : spot.def.kind == "stairs" ? "The stair down." : $"{spot.def.name} — found. From now on it is a way out too.");
         }
 
         public void Toast(string text)
@@ -365,6 +415,7 @@ namespace Gloamvault
         /// <summary>A: the key on a locked door of the floor, else whatever is nearest.</summary>
         public bool Act()
         {
+            if (Play != null && Play.CardOpen) return Play.Card.PressFirst();
             if (Floor != null && Interactor.Nearest is Door d && d.locked && !d.hidden && doorJoin.TryGetValue(d, out int ji) && Floor.lockedJoins.Contains(ji))
             {
                 if (State.keysHeld <= 0) { Toast("Locked. The key is somewhere on this floor."); return false; }
@@ -421,11 +472,12 @@ namespace Gloamvault
                 if (kb.rKey.isPressed) Pan.Drag(400f * Time.deltaTime);
             }
             float yaw = Follow != null ? Follow.Yaw : 0f;
-            if (Follow != null) Follow.heroSpeed = Mover.Speed;
+            if (Follow != null) Follow.heroSpeed = Mover.Scripted ? 1f : Mover.Speed;
             Interactor.Update(Hero.root.transform, things);
             if (AutoWalk && v == Vector2.zero && !Stick.Held) v = Pilot.Tick(Time.deltaTime, yaw, overlay);
             else if (AutoWalk) Pilot.Tick(0f, yaw, overlay);
-            Mover.stick = MapOpen ? Vector2.zero : v;
+            bool cardOpen = Play != null && Play.CardOpen;
+            Mover.stick = MapOpen || Mover.Scripted || cardOpen ? Vector2.zero : v;
             Mover.cameraYaw = yaw;
             promptLabel.text = Interactor.Nearest != null ? "A · " + Interactor.Prompt : "";
             promptLabel.style.visibility = Interactor.Nearest != null ? Visibility.Visible : Visibility.Hidden;
@@ -435,6 +487,11 @@ namespace Gloamvault
             if (Floor != null)
             {
                 if (room != null && State.visited.Add(room.id)) { State.Save(); RedrawMaps(); }
+                if (Play != null)
+                {
+                    if (room != null && room.id != lastRoomId) { lastRoomId = room.id; Play.EnteredRoom(room.id); }
+                    Play.Tick(Time.deltaTime, !Mover.Scripted && !cardOpen && Mover.Speed > FollowCamera.MovingSpeed, Hero.root.transform.position, AutoWalk);
+                }
                 mapTimer += Time.unscaledDeltaTime;
                 if (mapTimer > 0.2f) { mapTimer = 0f; RedrawMaps(); }
                 if (toastLabel != null && toastUntil > 0f && Time.unscaledTime > toastUntil) { toastUntil = 0f; toastLabel.style.visibility = Visibility.Hidden; }
@@ -450,13 +507,24 @@ namespace Gloamvault
                 lastStats = Time.unscaledTime;
                 string where = room == null ? "between rooms" : Floor != null ? Floor.NameOf(room.id) : room.kit;
                 string keys = Floor != null && State.keysHeld > 0 ? $" · key ×{State.keysHeld}" : "";
-                statsLabel.text = $"{Streamer.Built.Count} built · {Streamer.ActiveCount} lit · {Level.rooms.Count} rooms · {Pilot.Walked:0} m · {Mover.Clip} · {where}{keys} · camera {Follow?.Label}";
+                // A floor reads its rules (the light, the clock, the hunter); the test level its streaming numbers.
+                statsLabel.text = Floor != null && Play != null
+                    ? $"{where}{keys}{Play.StatsSuffix()} · {Mover.Clip} · camera {Follow?.Label}"
+                    : $"{Streamer.Built.Count} built · {Streamer.ActiveCount} lit · {Level.rooms.Count} rooms · {Pilot.Walked:0} m · {Mover.Clip} · {where}{keys} · camera {Follow?.Label}";
             }
+        }
+
+        /// <summary>The delve is over (the card's Leave): the floor's map is kept, the screen closes to the title.</summary>
+        public void EndDelve(string outcome)
+        {
+            GvLog.Line("play-end", ("outcome", outcome), ("steps", Play?.Steps ?? 0), ("refused", Play?.Refused ?? 0));
+            Close();
         }
 
         void Close()
         {
             State?.Save();
+            Play?.Dispose(); Play = null;
             Hero?.Destroy(); Hero = null; Mover = null;
             Streamer?.ReleaseAll();
             Lighting?.Destroy(); Lighting = null;

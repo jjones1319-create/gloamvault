@@ -113,10 +113,10 @@ function wonFight(heroLevels: number[], monsters: { level: number; xpClass: numb
 }
 
 describe('battle XP and the level gap (D-096)', () => {
-  it('reads the curve: ×0.25 at 5 below, ×2 at 5 above, ×3 at the cap, linear between', () => {
-    expect(levelGapMultiplier(t, -12)).toBe(5)
-    expect(levelGapMultiplier(t, -5)).toBe(25)
-    expect(levelGapMultiplier(t, -2)).toBe(70)
+  it('reads the curve (D-152): ×0.2 at 5 below, ×0.02 at 10 below, ×2 at 5 above, ×3 at the cap, linear between', () => {
+    expect(levelGapMultiplier(t, -12)).toBe(2)
+    expect(levelGapMultiplier(t, -5)).toBe(20)
+    expect(levelGapMultiplier(t, -2)).toBe(68)
     expect(levelGapMultiplier(t, 0)).toBe(100)
     expect(levelGapMultiplier(t, 2)).toBe(140)
     expect(levelGapMultiplier(t, 5)).toBe(200)
@@ -133,8 +133,8 @@ describe('battle XP and the level gap (D-096)', () => {
     expect(level).toBe(unit(6) * 3)
     // Average 6 either way.
     expect(fightXpPool(t, wonFight([2, 10], pack))).toBe(level)
-    // A party five levels above: a quarter.
-    expect(fightXpPool(t, wonFight([11, 11], pack))).toBe(Math.round(unit(6) * 0.25) + Math.round(unit(6) * 2 * 0.25))
+    // A party five levels above: a fifth (D-152).
+    expect(fightXpPool(t, wonFight([11, 11], pack))).toBe(Math.round(unit(6) * 0.2) + Math.round(unit(6) * 2 * 0.2))
     // A strong hero alone (gap −4 → ×0.4) against the same strong hero with a weak wayfarer (average 6: ×1.0).
     expect(fightXpPool(t, wonFight([10, 2], pack))).toBeGreaterThan(fightXpPool(t, wonFight([10], pack)))
   })
@@ -148,7 +148,7 @@ describe('battle XP and the level gap (D-096)', () => {
 
 describe('the level curve (D-097)', () => {
   it('every level costs more battle XP than the one before', () => {
-    expect(heroLevelXpCost(t, 2)).toBe(60)
+    expect(heroLevelXpCost(t, 2)).toBe(120)
     for (let level = 3; level <= 40; level++) expect(heroLevelXpCost(t, level)).toBeGreaterThan(heroLevelXpCost(t, level - 1))
   })
 })

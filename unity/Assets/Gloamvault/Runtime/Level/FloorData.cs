@@ -46,7 +46,7 @@ namespace Gloamvault.Level
     [Serializable] public sealed class FloorJoinDef { public int a, b, offsetA; public string sideA, kind; }
     [Serializable] public sealed class FloorLeverDef { public string id; public int room, opens; public float x, z; }
     [Serializable] public sealed class FloorExitDef { public string id, kind, side, name; public int room; }
-    [Serializable] public sealed class FloorSpotDef { public string kind, id; public int room; public float x, z; }
+    [Serializable] public sealed class FloorSpotDef { public string kind, id; public int room; public float x, z; public string axis; public float length; public bool IsTraversal => kind == "crawl" || kind == "squeeze" || kind == "jump" || kind == "climb"; }
 
     /// <summary>
     /// A floor in play: its <see cref="Level"/> (the rooms and joins the builder and streamer take) plus what the
