@@ -50,6 +50,8 @@
 5. [x] **Tests and shots:** Vitest `skill-tree.test.ts` (9), economy and save tests updated; EditMode `TreeBridgeTests` (2), PlayMode `TreeSmokeTests` (1); shots `tree-arcanist`, `tree-warden`.
 6. [x] Docs (`13` D-178, `03` §7, `09` §7, `04`, `12`, the sheet, STATUS, README).
 
+**James at the Phases 18–19 install (2026-11-02):** *"there is a lot of different selections on the left side main menu and there is no ability to scroll"* — the title menu is a scrolling list now (drag it up and down; `UI/Title.uxml`, a ScrollView with the scrollbar hidden), rebuilt and reinstalled the same day.
+
 ## Try this on your phone — the Phases 18–19 install
 
 1. **Skill trees.** On the title screen tap **Skill trees**. The Arcanist's four branches are columns (Fire, Frost, Storm, Summoning); tap a skill to read it; tap **Level +5** a few times, then **Learn** on an open skill — the points line at the top counts down. ◀ ▶ changes class. **Reset tree** gives every point back.

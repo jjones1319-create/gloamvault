@@ -10,7 +10,7 @@
                 <ui:Label text="This is the first Unity build. Your heroes come across from the web version in Phase 22; until then, keep playing there." class="note__body" />
             </ui:VisualElement>
         </ui:VisualElement>
-        <ui:VisualElement class="menu">
+        <ui:ScrollView name="menu" class="menu" mode="Vertical" vertical-scroller-visibility="Hidden" horizontal-scroller-visibility="Hidden" touch-scroll-type="Elastic">
             <ui:Button name="new" enabled="false" class="menu__btn menu__btn--primary">
                 <ui:Label text="New game" class="menu__label" />
                 <ui:Label text="arrives in Phase 22" class="menu__hint" />
@@ -28,7 +28,7 @@
             <ui:Button name="floor" text="Floor 1" class="menu__btn menu__btn--text" />
             <ui:Button name="trees" text="Skill trees" class="menu__btn menu__btn--text" />
             <ui:Button name="fps" text="Frame rate: 60" class="menu__btn menu__btn--text" />
-        </ui:VisualElement>
+        </ui:ScrollView>
         <ui:Label name="version" class="version" />
         <ui:Label name="perf" class="perf" picking-mode="Ignore" />
     </ui:VisualElement>

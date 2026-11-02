@@ -54,17 +54,24 @@
     color: var(--ink-dim);
 }
 
+/* The menu scrolls (James, 2026-11-02): more buttons than a landscape screen holds — drag it up and down. */
 .menu {
     flex-grow: 1;
     flex-basis: 0;
     flex-direction: column;
+    max-height: 100%;
+}
+
+.menu .unity-scroll-view__content-container {
+    flex-direction: column;
     align-items: flex-end;
+    padding-bottom: 24px;
 }
 
 .menu__btn {
     width: 300px;
-    min-height: 46px;
-    margin-bottom: 10px;
+    min-height: 44px;
+    margin-bottom: 8px;
     padding: 0 16px;
     flex-direction: row;
     justify-content: space-between;
