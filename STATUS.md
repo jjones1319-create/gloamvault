@@ -50,7 +50,7 @@
 5. [x] **Tests and shots:** Vitest `skill-tree.test.ts` (9), economy and save tests updated; EditMode `TreeBridgeTests` (2), PlayMode `TreeSmokeTests` (1); shots `tree-arcanist`, `tree-warden`.
 6. [x] Docs (`13` D-178, `03` §7, `09` §7, `04`, `12`, the sheet, STATUS, README).
 
-**James at the Phases 18–19 install (2026-11-02):** *"there is a lot of different selections on the left side main menu and there is no ability to scroll"* — the title menu is a scrolling list now (drag it up and down; `UI/Title.uxml`, a ScrollView with the scrollbar hidden), rebuilt and reinstalled the same day.
+**James at the Phases 18–19 install (2026-11-02):** *"there is a lot of different selections on the left side main menu and there is no ability to scroll"* — the title menu is a scrolling list now (drag it up and down; `UI/Title.uxml`, a ScrollView with the scrollbar hidden), rebuilt the same day and **installed on the phone 2026-11-02** (still 0.19.0 (19); the next phase bumps the version).
 
 ## Try this on your phone — the Phases 18–19 install
 
